@@ -17,6 +17,7 @@ import de.craftplay.plotextras.competition.CompetitionService;
 import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.furniture.FurnitureProtectionManager;
 import de.craftplay.plotextras.gui.GuiManager;
+import de.craftplay.plotextras.integration.BedrockService;
 import de.craftplay.plotextras.integration.HeadDatabaseService;
 import de.craftplay.plotextras.integration.PlaceholderService;
 import de.craftplay.plotextras.language.LanguageManager;
@@ -30,6 +31,7 @@ import de.craftplay.plotextras.plotmeta.PlotMetaService;
 import de.craftplay.plotextras.redstone.RedstoneLagProtectionService;
 import de.craftplay.plotextras.report.PlotReportService;
 import de.craftplay.plotextras.resource.ResourceInstaller;
+import de.craftplay.plotextras.safety.CooldownService;
 import de.craftplay.plotextras.utility.PlotUtilityService;
 import de.craftplay.plotextras.validation.ConfigValidationService;
 import de.craftplay.plotextras.warp.PlotWarpService;
@@ -75,6 +77,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     private LanguageManager languageManager;
     private PlaceholderService placeholderService;
     private HeadDatabaseService headDatabaseService;
+    private BedrockService bedrockService;
+    private CooldownService cooldownService;
     private FurnitureProtectionManager furnitureProtectionManager;
     private EntityLimitService entityLimitService;
     private AuditLogService auditLogService;
@@ -119,6 +123,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         languageManager = new LanguageManager(this, playerDataManager);
         placeholderService = new PlaceholderService(this, languageManager, featureToggleService);
         headDatabaseService = new HeadDatabaseService(this, featureToggleService);
+        bedrockService = new BedrockService(this, featureToggleService);
+        cooldownService = new CooldownService(this, featureToggleService);
         furnitureProtectionManager = new FurnitureProtectionManager(this, featureToggleService);
         entityLimitService = new EntityLimitService(this, languageManager, featureToggleService);
         auditLogService = new AuditLogService(this, featureToggleService);
@@ -134,7 +140,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotPerformanceService = new PlotPerformanceService(this, featureToggleService);
         competitionService = new CompetitionService(this, featureToggleService);
         configValidationService = new ConfigValidationService(this, featureToggleService);
-        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, plotUtilityService, featureToggleService, playerDataManager);
+        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, bedrockService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, plotUtilityService, featureToggleService, playerDataManager);
 
         furnitureProtectionManager.registerFlags();
         furnitureProtectionManager.reload();
@@ -153,6 +159,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         languageManager.load();
         placeholderService.reload();
         headDatabaseService.reload();
+        bedrockService.reload();
+        cooldownService.reload();
         plotService.reload();
         guiManager.reload();
 
@@ -210,6 +218,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         languageManager.load();
         placeholderService.reload();
         headDatabaseService.reload();
+        bedrockService.reload();
+        cooldownService.reload();
         plotService.reload();
         guiManager.reload();
     }
@@ -276,6 +286,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     public FeatureToggleService getFeatureToggleService() {
         return featureToggleService;
+    }
+
+    public CooldownService getCooldownService() {
+        return cooldownService;
     }
 
     private void registerCommands() {

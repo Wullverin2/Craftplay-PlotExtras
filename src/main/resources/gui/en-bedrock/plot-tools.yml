@@ -1,0 +1,71 @@
+# Bedrock player tools.
+title: "&8Plot Tools"
+size: 54
+
+fill:
+  enabled: true
+  material: GREEN_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 4
+    material: COMPASS
+    name: "&eTools"
+    lore:
+      - "&7Category: &f{plot_category}"
+      - "&7Requests: &f{plot_open_requests}"
+  assistant:
+    slots: [10, 11]
+    material: KNOWLEDGE_BOOK
+    name: "&aAssistant"
+    actions:
+      - "PLAYER_COMMAND:pe assistant"
+  profile:
+    slots: [13, 14]
+    material: NAME_TAG
+    name: "&aProfile"
+    actions:
+      - "PLAYER_COMMAND:pe profile show"
+  guestbook:
+    slots: [16, 17]
+    material: WRITABLE_BOOK
+    name: "&aGuestbook"
+    actions:
+      - "PLAYER_COMMAND:pe guestbook list"
+  favorite:
+    slots: [28, 29]
+    material: EMERALD
+    name: "&aFavorite"
+    actions:
+      - "PLAYER_COMMAND:pe favorite"
+  request:
+    slots: [31, 32]
+    material: PAPER
+    name: "&aRequests"
+    actions:
+      - "PLAYER_COMMAND:pe request list"
+  cleanup:
+    slots: [34, 35]
+    material: HOPPER
+    name: "&aCleanup"
+    actions:
+      - "PLAYER_COMMAND:pe cleanup drops"
+  selfcheck:
+    slot: 40
+    material: CLOCK
+    name: "&aCheck"
+    actions:
+      - "PLAYER_COMMAND:pe selfcheck"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "OPEN:plot-dashboard"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"

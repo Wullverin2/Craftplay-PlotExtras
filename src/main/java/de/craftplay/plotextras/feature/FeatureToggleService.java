@@ -242,6 +242,14 @@ public final class FeatureToggleService {
         if (normalized.startsWith("player_command:pe report")) {
             return "player.reports";
         }
+        if (normalized.startsWith("player_command:pe backup create")
+                || normalized.startsWith("player_command:pe backup save")
+                || normalized.startsWith("player_command:pe backup sichern")) {
+            return "team.backups.create";
+        }
+        if (normalized.startsWith("player_command:pe backup")) {
+            return "team.backups";
+        }
         if (normalized.startsWith("player_command:pe mod")) {
             return "team.moderation";
         }

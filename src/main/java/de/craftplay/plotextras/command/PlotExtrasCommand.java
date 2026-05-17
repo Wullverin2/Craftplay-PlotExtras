@@ -388,6 +388,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             plugin.getLanguageManager().send(player, "no-permission");
             return true;
         }
+        if (!useCooldown(player, "report")) {
+            return true;
+        }
         final Plot plot = plugin.getPlotService().getCurrentPlot(player);
         if (plot == null) {
             plugin.getLanguageManager().send(player, "no-plot");
@@ -683,6 +686,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if (args.length >= 2 && (args[1].equalsIgnoreCase("sign") || args[1].equalsIgnoreCase("write") || args[1].equalsIgnoreCase("schreiben"))) {
+            if (!useCooldown(player, "guestbook")) {
+                return true;
+            }
             if (args.length < 3) {
                 player.sendMessage(TextUtil.component("&cNutze: &e/pe guestbook sign <Nachricht>"));
                 return true;
@@ -712,6 +718,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (plot == null) {
             plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        if (!useCooldown(player, "request")) {
             return true;
         }
         if (args.length < 2) {
@@ -799,6 +808,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(TextUtil.component("&cNutze: &e/pe search <Tag|Kategorie|Text>"));
             return true;
         }
+        if (!useCooldown(player, "search")) {
+            return true;
+        }
         final List<PlotUtilityService.PlotProfileEntry> results = plugin.getPlotUtilityService().searchProfiles(join(args, 1));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         player.sendMessage(TextUtil.component("&aPlotsuche &8(" + results.size() + ")"));
@@ -841,6 +853,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         final String mode = args.length >= 2 ? args[1] : "drops";
+        if (!useCooldown(player, "cleanup")) {
+            return true;
+        }
         final int removed = plugin.getPlotUtilityService().cleanupOwnedPlot(player, plot, mode);
         if (removed < 0) {
             player.sendMessage(TextUtil.component("&cCleanup konnte nicht ausgeführt werden. Nur Plotbesitzer können das nutzen."));
@@ -1250,6 +1265,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         final String action = args[1].toLowerCase(Locale.ROOT);
         return switch (action) {
             case "list", "liste" -> listBackups(player, args);
+            case "create", "save", "sichern" -> createManualBackup(player, args);
             case "gui" -> openBackupGui(player, args);
             case "info" -> backupInfo(player, args);
             case "restore", "wiederherstellen" -> restoreBackup(player, args);
@@ -1284,6 +1300,29 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(TextUtil.component("&8/pe backup info <id>"));
         player.sendMessage(TextUtil.component("&8/pe backup restore <id> &7- auf aktuellen Plot wiederherstellen"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean createManualBackup(final Player player, final String[] args) {
+        if (!plugin.getPlotBackupService().canCreateManual(player)) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        if (!useCooldown(player, "manual-backup")) {
+            return true;
+        }
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        final String reason = args.length >= 3 ? join(args, 2) : "admin";
+        if (plugin.getPlotBackupService().createManualBackup(player, plot, reason)) {
+            plugin.getAuditLogService().log(player, plot, "Manuelles Backup gestartet", reason);
+            player.sendMessage(TextUtil.component("&aManuelles Plot-Backup wurde gestartet."));
+        } else {
+            player.sendMessage(TextUtil.component("&cManuelles Plot-Backup konnte nicht gestartet werden."));
+        }
         return true;
     }
 
@@ -1347,6 +1386,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
     private void sendBackupHelp(final Player player) {
         player.sendMessage(TextUtil.component("&8&m----------------"));
         player.sendMessage(TextUtil.component("&aPlot-Backup Befehle"));
+        player.sendMessage(TextUtil.component("&e/pe backup create <Grund> &7- aktuelles Plot sichern"));
         player.sendMessage(TextUtil.component("&e/pe backup list <Spieler> &7- Backups ansehen"));
         player.sendMessage(TextUtil.component("&e/pe backup gui <Spieler> &7- Backup-GUI öffnen"));
         player.sendMessage(TextUtil.component("&e/pe backup info <id> &7- Details anzeigen"));
@@ -1390,6 +1430,16 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                 || normalized.equals("ja")
                 || normalized.equals("an")
                 || normalized.equals("1");
+    }
+
+    private boolean useCooldown(final Player player, final String key) {
+        if (plugin.getCooldownService().tryUse(player, key)) {
+            return true;
+        }
+        player.sendMessage(TextUtil.component("&cBitte warte noch &e"
+                + plugin.getCooldownService().remainingSeconds(player, key)
+                + " Sekunden&c."));
+        return false;
     }
 
     private String join(final String[] args, final int start) {
@@ -1619,7 +1669,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
 
     private List<String> completeBackupCommand(final String[] args) {
         if (args.length == 2) {
-            return filter(List.of("list", "gui", "info", "restore"), args[1]);
+            return filter(List.of("create", "list", "gui", "info", "restore"), args[1]);
         }
         if (args.length == 3 && (args[1].equalsIgnoreCase("info") || args[1].equalsIgnoreCase("restore"))) {
             return filter(plugin.getPlotBackupService().listAllBackups().stream().map(PlotBackupEntry::id).toList(), args[2]);

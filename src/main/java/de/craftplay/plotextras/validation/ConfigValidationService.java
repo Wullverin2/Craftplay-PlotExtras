@@ -9,8 +9,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public final class ConfigValidationService {
 
@@ -61,18 +63,42 @@ public final class ConfigValidationService {
         final YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         final int size = config.getInt("size", 54);
         if (size % 9 != 0 || size < 9 || size > 54) {
-            issues.add(file.getName() + ": GUI-Größe muss zwischen 9 und 54 liegen und durch 9 teilbar sein.");
+            issues.add(file.getName() + ": GUI-Groesse muss zwischen 9 und 54 liegen und durch 9 teilbar sein.");
         }
         final ConfigurationSection items = config.getConfigurationSection("items");
         if (items == null) {
             return;
         }
+        final Map<Integer, String> usedSlots = new HashMap<>();
         for (final String key : items.getKeys(false)) {
-            final int slot = items.getInt(key + ".slot", -1);
-            if (slot < 0 || slot >= size) {
-                issues.add(file.getName() + ": Item '" + key + "' nutzt ungültigen Slot " + slot + ".");
+            final List<Integer> slots = itemSlots(items.getConfigurationSection(key));
+            if (slots.isEmpty()) {
+                issues.add(file.getName() + ": Item '" + key + "' hat keinen Slot.");
+            }
+            for (final int slot : slots) {
+                if (slot < 0 || slot >= size) {
+                    issues.add(file.getName() + ": Item '" + key + "' nutzt ungueltigen Slot " + slot + ".");
+                    continue;
+                }
+                final String previous = usedSlots.putIfAbsent(slot, key);
+                if (previous != null) {
+                    issues.add(file.getName() + ": Slot " + slot + " wird mehrfach genutzt (" + previous + ", " + key + ").");
+                }
             }
         }
+    }
+
+    private List<Integer> itemSlots(final ConfigurationSection section) {
+        if (section == null) {
+            return List.of();
+        }
+        if (section.isList("slots")) {
+            return section.getIntegerList("slots");
+        }
+        if (section.contains("slot")) {
+            return List.of(section.getInt("slot", -1));
+        }
+        return List.of();
     }
 
     private void validateYaml(final File file, final List<String> issues) {
@@ -90,7 +116,7 @@ public final class ConfigValidationService {
                 continue;
             }
             if (Material.matchMaterial(materialName) == null) {
-                issues.add(file.getName() + ": Ungültiges Material bei '" + key + "': " + materialName);
+                issues.add(file.getName() + ": Ungueltiges Material bei '" + key + "': " + materialName);
             }
         }
     }

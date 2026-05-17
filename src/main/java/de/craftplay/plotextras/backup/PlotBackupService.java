@@ -157,6 +157,15 @@ public final class PlotBackupService {
                 && (sender.hasPermission("craftplayplotextras.backup.admin") || sender.hasPermission("craftplayplotextras.admin"));
     }
 
+    public boolean canCreateManual(final org.bukkit.command.CommandSender sender) {
+        return enabled
+                && featureToggleService.isEnabled("team.backups.create")
+                && featureToggleService.isEnabled("backups.manual")
+                && (sender.hasPermission("craftplayplotextras.backup.create")
+                || sender.hasPermission("craftplayplotextras.backup.admin")
+                || sender.hasPermission("craftplayplotextras.admin"));
+    }
+
     public boolean canRestore(final Player player) {
         return featureToggleService.isEnabled("team.backups.restore")
                 && featureToggleService.isEnabled("backups.restore")
@@ -165,26 +174,37 @@ public final class PlotBackupService {
                 || player.hasPermission("craftplayplotextras.admin"));
     }
 
+    public boolean createManualBackup(final Player actor, final Plot plot, final String reason) {
+        if (actor == null || !canCreateManual(actor)) {
+            return false;
+        }
+        return createBackup(plot, "manual-" + sanitize(blank(reason, "admin")), actor.getName());
+    }
+
     private void createAutomaticBackup(final Plot plot, final String reason) {
+        createBackup(plot, reason, "System");
+    }
+
+    private boolean createBackup(final Plot plot, final String reason, final String actorName) {
         if (plot == null || !plot.hasOwner()) {
-            return;
+            return false;
         }
         final SchematicHandler schematicHandler = SchematicHandler.manager;
         if (schematicHandler == null) {
             plugin.getLogger().warning("Could not create plot backup because PlotSquared schematic handler is unavailable.");
-            return;
+            return false;
         }
 
         final Plot basePlot = plot.getBasePlot(false);
         final UUID ownerUuid = basePlot.getOwnerAbs();
         if (ownerUuid == null) {
-            return;
+            return false;
         }
 
         final Set<Plot> connectedPlots = basePlot.getConnectedPlots();
         final String runningKey = basePlot.getWorldName() + ":" + basePlot.getId() + ":" + reason;
         if (!runningBackups.add(runningKey)) {
-            return;
+            return false;
         }
 
         final Instant now = Instant.now();
@@ -194,7 +214,7 @@ public final class PlotBackupService {
         if (!ownerFolder.exists() && !ownerFolder.mkdirs()) {
             runningBackups.remove(runningKey);
             plugin.getLogger().warning("Could not create backup folder for " + ownerUuid + ".");
-            return;
+            return false;
         }
 
         final String ownerName = ownerName(ownerUuid);
@@ -228,11 +248,12 @@ public final class PlotBackupService {
                         plotIds,
                         schematicFile
                 ));
-                plugin.getLogger().info("Created plot schematic backup " + schematicFile.getName() + " for " + ownerName + " (" + mergeSize + ").");
+                plugin.getLogger().info("Created plot schematic backup " + schematicFile.getName() + " for " + ownerName + " (" + mergeSize + ") by " + actorName + ".");
             } finally {
                 runningBackups.remove(runningKey);
             }
         }));
+        return true;
     }
 
     private void reloadEntries() {
@@ -352,6 +373,10 @@ public final class PlotBackupService {
     private String ownerName(final UUID ownerUuid) {
         final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerUuid);
         return offlinePlayer.getName() == null ? ownerUuid.toString() : offlinePlayer.getName();
+    }
+
+    private String blank(final String value, final String fallback) {
+        return value == null || value.isBlank() ? fallback : value.trim();
     }
 
     private String sanitize(final String input) {

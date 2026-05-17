@@ -1,0 +1,79 @@
+# Bedrock-Dashboard fuer das aktuelle Plot.
+title: "&8Plot-Dashboard"
+size: 54
+
+fill:
+  enabled: true
+  material: BLUE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 4
+    material: COMPASS
+    name: "&ePlot-Info"
+    lore:
+      - "&7Besitzer: &f{plot_owner}"
+      - "&7Rolle: &f{plot_role}"
+      - "&7Status: &f{plot_status_display}"
+      - "&7Warps: &f{plot_warps}"
+  settings:
+    slots: [10, 11]
+    material: COMPARATOR
+    name: "&aEinstellungen"
+    actions:
+      - "OPEN:settings"
+  flags:
+    slots: [13, 14]
+    material: REDSTONE_TORCH
+    name: "&aFlags"
+    actions:
+      - "OPEN:flags"
+  decor:
+    slots: [16, 17]
+    material: GRASS_BLOCK
+    name: "&aDeko"
+    actions:
+      - "OPEN:decor"
+  members:
+    slots: [28, 29]
+    material: PLAYER_HEAD
+    name: "&aMitglieder"
+    actions:
+      - "OPEN:members"
+  warps:
+    slots: [31, 32]
+    material: ENDER_PEARL
+    name: "&aWarps"
+    actions:
+      - "OPEN:plot-warps"
+  tools:
+    slots: [34, 35]
+    material: COMPASS
+    name: "&aWerkzeuge"
+    actions:
+      - "OPEN:plot-tools"
+  like:
+    slot: 39
+    material: EMERALD
+    name: "&aFavorit"
+    actions:
+      - "TOGGLE_PLOT_LIKE"
+  report:
+    slot: 41
+    material: BELL
+    name: "&cMelden"
+    actions:
+      - "PLAYER_COMMAND:pe report Bedrock-GUI"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurueck"
+    actions:
+      - "OPEN:main"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchliessen"
+    actions:
+      - "CLOSE"

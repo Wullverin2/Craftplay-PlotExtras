@@ -1,0 +1,74 @@
+# Bedrock main menu. Reduced lore and large separated buttons for Floodgate players.
+title: "&8Plot Menu"
+size: 54
+
+fill:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: COMPASS
+    name: "&ePlot Overview"
+    lore:
+      - "&7Plots: &f{plot_count}&7/&f{plot_max}"
+      - "&7Plot: &f{plot_id}"
+    actions:
+      - "OPEN:plot-dashboard"
+  dashboard:
+    slots: [10, 11]
+    material: MAP
+    name: "&aDashboard"
+    actions:
+      - "OPEN:plot-dashboard"
+  settings:
+    slots: [13, 14]
+    material: COMPARATOR
+    name: "&aSettings"
+    actions:
+      - "OPEN:settings"
+  flags:
+    slots: [16, 17]
+    material: REDSTONE_TORCH
+    name: "&aFlags"
+    actions:
+      - "OPEN:flags"
+  decor:
+    slots: [28, 29]
+    material: GRASS_BLOCK
+    name: "&aDecor"
+    actions:
+      - "OPEN:decor"
+  members:
+    slots: [31, 32]
+    material: PLAYER_HEAD
+    name: "&aMembers"
+    actions:
+      - "OPEN:members"
+  tools:
+    slots: [34, 35]
+    material: COMPASS
+    name: "&aTools"
+    actions:
+      - "OPEN:plot-tools"
+  language:
+    slot: 45
+    material: WRITABLE_BOOK
+    name: "&aLanguage"
+    actions:
+      - "OPEN_LANGUAGE"
+  team-tools:
+    slot: 47
+    permission: "craftplayplotextras.teamtools"
+    material: SPYGLASS
+    name: "&bTeam"
+    actions:
+      - "OPEN:team-tools"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"

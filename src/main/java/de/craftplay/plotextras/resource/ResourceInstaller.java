@@ -61,6 +61,10 @@ public final class ResourceInstaller {
             "gui/de/settings-biome.yml",
             "gui/de/entity-limits.yml",
             "gui/de/language.yml",
+            "gui/de-bedrock/main.yml",
+            "gui/de-bedrock/plot-dashboard.yml",
+            "gui/de-bedrock/plot-tools.yml",
+            "gui/de-bedrock/team-tools.yml",
             "gui/en/main.yml",
             "gui/en/plot-dashboard.yml",
             "gui/en/plot-tools.yml",
@@ -96,7 +100,11 @@ public final class ResourceInstaller {
             "gui/en/settings-time.yml",
             "gui/en/settings-biome.yml",
             "gui/en/entity-limits.yml",
-            "gui/en/language.yml"
+            "gui/en/language.yml",
+            "gui/en-bedrock/main.yml",
+            "gui/en-bedrock/plot-dashboard.yml",
+            "gui/en-bedrock/plot-tools.yml",
+            "gui/en-bedrock/team-tools.yml"
     );
 
     private ResourceInstaller() {

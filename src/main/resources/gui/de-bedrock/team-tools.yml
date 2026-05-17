@@ -1,0 +1,74 @@
+# Bedrock-Teamwerkzeuge.
+title: "&8Team-Werkzeuge"
+size: 54
+
+fill:
+  enabled: true
+  material: CYAN_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 4
+    material: SPYGLASS
+    name: "&bTeam-Werkzeuge"
+  requests:
+    slots: [10, 11]
+    material: PAPER
+    name: "&bAnfragen"
+    actions:
+      - "PLAYER_COMMAND:pe requests list"
+  reports:
+    slots: [13, 14]
+    material: BELL
+    name: "&cMeldungen"
+    actions:
+      - "PLAYER_COMMAND:pe reports list"
+  moderation:
+    slots: [16, 17]
+    material: PACKED_ICE
+    name: "&bModeration"
+    actions:
+      - "PLAYER_COMMAND:pe mod list"
+  backups:
+    slots: [28, 29]
+    material: CHEST
+    name: "&bBackups"
+    actions:
+      - "OPEN:backups"
+  create-backup:
+    slots: [31, 32]
+    material: CHEST_MINECART
+    name: "&bPlot sichern"
+    actions:
+      - "PLAYER_COMMAND:pe backup create Bedrock-Team"
+  redstone:
+    slots: [34, 35]
+    material: REDSTONE_BLOCK
+    name: "&cRedstone"
+    actions:
+      - "OPEN:redstone-alerts"
+  stats:
+    slot: 39
+    material: LECTERN
+    name: "&bStatistik"
+    actions:
+      - "PLAYER_COMMAND:pe stats"
+  validate:
+    slot: 41
+    material: KNOWLEDGE_BOOK
+    name: "&bConfig"
+    actions:
+      - "PLAYER_COMMAND:pe validate"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurueck"
+    actions:
+      - "OPEN:main"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchliessen"
+    actions:
+      - "CLOSE"

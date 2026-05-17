@@ -86,6 +86,15 @@ items:
       - "&7Bauaufgaben anzeigen."
     actions:
       - "PLAYER_COMMAND:pe buildtask list"
+  create-backup:
+    slot: 37
+    material: CHEST_MINECART
+    name: "&bAktuelles Plot sichern"
+    lore:
+      - "&7Erstellt ein manuelles"
+      - "&7Schematic-Backup vom Plot."
+    actions:
+      - "PLAYER_COMMAND:pe backup create GUI-Team"
   stats:
     slot: 39
     material: LECTERN

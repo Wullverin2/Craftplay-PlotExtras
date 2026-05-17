@@ -14,6 +14,9 @@ features:
     gui:
       # Haupt-GUI und frei erstellte GUI-Seiten.
       enabled: true
+      bedrock:
+        # Wenn Floodgate erkannt wird, werden fuer Bedrock-Spieler passende GUI-Dateien wie gui/de-bedrock/main.yml bevorzugt.
+        enabled: true
       skull-owner-lookups:
         # Spieler-Köpfe in GUIs über Mojang-Profile auflösen. Standardmäßig aus, um Rate-Limits zu vermeiden.
         enabled: false
@@ -209,6 +212,9 @@ features:
     dragon-egg-teleport:
       # Verhindert, dass Enderdracheneier beim Anklicken wegteleportieren.
       enabled: true
+    cooldowns:
+      # Schuetzt schwere oder spammbare Befehle mit konfigurierbaren Cooldowns.
+      enabled: true
     furniture:
       # Integrierte Möbel-Flags und Möbelinteraktionsschutz.
       enabled: true
@@ -232,6 +238,9 @@ features:
   backups:
     # Backup-System. Einzelne Gründe werden zusätzlich in config.yml unter plot-backups.automatic geschaltet.
     enabled: true
+    manual:
+      # Erlaubt manuelle Admin-Backups vom aktuellen Plot.
+      enabled: true
     automatic:
       enabled: true
       on-delete:
@@ -269,6 +278,8 @@ features:
       enabled: true
     backups:
       enabled: true
+      create:
+        enabled: true
       restore:
         enabled: true
     redstone-alerts:
@@ -320,4 +331,7 @@ features:
     jobs:
       enabled: true
     quests:
+      enabled: true
+    floodgate:
+      # Floodgate-Erkennung fuer Bedrock-Spieler und Bedrock-GUI-Varianten.
       enabled: true

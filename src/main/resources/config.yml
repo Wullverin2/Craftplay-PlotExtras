@@ -39,6 +39,9 @@ plot-roles:
 plot-backups:
   # Aktiviert das automatische Backup-System fuer Plots.
   enabled: true
+  manual:
+    # Wenn true, koennen Admins ueber /pe backup create oder das Team-GUI manuelle Schematic-Backups starten.
+    enabled: true
   automatic:
     # Wenn true, wird vor dem Loeschen oder Ablaufloeschen eines Plots ein Backup gestartet.
     on-delete: true
@@ -46,6 +49,23 @@ plot-backups:
     on-unmerge: true
     # Wenn true, wird auch vor einem Plot-Clear ein Backup gestartet.
     on-clear: true
+
+cooldowns:
+  # Aktiviert Cooldowns fuer schwere oder spammbare PlotExtras-Befehle.
+  enabled: true
+  commands:
+    # Sekunden zwischen zwei Plot-Meldungen pro Spieler.
+    report: 60
+    # Sekunden zwischen zwei Spieleranfragen pro Spieler.
+    request: 60
+    # Sekunden zwischen zwei Gaestebuch-Eintraegen pro Spieler.
+    guestbook: 30
+    # Sekunden zwischen zwei Spieler-Cleanups pro Spieler.
+    cleanup: 20
+    # Sekunden zwischen zwei manuellen Admin-Backups pro Teammitglied.
+    manual-backup: 120
+    # Sekunden zwischen zwei Plotsuchen pro Spieler.
+    search: 5
 
 redstone-lag-protection:
   # Aktiviert die Erkennung schneller Redstone-Aktivitaet pro Plot oder Plotmerge.

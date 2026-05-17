@@ -11,6 +11,7 @@ softdepend:
   - HeadDatabase
   - Jobs
   - Quests
+  - floodgate
 author: Codex
 description: Extra PlotSquared helpers for Craftplay, including fly protection, named entity persistence and configurable plot GUIs.
 commands:
@@ -47,6 +48,12 @@ permissions:
     default: op
   craftplayplotextras.backup.restore:
     description: Allows restoring plot backups to the current plot.
+    default: op
+  craftplayplotextras.backup.create:
+    description: Allows creating manual schematic backups of the current plot.
+    default: op
+  craftplayplotextras.cooldown.bypass:
+    description: Bypasses command cooldowns for heavy PlotExtras actions.
     default: op
   craftplayplotextras.redstone.notify:
     description: Receives clickable redstone lag protection alerts.

@@ -6,6 +6,7 @@ import de.craftplay.plotextras.audit.AuditLogService;
 import de.craftplay.plotextras.backup.PlotBackupEntry;
 import de.craftplay.plotextras.backup.PlotBackupService;
 import de.craftplay.plotextras.feature.FeatureToggleService;
+import de.craftplay.plotextras.integration.BedrockService;
 import de.craftplay.plotextras.integration.HeadDatabaseService;
 import de.craftplay.plotextras.integration.PlaceholderService;
 import de.craftplay.plotextras.language.LanguageDefinition;
@@ -69,6 +70,7 @@ public final class GuiManager implements Listener {
     private final LanguageManager languageManager;
     private final PlaceholderService placeholderService;
     private final HeadDatabaseService headDatabaseService;
+    private final BedrockService bedrockService;
     private final PlotService plotService;
     private final EntityLimitService entityLimitService;
     private final PlotBackupService plotBackupService;
@@ -93,6 +95,7 @@ public final class GuiManager implements Listener {
             final LanguageManager languageManager,
             final PlaceholderService placeholderService,
             final HeadDatabaseService headDatabaseService,
+            final BedrockService bedrockService,
             final PlotService plotService,
             final EntityLimitService entityLimitService,
             final PlotBackupService plotBackupService,
@@ -108,6 +111,7 @@ public final class GuiManager implements Listener {
         this.languageManager = languageManager;
         this.placeholderService = placeholderService;
         this.headDatabaseService = headDatabaseService;
+        this.bedrockService = bedrockService;
         this.plotService = plotService;
         this.entityLimitService = entityLimitService;
         this.plotBackupService = plotBackupService;
@@ -170,7 +174,7 @@ public final class GuiManager implements Listener {
             sendMessage(player, "feature-disabled", Map.of("feature", normalizedGuiId));
             return;
         }
-        final YamlConfiguration guiConfig = getGuiConfig(languageManager.getPlayerLanguage(player), normalizedGuiId);
+        final YamlConfiguration guiConfig = getGuiConfig(player, languageManager.getPlayerLanguage(player), normalizedGuiId);
         if (guiConfig == null) {
             sendMessage(player, "unknown-gui", Map.of("gui", normalizedGuiId));
             return;
@@ -231,6 +235,20 @@ public final class GuiManager implements Listener {
         event.setCancelled(true);
         final String message = event.getMessage().trim();
         Bukkit.getScheduler().runTask(plugin, () -> handleChatInput(event.getPlayer(), input, message));
+    }
+
+    private YamlConfiguration getGuiConfig(final Player player, final String language, final String guiId) {
+        if (bedrockService.isBedrockPlayer(player) && featureToggleService.isEnabled("player.gui.bedrock")) {
+            final YamlConfiguration bedrockConfig = getGuiConfig(language + "-bedrock", guiId);
+            if (bedrockConfig != null) {
+                return bedrockConfig;
+            }
+            final YamlConfiguration defaultBedrockConfig = getGuiConfig(languageManager.getDefaultLanguage() + "-bedrock", guiId);
+            if (defaultBedrockConfig != null) {
+                return defaultBedrockConfig;
+            }
+        }
+        return getGuiConfig(language, guiId);
     }
 
     private YamlConfiguration getGuiConfig(final String language, final String guiId) {
