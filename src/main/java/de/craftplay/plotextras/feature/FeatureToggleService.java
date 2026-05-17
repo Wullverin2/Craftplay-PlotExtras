@@ -301,6 +301,48 @@ public final class FeatureToggleService {
         if (normalized.startsWith("close_report:")) {
             return "team.reports.close";
         }
+        if (normalized.startsWith("create_report:")) {
+            return "player.reports";
+        }
+        if (normalized.startsWith("player_cleanup:")) {
+            return "player.cleanup";
+        }
+        if (normalized.equals("show_selfcheck")) {
+            return "player.assistant";
+        }
+        if (normalized.equals("show_assistant")) {
+            return "player.assistant";
+        }
+        if (normalized.equals("show_profile") || normalized.startsWith("set_profile_access:")) {
+            return "player.plot-profile";
+        }
+        if (normalized.equals("show_performance")) {
+            return "team.performance";
+        }
+        if (normalized.equals("team_mod_list")
+                || normalized.startsWith("team_freeze:")
+                || normalized.equals("team_unfreeze")
+                || normalized.startsWith("team_cleanup:")) {
+            return "team.moderation";
+        }
+        if (normalized.startsWith("redstone_enable")) {
+            return "redstone.reactivate";
+        }
+        if (normalized.startsWith("redstone_teleport:")) {
+            return "team.redstone-alerts";
+        }
+        if (normalized.startsWith("create_backup:")) {
+            return "team.backups.create";
+        }
+        if (normalized.startsWith("permission_check:")) {
+            return "team.permission-checker";
+        }
+        if (normalized.startsWith("competition_join:") || normalized.equals("competition_list")) {
+            return "player.competitions";
+        }
+        if (normalized.startsWith("competition_score_prompt:")) {
+            return "team.competitions.judge";
+        }
         if (normalized.startsWith("complete_build_task:")) {
             return "team.builder.tasks";
         }

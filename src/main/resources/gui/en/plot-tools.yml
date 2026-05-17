@@ -26,7 +26,7 @@ items:
       - "&7Shows the most useful"
       - "&7next steps for your plot."
     actions:
-      - "PLAYER_COMMAND:pe assistant"
+      - "SHOW_ASSISTANT"
   profile:
     slot: 12
     material: NAME_TAG
@@ -63,7 +63,7 @@ items:
       - "&7Saves or removes"
       - "&7this plot from your list."
     actions:
-      - "PLAYER_COMMAND:pe favorite"
+      - "TOGGLE_PLOT_LIKE"
   own-requests:
     slot: 30
     material: PAPER
@@ -81,7 +81,7 @@ items:
       - "&7Creates a trust request"
       - "&7for the current plot."
     actions:
-      - "PLAYER_COMMAND:pe request trust GUI request"
+      - "REQUEST_PROMPT:trust"
   selfcheck:
     slot: 34
     material: CLOCK
@@ -90,7 +90,7 @@ items:
       - "&7Shows entities and"
       - "&7performance hints."
     actions:
-      - "PLAYER_COMMAND:pe selfcheck"
+      - "SHOW_SELFCHECK"
   cleanup:
     slot: 40
     material: HOPPER

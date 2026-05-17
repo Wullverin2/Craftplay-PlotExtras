@@ -46,7 +46,7 @@ dynamic:
       - "&8Left click: teleport"
       - "&8Then: /pe redstone enable {redstone_alert_id}"
     actions:
-      - "PLAYER_COMMAND:pe redstone tp {redstone_alert_id}"
+      - "REDSTONE_TELEPORT:{redstone_alert_id}"
   previous-item:
     slot: 48
     material: ARROW

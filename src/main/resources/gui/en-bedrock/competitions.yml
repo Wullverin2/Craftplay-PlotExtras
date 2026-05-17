@@ -23,21 +23,21 @@ items:
       - "&7Registers this plot for"
       - "&7the default competition."
     actions:
-      - "PLAYER_COMMAND:pe contest join default GUI entry"
+      - "COMPETITION_JOIN:default:GUI entry"
   list-chat:
     slot: 12
     material: PAPER
     name: "&aList in Chat"
     actions:
-      - "PLAYER_COMMAND:pe contest list"
+      - "COMPETITION_LIST"
   judge-help:
     slot: 14
     permission: "craftplayplotextras.competition.judge"
     material: GOLD_BLOCK
     name: "&6Team Scoring"
     lore:
-      - "&7Score in chat:"
-      - "&f/pe contest score <id> <0-100> <note>"
+      - "&7Click an entry below"
+      - "&7and enter score + note."
   team-tools:
     slot: 16
     permission: "craftplayplotextras.teamtools"
@@ -70,7 +70,7 @@ dynamic:
       - "&7Plot: &f{competition_plot_key}"
       - "&7Score: &f{competition_score}"
       - "&8{competition_note}"
-      - "&eClick to teleport."
+      - "&eClick: teleport or score."
     actions:
       - "TELEPORT_PLOT_KEY:{competition_plot_key}"
   scored-item:
@@ -81,7 +81,7 @@ dynamic:
       - "&7Plot: &f{competition_plot_key}"
       - "&7Scored by: &f{competition_scored_by}"
       - "&8{competition_score_note}"
-      - "&eClick to teleport."
+      - "&eClick: teleport or score."
     actions:
       - "TELEPORT_PLOT_KEY:{competition_plot_key}"
   previous-item:

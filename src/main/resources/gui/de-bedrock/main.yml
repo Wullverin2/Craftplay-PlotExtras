@@ -74,7 +74,7 @@ items:
     material: BELL
     name: "&cPlot melden"
     actions:
-      - "PLAYER_COMMAND:pe report Bedrock-Menü"
+      - "CREATE_REPORT:Bedrock-Menü"
   competitions:
     slot: 22
     material: GOLDEN_APPLE

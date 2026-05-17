@@ -26,7 +26,7 @@ items:
       - "&7Zeigt dir die wichtigsten"
       - "&7nächsten Schritte für dein Plot."
     actions:
-      - "PLAYER_COMMAND:pe assistant"
+      - "SHOW_ASSISTANT"
   profile:
     slot: 12
     material: NAME_TAG
@@ -63,7 +63,7 @@ items:
       - "&7Speichert oder entfernt"
       - "&7dieses Plot in deiner Liste."
     actions:
-      - "PLAYER_COMMAND:pe favorite"
+      - "TOGGLE_PLOT_LIKE"
   own-requests:
     slot: 30
     material: PAPER
@@ -81,7 +81,7 @@ items:
       - "&7Erstellt eine Trust-Anfrage"
       - "&7für das aktuelle Plot."
     actions:
-      - "PLAYER_COMMAND:pe request trust GUI-Anfrage"
+      - "REQUEST_PROMPT:trust"
   selfcheck:
     slot: 34
     material: CLOCK
@@ -90,7 +90,7 @@ items:
       - "&7Zeigt Entities und"
       - "&7Performance-Hinweise."
     actions:
-      - "PLAYER_COMMAND:pe selfcheck"
+      - "SHOW_SELFCHECK"
   cleanup:
     slot: 40
     material: HOPPER

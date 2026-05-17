@@ -22,7 +22,7 @@ items:
     skull-owner: "{player}"
     name: "&aCheck Me"
     actions:
-      - "PLAYER_COMMAND:pe permcheck {player}"
+      - "PERMISSION_CHECK:{player}"
   owner:
     slot: 12
     material: PLAYER_HEAD
@@ -31,7 +31,7 @@ items:
     lore:
       - "&7Owner: &f{plot_owner}"
     actions:
-      - "PLAYER_COMMAND:pe permcheck {plot_owner}"
+      - "PERMISSION_CHECK:{plot_owner}"
   back:
     slot: 45
     material: ARROW
@@ -59,7 +59,7 @@ dynamic:
       - "&8{permission_uuid}"
       - "&eClick to check."
     actions:
-      - "PLAYER_COMMAND:pe permcheck {permission_player}"
+      - "PERMISSION_CHECK:{permission_player}"
   previous-item:
     slot: 48
     material: ARROW

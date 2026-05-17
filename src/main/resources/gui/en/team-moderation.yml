@@ -21,62 +21,62 @@ items:
     material: PAPER
     name: "&aFrozen Plots"
     actions:
-      - "PLAYER_COMMAND:pe mod list"
+      - "TEAM_MOD_LIST"
   freeze:
     slot: 12
     material: PACKED_ICE
     name: "&bFreeze Plot"
     actions:
-      - "PLAYER_COMMAND:pe mod freeze GUI freeze"
+      - "TEAM_FREEZE:GUI freeze"
   unfreeze:
     slot: 14
     material: HONEYCOMB
     name: "&aUnfreeze Plot"
     actions:
-      - "PLAYER_COMMAND:pe mod unfreeze"
+      - "TEAM_UNFREEZE"
   redstone:
     slot: 16
     permission: "craftplayplotextras.redstone.admin"
     material: REDSTONE_BLOCK
     name: "&cEnable Redstone"
     actions:
-      - "PLAYER_COMMAND:pe redstone enable"
+      - "REDSTONE_ENABLE"
   cleanup-drops:
     slot: 20
     material: HOPPER
     name: "&eRemove Drops"
     actions:
-      - "PLAYER_COMMAND:pe mod cleanup drops"
+      - "TEAM_CLEANUP:drops"
   cleanup-projectiles:
     slot: 21
     material: ARROW
     name: "&eRemove Projectiles"
     actions:
-      - "PLAYER_COMMAND:pe mod cleanup projectiles"
+      - "TEAM_CLEANUP:projectiles"
   cleanup-monsters:
     slot: 22
     material: ZOMBIE_HEAD
     name: "&eRemove Monsters"
     actions:
-      - "PLAYER_COMMAND:pe mod cleanup monsters"
+      - "TEAM_CLEANUP:monsters"
   cleanup-animals:
     slot: 23
     material: WHEAT
     name: "&eRemove Animals"
     actions:
-      - "PLAYER_COMMAND:pe mod cleanup animals"
+      - "TEAM_CLEANUP:animals"
   cleanup-vehicles:
     slot: 24
     material: MINECART
     name: "&eRemove Vehicles"
     actions:
-      - "PLAYER_COMMAND:pe mod cleanup vehicles"
+      - "TEAM_CLEANUP:vehicles"
   cleanup-all:
     slot: 31
     material: TNT
     name: "&cRemove All"
     actions:
-      - "PLAYER_COMMAND:pe mod cleanup all"
+      - "TEAM_CLEANUP:all"
   performance:
     slot: 33
     permission: "craftplayplotextras.performance.view"

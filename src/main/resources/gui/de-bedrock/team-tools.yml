@@ -57,7 +57,7 @@ items:
     material: CHEST_MINECART
     name: "&bPlot sichern"
     actions:
-      - "PLAYER_COMMAND:pe backup create GUI-Team"
+      - "CREATE_BACKUP:GUI-Team"
   audit:
     slot: 21
     permission: "craftplayplotextras.audit.view"

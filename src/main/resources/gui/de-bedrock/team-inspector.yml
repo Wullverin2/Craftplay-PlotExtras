@@ -123,7 +123,7 @@ items:
       - "&7Aktiviert Redstone auf"
       - "&7dem aktuellen Plot wieder."
     actions:
-      - "PLAYER_COMMAND:pe redstone enable"
+      - "REDSTONE_ENABLE"
   freeze:
     slot: 22
     permission: "craftplayplotextras.moderation.manage"
@@ -133,7 +133,7 @@ items:
       - "&7Blockiert Bauen, Interaktion,"
       - "&7Spawns und Redstone."
     actions:
-      - "PLAYER_COMMAND:pe mod freeze GUI-Freeze"
+      - "TEAM_FREEZE:GUI-Freeze"
   unfreeze:
     slot: 23
     permission: "craftplayplotextras.moderation.manage"
@@ -143,7 +143,7 @@ items:
       - "&7Hebt den Freeze"
       - "&7für den Plot auf."
     actions:
-      - "PLAYER_COMMAND:pe mod unfreeze"
+      - "TEAM_UNFREEZE"
   cleanup-drops:
     slot: 24
     permission: "craftplayplotextras.moderation.manage"
@@ -153,7 +153,7 @@ items:
       - "&7Entfernt Items und XP"
       - "&7vom aktuellen Plot."
     actions:
-      - "PLAYER_COMMAND:pe mod cleanup drops"
+      - "TEAM_CLEANUP:drops"
   validate:
     slot: 25
     permission: "craftplayplotextras.config.validate"

@@ -23,21 +23,21 @@ items:
       - "&7Meldet dieses Plot für"
       - "&7den Standard-Wettbewerb an."
     actions:
-      - "PLAYER_COMMAND:pe contest join default GUI-Anmeldung"
+      - "COMPETITION_JOIN:default:GUI-Anmeldung"
   list-chat:
     slot: 12
     material: PAPER
     name: "&aListe im Chat"
     actions:
-      - "PLAYER_COMMAND:pe contest list"
+      - "COMPETITION_LIST"
   judge-help:
     slot: 14
     permission: "craftplayplotextras.competition.judge"
     material: GOLD_BLOCK
     name: "&6Team-Bewertung"
     lore:
-      - "&7Bewerten per Chat:"
-      - "&f/pe contest score <id> <0-100> <Notiz>"
+      - "&7Eintrag unten anklicken"
+      - "&7und Punktzahl + Notiz eingeben."
   team-tools:
     slot: 16
     permission: "craftplayplotextras.teamtools"
@@ -70,7 +70,7 @@ dynamic:
       - "&7Plot: &f{competition_plot_key}"
       - "&7Punkte: &f{competition_score}"
       - "&8{competition_note}"
-      - "&eKlicken zum Teleportieren."
+      - "&eKlicken: teleportieren oder bewerten."
     actions:
       - "TELEPORT_PLOT_KEY:{competition_plot_key}"
   scored-item:
@@ -81,7 +81,7 @@ dynamic:
       - "&7Plot: &f{competition_plot_key}"
       - "&7Bewertet von: &f{competition_scored_by}"
       - "&8{competition_score_note}"
-      - "&eKlicken zum Teleportieren."
+      - "&eKlicken: teleportieren oder bewerten."
     actions:
       - "TELEPORT_PLOT_KEY:{competition_plot_key}"
   previous-item:

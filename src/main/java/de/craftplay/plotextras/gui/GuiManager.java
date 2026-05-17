@@ -14,6 +14,7 @@ import de.craftplay.plotextras.integration.PlaceholderService;
 import de.craftplay.plotextras.language.LanguageDefinition;
 import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.limit.EntityLimitService;
+import de.craftplay.plotextras.moderation.PlotModerationService;
 import de.craftplay.plotextras.performance.PlotPerformanceService;
 import de.craftplay.plotextras.performance.PlotPerformanceSnapshot;
 import de.craftplay.plotextras.player.PlayerDataManager;
@@ -50,6 +51,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -88,6 +90,7 @@ public final class GuiManager implements Listener {
     private final PlotWarpService plotWarpService;
     private final PlotUtilityService plotUtilityService;
     private final PlotReportService plotReportService;
+    private final PlotModerationService plotModerationService;
     private final PlotPerformanceService plotPerformanceService;
     private final CompetitionService competitionService;
     private final ConfigValidationService configValidationService;
@@ -118,6 +121,7 @@ public final class GuiManager implements Listener {
             final PlotWarpService plotWarpService,
             final PlotUtilityService plotUtilityService,
             final PlotReportService plotReportService,
+            final PlotModerationService plotModerationService,
             final PlotPerformanceService plotPerformanceService,
             final CompetitionService competitionService,
             final ConfigValidationService configValidationService,
@@ -138,6 +142,7 @@ public final class GuiManager implements Listener {
         this.plotWarpService = plotWarpService;
         this.plotUtilityService = plotUtilityService;
         this.plotReportService = plotReportService;
+        this.plotModerationService = plotModerationService;
         this.plotPerformanceService = plotPerformanceService;
         this.competitionService = competitionService;
         this.configValidationService = configValidationService;
@@ -1066,7 +1071,9 @@ public final class GuiManager implements Listener {
             final int slot = slots.get(index);
             if (item != null && isValidSlot(inventory, slot)) {
                 inventory.setItem(slot, item);
-                holder.setActions(slot, resolveActions(player, readActions(template, fallback), itemPlaceholders));
+                holder.setActions(slot, competitionService.canJudge(player)
+                        ? List.of("COMPETITION_SCORE_PROMPT:" + entry.id())
+                        : resolveActions(player, readActions(template, fallback), itemPlaceholders));
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
@@ -1661,6 +1668,82 @@ public final class GuiManager implements Listener {
                 closeReport(player, action.substring("CLOSE_REPORT:".length()));
                 return;
             }
+            if (upperAction.startsWith("CREATE_REPORT:")) {
+                createReport(player, action.substring("CREATE_REPORT:".length()));
+                return;
+            }
+            if (upperAction.startsWith("PLAYER_CLEANUP:")) {
+                cleanupPlayerPlot(player, action.substring("PLAYER_CLEANUP:".length()));
+                return;
+            }
+            if (upperAction.equals("SHOW_SELFCHECK")) {
+                showSelfCheck(player);
+                return;
+            }
+            if (upperAction.equals("SHOW_ASSISTANT")) {
+                showAssistant(player);
+                return;
+            }
+            if (upperAction.equals("SHOW_PROFILE")) {
+                showProfile(player);
+                return;
+            }
+            if (upperAction.startsWith("SET_PROFILE_ACCESS:")) {
+                setProfileAccess(player, action.substring("SET_PROFILE_ACCESS:".length()));
+                return;
+            }
+            if (upperAction.equals("SHOW_PERFORMANCE")) {
+                showPerformance(player);
+                return;
+            }
+            if (upperAction.equals("TEAM_MOD_LIST")) {
+                showFrozenPlots(player);
+                return;
+            }
+            if (upperAction.startsWith("TEAM_FREEZE:")) {
+                freezeCurrentPlot(player, action.substring("TEAM_FREEZE:".length()));
+                return;
+            }
+            if (upperAction.equals("TEAM_UNFREEZE")) {
+                unfreezeCurrentPlot(player);
+                return;
+            }
+            if (upperAction.startsWith("TEAM_CLEANUP:")) {
+                cleanupTeamPlot(player, action.substring("TEAM_CLEANUP:".length()));
+                return;
+            }
+            if (upperAction.startsWith("REDSTONE_ENABLE:")) {
+                enableRedstone(player, action.substring("REDSTONE_ENABLE:".length()));
+                return;
+            }
+            if (upperAction.equals("REDSTONE_ENABLE")) {
+                enableRedstone(player, "");
+                return;
+            }
+            if (upperAction.startsWith("REDSTONE_TELEPORT:")) {
+                teleportRedstoneAlert(player, action.substring("REDSTONE_TELEPORT:".length()));
+                return;
+            }
+            if (upperAction.startsWith("CREATE_BACKUP:")) {
+                createManualBackup(player, action.substring("CREATE_BACKUP:".length()));
+                return;
+            }
+            if (upperAction.startsWith("PERMISSION_CHECK:")) {
+                showPermissionCheck(player, action.substring("PERMISSION_CHECK:".length()));
+                return;
+            }
+            if (upperAction.startsWith("COMPETITION_JOIN:")) {
+                joinCompetition(player, action.substring("COMPETITION_JOIN:".length()));
+                return;
+            }
+            if (upperAction.equals("COMPETITION_LIST")) {
+                showCompetitions(player);
+                return;
+            }
+            if (upperAction.startsWith("COMPETITION_SCORE_PROMPT:")) {
+                startCompetitionScorePrompt(player, action.substring("COMPETITION_SCORE_PROMPT:".length()));
+                return;
+            }
             if (upperAction.startsWith("COMPLETE_BUILD_TASK:")) {
                 completeBuildTask(player, action.substring("COMPLETE_BUILD_TASK:".length()));
                 return;
@@ -2008,6 +2091,9 @@ public final class GuiManager implements Listener {
             } else if (input.type() == ChatInputType.CREATE_REQUEST) {
                 sendMessage(player, "request-cancelled", Map.of());
                 scheduleOpen(player, "requests", 0);
+            } else if (input.type() == ChatInputType.SCORE_COMPETITION) {
+                player.sendMessage(TextUtil.component("&7Bewertung abgebrochen."));
+                scheduleOpen(player, "competitions", 0);
             } else {
                 sendMessage(player, "role-input-cancelled", Map.of());
                 scheduleOpen(player, "roles", 0);
@@ -2047,6 +2133,11 @@ public final class GuiManager implements Listener {
 
         if (input.type() == ChatInputType.CREATE_REQUEST) {
             handleRequestInput(player, input.roleId(), message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.SCORE_COMPETITION) {
+            handleCompetitionScoreInput(player, input, message);
             return;
         }
 
@@ -2558,6 +2649,378 @@ public final class GuiManager implements Listener {
         scheduleOpen(player, "reports", 0);
     }
 
+    private void createReport(final Player player, final String reason) {
+        if (!plotReportService.canCreate(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        final String reportReason = blankInput(reason, "Keine Begründung angegeben.");
+        final PlotReportEntry report = plotReportService.create(player, plot, reportReason);
+        player.closeInventory();
+        if (report == null) {
+            player.sendMessage(TextUtil.component("&cMeldung konnte nicht erstellt werden."));
+            return;
+        }
+
+        auditLogService.log(player, plot, "Plot gemeldet", report.id() + ": " + reportReason);
+        player.sendMessage(TextUtil.component("&aMeldung &e" + report.id() + " &awurde an das Team gesendet."));
+        for (final Player online : Bukkit.getOnlinePlayers()) {
+            if (plotReportService.canView(online)) {
+                online.sendMessage(TextUtil.component("&cNeue Plot-Meldung &e" + report.id()
+                        + " &7von &f" + player.getName()
+                        + " &7auf &f" + report.plotKey()
+                        + " &8- &föffne das Team-Menü."));
+            }
+        }
+    }
+
+    private void cleanupPlayerPlot(final Player player, final String mode) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        final String cleanupMode = blankInput(mode, "drops");
+        final int removed = plotUtilityService.cleanupOwnedPlot(player, plot, cleanupMode);
+        if (removed < 0) {
+            player.sendMessage(TextUtil.component("&cCleanup konnte nicht ausgeführt werden. Nur berechtigte Plotmitglieder können das nutzen."));
+        } else {
+            auditLogService.log(player, plot, "Spieler-Cleanup", cleanupMode + ": " + removed);
+            player.sendMessage(TextUtil.component("&aEntfernt: &e" + removed + " &7(" + cleanupMode + ")"));
+        }
+        scheduleOpen(player, "cleanup", 0);
+    }
+
+    private void showSelfCheck(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        player.closeInventory();
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        final PlotPerformanceSnapshot snapshot = plotPerformanceService.snapshot(plot);
+        sendSnapshot(player, "&aPlot-Selbstcheck", snapshot, 8);
+    }
+
+    private void showAssistant(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        final Map<String, String> plotPlaceholders = plotService.getPlotPlaceholders(player);
+        player.closeInventory();
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aPlot-Assistent"));
+        player.sendMessage(TextUtil.component("&7Plots: &f" + plotPlaceholders.getOrDefault("plot_count", "0")
+                + "&7/&f" + plotService.getPlotLimit(player)));
+        if (plot == null) {
+            player.sendMessage(TextUtil.component("&cDu stehst auf keinem Plot."));
+            player.sendMessage(TextUtil.component("&8Tipp: &fNutze Plot-Auto oder das PlotSquared-Claim-Menü."));
+        } else {
+            final Map<String, String> meta = plotUtilityService.placeholders(plot);
+            player.sendMessage(TextUtil.component("&7Besuchsmodus: &f"
+                    + profileAccessDisplay(meta.getOrDefault("plot_access_mode", "normal"))
+                    + " &8| &7Kategorie: &f" + meta.getOrDefault("plot_category", "-")));
+            player.sendMessage(TextUtil.component("&7Beschreibung: &f" + meta.getOrDefault("plot_description", "-")));
+            player.sendMessage(TextUtil.component("&7Tags: &f" + meta.getOrDefault("plot_tags", "-")));
+            player.sendMessage(TextUtil.component("&7Werkzeuge, Profil, Warps und Selbstcheck findest du direkt im Menü."));
+        }
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+    }
+
+    private void showProfile(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        player.closeInventory();
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        final Map<String, String> meta = plotUtilityService.placeholders(plot);
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aPlotprofil"));
+        player.sendMessage(TextUtil.component("&7Beschreibung: &f" + meta.getOrDefault("plot_description", "-")));
+        player.sendMessage(TextUtil.component("&7Kategorie: &f" + meta.getOrDefault("plot_category", "-")));
+        player.sendMessage(TextUtil.component("&7Tags: &f" + meta.getOrDefault("plot_tags", "-")));
+        player.sendMessage(TextUtil.component("&7Besuchsmodus: &f"
+                + profileAccessDisplay(meta.getOrDefault("plot_access_mode", "normal"))));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+    }
+
+    private void setProfileAccess(final Player player, final String mode) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        final String accessMode = blankInput(mode, "normal");
+        if (plotUtilityService.setAccessMode(player, plot, accessMode)) {
+            auditLogService.log(player, plot, "Plotprofil geändert", "Besuchsmodus: " + profileAccessDisplay(accessMode));
+            player.sendMessage(TextUtil.component("&aBesuchsmodus wurde auf &e" + profileAccessDisplay(accessMode) + " &agesetzt."));
+        } else {
+            player.sendMessage(TextUtil.component("&cBesuchsmodus konnte nicht geändert werden. Prüfe deine Rechte."));
+        }
+        scheduleOpen(player, "plot-profile", 0);
+    }
+
+    private void showPerformance(final Player player) {
+        if (!plotPerformanceService.canView(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final Plot plot = plotService.getCurrentPlot(player);
+        player.closeInventory();
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        final PlotPerformanceSnapshot snapshot = plotPerformanceService.snapshot(plot);
+        sendSnapshot(player, "&aPerformance: &f" + snapshot.plotKey(), snapshot, 10);
+    }
+
+    private void showFrozenPlots(final Player player) {
+        if (!plotModerationService.canModerate(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        player.closeInventory();
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aGesperrte Plots"));
+        final List<String> entries = plotModerationService.listFrozen();
+        if (entries.isEmpty()) {
+            player.sendMessage(TextUtil.component("&7Keine gesperrten Plots vorhanden."));
+        }
+        for (final String line : entries) {
+            player.sendMessage(TextUtil.component("&e" + line));
+        }
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+    }
+
+    private void freezeCurrentPlot(final Player player, final String reason) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        final String freezeReason = blankInput(reason, "Teamprüfung");
+        if (plotModerationService.freeze(player, plot, freezeReason)) {
+            auditLogService.log(player, plot, "Plot eingefroren", freezeReason);
+            player.sendMessage(TextUtil.component("&aDer aktuelle Plot wurde eingefroren."));
+        } else {
+            player.sendMessage(TextUtil.component("&cDer Plot konnte nicht eingefroren werden."));
+        }
+        scheduleOpen(player, "team-moderation", 0);
+    }
+
+    private void unfreezeCurrentPlot(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        if (plotModerationService.unfreeze(player, plot)) {
+            auditLogService.log(player, plot, "Plot-Freeze aufgehoben", "-");
+            player.sendMessage(TextUtil.component("&aDer aktuelle Plot wurde freigegeben."));
+        } else {
+            player.sendMessage(TextUtil.component("&cDer Plot war nicht eingefroren oder du hast keine Rechte."));
+        }
+        scheduleOpen(player, "team-moderation", 0);
+    }
+
+    private void cleanupTeamPlot(final Player player, final String mode) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        final String cleanupMode = blankInput(mode, "drops");
+        final int removed = plotModerationService.cleanup(player, plot, cleanupMode);
+        if (removed >= 0) {
+            auditLogService.log(player, plot, "Plot-Cleanup", cleanupMode + ": " + removed);
+            player.sendMessage(TextUtil.component("&aEntfernt: &e" + removed + " &7(" + cleanupMode + ")"));
+        } else {
+            player.sendMessage(TextUtil.component("&cCleanup konnte nicht ausgeführt werden."));
+        }
+        scheduleOpen(player, "team-moderation", 0);
+    }
+
+    private void enableRedstone(final Player player, final String alertId) {
+        if (!redstoneLagProtectionService.canAdmin(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final boolean enabled = isBlankPlaceholder(alertId)
+                ? redstoneLagProtectionService.enableRedstoneAtCurrentPlot(player)
+                : redstoneLagProtectionService.enableRedstoneAtAlert(player, alertId);
+        if (enabled) {
+            player.sendMessage(TextUtil.component("&aRedstone wurde auf dem Plot wieder aktiviert."));
+        } else {
+            player.sendMessage(TextUtil.component("&cRedstone konnte auf diesem Plot nicht aktiviert werden."));
+        }
+        scheduleOpen(player, isBlankPlaceholder(alertId) ? "team-moderation" : "redstone-alerts", 0);
+    }
+
+    private void teleportRedstoneAlert(final Player player, final String alertId) {
+        if (!redstoneLagProtectionService.canReceiveAlerts(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        if (isBlankPlaceholder(alertId) || !redstoneLagProtectionService.teleportToAlert(player, alertId)) {
+            player.sendMessage(TextUtil.component("&cRedstone-Alarm wurde nicht gefunden."));
+            scheduleOpen(player, "redstone-alerts", 0);
+            return;
+        }
+        player.closeInventory();
+        player.sendMessage(TextUtil.component("&aDu wurdest zur Redstone-Lagmaschine teleportiert."));
+    }
+
+    private void createManualBackup(final Player player, final String reason) {
+        if (!plotBackupService.canCreateManual(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        final String backupReason = blankInput(reason, "GUI-Team");
+        if (plotBackupService.createManualBackup(player, plot, backupReason)) {
+            auditLogService.log(player, plot, "Manuelles Backup gestartet", backupReason);
+            player.sendMessage(TextUtil.component("&aManuelles Plot-Backup wurde gestartet."));
+        } else {
+            player.sendMessage(TextUtil.component("&cManuelles Plot-Backup konnte nicht gestartet werden."));
+        }
+        scheduleOpen(player, "team-tools", 0);
+    }
+
+    private void showPermissionCheck(final Player player, final String targetName) {
+        if (!player.hasPermission("craftplayplotextras.permissioncheck") && !player.hasPermission("craftplayplotextras.admin")) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final String cleanTargetName = blankInput(targetName, player.getName());
+        final Player target = Bukkit.getPlayerExact(cleanTargetName);
+        player.closeInventory();
+        if (target == null) {
+            player.sendMessage(TextUtil.component("&cDer Spieler muss online sein."));
+            return;
+        }
+
+        final List<String> permissions = target.getEffectivePermissions().stream()
+                .filter(PermissionAttachmentInfo::getValue)
+                .map(PermissionAttachmentInfo::getPermission)
+                .filter(permission -> permission.startsWith("craftplayplotextras.") || permission.startsWith("plots.plot."))
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList();
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aRechtecheck: &f" + target.getName()));
+        player.sendMessage(TextUtil.component("&7Plotlimit: &f" + plotService.getPlotLimit(target)));
+        permissions.stream().limit(30).forEach(permission -> player.sendMessage(TextUtil.component("&e" + permission)));
+        if (permissions.size() > 30) {
+            player.sendMessage(TextUtil.component("&7Weitere Rechte: &f" + (permissions.size() - 30)));
+        }
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+    }
+
+    private void joinCompetition(final Player player, final String rawCompetition) {
+        if (!competitionService.canJoin(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        final String[] parts = blankInput(rawCompetition, "default").split(":", 2);
+        final String competition = blankInput(parts[0], "default");
+        final String note = parts.length >= 2 ? blankInput(parts[1], "-") : "-";
+        final CompetitionEntry entry = competitionService.join(player, plot, competition, note);
+        if (entry == null) {
+            player.sendMessage(TextUtil.component("&cTeilnahme konnte nicht gespeichert werden."));
+        } else {
+            auditLogService.log(player, plot, "Wettbewerb angemeldet", entry.competition());
+            player.sendMessage(TextUtil.component("&aPlot wurde für Wettbewerb &e" + entry.competition() + " &aangemeldet."));
+        }
+        scheduleOpen(player, "competitions", 0);
+    }
+
+    private void showCompetitions(final Player player) {
+        final List<CompetitionEntry> entries = competitionService.list("");
+        player.closeInventory();
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aWettbewerbe &8(" + entries.size() + ")"));
+        if (entries.isEmpty()) {
+            player.sendMessage(TextUtil.component("&7Keine Einträge vorhanden."));
+        }
+        for (final CompetitionEntry entry : entries.stream().limit(10).toList()) {
+            player.sendMessage(TextUtil.component("&e" + entry.id()
+                    + " &7| &f" + entry.ownerName()
+                    + " &7| &f" + entry.plotKey()
+                    + " &7| &a" + entry.score()));
+        }
+        if (competitionService.canJudge(player)) {
+            player.sendMessage(TextUtil.component("&7Klicke einen Wettbewerbseintrag im Menü, um ihn zu bewerten."));
+        }
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+    }
+
+    private void startCompetitionScorePrompt(final Player player, final String competitionId) {
+        if (!competitionService.canJudge(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final String cleanCompetitionId = blankInput(competitionId, "");
+        if (cleanCompetitionId.isBlank() || competitionService.get(cleanCompetitionId).isEmpty()) {
+            player.sendMessage(TextUtil.component("&cWettbewerbseintrag wurde nicht gefunden."));
+            scheduleOpen(player, "competitions", 0);
+            return;
+        }
+
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.SCORE_COMPETITION, cleanCompetitionId));
+        player.closeInventory();
+        player.sendMessage(TextUtil.component("&eGib Punktzahl 0-100 und optional eine Notiz ein. &7Beispiel: &f85 Sehr schön"));
+        player.sendMessage(TextUtil.component("&7Schreibe &fabbrechen &7zum Abbrechen."));
+    }
+
+    private void handleCompetitionScoreInput(final Player player, final ChatInput input, final String message) {
+        final String[] parts = message.split("\\s+", 2);
+        final int score;
+        try {
+            score = Integer.parseInt(parts[0]);
+        } catch (final NumberFormatException exception) {
+            pendingChatInputs.put(player.getUniqueId(), input);
+            player.sendMessage(TextUtil.component("&cBitte gib eine Zahl zwischen 0 und 100 an."));
+            return;
+        }
+        if (score < 0 || score > 100) {
+            pendingChatInputs.put(player.getUniqueId(), input);
+            player.sendMessage(TextUtil.component("&cBitte gib eine Zahl zwischen 0 und 100 an."));
+            return;
+        }
+
+        final String note = parts.length >= 2 && !parts[1].isBlank() ? parts[1].trim() : "-";
+        if (competitionService.score(player, input.roleId(), score, note)) {
+            auditLogService.log(player, null, "Wettbewerb bewertet", input.roleId() + ": " + score + " (" + note + ")");
+            player.sendMessage(TextUtil.component("&aBewertung gespeichert."));
+        } else {
+            player.sendMessage(TextUtil.component("&cEintrag wurde nicht gefunden."));
+        }
+        scheduleOpen(player, "competitions", 0);
+    }
+
     private void completeBuildTask(final Player player, final String taskId) {
         if (plotUtilityService.completeBuildTask(player, taskId)) {
             sendMessage(player, "build-task-completed", Map.of("task", taskId));
@@ -2872,6 +3335,46 @@ public final class GuiManager implements Listener {
         return plotService.getComponentDisplayName(key);
     }
 
+    private void sendSnapshot(final Player player, final String title, final PlotPerformanceSnapshot snapshot, final int limit) {
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component(title));
+        player.sendMessage(TextUtil.component("&7Entities gesamt: &f" + snapshot.totalEntities()));
+        snapshot.entityCounts().entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(limit)
+                .forEach(entry -> player.sendMessage(TextUtil.component("&e" + entry.getKey() + " &7- &f" + entry.getValue())));
+        for (final String warning : snapshot.warnings()) {
+            player.sendMessage(TextUtil.component("&6" + warning));
+        }
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+    }
+
+    private String profileAccessDisplay(final String mode) {
+        return switch (mode == null ? "normal" : mode.toLowerCase(Locale.ROOT)) {
+            case "public" -> "Öffentlich";
+            case "members" -> "Mitglieder";
+            case "friends" -> "Freunde";
+            case "private" -> "Privat";
+            case "locked" -> "Gesperrt";
+            default -> "Normal";
+        };
+    }
+
+    private String blankInput(final String value, final String fallback) {
+        return isBlankPlaceholder(value) ? fallback : value.trim();
+    }
+
+    private boolean isBlankPlaceholder(final String value) {
+        if (value == null) {
+            return true;
+        }
+        final String trimmed = value.trim();
+        return trimmed.isBlank()
+                || trimmed.equals("-")
+                || trimmed.equals("{}")
+                || (trimmed.startsWith("{") && trimmed.endsWith("}"));
+    }
+
     private String readString(final ConfigurationSection primary, final ConfigurationSection fallback, final String path, final String defaultValue) {
         if (primary != null && primary.contains(path)) {
             return primary.getString(path, defaultValue);
@@ -2954,6 +3457,7 @@ public final class GuiManager implements Listener {
         SET_WARP,
         SEARCH_PLOTS,
         GUESTBOOK_SIGN,
-        CREATE_REQUEST
+        CREATE_REQUEST,
+        SCORE_COMPETITION
     }
 }

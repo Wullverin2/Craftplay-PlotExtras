@@ -22,7 +22,7 @@ items:
     material: PAPER
     name: "&aShow Profile"
     actions:
-      - "PLAYER_COMMAND:pe profile show"
+      - "SHOW_PROFILE"
   note:
     slot: 12
     material: WRITABLE_BOOK
@@ -34,31 +34,31 @@ items:
     material: WHITE_DYE
     name: "&fVisit Mode: Normal"
     actions:
-      - "PLAYER_COMMAND:pe profile access normal"
+      - "SET_PROFILE_ACCESS:normal"
   public:
     slot: 21
     material: LIME_DYE
     name: "&aVisit Mode: Public"
     actions:
-      - "PLAYER_COMMAND:pe profile access public"
+      - "SET_PROFILE_ACCESS:public"
   members:
     slot: 22
     material: CYAN_DYE
     name: "&bVisit Mode: Members"
     actions:
-      - "PLAYER_COMMAND:pe profile access members"
+      - "SET_PROFILE_ACCESS:members"
   private:
     slot: 23
     material: ORANGE_DYE
     name: "&6Visit Mode: Private"
     actions:
-      - "PLAYER_COMMAND:pe profile access private"
+      - "SET_PROFILE_ACCESS:private"
   locked:
     slot: 24
     material: RED_DYE
     name: "&cVisit Mode: Locked"
     actions:
-      - "PLAYER_COMMAND:pe profile access locked"
+      - "SET_PROFILE_ACCESS:locked"
   search:
     slot: 32
     material: SPYGLASS

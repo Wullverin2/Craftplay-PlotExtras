@@ -93,7 +93,7 @@ items:
       - "&7Sendet eine Meldung zum"
       - "&7aktuellen Plot an das Team."
     actions:
-      - "PLAYER_COMMAND:pe report GUI-Meldung"
+      - "CREATE_REPORT:GUI-Meldung"
   contest:
     slot: 32
     material: GOLDEN_APPLE

@@ -20,7 +20,7 @@ items:
     material: KNOWLEDGE_BOOK
     name: "&aAssistant"
     actions:
-      - "PLAYER_COMMAND:pe assistant"
+      - "SHOW_ASSISTANT"
   profile:
     slot: 11
     material: NAME_TAG
@@ -44,7 +44,7 @@ items:
     material: EMERALD
     name: "&aFavorite"
     actions:
-      - "PLAYER_COMMAND:pe favorite"
+      - "TOGGLE_PLOT_LIKE"
   requests:
     slot: 15
     material: PAPER
@@ -56,13 +56,13 @@ items:
     material: PLAYER_HEAD
     name: "&aRequest Trust"
     actions:
-      - "PLAYER_COMMAND:pe request trust Bedrock request"
+      - "REQUEST_PROMPT:trust"
   selfcheck:
     slot: 21
     material: CLOCK
     name: "&aCheck"
     actions:
-      - "PLAYER_COMMAND:pe selfcheck"
+      - "SHOW_SELFCHECK"
   cleanup:
     slot: 22
     material: HOPPER

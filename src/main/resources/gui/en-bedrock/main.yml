@@ -74,7 +74,7 @@ items:
     material: BELL
     name: "&cReport Plot"
     actions:
-      - "PLAYER_COMMAND:pe report Bedrock menu"
+      - "CREATE_REPORT:Bedrock menu"
   competitions:
     slot: 22
     material: GOLDEN_APPLE

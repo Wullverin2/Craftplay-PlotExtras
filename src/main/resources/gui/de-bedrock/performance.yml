@@ -27,7 +27,7 @@ items:
     material: PAPER
     name: "&aAusgabe im Chat"
     actions:
-      - "PLAYER_COMMAND:pe performance"
+      - "SHOW_PERFORMANCE"
   limits:
     slot: 14
     material: ARMOR_STAND

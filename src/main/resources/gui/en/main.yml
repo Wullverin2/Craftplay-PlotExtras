@@ -93,7 +93,7 @@ items:
       - "&7Sends a report for"
       - "&7the current plot to staff."
     actions:
-      - "PLAYER_COMMAND:pe report GUI report"
+      - "CREATE_REPORT:GUI report"
   contest:
     slot: 32
     material: GOLDEN_APPLE

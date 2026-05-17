@@ -76,7 +76,7 @@ items:
     material: BELL
     name: "&cReport"
     actions:
-      - "PLAYER_COMMAND:pe report Bedrock dashboard"
+      - "CREATE_REPORT:Bedrock dashboard"
   competitions:
     slot: 23
     material: GOLDEN_APPLE

@@ -76,7 +76,7 @@ items:
     material: BELL
     name: "&cMelden"
     actions:
-      - "PLAYER_COMMAND:pe report Bedrock-Dashboard"
+      - "CREATE_REPORT:Bedrock-Dashboard"
   competitions:
     slot: 23
     material: GOLDEN_APPLE

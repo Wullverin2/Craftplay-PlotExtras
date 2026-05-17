@@ -20,31 +20,31 @@ items:
     material: ROTTEN_FLESH
     name: "&aDrops und XP"
     actions:
-      - "PLAYER_COMMAND:pe cleanup drops"
+      - "PLAYER_CLEANUP:drops"
   projectiles:
     slot: 12
     material: ARROW
     name: "&aProjektile"
     actions:
-      - "PLAYER_COMMAND:pe cleanup projectiles"
+      - "PLAYER_CLEANUP:projectiles"
   monsters:
     slot: 14
     material: ZOMBIE_HEAD
     name: "&aMonster"
     actions:
-      - "PLAYER_COMMAND:pe cleanup monsters"
+      - "PLAYER_CLEANUP:monsters"
   animals:
     slot: 16
     material: WHEAT
     name: "&aTiere"
     actions:
-      - "PLAYER_COMMAND:pe cleanup animals"
+      - "PLAYER_CLEANUP:animals"
   vehicles:
     slot: 28
     material: MINECART
     name: "&aFahrzeuge"
     actions:
-      - "PLAYER_COMMAND:pe cleanup vehicles"
+      - "PLAYER_CLEANUP:vehicles"
   all:
     slot: 30
     material: TNT
@@ -52,13 +52,13 @@ items:
     lore:
       - "&7Entfernt alles außer Spielern."
     actions:
-      - "PLAYER_COMMAND:pe cleanup all"
+      - "PLAYER_CLEANUP:all"
   selfcheck:
     slot: 32
     material: CLOCK
     name: "&aSelbstcheck"
     actions:
-      - "PLAYER_COMMAND:pe selfcheck"
+      - "SHOW_SELFCHECK"
   limits:
     slot: 34
     material: ARMOR_STAND

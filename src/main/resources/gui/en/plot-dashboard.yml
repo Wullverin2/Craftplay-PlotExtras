@@ -109,7 +109,7 @@ items:
       - "&7Reports this plot"
       - "&7to staff."
     actions:
-      - "PLAYER_COMMAND:pe report Dashboard report"
+      - "CREATE_REPORT:Dashboard report"
   contest:
     slot: 24
     material: GOLDEN_APPLE

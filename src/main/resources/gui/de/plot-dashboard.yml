@@ -109,7 +109,7 @@ items:
       - "&7Meldet dieses Plot"
       - "&7an das Team."
     actions:
-      - "PLAYER_COMMAND:pe report Dashboard-Meldung"
+      - "CREATE_REPORT:Dashboard-Meldung"
   contest:
     slot: 24
     material: GOLDEN_APPLE
