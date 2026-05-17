@@ -7,6 +7,12 @@ language:
   # Spieler können ihre Sprache im Sprach-GUI selbst wechseln.
   default: de
 
+gui:
+  skull-owner-lookups:
+    # Wenn true, werden Spieler-Köpfe in GUIs über Mojang-Profile aufgelöst.
+    # Standardmäßig false, damit Menüs bei vielen Mitgliedern keine HTTP-429-Fehler oder Lags auslösen.
+    enabled: false
+
 plot-limits:
   # Hartes Fallback-Limit, falls beim Spieler keine Permission wie plots.plot.84 gefunden wird.
   default: 4

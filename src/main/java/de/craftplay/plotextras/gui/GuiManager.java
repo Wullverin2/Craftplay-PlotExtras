@@ -2037,10 +2037,13 @@ public final class GuiManager implements Listener {
 
         item.setAmount(Math.max(1, Math.min(64, readInt(primary, fallback, "amount", 1))));
         final String skullOwner = readString(primary, fallback, "skull-owner", "");
-        if (!skullOwner.isBlank() && item.getItemMeta() instanceof SkullMeta skullMeta) {
-            final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(placeholderService.apply(player, skullOwner, placeholders));
-            skullMeta.setOwningPlayer(offlinePlayer);
-            item.setItemMeta(skullMeta);
+        if (skullOwnerLookupsEnabled() && !skullOwner.isBlank() && item.getItemMeta() instanceof SkullMeta skullMeta) {
+            final String resolvedOwner = placeholderService.apply(player, skullOwner, placeholders).trim();
+            if (!resolvedOwner.isBlank() && !"-".equals(resolvedOwner)) {
+                final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(resolvedOwner);
+                skullMeta.setOwningPlayer(offlinePlayer);
+                item.setItemMeta(skullMeta);
+            }
         }
 
         final ItemMeta meta = item.getItemMeta();
@@ -2075,6 +2078,11 @@ public final class GuiManager implements Listener {
 
         item.setItemMeta(meta);
         return item;
+    }
+
+    private boolean skullOwnerLookupsEnabled() {
+        return featureToggleService.isEnabled("player.gui.skull-owner-lookups")
+                && plugin.getConfig().getBoolean("gui.skull-owner-lookups.enabled", false);
     }
 
     private List<String> readActions(final ConfigurationSection section) {

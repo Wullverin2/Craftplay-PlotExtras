@@ -14,6 +14,9 @@ features:
     gui:
       # Haupt-GUI und frei erstellte GUI-Seiten.
       enabled: true
+      skull-owner-lookups:
+        # Spieler-Köpfe in GUIs über Mojang-Profile auflösen. Standardmäßig aus, um Rate-Limits zu vermeiden.
+        enabled: false
       custom:
         # Eigene GUI-Dateien und eigene Buttons, die nicht direkt einem Standardbereich zugeordnet sind.
         enabled: true

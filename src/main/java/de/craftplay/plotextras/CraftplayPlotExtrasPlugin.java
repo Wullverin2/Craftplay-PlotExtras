@@ -151,6 +151,20 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         getLogger().info("Loaded " + languageManager.getLanguages().size() + " language(s) and configurable plot GUIs.");
     }
 
+    @Override
+    public void onDisable() {
+        getServer().getScheduler().cancelTasks(this);
+        try {
+            PlotSquared.get().getEventDispatcher().unregisterListener(this);
+            if (plotBackupService != null) {
+                PlotSquared.get().getEventDispatcher().unregisterListener(plotBackupService);
+            }
+        } catch (final RuntimeException ignored) {
+            // PlotSquared may already be shutting down.
+        }
+        rememberedFlightStates.clear();
+    }
+
     public void reloadPlugin() {
         reloadConfig();
         featureToggleService.reload();
@@ -227,6 +241,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @EventHandler
     public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         final Player player = event.getPlayer();
         if (isPlotWorld(player.getWorld())) {
             rememberFlightState(player);
@@ -239,11 +256,17 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         rememberedFlightStates.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onPlayerToggleFlight(final PlayerToggleFlightEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         final Player player = event.getPlayer();
         if (!isPlotWorld(player.getWorld())) {
             return;
@@ -254,6 +277,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @EventHandler
     public void onPlayerCommandPreprocess(final PlayerCommandPreprocessEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         final Player player = event.getPlayer();
         if (!isPlotWorld(player.getWorld()) || !isFlyCommand(event.getMessage())) {
             return;
@@ -264,6 +290,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteractEntity(final PlayerInteractEntityEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         if (!preventNamedEntityDespawn) {
             return;
         }
@@ -278,6 +307,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerInteractDragonEgg(final PlayerInteractEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         if (!preventDragonEggTeleportInPlotWorlds
                 || (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.LEFT_CLICK_BLOCK)) {
             return;
@@ -294,6 +326,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onDragonEggTeleport(final BlockFromToEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         if (!preventDragonEggTeleportInPlotWorlds
                 || event.getBlock().getType() != Material.DRAGON_EGG
                 || !isPlotWorld(event.getBlock().getWorld())) {
@@ -305,6 +340,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @Subscribe
     public void onPlayerEnterPlot(final PlayerEnterPlotEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         final Player player = getBukkitPlayer(event.getPlotPlayer());
         if (player != null && feature("player.plot-visits")) {
             plotMetaService.recordVisit(event.getPlot(), player);
@@ -314,11 +352,17 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @Subscribe
     public void onPlayerLeavePlot(final PlayerLeavePlotEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         protectFlightInPlotWorld(event.getPlotPlayer());
     }
 
     @Subscribe
     public void onPlayerPlotLimit(final PlayerPlotLimitEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         if (!feature("player.plot-limits")) {
             return;
         }
@@ -330,11 +374,17 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @Subscribe
     public void onPlayerClaimPlot(final PlayerClaimPlotEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         enforcePlotLimit(event.getPlotPlayer(), 1, event);
     }
 
     @Subscribe
     public void onPlayerAutoPlot(final PlayerAutoPlotEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
         enforcePlotLimit(event.getPlayer(), Math.max(1, event.getSizeX() * event.getSizeZ()), event);
     }
 
@@ -401,6 +451,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     private void startFlightStateScanner() {
         final long interval = Math.max(1L, getConfig().getLong("flight-state-scan-interval-ticks", 20L));
         getServer().getScheduler().runTaskTimer(this, () -> {
+            if (!isEnabled()) {
+                return;
+            }
             for (final Player player : getServer().getOnlinePlayers()) {
                 if (isPlotWorld(player.getWorld())) {
                     rememberFlightState(player);
@@ -410,6 +463,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     }
 
     private void scheduleFlightRestore(final Player player) {
+        if (!isEnabled()) {
+            return;
+        }
         final UUID playerId = player.getUniqueId();
         for (final long delay : restoreDelayTicks) {
             getServer().getScheduler().runTaskLater(this, () -> restoreFlight(playerId), delay);
@@ -417,6 +473,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     }
 
     private void restoreFlight(final UUID playerId) {
+        if (!isEnabled()) {
+            return;
+        }
         final Player player = getServer().getPlayer(playerId);
         if (player == null || !player.isOnline() || !isPlotWorld(player.getWorld())) {
             return;
@@ -437,6 +496,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     }
 
     private void scheduleFlightDisable(final Player player) {
+        if (!isEnabled()) {
+            return;
+        }
         if (!disableFlightOutsidePlotWorlds) {
             return;
         }
@@ -445,6 +507,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         final UUID playerId = player.getUniqueId();
         for (final long delay : disableDelayTicks) {
             getServer().getScheduler().runTaskLater(this, () -> {
+                if (!isEnabled()) {
+                    return;
+                }
                 final Player delayedPlayer = getServer().getPlayer(playerId);
                 if (delayedPlayer != null && delayedPlayer.isOnline() && !isPlotWorld(delayedPlayer.getWorld())) {
                     disableFlight(delayedPlayer);

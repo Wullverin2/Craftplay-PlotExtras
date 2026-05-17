@@ -10,6 +10,15 @@ settings:
   count-merged-plots: true
   # Wenn true, zaehlen bei alten Gruppenlimits die konkreten Einzellimits zuerst. Dadurch bremsen alte Kategorien die neuen Einzelwerte nicht aus.
   prefer-single-entity-limits: true
+  # Wenn true, werden auch Item-Spawns wie Drops von Kakteen, Farmen oder Blockabbau aktiv limitiert.
+  # Standardmäßig false, weil Item-Spawns sehr häufig auftreten und sonst bei großen Plotwelten stark laggen können.
+  limit-item-spawns: false
+  # Wenn true, werden Projektile wie Pfeile beim Abschießen geprüft.
+  limit-projectiles: true
+  # Cachezeit für PlotSquared-Regionen in Millisekunden. Reduziert teure Region-Abfragen bei vielen Spawn-Events.
+  region-cache-millis: 5000
+  # Cachezeit für Entity-Zählungen in Millisekunden. 1000 bedeutet: maximal einmal pro Sekunde pro Plot/Limit neu zählen.
+  count-cache-millis: 1000
   # Spieler mit dieser Permission umgehen alle Entity-Limits.
   bypass-permission: craftplayplotextras.entitylimit.bypass
   # Diese Entity-Typen werden nicht mitgezaehlt und nicht limitiert.

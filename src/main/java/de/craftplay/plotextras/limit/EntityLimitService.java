@@ -30,6 +30,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.util.BoundingBox;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,6 +51,8 @@ public final class EntityLimitService implements Listener {
     private final File limitsFile;
     private Settings settings = Settings.defaults();
     private final Map<String, LimitRule> limitRules = new LinkedHashMap<>();
+    private final Map<String, RegionCacheEntry> regionCache = new LinkedHashMap<>();
+    private final Map<String, CountCacheEntry> countCache = new LinkedHashMap<>();
 
     public EntityLimitService(final JavaPlugin plugin, final LanguageManager languageManager, final FeatureToggleService featureToggleService) {
         this.plugin = plugin;
@@ -62,6 +65,8 @@ public final class EntityLimitService implements Listener {
         final YamlConfiguration config = YamlConfiguration.loadConfiguration(limitsFile);
         settings = Settings.from(config.getConfigurationSection("settings"));
         limitRules.clear();
+        regionCache.clear();
+        countCache.clear();
 
         final ConfigurationSection limitsSection = config.getConfigurationSection("limits");
         if (limitsSection == null) {
@@ -144,6 +149,9 @@ public final class EntityLimitService implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onItemSpawn(final ItemSpawnEvent event) {
+        if (!settings.limitItemSpawns()) {
+            return;
+        }
         final LimitCheck check = check(null, event.getEntity().getType(), event.getEntity().getUniqueId(), event.getLocation());
         if (!check.allowed()) {
             event.setCancelled(true);
@@ -152,6 +160,9 @@ public final class EntityLimitService implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onProjectileLaunch(final ProjectileLaunchEvent event) {
+        if (!settings.limitProjectiles()) {
+            return;
+        }
         final ProjectileSource shooter = event.getEntity().getShooter();
         final Player player = shooter instanceof Player shooterPlayer ? shooterPlayer : null;
         final LimitCheck check = check(player, event.getEntity().getType(), event.getEntity().getUniqueId(), event.getEntity().getLocation());
@@ -272,45 +283,80 @@ public final class EntityLimitService implements Listener {
         if (world == null) {
             return 0;
         }
+        final String countKey = plotKey(plot) + "|" + settings.countMergedPlots() + "|" + rule.id();
+        if (ignoredEntityId == null) {
+            final CountCacheEntry cachedCount = countCache.get(countKey);
+            if (cachedCount != null && cachedCount.expiresAt() > System.currentTimeMillis()) {
+                return cachedCount.count();
+            }
+        }
 
         int count = 0;
-        for (final Entity entity : world.getEntities()) {
-            if (ignoredEntityId != null && entity.getUniqueId().equals(ignoredEntityId)) {
-                continue;
+        final List<CuboidRegion> regions = regions(plot);
+        for (final CuboidRegion region : regions) {
+            for (final Entity entity : world.getNearbyEntities(toBoundingBox(world, region))) {
+                if (ignoredEntityId != null && entity.getUniqueId().equals(ignoredEntityId)) {
+                    continue;
+                }
+                if (!isCountable(entity.getType()) || !rule.matches(entity.getType()) || !contains(region, entity.getLocation())) {
+                    continue;
+                }
+                count++;
             }
-            if (!isCountable(entity.getType()) || !rule.matches(entity.getType()) || !isInsidePlot(entity.getLocation(), plot)) {
-                continue;
-            }
-            count++;
+        }
+        if (ignoredEntityId == null) {
+            countCache.put(countKey, new CountCacheEntry(count, System.currentTimeMillis() + settings.countCacheMillis()));
         }
         return count;
     }
 
-    private boolean isInsidePlot(final Location location, final Plot plot) {
-        if (location.getWorld() == null || !location.getWorld().getName().equals(plot.getWorldName())) {
-            return false;
+    private List<CuboidRegion> regions(final Plot plot) {
+        final String key = plotKey(plot) + "|" + settings.countMergedPlots();
+        final RegionCacheEntry cached = regionCache.get(key);
+        if (cached != null && cached.expiresAt() > System.currentTimeMillis()) {
+            return cached.regions();
         }
 
-        final BlockVector3 point = BlockVector3.at(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-        if (!settings.countMergedPlots()) {
-            return contains(plot, point);
-        }
-        for (final Plot connectedPlot : plot.getConnectedPlots()) {
-            if (contains(connectedPlot, point)) {
-                return true;
+        final List<CuboidRegion> regions = new ArrayList<>();
+        final Set<Plot> plots = settings.countMergedPlots() ? plot.getConnectedPlots() : Set.of(plot);
+        for (final Plot connectedPlot : plots) {
+            try {
+                final CuboidRegion region = connectedPlot.getLargestRegion();
+                if (region != null) {
+                    regions.add(region);
+                }
+            } catch (final RuntimeException exception) {
+                plugin.getLogger().log(Level.WARNING, "Could not read PlotSquared region for entity limit.", exception);
             }
         }
-        return false;
+        final List<CuboidRegion> immutableRegions = List.copyOf(regions);
+        regionCache.put(key, new RegionCacheEntry(immutableRegions, System.currentTimeMillis() + settings.regionCacheMillis()));
+        return immutableRegions;
     }
 
-    private boolean contains(final Plot plot, final BlockVector3 point) {
-        try {
-            final CuboidRegion region = plot.getLargestRegion();
-            return region != null && region.contains(point);
-        } catch (final RuntimeException exception) {
-            plugin.getLogger().log(Level.WARNING, "Could not read PlotSquared region for entity limit.", exception);
+    private BoundingBox toBoundingBox(final World world, final CuboidRegion region) {
+        final BlockVector3 min = region.getMinimumPoint();
+        final BlockVector3 max = region.getMaximumPoint();
+        return new BoundingBox(
+                min.getX(),
+                world.getMinHeight(),
+                min.getZ(),
+                max.getX() + 1D,
+                world.getMaxHeight(),
+                max.getZ() + 1D
+        );
+    }
+
+    private boolean contains(final CuboidRegion region, final Location location) {
+        if (location.getWorld() == null) {
             return false;
         }
+        return region.contains(BlockVector3.at(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+    }
+
+    private String plotKey(final Plot plot) {
+        final Plot basePlot = plot.getBasePlot(false);
+        return basePlot.getWorldName() + ":" + basePlot.getId().toDashSeparatedString();
     }
 
     private Plot getCurrentPlot(final Player player) {
@@ -428,6 +474,10 @@ public final class EntityLimitService implements Listener {
             boolean enabled,
             boolean countMergedPlots,
             boolean preferSingleEntityLimits,
+            boolean limitItemSpawns,
+            boolean limitProjectiles,
+            long regionCacheMillis,
+            long countCacheMillis,
             String bypassPermission,
             Set<EntityType> excludedTypes,
             Set<CreatureSpawnEvent.SpawnReason> limitedSpawnReasons
@@ -438,6 +488,10 @@ public final class EntityLimitService implements Listener {
                     true,
                     true,
                     true,
+                    false,
+                    true,
+                    5000L,
+                    1000L,
                     "craftplayplotextras.entitylimit.bypass",
                     Set.of(EntityType.PLAYER, EntityType.UNKNOWN),
                     Set.of(
@@ -461,6 +515,10 @@ public final class EntityLimitService implements Listener {
                     section.getBoolean("enabled", defaults.enabled()),
                     section.getBoolean("count-merged-plots", defaults.countMergedPlots()),
                     section.getBoolean("prefer-single-entity-limits", defaults.preferSingleEntityLimits()),
+                    section.getBoolean("limit-item-spawns", defaults.limitItemSpawns()),
+                    section.getBoolean("limit-projectiles", defaults.limitProjectiles()),
+                    Math.max(0L, section.getLong("region-cache-millis", defaults.regionCacheMillis())),
+                    Math.max(0L, section.getLong("count-cache-millis", defaults.countCacheMillis())),
                     section.getString("bypass-permission", defaults.bypassPermission()),
                     entityTypes(section.getStringList("excluded-types"), defaults.excludedTypes()),
                     spawnReasons(section.getStringList("limited-spawn-reasons"), defaults.limitedSpawnReasons())
@@ -504,6 +562,12 @@ public final class EntityLimitService implements Listener {
     }
 
     private record PermissionLimit(String permission, int limit) {
+    }
+
+    private record RegionCacheEntry(List<CuboidRegion> regions, long expiresAt) {
+    }
+
+    private record CountCacheEntry(int count, long expiresAt) {
     }
 
     private static List<PermissionLimit> parsePermissionLimits(final ConfigurationSection section) {
