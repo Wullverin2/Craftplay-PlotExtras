@@ -15,6 +15,7 @@ import de.craftplay.plotextras.audit.AuditLogService;
 import de.craftplay.plotextras.backup.PlotBackupService;
 import de.craftplay.plotextras.command.PlotExtrasCommand;
 import de.craftplay.plotextras.competition.CompetitionService;
+import de.craftplay.plotextras.debug.DebugLogService;
 import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.furniture.FurnitureProtectionManager;
 import de.craftplay.plotextras.gui.GuiManager;
@@ -100,6 +101,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     private FeatureToggleService featureToggleService;
     private PlotService plotService;
     private GuiManager guiManager;
+    private DebugLogService debugLogService;
 
     private boolean cmiAvailable;
     private boolean restoreFlightInsidePlotWorlds;
@@ -114,11 +116,24 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @Override
     public void onEnable() {
+        debugLogService = new DebugLogService(this);
+        debugLogService.startFromDiskConfig("Plugin enable started.");
+        try {
+            enablePlugin();
+            debugLogService.lifecycle("Plugin enable finished.");
+        } catch (final RuntimeException | Error exception) {
+            debugLogService.logThrowable("Plugin enable failed.", exception);
+            throw exception;
+        }
+    }
+
+    private void enablePlugin() {
         ResourceInstaller.installDefaults(this);
         reloadConfig();
         featureToggleService = new FeatureToggleService(this);
         featureToggleService.reload();
         loadSettings();
+        debugLogService.reloadFromPluginConfig(false, "Plugin config loaded.");
 
         final PluginManager pluginManager = getServer().getPluginManager();
         cmiAvailable = pluginManager.isPluginEnabled("CMI");
@@ -190,6 +205,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @Override
     public void onDisable() {
+        if (debugLogService != null) {
+            debugLogService.lifecycle("Plugin disable started.");
+        }
         getServer().getScheduler().cancelTasks(this);
         try {
             PlotSquared.get().getEventDispatcher().unregisterListener(this);
@@ -201,35 +219,51 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         }
         rememberedFlightStates.clear();
         lastAllowedLocations.clear();
+        if (debugLogService != null) {
+            debugLogService.close("Plugin disable finished.");
+        }
     }
 
     public void reloadPlugin() {
         reloadConfig();
-        featureToggleService.reload();
-        loadSettings();
-        cmiAvailable = getServer().getPluginManager().isPluginEnabled("CMI");
-        furnitureProtectionManager.registerFlags();
-        furnitureProtectionManager.reload();
-        entityLimitService.reload();
-        auditLogService.load();
-        plotMetaService.load();
-        plotWarpService.load();
-        plotUtilityService.load();
-        plotUtilityService.revokeExpiredTemporaryTrusts();
-        playerDataManager.load();
-        plotRoleService.load();
-        plotBackupService.load();
-        redstoneLagProtectionService.reload();
-        plotReportService.load();
-        plotModerationService.load();
-        competitionService.load();
-        languageManager.load();
-        placeholderService.reload();
-        headDatabaseService.reload();
-        bedrockService.reload();
-        cooldownService.reload();
-        plotService.reload();
-        guiManager.reload();
+        if (debugLogService != null) {
+            debugLogService.reloadFromPluginConfig(true, "Plugin reload started.");
+        }
+        try {
+            featureToggleService.reload();
+            loadSettings();
+            cmiAvailable = getServer().getPluginManager().isPluginEnabled("CMI");
+            furnitureProtectionManager.registerFlags();
+            furnitureProtectionManager.reload();
+            entityLimitService.reload();
+            auditLogService.load();
+            plotMetaService.load();
+            plotWarpService.load();
+            plotUtilityService.load();
+            plotUtilityService.revokeExpiredTemporaryTrusts();
+            playerDataManager.load();
+            plotRoleService.load();
+            plotBackupService.load();
+            redstoneLagProtectionService.reload();
+            plotReportService.load();
+            plotModerationService.load();
+            competitionService.load();
+            languageManager.load();
+            placeholderService.reload();
+            headDatabaseService.reload();
+            bedrockService.reload();
+            cooldownService.reload();
+            plotService.reload();
+            guiManager.reload();
+            if (debugLogService != null) {
+                debugLogService.lifecycle("Plugin reload finished.");
+            }
+        } catch (final RuntimeException | Error exception) {
+            if (debugLogService != null) {
+                debugLogService.logThrowable("Plugin reload failed.", exception);
+            }
+            throw exception;
+        }
     }
 
     public GuiManager getGuiManager() {
@@ -726,6 +760,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     private void debug(final String message) {
         if (debug) {
             getLogger().info("[Debug] " + message);
+        }
+        if (debugLogService != null) {
+            debugLogService.debug(message);
         }
     }
 

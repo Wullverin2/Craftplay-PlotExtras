@@ -336,5 +336,24 @@ prevent-dragon-egg-teleport-in-plot-worlds: true
 # Merkt sich in Plotwelten regelmäßig, ob ein Spieler Fly aktiv hatte.
 flight-state-scan-interval-ticks: 20
 
-# Nur für Fehlersuche einschalten.
+# Datei-Debuglog für Tests und Fehlersuche.
+debug-log:
+  # Wenn true, schreibt das Plugin eigene Ausgaben, Warnungen und Fehler in eine Debugdatei.
+  enabled: false
+  # Ordner im Pluginordner. Relativ: plugins/CraftplayPlotExtras/debuglog.
+  folder: "debuglog"
+  # Dateiname wird als <prefix>-yyyy-MM-dd_HH-mm-ss.log angelegt.
+  file-prefix: "debug"
+  # Kleinste Logstufe, die gespeichert wird. Sinnvoll: INFO, WARNING oder SEVERE.
+  minimum-level: "INFO"
+  # Wenn true, werden Stacktraces bei Fehlern komplett in die Datei geschrieben.
+  include-stacktraces: true
+  # Wenn true, versucht das Plugin auch Bukkit/Paper-Fehler mitzuschreiben,
+  # wenn diese CraftplayPlotExtras im Text oder im Stacktrace enthalten.
+  capture-server-exceptions: true
+  # Wenn true, werden zusätzliche interne Debug-Zeilen gespeichert.
+  # Nur für kurze Tests aktivieren, da diese Option bei vielen Spielern viele Zeilen erzeugen kann.
+  capture-internal-debug: false
+
+# Nur für alte Konsolen-Debugausgaben einschalten.
 debug: false
