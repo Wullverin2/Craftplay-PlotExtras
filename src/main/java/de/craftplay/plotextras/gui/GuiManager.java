@@ -997,6 +997,10 @@ public final class GuiManager implements Listener {
                 toggleFlag(player, holder, action.substring("TOGGLE_FLAG:".length()));
                 return;
             }
+            if (upperAction.startsWith("APPLY_FLAG_PRESET:")) {
+                applyFlagPreset(player, action.substring("APPLY_FLAG_PRESET:".length()));
+                return;
+            }
             if (upperAction.startsWith("SET_FLAG:")) {
                 setFlagValue(player, action);
                 return;
@@ -1147,6 +1151,43 @@ public final class GuiManager implements Listener {
         auditLogService.log(player, plot, "Flag geändert", flag + " -> " + (enabled ? "aktiv" : "inaktiv"));
         sendMessage(player, enabled ? "flag-enabled" : "flag-disabled", Map.of("flag", flag));
         scheduleOpen(player, holder.guiId(), holder.page());
+    }
+
+    private void applyFlagPreset(final Player player, final String rawPresetId) {
+        if (!player.hasPermission("craftplayplotextras.presets")) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canModifyFlags(player, plot)) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+        final String presetId = rawPresetId.toLowerCase(Locale.ROOT).trim();
+        final ConfigurationSection preset = plugin.getConfig().getConfigurationSection("plot-presets.flags.options." + presetId);
+        final ConfigurationSection flags = preset == null ? null : preset.getConfigurationSection("flags");
+        if (preset == null || flags == null) {
+            sendMessage(player, "preset-unknown", Map.of("preset", presetId));
+            return;
+        }
+
+        int changed = 0;
+        for (final String flag : flags.getKeys(false)) {
+            if (!plotService.canUseFlag(player, flag)) {
+                continue;
+            }
+            if (plotService.setBooleanFlagOnConnectedPlots(plot, flag, flags.getBoolean(flag))) {
+                changed++;
+            }
+        }
+        final String display = preset.getString("display", presetId);
+        auditLogService.log(player, plot, "Flag-Preset angewendet", display + " (" + changed + " Flags)");
+        sendMessage(player, "preset-applied", Map.of("preset", display, "count", String.valueOf(changed)));
+        scheduleOpen(player, "flag-presets", 0);
     }
 
     private void setFlagValue(final Player player, final String action) {

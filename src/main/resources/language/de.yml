@@ -73,6 +73,8 @@ messages:
   warp-teleported: "&aDu wurdest zu Warp &e{warp} &ateleportiert."
   warp-unknown: "&cWarp &e{warp} &cwurde nicht gefunden."
   warp-failed: "&cWarp &e{warp} &ckonnte nicht gespeichert werden."
+  preset-applied: "&aPreset &e{preset} &awurde angewendet. Geänderte Flags: &e{count}&a."
+  preset-unknown: "&cPreset &e{preset} &cwurde nicht gefunden."
   state-enabled: "aktiv"
   state-disabled: "inaktiv"
   member-type-owner: "Besitzer"

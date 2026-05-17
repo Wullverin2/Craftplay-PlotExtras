@@ -33,6 +33,9 @@ permissions:
   craftplayplotextras.flags.prevent-crop-trample:
     description: Allows changing the prevent-crop-trample plot flag through the GUI.
     default: true
+  craftplayplotextras.presets:
+    description: Allows applying configured plot presets through the GUI.
+    default: true
   craftplayplotextras.furniture.bypass:
     description: Bypasses integrated datapack furniture protection checks.
     default: op

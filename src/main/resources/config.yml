@@ -137,6 +137,65 @@ flags:
     furniture-interact: "Legt fest, ob Gäste Möbel von FurniCraft oder Furniture auf diesem Plot benutzen dürfen."
     prevent-crop-trample: "Verhindert, dass Spieler Ackerboden zertrampeln und dadurch Weizen oder andere Pflanzen abbrechen."
 
+plot-presets:
+  flags:
+    # Vordefinierte Flag-Kombinationen, die Spieler über das Preset-GUI anwenden können.
+    options:
+      private:
+        display: "Privat"
+        material: OAK_DOOR
+        name: "&aPrivat"
+        lore:
+          - "&7Macht das Plot ruhiger"
+          - "&7und schränkt Besucher ein."
+        actions:
+          - "APPLY_FLAG_PRESET:private"
+        flags:
+          pvp: false
+          pve: false
+          use: false
+          redstone: false
+          notify-enter: true
+      shop:
+        display: "Shop"
+        material: EMERALD
+        name: "&aShop"
+        lore:
+          - "&7Besucherfreundliche"
+          - "&7Einstellung für Shops."
+        actions:
+          - "APPLY_FLAG_PRESET:shop"
+        flags:
+          pvp: false
+          pve: false
+          use: true
+          redstone: true
+          notify-enter: true
+      friends:
+        display: "Freunde bauen"
+        material: CRAFTING_TABLE
+        name: "&aFreunde bauen"
+        lore:
+          - "&7Gute Basis für gemeinsame"
+          - "&7Bauprojekte."
+        actions:
+          - "APPLY_FLAG_PRESET:friends"
+        flags:
+          pvp: false
+          fly: true
+          redstone: true
+      redstone-off:
+        display: "Redstone aus"
+        material: REDSTONE_BLOCK
+        name: "&cRedstone aus"
+        lore:
+          - "&7Schaltet Redstone auf"
+          - "&7dem Plot aus."
+        actions:
+          - "APPLY_FLAG_PRESET:redstone-off"
+        flags:
+          redstone: false
+
 furniture-flags:
   # Aktiviert zusätzliche Debug-Ausgaben zur Möbel-Erkennung und Plot-Prüfung.
   debug: false

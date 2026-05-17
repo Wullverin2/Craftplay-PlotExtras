@@ -104,6 +104,15 @@ items:
       - "&8Staff only."
     actions:
       - "TEAM_NOTE_PROMPT"
+  presets:
+    slot: 33
+    material: MAP
+    name: "&aPresets"
+    lore:
+      - "&7Quick templates for"
+      - "&7common plot settings."
+    actions:
+      - "OPEN:flag-presets"
   back:
     slot: 45
     material: ARROW
