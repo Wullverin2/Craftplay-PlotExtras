@@ -1,0 +1,61 @@
+# Offene Redstone-Alarme. Ein Klick teleportiert zum Alarmblock.
+title: "&8Redstone-Alarme"
+size: 54
+
+fill:
+  enabled: true
+  material: RED_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: REDSTONE_BLOCK
+    name: "&cRedstone-Alarme"
+    lore:
+      - "&7Klicke auf einen Alarm,"
+      - "&7um dich zum Block zu teleportieren."
+      - "&7Admins können danach Redstone freigeben."
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:team-inspector"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: redstone-alerts
+  slots: "10-16,19-25,28-34"
+  alert-item:
+    material: REDSTONE_TORCH
+    name: "&c{redstone_alert_world} {redstone_alert_plot}"
+    lore:
+      - "&7Besitzer: &f{redstone_alert_owner}"
+      - "&7Merge: &f{redstone_alert_merge}"
+      - "&7Block: &f{redstone_alert_x}, {redstone_alert_y}, {redstone_alert_z}"
+      - "&7Events: &f{redstone_alert_events}"
+      - "&7Quelle: &f{redstone_alert_source}"
+      - "&7Zeit: &f{redstone_alert_created}"
+      - "&8Linksklick: teleportieren"
+      - "&8Danach: /pe redstone enable {redstone_alert_id}"
+    actions:
+      - "PLAYER_COMMAND:pe redstone tp {redstone_alert_id}"
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&eVorherige Seite"
+    lore:
+      - "&7Seite &f{page}&7/&f{pages}"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNächste Seite"
+    lore:
+      - "&7Seite &f{page}&7/&f{pages}"

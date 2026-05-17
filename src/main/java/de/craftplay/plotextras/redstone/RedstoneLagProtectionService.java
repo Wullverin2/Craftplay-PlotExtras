@@ -170,6 +170,25 @@ public final class RedstoneLagProtectionService implements Listener {
                 .toList();
     }
 
+    public List<RedstoneAlertEntry> listAlerts() {
+        return alerts.values().stream()
+                .sorted(Comparator.comparing(RedstoneAlert::detectedAt).reversed())
+                .map(alert -> new RedstoneAlertEntry(
+                        alert.id(),
+                        alert.worldName(),
+                        alert.plotId(),
+                        alert.ownerName(),
+                        alert.mergeSize(),
+                        alert.x(),
+                        alert.y(),
+                        alert.z(),
+                        alert.eventCount(),
+                        alert.source(),
+                        alert.detectedAt()
+                ))
+                .toList();
+    }
+
     public boolean teleportToAlert(final Player player, final String alertId) {
         final RedstoneAlert alert = alerts.get(normalizeAlertId(alertId));
         if (alert == null) {
@@ -443,6 +462,21 @@ public final class RedstoneLagProtectionService implements Listener {
             final World world = Bukkit.getWorld(worldName);
             return world == null ? null : new Location(world, x, y, z);
         }
+    }
+
+    public record RedstoneAlertEntry(
+            String id,
+            String worldName,
+            String plotId,
+            String ownerName,
+            String mergeSize,
+            int x,
+            int y,
+            int z,
+            int eventCount,
+            String source,
+            Instant detectedAt
+    ) {
     }
 
     private static final class Counter {

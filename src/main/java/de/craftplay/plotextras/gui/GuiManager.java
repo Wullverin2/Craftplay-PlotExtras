@@ -17,6 +17,7 @@ import de.craftplay.plotextras.plot.PlotRole;
 import de.craftplay.plotextras.plot.PlotRolePermission;
 import de.craftplay.plotextras.plot.PlotRoleService;
 import de.craftplay.plotextras.plot.PlotService;
+import de.craftplay.plotextras.redstone.RedstoneLagProtectionService;
 import de.craftplay.plotextras.util.SlotParser;
 import de.craftplay.plotextras.util.TextUtil;
 import org.bukkit.Bukkit;
@@ -67,6 +68,7 @@ public final class GuiManager implements Listener {
     private final EntityLimitService entityLimitService;
     private final PlotBackupService plotBackupService;
     private final AuditLogService auditLogService;
+    private final RedstoneLagProtectionService redstoneLagProtectionService;
     @SuppressWarnings("unused")
     private final PlayerDataManager playerDataManager;
     private final Map<String, Map<String, YamlConfiguration>> guiConfigs = new HashMap<>();
@@ -85,6 +87,7 @@ public final class GuiManager implements Listener {
             final EntityLimitService entityLimitService,
             final PlotBackupService plotBackupService,
             final AuditLogService auditLogService,
+            final RedstoneLagProtectionService redstoneLagProtectionService,
             final PlayerDataManager playerDataManager
     ) {
         this.plugin = plugin;
@@ -95,6 +98,7 @@ public final class GuiManager implements Listener {
         this.entityLimitService = entityLimitService;
         this.plotBackupService = plotBackupService;
         this.auditLogService = auditLogService;
+        this.redstoneLagProtectionService = redstoneLagProtectionService;
         this.playerDataManager = playerDataManager;
     }
 
@@ -307,6 +311,7 @@ public final class GuiManager implements Listener {
             case "entity-limits" -> renderEntityLimits(player, inventory, holder, dynamic, placeholders, page);
             case "plot-backups" -> renderPlotBackups(player, inventory, holder, dynamic, placeholders, page);
             case "audit-log" -> renderAuditLog(player, inventory, holder, dynamic, placeholders, page);
+            case "redstone-alerts" -> renderRedstoneAlerts(player, inventory, holder, dynamic, placeholders, page);
             case "languages" -> renderLanguages(player, inventory, holder, dynamic, placeholders, page);
             default -> plugin.getLogger().warning("Unknown dynamic GUI type: " + type);
         }
@@ -561,6 +566,50 @@ public final class GuiManager implements Listener {
             if (item != null && isValidSlot(inventory, slot)) {
                 inventory.setItem(slot, item);
                 holder.setActions(slot, List.of());
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderRedstoneAlerts(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        if (!redstoneLagProtectionService.canReceiveAlerts(player)) {
+            return;
+        }
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty()) {
+            return;
+        }
+
+        final List<RedstoneLagProtectionService.RedstoneAlertEntry> entries = redstoneLagProtectionService.listAlerts();
+        final PageSlice<RedstoneLagProtectionService.RedstoneAlertEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("alert-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final RedstoneLagProtectionService.RedstoneAlertEntry alert = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("redstone_alert_id", alert.id());
+            itemPlaceholders.put("redstone_alert_world", alert.worldName());
+            itemPlaceholders.put("redstone_alert_plot", alert.plotId());
+            itemPlaceholders.put("redstone_alert_owner", alert.ownerName());
+            itemPlaceholders.put("redstone_alert_merge", alert.mergeSize());
+            itemPlaceholders.put("redstone_alert_x", String.valueOf(alert.x()));
+            itemPlaceholders.put("redstone_alert_y", String.valueOf(alert.y()));
+            itemPlaceholders.put("redstone_alert_z", String.valueOf(alert.z()));
+            itemPlaceholders.put("redstone_alert_events", String.valueOf(alert.eventCount()));
+            itemPlaceholders.put("redstone_alert_source", alert.source());
+            itemPlaceholders.put("redstone_alert_created", BACKUP_TIME_FORMAT.format(alert.detectedAt()));
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);

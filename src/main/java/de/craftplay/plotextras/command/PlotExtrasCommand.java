@@ -147,6 +147,14 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
 
         final String action = args[1].toLowerCase(Locale.ROOT);
+        if (action.equals("gui") || action.equals("alarme") || action.equals("alerts")) {
+            if (!plugin.getRedstoneLagProtectionService().canReceiveAlerts(player)) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            plugin.getGuiManager().open(player, "redstone-alerts", 0);
+            return true;
+        }
         if (action.equals("tp") || action.equals("teleport")) {
             if (!plugin.getRedstoneLagProtectionService().canReceiveAlerts(player)) {
                 plugin.getLanguageManager().send(player, "no-permission");
@@ -466,6 +474,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(TextUtil.component("&e/pe redstone tp <Alarm-ID> &7- zum erkannten Block teleportieren"));
         player.sendMessage(TextUtil.component("&e/pe redstone enable <Alarm-ID> &7- Redstone fuer den Alarm-Plot aktivieren"));
         player.sendMessage(TextUtil.component("&e/pe redstone enable &7- Redstone auf deinem aktuellen Plot aktivieren"));
+        player.sendMessage(TextUtil.component("&e/pe redstone gui &7- offene Redstone-Alarme anzeigen"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
     }
 
@@ -617,7 +626,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
 
     private List<String> completeRedstoneCommand(final String[] args) {
         if (args.length == 2) {
-            return filter(List.of("tp", "enable"), args[1]);
+            return filter(List.of("tp", "enable", "gui"), args[1]);
         }
         if (args.length == 3 && (args[1].equalsIgnoreCase("tp") || args[1].equalsIgnoreCase("enable"))) {
             return filter(plugin.getRedstoneLagProtectionService().getAlertIds(), args[2]);

@@ -74,6 +74,15 @@ items:
       - "&8Benötigt Redstone-Adminrecht."
     actions:
       - "PLAYER_COMMAND:pe redstone enable"
+  redstone-alerts:
+    slot: 32
+    material: TARGET
+    name: "&cRedstone-Alarme"
+    lore:
+      - "&7Offene Redstone-Lagalarme"
+      - "&7mit Teleport und Freigabe."
+    actions:
+      - "OPEN:redstone-alerts"
   plot-info:
     slot: 33
     material: PAPER

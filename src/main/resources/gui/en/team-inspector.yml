@@ -69,6 +69,15 @@ items:
       - "&7the current plot."
     actions:
       - "PLAYER_COMMAND:pe redstone enable"
+  redstone-alerts:
+    slot: 32
+    material: TARGET
+    name: "&cRedstone Alerts"
+    lore:
+      - "&7Open redstone lag alerts"
+      - "&7with teleport and release."
+    actions:
+      - "OPEN:redstone-alerts"
   plot-info:
     slot: 33
     material: PAPER

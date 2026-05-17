@@ -106,7 +106,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotService = new PlotService(this, plotRoleService);
         plotBackupService = new PlotBackupService(this, plotService);
         redstoneLagProtectionService = new RedstoneLagProtectionService(this, plotService, auditLogService);
-        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, playerDataManager);
+        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, playerDataManager);
 
         furnitureProtectionManager.registerFlags();
         furnitureProtectionManager.reload();
