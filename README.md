@@ -4,7 +4,7 @@ Paper/Bukkit-Addon für Craftplay mit PlotSquared-Extras:
 
 - schützt Fly in PlotSquared-Welten und deaktiviert Fly außerhalb von Plotwelten
 - verhindert Despawn bei per Nametag benannten Kreaturen
-- bietet ein konfigurierbares Plot-GUI fuer Flags, Deko, Mitglieder, Einstellungen, Infos und Sprache
+- bietet ein konfigurierbares Plot-GUI für Flags, Deko, Mitglieder, Einstellungen, Infos und Sprache
 - zeigt deutsche Flag-Namen und Beschreibungen aus `language/de.yml`
 - nutzt Permission-Nodes wie `plots.plot.84` als hartes Plot-Limit und für die Plot-Info-Anzeige
 - trennt Einstellungen in Tabs für Home, Wetter, Zeit und Plotbiom
@@ -18,13 +18,13 @@ Paper/Bukkit-Addon für Craftplay mit PlotSquared-Extras:
 - Rollen können zusätzlich `members.promote` und `members.demote` erhalten, um Mitglieder per GUI zu befördern oder zu degradieren
 - zeigt Spielern nur Flags, für die sie eine konfigurierte Flag-Permission besitzen
 - liest Sprachen automatisch aus `language/*.yml`
-- laedt GUI-Dateien pro Sprache aus `gui/<sprache>/*.yml`
-- laedt Wand- und Randdefinitionen getrennt aus `wall.yml` und `border.yml`
+- lädt GUI-Dateien pro Sprache aus `gui/<sprache>/*.yml`
+- lädt Wand- und Randdefinitionen getrennt aus `wall.yml` und `border.yml`
 - jede Wand- und Randoption kann dort einzeln per `enabled` deaktiviert und per `permission` an eigene Ränge gehängt werden
-- begrenzt Entities pro Plot oder Plotmerge ueber `limits.yml` und zeigt die Werte im Entity-Limit-GUI
-- sichert vorhandene Standard-Konfigurationen bei Versionswechseln unter `backups/<alte-version>/` und ergaenzt neue Standard-Eintraege
-- unterstuetzt optionale Items aus HeadDatabase
-- unterstuetzt PlaceholderAPI, inklusive konfigurierbarer Platzhalter fuer Jobs, CMI-Geld und Quests
+- begrenzt Entities pro Plot oder Plotmerge über `limits.yml` und zeigt die Werte im Entity-Limit-GUI
+- sichert vorhandene Standard-Konfigurationen bei Versionswechseln unter `backups/<alte-version>/` und ergänzt neue Standard-Einträge
+- unterstützt optionale Items aus HeadDatabase
+- unterstützt PlaceholderAPI, inklusive konfigurierbarer Platzhalter für Jobs, CMI-Geld und Quests
 
 ## Befehle
 

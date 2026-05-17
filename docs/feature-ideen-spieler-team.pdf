@@ -9,34 +9,34 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
 endobj
 4 0 obj
-<< /Length 4086 >>
+<< /Length 4055 >>
 stream
 q
-BT /F1 20.0 Tf 48.00 789.89 Td (Feature-Ideen fuer CraftplayPlotExtras) Tj ET
+BT /F1 20.0 Tf 48.00 789.89 Td (Feature-Ideen für CraftplayPlotExtras) Tj ET
 BT /F1 10.2 Tf 48.00 749.89 Td (Stand: 17.05.2026) Tj ET
-BT /F1 10.2 Tf 48.00 728.99 Td (Diese Liste sammelt sinnvolle Erweiterungen fuer Spieler und fuer das Serverteam. Sie ist als) Tj ET
-BT /F1 10.2 Tf 48.00 715.59 Td (Ideensammlung gedacht, damit Funktionen spaeter priorisiert und schrittweise umgesetzt werden) Tj ET
-BT /F1 10.2 Tf 48.00 702.19 Td (koennen.) Tj ET
+BT /F1 10.2 Tf 48.00 728.99 Td (Diese Liste sammelt sinnvolle Erweiterungen für Spieler und für das Serverteam. Sie ist als) Tj ET
+BT /F1 10.2 Tf 48.00 715.59 Td (Ideensammlung gedacht, damit Funktionen später priorisiert und schrittweise umgesetzt werden) Tj ET
+BT /F1 10.2 Tf 48.00 702.19 Td (können.) Tj ET
 BT /F1 15.0 Tf 48.00 670.29 Td (Spielerfunktionen) Tj ET
-BT /F1 12.5 Tf 48.00 632.29 Td (Plot-Komfort und Uebersicht) Tj ET
+BT /F1 12.5 Tf 48.00 632.29 Td (Plot-Komfort und Übersicht) Tj ET
 BT /F1 10.2 Tf 48.00 606.29 Td (- Plot-Dashboard mit Besitzer, Rolle, Mitgliedern, Flags, Deko, Entity-Limits, Redstone-Status) Tj ET
 BT /F1 10.2 Tf 60.00 592.89 Td (und Backup-Hinweisen.) Tj ET
-BT /F1 10.2 Tf 48.00 577.99 Td (- "Meine Rechte hier"-Anzeige, die erklaert, was der Spieler auf dem aktuellen Plot darf.) Tj ET
-BT /F1 10.2 Tf 48.00 563.09 Td (- Plot-Info-GUI fuer Besucher mit Besitzer, Merge-Groesse, Besuchsstatus, Warps und) Tj ET
-BT /F1 10.2 Tf 60.00 549.69 Td (oeffentlichen Regeln.) Tj ET
-BT /F1 10.2 Tf 48.00 534.79 Td (- Favoriten fuer haeufig genutzte Flags, Randbloecke, Waende, Biome und Einstellungen.) Tj ET
-BT /F1 10.2 Tf 48.00 519.89 Td (- Suchfunktion in grossen GUIs, zum Beispiel fuer Flags, Biome, Rand- und Wandbloecke.) Tj ET
-BT /F1 10.2 Tf 48.00 504.99 Td (- Verlauf der letzten Aenderungen auf dem eigenen Plot.) Tj ET
-BT /F1 10.2 Tf 48.00 490.09 Td (- Rueckgaengig-Funktion fuer letzte Wand-, Rand-, Wetter-, Zeit- oder Biom-Aenderung.) Tj ET
-BT /F1 10.2 Tf 48.00 475.19 Td (- Sicherheitsabfragen bei kritischen Aktionen wie Reset, Clear, Rollen loeschen oder Spieler) Tj ET
+BT /F1 10.2 Tf 48.00 577.99 Td (- "Meine Rechte hier"-Anzeige, die erklärt, was der Spieler auf dem aktuellen Plot darf.) Tj ET
+BT /F1 10.2 Tf 48.00 563.09 Td (- Plot-Info-GUI für Besucher mit Besitzer, Merge-Größe, Besuchsstatus, Warps und öffentlichen) Tj ET
+BT /F1 10.2 Tf 60.00 549.69 Td (Regeln.) Tj ET
+BT /F1 10.2 Tf 48.00 534.79 Td (- Favoriten für häufig genutzte Flags, Randblöcke, Wände, Biome und Einstellungen.) Tj ET
+BT /F1 10.2 Tf 48.00 519.89 Td (- Suchfunktion in großen GUIs, zum Beispiel für Flags, Biome, Rand- und Wandblöcke.) Tj ET
+BT /F1 10.2 Tf 48.00 504.99 Td (- Verlauf der letzten Änderungen auf dem eigenen Plot.) Tj ET
+BT /F1 10.2 Tf 48.00 490.09 Td (- Rückgängig-Funktion für letzte Wand-, Rand-, Wetter-, Zeit- oder Biom-Änderung.) Tj ET
+BT /F1 10.2 Tf 48.00 475.19 Td (- Sicherheitsabfragen bei kritischen Aktionen wie Reset, Clear, Rollen löschen oder Spieler) Tj ET
 BT /F1 10.2 Tf 60.00 461.79 Td (entfernen.) Tj ET
-BT /F1 10.2 Tf 48.00 446.89 Td (- Schneller Wechsel zwischen eigenen Plots ueber ein GUI.) Tj ET
+BT /F1 10.2 Tf 48.00 446.89 Td (- Schneller Wechsel zwischen eigenen Plots über ein GUI.) Tj ET
 BT /F1 10.2 Tf 48.00 431.99 Td (- Anzeige, wie viele Plots ein Spieler aktuell besitzt und wie viele maximal erlaubt sind.) Tj ET
 BT /F1 10.2 Tf 48.00 417.09 Td (- Anzeige, wodurch das Plotlimit entsteht, zum Beispiel Rang-Permission oder Extra-Plugin.) Tj ET
-BT /F1 10.2 Tf 48.00 402.19 Td (- Plot-Status-Anzeige: privat, offen, gesperrt, im Wartungsmodus, Team-geprueft.) Tj ET
-BT /F1 10.2 Tf 48.00 387.29 Td (- Eigene Plot-Notizen fuer Besitzer und Mitglieder.) Tj ET
-BT /F1 10.2 Tf 48.00 372.39 Td (- Plot-Regeln, die Besucher beim Betreten optional sehen koennen.) Tj ET
-BT /F1 10.2 Tf 48.00 357.49 Td (- Plot-Kurzlink oder Plot-Code, damit Spieler ihr Plot leichter im Chat teilen koennen.) Tj ET
+BT /F1 10.2 Tf 48.00 402.19 Td (- Plot-Status-Anzeige: privat, offen, gesperrt, im Wartungsmodus, Team-geprüft.) Tj ET
+BT /F1 10.2 Tf 48.00 387.29 Td (- Eigene Plot-Notizen für Besitzer und Mitglieder.) Tj ET
+BT /F1 10.2 Tf 48.00 372.39 Td (- Plot-Regeln, die Besucher beim Betreten optional sehen können.) Tj ET
+BT /F1 10.2 Tf 48.00 357.49 Td (- Plot-Kurzlink oder Plot-Code, damit Spieler ihr Plot leichter im Chat teilen können.) Tj ET
 BT /F1 12.5 Tf 48.00 328.59 Td (Flags und Einstellungen) Tj ET
 BT /F1 10.2 Tf 48.00 302.59 Td (- Flag-Presets wie "Privat", "Shop", "Besucherfreundlich", "Freunde bauen", "Redstone aus",) Tj ET
 BT /F1 10.2 Tf 60.00 289.19 Td ("Roleplay".) Tj ET
@@ -49,7 +49,7 @@ BT /F1 10.2 Tf 48.00 199.79 Td (- Wetter-Presets mit Klar, Regen, Gewitter und S
 BT /F1 10.2 Tf 48.00 184.89 Td (- Biom-Favoriten und zuletzt genutzte Biome.) Tj ET
 BT /F1 10.2 Tf 48.00 169.99 Td (- Plot-Home in Kategorien, zum Beispiel Eingang, Lager, Shop, Farm und Privat.) Tj ET
 BT /F1 10.2 Tf 48.00 155.09 Td (- Mehrere Plothomes pro Plot, wenn der Rang es erlaubt.) Tj ET
-BT /F1 10.2 Tf 48.00 140.19 Td (- Rechte fuer einzelne Homes, damit nur bestimmte Rollen bestimmte Homes nutzen duerfen.) Tj ET
+BT /F1 10.2 Tf 48.00 140.19 Td (- Rechte für einzelne Homes, damit nur bestimmte Rollen bestimmte Homes nutzen dürfen.) Tj ET
 BT /F1 10.2 Tf 48.00 125.29 Td (- Home-Vorschau mit Koordinaten und kurzer Beschreibung.) Tj ET
 BT /F1 10.2 Tf 48.00 110.39 Td (- Eigene Meldungen beim Setzen und Nutzen von Plothomes, ohne doppelte PlotSquared-Meldung.) Tj ET
 BT /F1 12.5 Tf 48.00 81.49 Td (Deko, Rand und Wand) Tj ET
@@ -60,54 +60,54 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 4351 >>
+<< /Length 4322 >>
 stream
 q
-BT /F1 10.2 Tf 48.00 789.89 Td (- Vorschau fuer Wand und Rand, bevor die Aenderung uebernommen wird.) Tj ET
-BT /F1 10.2 Tf 48.00 774.99 Td (- Temporare Vorschau, die nach kurzer Zeit wieder entfernt wird, wenn nicht bestaetigt.) Tj ET
+BT /F1 10.2 Tf 48.00 789.89 Td (- Vorschau für Wand und Rand, bevor die Änderung übernommen wird.) Tj ET
+BT /F1 10.2 Tf 48.00 774.99 Td (- Temporare Vorschau, die nach kurzer Zeit wieder entfernt wird, wenn nicht bestätigt.) Tj ET
 BT /F1 10.2 Tf 48.00 760.09 Td (- Deko-Presets aus Wand, Rand, Biom, Wetter und Zeit.) Tj ET
-BT /F1 10.2 Tf 48.00 745.19 Td (- Saisonale Kategorien, zum Beispiel Fruehling, Sommer, Halloween, Weihnachten und Winter.) Tj ET
-BT /F1 10.2 Tf 48.00 730.29 Td (- Shop- oder Rang-Kategorien fuer hochwertige Wand- und Randbloecke.) Tj ET
+BT /F1 10.2 Tf 48.00 745.19 Td (- Saisonale Kategorien, zum Beispiel Frühling, Sommer, Halloween, Weihnachten und Winter.) Tj ET
+BT /F1 10.2 Tf 48.00 730.29 Td (- Shop- oder Rang-Kategorien für hochwertige Wand- und Randblöcke.) Tj ET
 BT /F1 10.2 Tf 48.00 715.39 Td (- Eigene Lieblingskategorien pro Spieler.) Tj ET
 BT /F1 10.2 Tf 48.00 700.49 Td (- Kombi-Buttons wie "Natur-Design", "Nether-Design", "Modern", "Mittelalter", "Luxus".) Tj ET
 BT /F1 10.2 Tf 48.00 685.59 Td (- Rand entfernen per Luft-Option.) Tj ET
-BT /F1 10.2 Tf 48.00 670.69 Td (- Anzeige, welche Permission fuer eine Wand oder einen Rand benoetigt wird.) Tj ET
-BT /F1 10.2 Tf 48.00 655.79 Td (- Anzeige, warum ein Deko-Item nicht verfuegbar ist.) Tj ET
-BT /F1 10.2 Tf 48.00 640.89 Td (- Builder-gepruefte Designvorlagen fuer schoene Plotlayouts.) Tj ET
+BT /F1 10.2 Tf 48.00 670.69 Td (- Anzeige, welche Permission für eine Wand oder einen Rand benötigt wird.) Tj ET
+BT /F1 10.2 Tf 48.00 655.79 Td (- Anzeige, warum ein Deko-Item nicht verfügbar ist.) Tj ET
+BT /F1 10.2 Tf 48.00 640.89 Td (- Builder-geprüfte Designvorlagen für schöne Plotlayouts.) Tj ET
 BT /F1 10.2 Tf 48.00 625.99 Td (- Plot-Design exportieren und auf einem anderen eigenen Plot wieder anwenden.) Tj ET
 BT /F1 12.5 Tf 48.00 597.09 Td (Mitglieder, Rollen und Zusammenarbeit) Tj ET
 BT /F1 10.2 Tf 48.00 571.09 Td (- Rollen-Vorlagen wie Freund, Builder, Shophelfer, Mitbauer, Besucherplus.) Tj ET
 BT /F1 10.2 Tf 48.00 556.19 Td (- Temporare Rechte, zum Beispiel "darf 2 Stunden bauen".) Tj ET
 BT /F1 10.2 Tf 48.00 541.29 Td (- Einladungen mit Ablaufzeit.) Tj ET
 BT /F1 10.2 Tf 48.00 526.39 Td (- Einladung per GUI mit Chat-Eingabe, ohne dass andere Spieler den Namen sehen.) Tj ET
-BT /F1 10.2 Tf 48.00 511.49 Td (- Rollenwechsel mit Historie, damit nachvollziehbar bleibt, wer wen befoerdert hat.) Tj ET
+BT /F1 10.2 Tf 48.00 511.49 Td (- Rollenwechsel mit Historie, damit nachvollziehbar bleibt, wer wen befördert hat.) Tj ET
 BT /F1 10.2 Tf 48.00 496.59 Td (- Mitgliedernotizen, zum Beispiel "baut am Lager" oder "darf nur dekorieren".) Tj ET
 BT /F1 10.2 Tf 48.00 481.69 Td (- Rechte-Vorschau beim Bearbeiten einer Rolle.) Tj ET
 BT /F1 10.2 Tf 48.00 466.79 Td (- Anzeige, welche Spieler online sind und Zugriff auf das Plot haben.) Tj ET
-BT /F1 10.2 Tf 48.00 451.89 Td (- Schnellaktion, um alle inaktiven Mitglieder zu pruefen.) Tj ET
-BT /F1 10.2 Tf 48.00 436.99 Td (- Optionaler Co-Owner-Modus ohne echte Plotuebergabe.) Tj ET
-BT /F1 10.2 Tf 48.00 422.09 Td (- Rechte fuer Kisten, Redstone, Deko, Homes, Warps, Mob-Nutzung und Flags getrennt steuerbar.) Tj ET
+BT /F1 10.2 Tf 48.00 451.89 Td (- Schnellaktion, um alle inaktiven Mitglieder zu prüfen.) Tj ET
+BT /F1 10.2 Tf 48.00 436.99 Td (- Optionaler Co-Owner-Modus ohne echte Plotübergabe.) Tj ET
+BT /F1 10.2 Tf 48.00 422.09 Td (- Rechte für Kisten, Redstone, Deko, Homes, Warps, Mob-Nutzung und Flags getrennt steuerbar.) Tj ET
 BT /F1 10.2 Tf 48.00 407.19 Td (- Einladung per Klick aus einer Freundesliste, falls ein passendes Freundesplugin vorhanden) Tj ET
 BT /F1 10.2 Tf 60.00 393.79 Td (ist.) Tj ET
 BT /F1 12.5 Tf 48.00 364.89 Td (Besucher, Community und Entdeckung) Tj ET
-BT /F1 10.2 Tf 48.00 338.89 Td (- Plot-Warp-System fuer oeffentliche Plots.) Tj ET
-BT /F1 10.2 Tf 48.00 323.99 Td (- Besucherzaehler pro Plot.) Tj ET
+BT /F1 10.2 Tf 48.00 338.89 Td (- Plot-Warp-System für öffentliche Plots.) Tj ET
+BT /F1 10.2 Tf 48.00 323.99 Td (- Besucherzähler pro Plot.) Tj ET
 BT /F1 10.2 Tf 48.00 309.09 Td (- Tages-, Wochen- und Gesamtbesuche.) Tj ET
 BT /F1 10.2 Tf 48.00 294.19 Td (- Plot-Likes oder Favoriten.) Tj ET
-BT /F1 10.2 Tf 48.00 279.29 Td (- Top-Plots-GUI: meistbesucht, neu, zufaellig, bestbewertet, Team-Empfehlung.) Tj ET
+BT /F1 10.2 Tf 48.00 279.29 Td (- Top-Plots-GUI: meistbesucht, neu, zufällig, bestbewertet, Team-Empfehlung.) Tj ET
 BT /F1 10.2 Tf 48.00 264.39 Td (- Plot-Kategorien wie Shop, Farm, Roleplay, Museum, Event, Bauwerk.) Tj ET
-BT /F1 10.2 Tf 48.00 249.49 Td (- Besucher-Mailbox fuer Nachrichten an den Besitzer.) Tj ET
-BT /F1 10.2 Tf 48.00 234.59 Td (- Gaestebuch mit optionaler Moderation.) Tj ET
-BT /F1 10.2 Tf 48.00 219.69 Td (- Oeffentliche Plotbeschreibung mit mehreren Sprachen.) Tj ET
-BT /F1 10.2 Tf 48.00 204.79 Td (- Besuchermodus, der nur oeffentliche Infos zeigt.) Tj ET
-BT /F1 10.2 Tf 48.00 189.89 Td (- Plot-Schilder oder GUI-Buttons fuer Shops, Regeln, Warps und Kontakt.) Tj ET
-BT /F1 10.2 Tf 48.00 174.99 Td (- Event-Plot-Markierung fuer besondere Aktionen.) Tj ET
-BT /F1 10.2 Tf 48.00 160.09 Td (- "Zufaelliges Plot besuchen"-Button.) Tj ET
+BT /F1 10.2 Tf 48.00 249.49 Td (- Besucher-Mailbox für Nachrichten an den Besitzer.) Tj ET
+BT /F1 10.2 Tf 48.00 234.59 Td (- Gästebuch mit optionaler Moderation.) Tj ET
+BT /F1 10.2 Tf 48.00 219.69 Td (- Öffentliche Plotbeschreibung mit mehreren Sprachen.) Tj ET
+BT /F1 10.2 Tf 48.00 204.79 Td (- Besuchermodus, der nur öffentliche Infos zeigt.) Tj ET
+BT /F1 10.2 Tf 48.00 189.89 Td (- Plot-Schilder oder GUI-Buttons für Shops, Regeln, Warps und Kontakt.) Tj ET
+BT /F1 10.2 Tf 48.00 174.99 Td (- Event-Plot-Markierung für besondere Aktionen.) Tj ET
+BT /F1 10.2 Tf 48.00 160.09 Td (- "Zufälliges Plot besuchen"-Button.) Tj ET
 BT /F1 12.5 Tf 48.00 131.19 Td (Limits, Performance und Schutz) Tj ET
 BT /F1 10.2 Tf 48.00 105.19 Td (- Entity-Limit-GUI mit Anzeige pro Entity-Typ.) Tj ET
 BT /F1 10.2 Tf 48.00 90.29 Td (- Warnung bei 80 Prozent und 100 Prozent Entity-Limit.) Tj ET
-BT /F1 10.2 Tf 48.00 75.39 Td (- Redstone-Status fuer Spieler sichtbar: aktiv, vom Besitzer deaktiviert, vom Team) Tj ET
-BT /F1 10.2 Tf 60.00 61.99 Td (deaktiviert, automatisch deaktiviert.) Tj ET
+BT /F1 10.2 Tf 48.00 75.39 Td (- Redstone-Status für Spieler sichtbar: aktiv, vom Besitzer deaktiviert, vom Team deaktiviert,) Tj ET
+BT /F1 10.2 Tf 60.00 61.99 Td (automatisch deaktiviert.) Tj ET
 Q
 endstream
 endobj
@@ -115,47 +115,47 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 4140 >>
+<< /Length 4114 >>
 stream
 q
 BT /F1 10.2 Tf 48.00 789.89 Td (- Anzeige der letzten Redstone-Warnung auf dem eigenen Plot.) Tj ET
-BT /F1 10.2 Tf 48.00 774.99 Td (- Hopper- und Redstone-Aktivitaetsanzeige als einfache Ampel.) Tj ET
-BT /F1 10.2 Tf 48.00 760.09 Td (- Vorschlaege zum Optimieren, zum Beispiel "zu viele Hopper" oder "zu viele ArmorStands".) Tj ET
-BT /F1 10.2 Tf 48.00 745.19 Td (- Schutz vor versehentlichem Zerstoeren besonderer Deko.) Tj ET
+BT /F1 10.2 Tf 48.00 774.99 Td (- Hopper- und Redstone-Aktivitätsanzeige als einfache Ampel.) Tj ET
+BT /F1 10.2 Tf 48.00 760.09 Td (- Vorschläge zum Optimieren, zum Beispiel "zu viele Hopper" oder "zu viele ArmorStands".) Tj ET
+BT /F1 10.2 Tf 48.00 745.19 Td (- Schutz vor versehentlichem Zerstören besonderer Deko.) Tj ET
 BT /F1 10.2 Tf 48.00 730.29 Td (- Warnung, wenn ein Spieler viele Entities auf einmal platzieren will.) Tj ET
-BT /F1 10.2 Tf 48.00 715.39 Td (- Anzeige, welche Entity-Limits per Rang hoeher sind.) Tj ET
-BT /F1 10.2 Tf 48.00 700.49 Td (- Plot-Aufraeumhilfe fuer eigene Drops oder alte Items.) Tj ET
-BT /F1 10.2 Tf 48.00 685.59 Td (- Optionaler Auto-Clear fuer herumliegende Items auf dem eigenen Plot.) Tj ET
+BT /F1 10.2 Tf 48.00 715.39 Td (- Anzeige, welche Entity-Limits per Rang höher sind.) Tj ET
+BT /F1 10.2 Tf 48.00 700.49 Td (- Plot-Aufräumhilfe für eigene Drops oder alte Items.) Tj ET
+BT /F1 10.2 Tf 48.00 685.59 Td (- Optionaler Auto-Clear für herumliegende Items auf dem eigenen Plot.) Tj ET
 BT /F1 12.5 Tf 48.00 656.69 Td (Wirtschaft und Belohnungen) Tj ET
 BT /F1 10.2 Tf 48.00 630.69 Td (- Kostenanzeige vor teuren Aktionen.) Tj ET
-BT /F1 10.2 Tf 48.00 615.79 Td (- Optionale Kosten fuer Wand, Rand, Biom, Homes oder Warps.) Tj ET
+BT /F1 10.2 Tf 48.00 615.79 Td (- Optionale Kosten für Wand, Rand, Biom, Homes oder Warps.) Tj ET
 BT /F1 10.2 Tf 48.00 600.89 Td (- Rabatte nach Rang oder Permission.) Tj ET
 BT /F1 10.2 Tf 48.00 585.99 Td (- Freischaltungen durch Quests, Jobs oder Spielzeit.) Tj ET
 BT /F1 10.2 Tf 48.00 571.09 Td (- Anzeige von Jobs, Geld, abgeschlossenen Quests und Gesamtquests in GUIs.) Tj ET
 BT /F1 10.2 Tf 48.00 556.19 Td (- Plot-Erfolge wie "erstes Plot", "erstes Merge", "100 Besucher", "perfektes Limit".) Tj ET
-BT /F1 10.2 Tf 48.00 541.29 Td (- Belohnungen fuer gut bewertete oder teamgepruefte Plots.) Tj ET
-BT /F1 10.2 Tf 48.00 526.39 Td (- Shop-Integration fuer Deko-Freischaltungen.) Tj ET
+BT /F1 10.2 Tf 48.00 541.29 Td (- Belohnungen für gut bewertete oder teamgeprüfte Plots.) Tj ET
+BT /F1 10.2 Tf 48.00 526.39 Td (- Shop-Integration für Deko-Freischaltungen.) Tj ET
 BT /F1 10.2 Tf 48.00 511.49 Td (- Gekaufte Plot-Erweiterungen im Dashboard anzeigen.) Tj ET
-BT /F1 15.0 Tf 48.00 479.59 Td (Funktionen fuer das Serverteam) Tj ET
+BT /F1 15.0 Tf 48.00 479.59 Td (Funktionen für das Serverteam) Tj ET
 BT /F1 12.5 Tf 48.00 441.59 Td (Allgemeine Team-Werkzeuge) Tj ET
-BT /F1 10.2 Tf 48.00 415.59 Td (- Team-Plotinspektor-GUI als zentrale Uebersicht fuer jedes Plot.) Tj ET
+BT /F1 10.2 Tf 48.00 415.59 Td (- Team-Plotinspektor-GUI als zentrale Übersicht für jedes Plot.) Tj ET
 BT /F1 10.2 Tf 48.00 400.69 Td (- Schnellzugriff auf Besitzer, Mitglieder, Rollen, Flags, Deko, Homes, Entity-Limits und) Tj ET
 BT /F1 10.2 Tf 60.00 387.29 Td (Backups.) Tj ET
 BT /F1 10.2 Tf 48.00 372.39 Td (- Klickbare Teammeldungen mit Teleport, Plotinfo und Schnellaktionen.) Tj ET
-BT /F1 10.2 Tf 48.00 357.49 Td (- Alarmcenter fuer Redstone, Entity-Limits, verdachtige Aktivitaet und Backup-Fehler.) Tj ET
+BT /F1 10.2 Tf 48.00 357.49 Td (- Alarmcenter für Redstone, Entity-Limits, verdachtige Aktivität und Backup-Fehler.) Tj ET
 BT /F1 10.2 Tf 48.00 342.59 Td (- Team-Notizen pro Plot.) Tj ET
 BT /F1 10.2 Tf 48.00 327.69 Td (- Team-Notizen pro Spieler.) Tj ET
 BT /F1 10.2 Tf 48.00 312.79 Td (- Support-Fall direkt aus einem Plot erstellen.) Tj ET
-BT /F1 10.2 Tf 48.00 297.89 Td (- Vollstaendiger Auditlog fuer sensible Aktionen.) Tj ET
+BT /F1 10.2 Tf 48.00 297.89 Td (- Vollständiger Auditlog für sensible Aktionen.) Tj ET
 BT /F1 10.2 Tf 48.00 282.99 Td (- Filter im Auditlog nach Spieler, Plot, Aktion, Teammitglied und Zeitraum.) Tj ET
 BT /F1 10.2 Tf 48.00 268.09 Td (- Unterschied zwischen Spieleraktion, Teamaktion und automatischer Pluginaktion anzeigen.) Tj ET
 BT /F1 10.2 Tf 48.00 253.19 Td (- Permission-Checker, der zeigt, warum ein Spieler eine Aktion darf oder nicht darf.) Tj ET
-BT /F1 10.2 Tf 48.00 238.29 Td (- Rollen-Debugger fuer effektive Plotrechte eines Spielers.) Tj ET
-BT /F1 10.2 Tf 48.00 223.39 Td (- GUI-Reload fuer einzelne Bereiche: Sprache, GUI, Walls, Borders, Limits, Config.) Tj ET
-BT /F1 10.2 Tf 48.00 208.49 Td (- Config-Validator fuer kaputte Materialien, Sounds, Enchantments, Permissions und) Tj ET
+BT /F1 10.2 Tf 48.00 238.29 Td (- Rollen-Debugger für effektive Plotrechte eines Spielers.) Tj ET
+BT /F1 10.2 Tf 48.00 223.39 Td (- GUI-Reload für einzelne Bereiche: Sprache, GUI, Walls, Borders, Limits, Config.) Tj ET
+BT /F1 10.2 Tf 48.00 208.49 Td (- Config-Validator für kaputte Materialien, Sounds, Enchantments, Permissions und) Tj ET
 BT /F1 10.2 Tf 60.00 195.09 Td (GUI-Aktionen.) Tj ET
-BT /F1 10.2 Tf 48.00 180.19 Td (- Wartungsmodus fuer einzelne GUI-Bereiche.) Tj ET
-BT /F1 10.2 Tf 48.00 165.29 Td (- Team-Statistik ueber Plots, Backups, Alarme, Entity-Verstoesse und Supportfaelle.) Tj ET
+BT /F1 10.2 Tf 48.00 180.19 Td (- Wartungsmodus für einzelne GUI-Bereiche.) Tj ET
+BT /F1 10.2 Tf 48.00 165.29 Td (- Team-Statistik über Plots, Backups, Alarme, Entity-Verstöße und Supportfälle.) Tj ET
 BT /F1 12.5 Tf 48.00 136.39 Td (Moderation und Sicherheit) Tj ET
 BT /F1 10.2 Tf 48.00 110.39 Td (- Plot einfrieren: Bauen, Abbauen, Interaktionen, Redstone oder Entities gezielt sperren.) Tj ET
 BT /F1 10.2 Tf 48.00 95.49 Td (- Temporare Plot-Sperren mit Ablaufzeit.) Tj ET
@@ -168,44 +168,44 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
 endobj
 10 0 obj
-<< /Length 4089 >>
+<< /Length 4063 >>
 stream
 q
-BT /F1 10.2 Tf 48.00 789.89 Td (- Entity-Platzierung auf einem Plot temporaer deaktivieren.) Tj ET
-BT /F1 10.2 Tf 48.00 774.99 Td (- Besucherzugriff temporaer sperren.) Tj ET
+BT /F1 10.2 Tf 48.00 789.89 Td (- Entity-Platzierung auf einem Plot temporär deaktivieren.) Tj ET
+BT /F1 10.2 Tf 48.00 774.99 Td (- Besucherzugriff temporär sperren.) Tj ET
 BT /F1 10.2 Tf 48.00 760.09 Td (- Spieler von einem Plot entfernen, mit Sicherheitsabfrage und Logeintrag.) Tj ET
 BT /F1 10.2 Tf 48.00 745.19 Td (- Trusted/Member-Liste bereinigen.) Tj ET
-BT /F1 10.2 Tf 48.00 730.29 Td (- Verdachtsliste fuer Plots mit sehr viel Redstone, vielen Hoppern oder vielen Entities.) Tj ET
-BT /F1 10.2 Tf 48.00 715.39 Td (- Teleport zum naechsten auffaelligen Block oder Entity.) Tj ET
-BT /F1 10.2 Tf 48.00 700.49 Td (- Ueberzaehlige Entities anzeigen lassen.) Tj ET
-BT /F1 10.2 Tf 48.00 685.59 Td (- Optionales Entfernen ueberzaehliger Entities nur mit doppelter Bestaetigung.) Tj ET
-BT /F1 10.2 Tf 48.00 670.69 Td (- Sicherheitsmarkierung fuer Plots, die bereits mehrfach auffaellig waren.) Tj ET
+BT /F1 10.2 Tf 48.00 730.29 Td (- Verdachtsliste für Plots mit sehr viel Redstone, vielen Hoppern oder vielen Entities.) Tj ET
+BT /F1 10.2 Tf 48.00 715.39 Td (- Teleport zum nächsten auffälligen Block oder Entity.) Tj ET
+BT /F1 10.2 Tf 48.00 700.49 Td (- Überzählige Entities anzeigen lassen.) Tj ET
+BT /F1 10.2 Tf 48.00 685.59 Td (- Optionales Entfernen überzähliger Entities nur mit doppelter Bestätigung.) Tj ET
+BT /F1 10.2 Tf 48.00 670.69 Td (- Sicherheitsmarkierung für Plots, die bereits mehrfach auffällig waren.) Tj ET
 BT /F1 10.2 Tf 48.00 655.79 Td (- Automatischer Screenshot- oder Daten-Snapshot als Metadaten bei Alarmen.) Tj ET
 BT /F1 12.5 Tf 48.00 626.89 Td (Backups und Wiederherstellung) Tj ET
-BT /F1 10.2 Tf 48.00 600.89 Td (- Backup-GUI mit Filter nach Spieler, Datum, Grund, Welt, Plot-ID und Merge-Groesse.) Tj ET
-BT /F1 10.2 Tf 48.00 585.99 Td (- Backup-Vorschau mit Besitzername, Loeschdatum, Grund, urspruenglicher Plot-ID und) Tj ET
+BT /F1 10.2 Tf 48.00 600.89 Td (- Backup-GUI mit Filter nach Spieler, Datum, Grund, Welt, Plot-ID und Merge-Größe.) Tj ET
+BT /F1 10.2 Tf 48.00 585.99 Td (- Backup-Vorschau mit Besitzername, Löschdatum, Grund, ursprünglicher Plot-ID und) Tj ET
 BT /F1 10.2 Tf 60.00 572.59 Td (Merge-Format.) Tj ET
 BT /F1 10.2 Tf 48.00 557.69 Td (- Wiederherstellung auf aktuellem Plot.) Tj ET
 BT /F1 10.2 Tf 48.00 542.79 Td (- Wiederherstellung an anderer Stelle.) Tj ET
 BT /F1 10.2 Tf 48.00 527.89 Td (- Vorher-Nachher-Sicherheitsbackup vor Restore.) Tj ET
 BT /F1 10.2 Tf 48.00 512.99 Td (- Backup vor Delete, Clear, Unmerge, Owner-Wechsel und Team-Reset.) Tj ET
 BT /F1 10.2 Tf 48.00 498.09 Td (- Backup-Kommentar vom Teammitglied hinterlegen.) Tj ET
-BT /F1 10.2 Tf 48.00 483.19 Td (- Backups als "wichtig" markieren, damit sie nicht automatisch geloescht werden.) Tj ET
+BT /F1 10.2 Tf 48.00 483.19 Td (- Backups als "wichtig" markieren, damit sie nicht automatisch gelöscht werden.) Tj ET
 BT /F1 10.2 Tf 48.00 468.29 Td (- Aufbewahrungsregeln pro Backup-Grund.) Tj ET
 BT /F1 10.2 Tf 48.00 453.39 Td (- Backup-Fehler im Team-Alarmcenter melden.) Tj ET
 BT /F1 10.2 Tf 48.00 438.49 Td (- Vergleich mehrerer Backups desselben Spielers.) Tj ET
 BT /F1 10.2 Tf 48.00 423.59 Td (- Wiederherstellungsrechte je Teamrolle getrennt vergeben.) Tj ET
 BT /F1 12.5 Tf 48.00 394.69 Td (Leitung) Tj ET
 BT /F1 10.2 Tf 48.00 368.69 Td (- Globale Plot-Policy verwalten.) Tj ET
-BT /F1 10.2 Tf 48.00 353.79 Td (- Standardlimits fuer Rangsgruppen pruefen.) Tj ET
-BT /F1 10.2 Tf 48.00 338.89 Td (- Uebersicht ueber genutzte Plotlimits und gekaufte Plot-Erweiterungen.) Tj ET
-BT /F1 10.2 Tf 48.00 323.99 Td (- Statistiken ueber aktive Plots, inaktive Plots, Backups, Restores und Teamaktionen.) Tj ET
-BT /F1 10.2 Tf 48.00 309.09 Td (- Globale Presets fuer Flags, Rollen, Deko und Limits definieren.) Tj ET
-BT /F1 10.2 Tf 48.00 294.19 Td (- Kritische Aktionen nur fuer Leitung freigeben, zum Beispiel Massenrestore oder) Tj ET
+BT /F1 10.2 Tf 48.00 353.79 Td (- Standardlimits für Rangsgruppen prüfen.) Tj ET
+BT /F1 10.2 Tf 48.00 338.89 Td (- Übersicht über genutzte Plotlimits und gekaufte Plot-Erweiterungen.) Tj ET
+BT /F1 10.2 Tf 48.00 323.99 Td (- Statistiken über aktive Plots, inaktive Plots, Backups, Restores und Teamaktionen.) Tj ET
+BT /F1 10.2 Tf 48.00 309.09 Td (- Globale Presets für Flags, Rollen, Deko und Limits definieren.) Tj ET
+BT /F1 10.2 Tf 48.00 294.19 Td (- Kritische Aktionen nur für Leitung freigeben, zum Beispiel Massenrestore oder) Tj ET
 BT /F1 10.2 Tf 60.00 280.79 Td (Datenmigration.) Tj ET
 BT /F1 10.2 Tf 48.00 265.89 Td (- Export von Auditberichten.) Tj ET
-BT /F1 10.2 Tf 48.00 250.99 Td (- Teamrechte fuer Admin, Mod, Supporter, Support JR und Builder zentral dokumentieren.) Tj ET
-BT /F1 10.2 Tf 48.00 236.09 Td (- Freigabeprozess fuer neue Deko-Kategorien oder Ranggruppen.) Tj ET
+BT /F1 10.2 Tf 48.00 250.99 Td (- Teamrechte für Admin, Mod, Supporter, Support JR und Builder zentral dokumentieren.) Tj ET
+BT /F1 10.2 Tf 48.00 236.09 Td (- Freigabeprozess für neue Deko-Kategorien oder Ranggruppen.) Tj ET
 BT /F1 12.5 Tf 48.00 207.19 Td (Admin) Tj ET
 BT /F1 10.2 Tf 48.00 181.19 Td (- Force-Owner-Wechsel mit Backup davor.) Tj ET
 BT /F1 10.2 Tf 48.00 166.29 Td (- Plot-Transfer zwischen Spielern.) Tj ET
@@ -223,50 +223,50 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
 endobj
 12 0 obj
-<< /Length 3564 >>
+<< /Length 3533 >>
 stream
 q
-BT /F1 10.2 Tf 48.00 789.89 Td (- Massenaenderungen mit Vorschau ausfuehren.) Tj ET
-BT /F1 10.2 Tf 48.00 774.99 Td (- Notfallmodus: Redstone global fuer Plotwelten deaktivieren.) Tj ET
+BT /F1 10.2 Tf 48.00 789.89 Td (- Massenänderungen mit Vorschau ausführen.) Tj ET
+BT /F1 10.2 Tf 48.00 774.99 Td (- Notfallmodus: Redstone global für Plotwelten deaktivieren.) Tj ET
 BT /F1 10.2 Tf 48.00 760.09 Td (- Alle offenen Redstone-Alarme in einem GUI abarbeiten.) Tj ET
 BT /F1 12.5 Tf 48.00 731.19 Td (Mod) Tj ET
 BT /F1 10.2 Tf 48.00 705.19 Td (- Plot sperren oder entsperren.) Tj ET
-BT /F1 10.2 Tf 48.00 690.29 Td (- Redstone auf auffaelligen Plots deaktivieren.) Tj ET
-BT /F1 10.2 Tf 48.00 675.39 Td (- Spieler von fremden Plots entfernen, wenn ein Regelverstoss vorliegt.) Tj ET
+BT /F1 10.2 Tf 48.00 690.29 Td (- Redstone auf auffälligen Plots deaktivieren.) Tj ET
+BT /F1 10.2 Tf 48.00 675.39 Td (- Spieler von fremden Plots entfernen, wenn ein Regelverstoß vorliegt.) Tj ET
 BT /F1 10.2 Tf 48.00 660.49 Td (- Teamnotizen und Verwarnungen schreiben.) Tj ET
-BT /F1 10.2 Tf 48.00 645.59 Td (- Auditlog fuer ein Plot oder einen Spieler ansehen.) Tj ET
-BT /F1 10.2 Tf 48.00 630.69 Td (- Verdachtige Entity- oder Redstone-Aktivitaet pruefen.) Tj ET
-BT /F1 10.2 Tf 48.00 615.79 Td (- Supportfaelle uebernehmen oder eskalieren.) Tj ET
+BT /F1 10.2 Tf 48.00 645.59 Td (- Auditlog für ein Plot oder einen Spieler ansehen.) Tj ET
+BT /F1 10.2 Tf 48.00 630.69 Td (- Verdachtige Entity- oder Redstone-Aktivität prüfen.) Tj ET
+BT /F1 10.2 Tf 48.00 615.79 Td (- Supportfälle übernehmen oder eskalieren.) Tj ET
 BT /F1 10.2 Tf 48.00 600.89 Td (- Plotstatus auf "unter Beobachtung" setzen.) Tj ET
 BT /F1 10.2 Tf 48.00 585.99 Td (- Spielerrechte auf einem Plot einsehen, aber nicht zwingend bearbeiten.) Tj ET
 BT /F1 12.5 Tf 48.00 557.09 Td (Supporter) Tj ET
 BT /F1 10.2 Tf 48.00 531.09 Td (- Plotinfo und Spielerinfo ansehen.) Tj ET
 BT /F1 10.2 Tf 48.00 516.19 Td (- Zu Spieler, Plot, Alarmblock oder Home teleportieren.) Tj ET
-BT /F1 10.2 Tf 48.00 501.29 Td (- Effektive Rechte eines Spielers erklaeren.) Tj ET
-BT /F1 10.2 Tf 48.00 486.39 Td (- Mitglieder- und Rollenuebersicht lesen.) Tj ET
+BT /F1 10.2 Tf 48.00 501.29 Td (- Effektive Rechte eines Spielers erklären.) Tj ET
+BT /F1 10.2 Tf 48.00 486.39 Td (- Mitglieder- und Rollenübersicht lesen.) Tj ET
 BT /F1 10.2 Tf 48.00 471.49 Td (- Tickets mit Plotbezug erstellen.) Tj ET
-BT /F1 10.2 Tf 48.00 456.59 Td (- Teamnotizen lesen und begrenzt ergaenzen.) Tj ET
-BT /F1 10.2 Tf 48.00 441.69 Td (- Spieler durch GUIs fuehren, ohne gefaehrliche Aktionen auszufuehren.) Tj ET
-BT /F1 10.2 Tf 48.00 426.79 Td (- Backup-Liste ansehen, aber Restore nur mit hoeherem Recht starten.) Tj ET
+BT /F1 10.2 Tf 48.00 456.59 Td (- Teamnotizen lesen und begrenzt ergänzen.) Tj ET
+BT /F1 10.2 Tf 48.00 441.69 Td (- Spieler durch GUIs führen, ohne gefährliche Aktionen auszuführen.) Tj ET
+BT /F1 10.2 Tf 48.00 426.79 Td (- Backup-Liste ansehen, aber Restore nur mit höherem Recht starten.) Tj ET
 BT /F1 10.2 Tf 48.00 411.89 Td (- Redstone-Alarm sehen und an Mods/Admins weitergeben.) Tj ET
 BT /F1 12.5 Tf 48.00 382.99 Td (Support JR) Tj ET
-BT /F1 10.2 Tf 48.00 356.99 Td (- Eingeschraenkter Plotinspektor ohne Veraenderungsrechte.) Tj ET
-BT /F1 10.2 Tf 48.00 342.09 Td (- Nur lesende Plotinfos: Besitzer, Plot-ID, Merge-Groesse, Mitglieder, Limits.) Tj ET
+BT /F1 10.2 Tf 48.00 356.99 Td (- Eingeschränkter Plotinspektor ohne Veränderungsrechte.) Tj ET
+BT /F1 10.2 Tf 48.00 342.09 Td (- Nur lesende Plotinfos: Besitzer, Plot-ID, Merge-Größe, Mitglieder, Limits.) Tj ET
 BT /F1 10.2 Tf 48.00 327.19 Td (- Ticket erstellen und bestehende Tickets kommentieren.) Tj ET
 BT /F1 10.2 Tf 48.00 312.29 Td (- Spielerrechte anzeigen, aber nicht aendern.) Tj ET
 BT /F1 10.2 Tf 48.00 297.39 Td (- Keine Restore-, Delete-, Sperr- oder Redstone-Reaktivierungsrechte.) Tj ET
-BT /F1 10.2 Tf 48.00 282.49 Td (- Hilfs-GUI mit haeufigen Antworten und naechsten Schritten.) Tj ET
+BT /F1 10.2 Tf 48.00 282.49 Td (- Hilfs-GUI mit häufigen Antworten und nächsten Schritten.) Tj ET
 BT /F1 10.2 Tf 48.00 267.59 Td (- Eskalieren-Button an Supporter oder Mod.) Tj ET
 BT /F1 12.5 Tf 48.00 238.69 Td (Builder) Tj ET
-BT /F1 10.2 Tf 48.00 212.69 Td (- Zugriff auf Deko- und Designpruefungen.) Tj ET
+BT /F1 10.2 Tf 48.00 212.69 Td (- Zugriff auf Deko- und Designprüfungen.) Tj ET
 BT /F1 10.2 Tf 48.00 197.79 Td (- Plot-Design-Presets erstellen und testen.) Tj ET
 BT /F1 10.2 Tf 48.00 182.89 Td (- Rand- und Wandkatalog pflegen.) Tj ET
-BT /F1 10.2 Tf 48.00 167.99 Td (- Builder-Kommentar fuer schoene Plots setzen.) Tj ET
-BT /F1 10.2 Tf 48.00 153.09 Td (- Team-Empfehlung fuer Top-Plots vergeben.) Tj ET
-BT /F1 10.2 Tf 48.00 138.19 Td (- Bauvorlagen fuer Events oder Spawn-nahe Plots verwalten.) Tj ET
-BT /F1 10.2 Tf 48.00 123.29 Td (- Sichtpruefung von Backup-Restores.) Tj ET
+BT /F1 10.2 Tf 48.00 167.99 Td (- Builder-Kommentar für schöne Plots setzen.) Tj ET
+BT /F1 10.2 Tf 48.00 153.09 Td (- Team-Empfehlung für Top-Plots vergeben.) Tj ET
+BT /F1 10.2 Tf 48.00 138.19 Td (- Bauvorlagen für Events oder Spawn-nahe Plots verwalten.) Tj ET
+BT /F1 10.2 Tf 48.00 123.29 Td (- Sichtprüfung von Backup-Restores.) Tj ET
 BT /F1 10.2 Tf 48.00 108.39 Td (- Biom-, Rand- und Wandkombinationen als Vorlage speichern.) Tj ET
-BT /F1 10.2 Tf 48.00 93.49 Td (- Keine Moderationsrechte, wenn sie fuer Builder nicht noetig sind.) Tj ET
+BT /F1 10.2 Tf 48.00 93.49 Td (- Keine Moderationsrechte, wenn sie für Builder nicht nötig sind.) Tj ET
 Q
 endstream
 endobj
@@ -274,17 +274,17 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
 endobj
 14 0 obj
-<< /Length 877 >>
+<< /Length 868 >>
 stream
 q
-BT /F1 15.0 Tf 48.00 778.89 Td (Sinnvolle naechste Umsetzungsschritte) Tj ET
-BT /F1 10.2 Tf 48.00 748.89 Td (1. Team-Plotinspektor-GUI bauen, weil es der zentrale Einstieg fuer Support und Admins ist.) Tj ET
-BT /F1 10.2 Tf 48.00 733.99 Td (2. Auditlog einfuehren, damit alle GUI- und Teamaktionen nachvollziehbar sind.) Tj ET
-BT /F1 10.2 Tf 48.00 719.09 Td (3. Redstone-Alarmcenter erweitern, damit Teamler Alarme gesammelt abarbeiten koennen.) Tj ET
+BT /F1 15.0 Tf 48.00 778.89 Td (Sinnvolle nächste Umsetzungsschritte) Tj ET
+BT /F1 10.2 Tf 48.00 748.89 Td (1. Team-Plotinspektor-GUI bauen, weil es der zentrale Einstieg für Support und Admins ist.) Tj ET
+BT /F1 10.2 Tf 48.00 733.99 Td (2. Auditlog einführen, damit alle GUI- und Teamaktionen nachvollziehbar sind.) Tj ET
+BT /F1 10.2 Tf 48.00 719.09 Td (3. Redstone-Alarmcenter erweitern, damit Teamler Alarme gesammelt abarbeiten können.) Tj ET
 BT /F1 10.2 Tf 48.00 704.19 Td (4. Backup-GUI ausbauen mit Filtern, Kommentaren und Restore-Historie.) Tj ET
-BT /F1 10.2 Tf 48.00 689.29 Td (5. Spieler-Presets fuer Flags, Deko und Ploteinstellungen einbauen.) Tj ET
-BT /F1 10.2 Tf 48.00 674.39 Td (6. Suchfunktion fuer grosse GUIs hinzufuegen.) Tj ET
-BT /F1 10.2 Tf 48.00 659.49 Td (7. Plot-Warp-, Besucher- und Bewertungsfunktionen fuer Community-Features planen.) Tj ET
+BT /F1 10.2 Tf 48.00 689.29 Td (5. Spieler-Presets für Flags, Deko und Ploteinstellungen einbauen.) Tj ET
+BT /F1 10.2 Tf 48.00 674.39 Td (6. Suchfunktion für große GUIs hinzufügen.) Tj ET
+BT /F1 10.2 Tf 48.00 659.49 Td (7. Plot-Warp-, Besucher- und Bewertungsfunktionen für Community-Features planen.) Tj ET
 Q
 endstream
 endobj
@@ -298,19 +298,19 @@ xref
 0000000058 00000 n 
 0000000148 00000 n 
 0000000245 00000 n 
-0000004382 00000 n 
-0000004514 00000 n 
-0000008916 00000 n 
-0000009048 00000 n 
-0000013239 00000 n 
-0000013371 00000 n 
-0000017512 00000 n 
-0000017646 00000 n 
-0000021262 00000 n 
-0000021396 00000 n 
-0000022324 00000 n 
+0000004351 00000 n 
+0000004483 00000 n 
+0000008856 00000 n 
+0000008988 00000 n 
+0000013153 00000 n 
+0000013285 00000 n 
+0000017400 00000 n 
+0000017534 00000 n 
+0000021119 00000 n 
+0000021253 00000 n 
+0000022172 00000 n 
 trailer
 << /Size 16 /Root 1 0 R >>
 startxref
-22458
+22306
 %%EOF
