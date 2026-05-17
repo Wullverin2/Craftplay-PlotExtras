@@ -8,6 +8,7 @@ import de.craftplay.plotextras.plot.PlotRole;
 import de.craftplay.plotextras.plot.PlotRolePermission;
 import de.craftplay.plotextras.plot.PlotRoleService;
 import de.craftplay.plotextras.util.TextUtil;
+import de.craftplay.plotextras.warp.PlotWarpEntry;
 import com.plotsquared.core.plot.Plot;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -89,6 +90,10 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return handleAudit(player, args);
         }
 
+        if (subCommand.equals("warp") || subCommand.equals("warps")) {
+            return handleWarps(player, args);
+        }
+
         if (subCommand.equals("inspect") || subCommand.equals("inspector") || subCommand.equals("team")) {
             if (!plugin.getAuditLogService().canView(player)) {
                 plugin.getLanguageManager().send(player, "no-permission");
@@ -110,6 +115,71 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
 
         player.sendMessage(TextUtil.component(plugin.getLanguageManager().getRawMessage(player, "help")));
+        return true;
+    }
+
+    private boolean handleWarps(final Player player, final String[] args) {
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        if (args.length == 1 || args[1].equalsIgnoreCase("gui")) {
+            plugin.getGuiManager().open(player, "plot-warps", 0);
+            return true;
+        }
+        final String action = args[1].toLowerCase(Locale.ROOT);
+        if ((action.equals("set") || action.equals("setzen")) && args.length >= 3) {
+            if (!plugin.getPlotService().canModifySetting(player, plot, "home")) {
+                plugin.getLanguageManager().send(player, "not-owner");
+                return true;
+            }
+            final String warp = args[2];
+            if (plugin.getPlotWarpService().setWarp(plot, warp, player.getLocation())) {
+                plugin.getAuditLogService().log(player, plot, "Plot-Warp gesetzt", warp);
+                player.sendMessage(TextUtil.component("&aWarp &e" + warp + " &awurde gesetzt."));
+            } else {
+                player.sendMessage(TextUtil.component("&cWarp &e" + warp + " &ckonnte nicht gesetzt werden."));
+            }
+            return true;
+        }
+        if ((action.equals("delete") || action.equals("del") || action.equals("löschen") || action.equals("loeschen")) && args.length >= 3) {
+            if (!plugin.getPlotService().canModifySetting(player, plot, "home")) {
+                plugin.getLanguageManager().send(player, "not-owner");
+                return true;
+            }
+            final String warp = args[2];
+            if (plugin.getPlotWarpService().deleteWarp(plot, warp)) {
+                plugin.getAuditLogService().log(player, plot, "Plot-Warp gelöscht", warp);
+                player.sendMessage(TextUtil.component("&aWarp &e" + warp + " &awurde gelöscht."));
+            } else {
+                player.sendMessage(TextUtil.component("&cWarp &e" + warp + " &cwurde nicht gefunden."));
+            }
+            return true;
+        }
+        if ((action.equals("tp") || action.equals("teleport")) && args.length >= 3) {
+            final String warp = args[2];
+            if (plugin.getPlotWarpService().teleport(player, plot, warp)) {
+                player.sendMessage(TextUtil.component("&aTeleportiere zu Warp &e" + warp + "&a."));
+            } else {
+                player.sendMessage(TextUtil.component("&cWarp &e" + warp + " &cwurde nicht gefunden."));
+            }
+            return true;
+        }
+
+        final List<PlotWarpEntry> warps = plugin.getPlotWarpService().listWarps(plot);
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aPlot-Warps &8(" + warps.size() + ")"));
+        if (warps.isEmpty()) {
+            player.sendMessage(TextUtil.component("&7Keine Warps vorhanden."));
+        }
+        for (final PlotWarpEntry warp : warps) {
+            player.sendMessage(TextUtil.component("&e" + warp.id() + " &7- &f" + warp.displayName()));
+        }
+        player.sendMessage(TextUtil.component("&8/pe warp set <Name>"));
+        player.sendMessage(TextUtil.component("&8/pe warp tp <Name>"));
+        player.sendMessage(TextUtil.component("&8/pe warp delete <Name>"));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
 
@@ -543,7 +613,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (args.length == 1) {
-            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team", "dashboard", "info"), args[0]);
+            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team", "dashboard", "info", "warp", "warps"), args[0]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("open")) {
             return filter(plugin.getGuiManager().getGuiIds(), args[1]);
@@ -559,6 +629,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("audit")) {
             return filter(List.of("gui", "plot"), args[1]);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("warp") || args[0].equalsIgnoreCase("warps"))) {
+            return completeWarpCommand(sender, args);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("language")) {
             final List<String> languages = new ArrayList<>();
@@ -635,6 +708,21 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length == 3 && (args[1].equalsIgnoreCase("tp") || args[1].equalsIgnoreCase("enable"))) {
             return filter(plugin.getRedstoneLagProtectionService().getAlertIds(), args[2]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeWarpCommand(final CommandSender sender, final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("gui", "list", "set", "tp", "delete"), args[1]);
+        }
+        if (args.length == 3 && sender instanceof Player player
+                && (args[1].equalsIgnoreCase("tp") || args[1].equalsIgnoreCase("delete"))) {
+            final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+            if (plot == null) {
+                return Collections.emptyList();
+            }
+            return filter(plugin.getPlotWarpService().listWarps(plot).stream().map(PlotWarpEntry::id).toList(), args[2]);
         }
         return Collections.emptyList();
     }

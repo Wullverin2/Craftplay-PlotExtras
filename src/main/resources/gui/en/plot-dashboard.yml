@@ -20,6 +20,7 @@ items:
       - "&7Status: &f{plot_status_display}"
       - "&7Visits: &f{plot_visits}"
       - "&7Favorites: &f{plot_likes}"
+      - "&7Warps: &f{plot_warps}"
       - "&7Plots: &f{plot_count}&7/&f{plot_max}"
   note:
     slot: 20
@@ -75,6 +76,15 @@ items:
       - "&7Members and roles."
     actions:
       - "OPEN:members"
+  warps:
+    slot: 29
+    material: ENDER_PEARL
+    name: "&aPlot Warps"
+    lore:
+      - "&7Saved locations on"
+      - "&7this plot: &f{plot_warps}"
+    actions:
+      - "OPEN:plot-warps"
   decor:
     slot: 31
     material: GRASS_BLOCK

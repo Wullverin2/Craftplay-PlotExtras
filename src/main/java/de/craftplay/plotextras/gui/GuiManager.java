@@ -21,6 +21,8 @@ import de.craftplay.plotextras.plotmeta.PlotMetaService;
 import de.craftplay.plotextras.redstone.RedstoneLagProtectionService;
 import de.craftplay.plotextras.util.SlotParser;
 import de.craftplay.plotextras.util.TextUtil;
+import de.craftplay.plotextras.warp.PlotWarpEntry;
+import de.craftplay.plotextras.warp.PlotWarpService;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -71,6 +73,7 @@ public final class GuiManager implements Listener {
     private final AuditLogService auditLogService;
     private final RedstoneLagProtectionService redstoneLagProtectionService;
     private final PlotMetaService plotMetaService;
+    private final PlotWarpService plotWarpService;
     @SuppressWarnings("unused")
     private final PlayerDataManager playerDataManager;
     private final Map<String, Map<String, YamlConfiguration>> guiConfigs = new HashMap<>();
@@ -91,6 +94,7 @@ public final class GuiManager implements Listener {
             final AuditLogService auditLogService,
             final RedstoneLagProtectionService redstoneLagProtectionService,
             final PlotMetaService plotMetaService,
+            final PlotWarpService plotWarpService,
             final PlayerDataManager playerDataManager
     ) {
         this.plugin = plugin;
@@ -103,6 +107,7 @@ public final class GuiManager implements Listener {
         this.auditLogService = auditLogService;
         this.redstoneLagProtectionService = redstoneLagProtectionService;
         this.plotMetaService = plotMetaService;
+        this.plotWarpService = plotWarpService;
         this.playerDataManager = playerDataManager;
     }
 
@@ -316,6 +321,7 @@ public final class GuiManager implements Listener {
             case "plot-backups" -> renderPlotBackups(player, inventory, holder, dynamic, placeholders, page);
             case "audit-log" -> renderAuditLog(player, inventory, holder, dynamic, placeholders, page);
             case "redstone-alerts" -> renderRedstoneAlerts(player, inventory, holder, dynamic, placeholders, page);
+            case "plot-warps" -> renderPlotWarps(player, inventory, holder, dynamic, placeholders, page);
             case "languages" -> renderLanguages(player, inventory, holder, dynamic, placeholders, page);
             default -> plugin.getLogger().warning("Unknown dynamic GUI type: " + type);
         }
@@ -608,6 +614,43 @@ public final class GuiManager implements Listener {
             itemPlaceholders.put("redstone_alert_events", String.valueOf(alert.eventCount()));
             itemPlaceholders.put("redstone_alert_source", alert.source());
             itemPlaceholders.put("redstone_alert_created", BACKUP_TIME_FORMAT.format(alert.detectedAt()));
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderPlotWarps(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (slots.isEmpty() || plot == null) {
+            return;
+        }
+
+        final List<PlotWarpEntry> entries = plotWarpService.listWarps(plot);
+        final PageSlice<PlotWarpEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("warp-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PlotWarpEntry warp = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("warp_id", warp.id());
+            itemPlaceholders.put("warp_name", warp.displayName());
+            itemPlaceholders.put("warp_world", warp.world());
+            itemPlaceholders.put("warp_x", String.valueOf(Math.round(warp.x())));
+            itemPlaceholders.put("warp_y", String.valueOf(Math.round(warp.y())));
+            itemPlaceholders.put("warp_z", String.valueOf(Math.round(warp.z())));
 
             final ItemStack item = buildItem(player, template, null, itemPlaceholders);
             final int slot = slots.get(index);
@@ -1042,6 +1085,18 @@ public final class GuiManager implements Listener {
                 togglePlotLike(player);
                 return;
             }
+            if (upperAction.equals("WARP_SET_PROMPT")) {
+                startWarpSetPrompt(player);
+                return;
+            }
+            if (upperAction.startsWith("TELEPORT_PLOT_WARP:")) {
+                teleportPlotWarp(player, action.substring("TELEPORT_PLOT_WARP:".length()));
+                return;
+            }
+            if (upperAction.startsWith("DELETE_PLOT_WARP:")) {
+                deletePlotWarp(player, action.substring("DELETE_PLOT_WARP:".length()));
+                return;
+            }
             if (upperAction.startsWith("COMMAND:")) {
                 runCommand(player, action.substring("COMMAND:".length()));
                 continue;
@@ -1278,6 +1333,21 @@ public final class GuiManager implements Listener {
         sendMessage(player, "team-note-input", Map.of());
     }
 
+    private void startWarpSetPrompt(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canModifySetting(player, plot, "home")) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.SET_WARP, ""));
+        player.closeInventory();
+        sendMessage(player, "warp-set-input", Map.of());
+    }
+
     private void handleChatInput(final Player player, final ChatInput input, final String message) {
         if (message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("abbrechen")) {
             if (input.type() == ChatInputType.INVITE_MEMBER) {
@@ -1289,6 +1359,9 @@ public final class GuiManager implements Listener {
             } else if (input.type() == ChatInputType.TEAM_NOTE) {
                 sendMessage(player, "team-note-cancelled", Map.of());
                 scheduleOpen(player, "team-inspector", 0);
+            } else if (input.type() == ChatInputType.SET_WARP) {
+                sendMessage(player, "warp-input-cancelled", Map.of());
+                scheduleOpen(player, "plot-warps", 0);
             } else {
                 sendMessage(player, "role-input-cancelled", Map.of());
                 scheduleOpen(player, "roles", 0);
@@ -1308,6 +1381,11 @@ public final class GuiManager implements Listener {
 
         if (input.type() == ChatInputType.TEAM_NOTE) {
             handleTeamNoteInput(player, message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.SET_WARP) {
+            handleWarpSetInput(player, message);
             return;
         }
 
@@ -1405,6 +1483,25 @@ public final class GuiManager implements Listener {
         auditLogService.log(player, plot, "Teamnotiz geändert", clear ? "geleert" : message);
         sendMessage(player, "team-note-set", Map.of());
         scheduleOpen(player, "team-inspector", 0);
+    }
+
+    private void handleWarpSetInput(final Player player, final String message) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canModifySetting(player, plot, "home")) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+        if (plotWarpService.setWarp(plot, message, player.getLocation())) {
+            auditLogService.log(player, plot, "Plot-Warp gesetzt", message);
+            sendMessage(player, "warp-set", Map.of("warp", message));
+        } else {
+            sendMessage(player, "warp-failed", Map.of("warp", message));
+        }
+        scheduleOpen(player, "plot-warps", 0);
     }
 
     private void selectRole(final Player player, final String rawAction) {
@@ -1677,6 +1774,39 @@ public final class GuiManager implements Listener {
         scheduleOpen(player, "plot-dashboard", 0);
     }
 
+    private void teleportPlotWarp(final Player player, final String warpId) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (plotWarpService.teleport(player, plot, warpId)) {
+            sendMessage(player, "warp-teleported", Map.of("warp", warpId));
+        } else {
+            sendMessage(player, "warp-unknown", Map.of("warp", warpId));
+            scheduleOpen(player, "plot-warps", 0);
+        }
+    }
+
+    private void deletePlotWarp(final Player player, final String warpId) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canModifySetting(player, plot, "home")) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+        if (plotWarpService.deleteWarp(plot, warpId)) {
+            auditLogService.log(player, plot, "Plot-Warp gelöscht", warpId);
+            sendMessage(player, "warp-deleted", Map.of("warp", warpId));
+        } else {
+            sendMessage(player, "warp-unknown", Map.of("warp", warpId));
+        }
+        scheduleOpen(player, "plot-warps", 0);
+    }
+
     private boolean canManageRolesHere(final Player player) {
         final Plot plot = plotService.getCurrentPlot(player);
         if (plot == null) {
@@ -1762,6 +1892,7 @@ public final class GuiManager implements Listener {
     private Map<String, String> createPlaceholders(final Player player) {
         final Map<String, String> placeholders = new HashMap<>(plotService.getPlotPlaceholders(player));
         placeholders.putAll(plotMetaService.placeholders(plotService.getCurrentPlot(player)));
+        placeholders.put("plot_warps", String.valueOf(plotWarpService.listWarps(plotService.getCurrentPlot(player)).size()));
         placeholders.put("language", languageManager.getPlayerLanguage(player));
         placeholders.putAll(placeholderService.getIntegrationPlaceholders(player));
         final String selectedRoleId = selectedRoles.getOrDefault(player.getUniqueId(), "-");
@@ -2024,6 +2155,7 @@ public final class GuiManager implements Listener {
         RENAME_ROLE,
         INVITE_MEMBER,
         PLOT_NOTE,
-        TEAM_NOTE
+        TEAM_NOTE,
+        SET_WARP
     }
 }

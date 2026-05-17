@@ -1,0 +1,68 @@
+# Plot warp GUI. Clicking a warp teleports to it.
+title: "&8Plot Warps"
+size: 54
+
+fill:
+  enabled: true
+  material: PURPLE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: ENDER_PEARL
+    name: "&aPlot Warps"
+    lore:
+      - "&7Plot: &f{plot_world} {plot_id}"
+      - "&7Warps: &f{plot_warps}"
+      - "&8Click: teleport"
+  set:
+    slot: 45
+    material: COMPASS
+    name: "&aSet Warp"
+    lore:
+      - "&7Saves your current"
+      - "&7position as a plot warp."
+      - "&8Name is entered in chat."
+    actions:
+      - "WARP_SET_PROMPT"
+  back:
+    slot: 46
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "OPEN:plot-dashboard"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: plot-warps
+  slots: "10-16,19-25,28-34"
+  warp-item:
+    material: ENDER_EYE
+    name: "&a{warp_name}"
+    lore:
+      - "&7ID: &f{warp_id}"
+      - "&7World: &f{warp_world}"
+      - "&7Position: &f{warp_x}, {warp_y}, {warp_z}"
+      - "&8Click: teleport"
+      - "&8Delete: /pe warp delete {warp_id}"
+    actions:
+      - "TELEPORT_PLOT_WARP:{warp_id}"
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&ePrevious Page"
+    lore:
+      - "&7Page &f{page}&7/&f{pages}"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNext Page"
+    lore:
+      - "&7Page &f{page}&7/&f{pages}"
