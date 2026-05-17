@@ -34,6 +34,9 @@ permissions:
   craftplayplotextras.flags.prevent-crop-trample:
     description: Allows changing the prevent-crop-trample plot flag through the GUI.
     default: true
+  craftplayplotextras.flags.*:
+    description: Documents dynamic per-flag GUI permissions such as craftplayplotextras.flags.mob-spawning.
+    default: false
   craftplayplotextras.presets:
     description: Allows applying configured plot presets through the GUI.
     default: true
@@ -43,6 +46,9 @@ permissions:
   craftplayplotextras.entitylimit.bypass:
     description: Bypasses plot entity limits.
     default: op
+  craftplayplotextras.entitylimit.*:
+    description: Documents dynamic per-entity limit permissions from limits.yml, for example craftplayplotextras.entitylimit.villager.64.
+    default: false
   craftplayplotextras.backup.admin:
     description: Allows listing plot backups.
     default: op
@@ -145,6 +151,12 @@ permissions:
   craftplayplotextras.decor.wall.5:
     description: Allows selecting value group 5 wall blocks.
     default: op
+  craftplayplotextras.decor.wall.*:
+    description: Documents all wall value group permissions configured in wall.yml.
+    default: false
+  craftplayplotextras.decor.border.*:
+    description: Documents optional per-border permissions configured in border.yml.
+    default: false
   craftplayplotextras.admin:
     description: Allows reloads and bypasses plot owner checks.
     default: op

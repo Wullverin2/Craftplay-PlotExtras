@@ -19,14 +19,15 @@ items:
       - "&7Benötigt: members.invite"
     actions:
       - "INVITE_MEMBER_PROMPT"
-  plot-members-command:
+  member-overview:
     slot: 13
     material: NAME_TAG
-    name: "&aPlotSquared Mitglieder"
+    name: "&aMitgliederübersicht"
     lore:
-      - "&7Führt /plot members aus."
-    commands:
-      - "player:plot members"
+      - "&7Besitzer: &f{plot_owner}"
+      - "&7Mitglieder: &f{plot_members}"
+      - "&7Vertraute: &f{plot_trusted}"
+      - "&7Gesperrte: &f{plot_denied}"
   roles:
     slot: 15
     material: BOOK

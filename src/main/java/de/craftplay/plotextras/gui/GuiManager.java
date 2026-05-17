@@ -34,7 +34,9 @@ import de.craftplay.plotextras.utility.PlotUtilityService;
 import de.craftplay.plotextras.validation.ConfigValidationService;
 import de.craftplay.plotextras.warp.PlotWarpEntry;
 import de.craftplay.plotextras.warp.PlotWarpService;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -219,6 +221,10 @@ public final class GuiManager implements Listener {
         placeholders.put("page", String.valueOf(page + 1));
 
         final String title = placeholderService.apply(player, guiConfig.getString("title", normalizedGuiId), placeholders);
+        if (tryOpenBedrockForm(player, normalizedGuiId, Math.max(0, page), guiConfig, placeholders, title, size)) {
+            return;
+        }
+
         final GuiHolder holder = new GuiHolder(normalizedGuiId, Math.max(0, page));
         final Inventory inventory = Bukkit.createInventory(holder, size, TextUtil.legacy(title));
         holder.setInventory(inventory);
@@ -228,6 +234,93 @@ public final class GuiManager implements Listener {
         applyDynamicItems(player, inventory, holder, guiConfig, placeholders, Math.max(0, page));
 
         player.openInventory(inventory);
+    }
+
+    private boolean tryOpenBedrockForm(
+            final Player player,
+            final String guiId,
+            final int page,
+            final YamlConfiguration guiConfig,
+            final Map<String, String> placeholders,
+            final String title,
+            final int size
+    ) {
+        if (!bedrockService.canUseForms(player)) {
+            return false;
+        }
+
+        final GuiHolder holder = new GuiHolder(guiId, page);
+        final Inventory inventory = Bukkit.createInventory(holder, size, TextUtil.legacy(title));
+        holder.setInventory(inventory);
+        applyFill(player, inventory, holder, guiConfig, placeholders);
+        applyStaticItems(player, inventory, holder, guiConfig, placeholders);
+        applyDynamicItems(player, inventory, holder, guiConfig, placeholders, page);
+
+        final List<BedrockButton> buttons = bedrockButtons(inventory, holder);
+        if (buttons.isEmpty()) {
+            return false;
+        }
+        return bedrockService.sendSimpleForm(
+                player,
+                stripLegacy(title),
+                bedrockContent(player, guiConfig, placeholders),
+                buttons.stream().map(BedrockButton::label).toList(),
+                index -> executeActions(player, holder, buttons.get(index).actions(), null)
+        );
+    }
+
+    private List<BedrockButton> bedrockButtons(final Inventory inventory, final GuiHolder holder) {
+        final List<BedrockButton> buttons = new ArrayList<>();
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            final List<String> actions = holder.actions(slot);
+            if (actions.isEmpty()) {
+                continue;
+            }
+            final ItemStack item = inventory.getItem(slot);
+            if (item == null || item.getType() == Material.AIR || item.getItemMeta() == null) {
+                continue;
+            }
+            final ItemMeta meta = item.getItemMeta();
+            final String label = meta.hasDisplayName()
+                    ? PlainTextComponentSerializer.plainText().serialize(meta.displayName())
+                    : item.getType().name().toLowerCase(Locale.ROOT).replace('_', ' ');
+            buttons.add(new BedrockButton(label.isBlank() ? item.getType().name() : label, actions));
+        }
+        return buttons;
+    }
+
+    private String bedrockContent(
+            final Player player,
+            final YamlConfiguration guiConfig,
+            final Map<String, String> placeholders
+    ) {
+        final String configuredContent = guiConfig.getString("bedrock.content", "");
+        if (!configuredContent.isBlank()) {
+            return stripLegacy(placeholderService.apply(player, configuredContent, placeholders));
+        }
+        final ConfigurationSection items = guiConfig.getConfigurationSection("items");
+        if (items != null) {
+            for (final String key : List.of("overview", "info")) {
+                final ConfigurationSection section = items.getConfigurationSection(key);
+                if (section == null) {
+                    continue;
+                }
+                final List<String> lines = new ArrayList<>();
+                final String name = section.getString("name", "");
+                if (!name.isBlank()) {
+                    lines.add(stripLegacy(placeholderService.apply(player, name, placeholders)));
+                }
+                for (final String loreLine : section.getStringList("lore")) {
+                    lines.add(stripLegacy(placeholderService.apply(player, loreLine, placeholders)));
+                }
+                if (!lines.isEmpty()) {
+                    return String.join("\n", lines);
+                }
+            }
+        }
+        return languageManager.getPlayerLanguage(player).startsWith("en")
+                ? "Choose an action."
+                : "Wähle eine Aktion.";
     }
 
     @EventHandler
@@ -1589,6 +1682,10 @@ public final class GuiManager implements Listener {
                 setComponent(player, action);
                 return;
             }
+            if (upperAction.equals("SHOW_PLOT_INFO")) {
+                showPlotInfo(player);
+                return;
+            }
             if (upperAction.equals("ROLE_CREATE_PROMPT")) {
                 startRoleCreatePrompt(player);
                 return;
@@ -2017,6 +2114,43 @@ public final class GuiManager implements Listener {
             sendMessage(player, "component-started", Map.of("component", componentDisplay, "pattern", optionDisplay));
         } else {
             sendMessage(player, "component-failed", Map.of("component", componentDisplay, "pattern", optionDisplay));
+        }
+    }
+
+    private void showPlotInfo(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        final Map<String, String> placeholders = createPlaceholders(player);
+        final boolean english = languageManager.getPlayerLanguage(player).toLowerCase(Locale.ROOT).startsWith("en");
+        player.closeInventory();
+        final List<String> lines = english
+                ? List.of(
+                "&8&m----------------",
+                "&aPlot Info",
+                "&7Plot: &f{plot_world} {plot_id}",
+                "&7Owner: &f{plot_owner}",
+                "&7Role here: &f{plot_role}",
+                "&7Members: &f{plot_members} &8| &7Trusted: &f{plot_trusted} &8| &7Denied: &f{plot_denied}",
+                "&7Plots: &f{plot_count}&7/&f{plot_max} &8| &7PlotSquared max: &f{plotsquared_plot_max}",
+                "&7Status: &f{plot_status_display} &8| &7Visits: &f{plot_visits} &8| &7Likes: &f{plot_likes}",
+                "&7Jobs: &f{jobs} &8| &7Money: &f{cmi_money} &8| &7Quests: &f{quests_completed}&7/&f{quests_total}",
+                "&8&m----------------")
+                : List.of(
+                "&8&m----------------",
+                "&aPlot-Info",
+                "&7Plot: &f{plot_world} {plot_id}",
+                "&7Besitzer: &f{plot_owner}",
+                "&7Rolle hier: &f{plot_role}",
+                "&7Mitglieder: &f{plot_members} &8| &7Vertraute: &f{plot_trusted} &8| &7Gesperrte: &f{plot_denied}",
+                "&7Plots: &f{plot_count}&7/&f{plot_max} &8| &7PlotSquared-Max: &f{plotsquared_plot_max}",
+                "&7Status: &f{plot_status_display} &8| &7Besuche: &f{plot_visits} &8| &7Favoriten: &f{plot_likes}",
+                "&7Jobs: &f{jobs} &8| &7Geld: &f{cmi_money} &8| &7Quests: &f{quests_completed}&7/&f{quests_total}",
+                "&8&m----------------");
+        for (final String line : lines) {
+            player.sendMessage(TextUtil.component(placeholderService.apply(player, line, placeholders)));
         }
     }
 
@@ -2596,7 +2730,7 @@ public final class GuiManager implements Listener {
             scheduleOpen(player, "members", 0);
             return;
         }
-        if (!event.isShiftClick() || !event.isRightClick()) {
+        if (event != null && (!event.isShiftClick() || !event.isRightClick())) {
             sendMessage(player, "member-remove-shift-right", Map.of("player", memberName(memberId)));
             return;
         }
@@ -2630,10 +2764,6 @@ public final class GuiManager implements Listener {
     }
 
     private void removeTemporaryTrust(final Player player, final InventoryClickEvent event, final String uuidText) {
-        if (!event.isShiftClick() || !event.isRightClick()) {
-            sendMessage(player, "temptrust-remove-shift-right", Map.of("player", uuidText));
-            return;
-        }
         final Plot plot = plotService.getCurrentPlot(player);
         if (plot == null) {
             sendMessage(player, "no-plot", Map.of());
@@ -2658,6 +2788,45 @@ public final class GuiManager implements Listener {
                 .map(PlotUtilityService.TemporaryTrustEntry::playerName)
                 .findFirst()
                 .orElse(memberName(targetId));
+        if (event == null) {
+            confirmBedrockTemporaryTrustRemoval(player, targetId, targetName);
+            return;
+        }
+        if (!event.isShiftClick() || !event.isRightClick()) {
+            sendMessage(player, "temptrust-remove-shift-right", Map.of("player", targetName));
+            return;
+        }
+        removeTemporaryTrustConfirmed(player, plot, targetId, targetName);
+    }
+
+    private void confirmBedrockTemporaryTrustRemoval(final Player player, final UUID targetId, final String targetName) {
+        final boolean english = languageManager.getPlayerLanguage(player).toLowerCase(Locale.ROOT).startsWith("en");
+        final boolean opened = bedrockService.sendSimpleForm(
+                player,
+                english ? "Remove temporary trust?" : "Temporären Trust entfernen?",
+                english
+                        ? "Remove temporary trust for " + targetName + "?"
+                        : "Temporären Trust für " + targetName + " entfernen?",
+                english ? List.of("Cancel", "Remove") : List.of("Abbrechen", "Entfernen"),
+                index -> {
+                    if (index != 1) {
+                        scheduleOpen(player, "temporary-trusts", 0);
+                        return;
+                    }
+                    final Plot currentPlot = plotService.getCurrentPlot(player);
+                    if (currentPlot == null) {
+                        sendMessage(player, "no-plot", Map.of());
+                        return;
+                    }
+                    removeTemporaryTrustConfirmed(player, currentPlot, targetId, targetName);
+                }
+        );
+        if (!opened) {
+            sendMessage(player, "temptrust-remove-shift-right", Map.of("player", targetName));
+        }
+    }
+
+    private void removeTemporaryTrustConfirmed(final Player player, final Plot plot, final UUID targetId, final String targetName) {
         if (plotUtilityService.removeTemporaryTrust(player, plot, targetId)) {
             auditLogService.log(player, plot, "Temporärer Trust entfernt", targetName);
             sendMessage(player, "temptrust-removed", Map.of("player", targetName));
@@ -2751,7 +2920,7 @@ public final class GuiManager implements Listener {
     }
 
     private void handlePlotWarpClick(final Player player, final InventoryClickEvent event, final String warpId) {
-        if (event.isShiftClick() && event.isRightClick()) {
+        if (event != null && event.isShiftClick() && event.isRightClick()) {
             deletePlotWarp(player, warpId);
             return;
         }
@@ -3553,6 +3722,10 @@ public final class GuiManager implements Listener {
         return true;
     }
 
+    private String stripLegacy(final String text) {
+        return ChatColor.stripColor(TextUtil.legacy(text == null ? "" : text)).trim();
+    }
+
     private String humanizeValue(final String group, final String value) {
         final String translation = languageManager.getRawMessage(languageManager.getDefaultLanguage(), "value-" + group + "-" + value);
         if (!translation.equals("value-" + group + "-" + value)) {
@@ -3697,6 +3870,9 @@ public final class GuiManager implements Listener {
     }
 
     private record PerformanceGuiEntry(String type, String name, String value) {
+    }
+
+    private record BedrockButton(String label, List<String> actions) {
     }
 
     private record ChatInput(ChatInputType type, String roleId) {

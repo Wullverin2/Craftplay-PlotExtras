@@ -312,6 +312,9 @@ public final class FeatureToggleService {
         if (normalized.startsWith("player_cleanup:")) {
             return "player.cleanup";
         }
+        if (normalized.equals("show_plot_info")) {
+            return "player.dashboard";
+        }
         if (normalized.equals("show_selfcheck")) {
             return "player.assistant";
         }

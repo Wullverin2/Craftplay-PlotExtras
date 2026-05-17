@@ -68,9 +68,10 @@ items:
     material: PAPER
     name: "&aPlot Info"
     lore:
-      - "&7Führt /plot info aus."
-    commands:
-      - "player:plot info"
+      - "&7Zeigt die eigene"
+      - "&7Plot-Info im Chat."
+    actions:
+      - "SHOW_PLOT_INFO"
   back:
     slot: 45
     material: ARROW

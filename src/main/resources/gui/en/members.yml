@@ -19,14 +19,15 @@ items:
       - "&7Requires: members.invite"
     actions:
       - "INVITE_MEMBER_PROMPT"
-  plot-members-command:
+  member-overview:
     slot: 13
     material: NAME_TAG
-    name: "&aPlotSquared Members"
+    name: "&aMember Overview"
     lore:
-      - "&7Runs /plot members."
-    commands:
-      - "player:plot members"
+      - "&7Owner: &f{plot_owner}"
+      - "&7Members: &f{plot_members}"
+      - "&7Trusted: &f{plot_trusted}"
+      - "&7Denied: &f{plot_denied}"
   roles:
     slot: 15
     material: BOOK

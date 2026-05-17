@@ -17,6 +17,9 @@ features:
       bedrock:
         # Wenn Floodgate erkannt wird, werden fuer Bedrock-Spieler passende GUI-Dateien wie gui/de-bedrock/main.yml bevorzugt.
         enabled: true
+        forms:
+          # Wenn Floodgate/Cumulus-Forms verfuegbar sind, bekommen Bedrock-Spieler native Formular-Menues statt Inventar-GUIs.
+          enabled: true
       skull-owner-lookups:
         # Spieler-Köpfe in GUIs über Mojang-Profile auflösen. Standardmäßig aus, um Rate-Limits zu vermeiden.
         enabled: false

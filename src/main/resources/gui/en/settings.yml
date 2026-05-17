@@ -60,8 +60,11 @@ items:
     slot: 33
     material: PAPER
     name: "&aPlot Info"
-    commands:
-      - "player:plot info"
+    lore:
+      - "&7Shows the plot info"
+      - "&7in chat."
+    actions:
+      - "SHOW_PLOT_INFO"
   back:
     slot: 45
     material: ARROW
