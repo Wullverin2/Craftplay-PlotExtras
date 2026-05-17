@@ -103,6 +103,15 @@ permissions:
   craftplayplotextras.requests.manage:
     description: Allows managing player plot requests.
     default: op
+  craftplayplotextras.guestbook.manage:
+    description: Allows deleting guestbook entries on plots.
+    default: op
+  craftplayplotextras.visit.bypass:
+    description: Bypasses plot profile visit-mode restrictions.
+    default: op
+  craftplayplotextras.features.manage:
+    description: Allows toggling CraftplayPlotExtras feature switches through the GUI.
+    default: op
   craftplayplotextras.statistics:
     description: Allows viewing PlotExtras statistics.
     default: op

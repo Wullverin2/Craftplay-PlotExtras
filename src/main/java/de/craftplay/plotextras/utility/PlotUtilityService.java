@@ -1,6 +1,9 @@
 package de.craftplay.plotextras.utility;
 
+import com.plotsquared.core.PlotSquared;
 import com.plotsquared.core.plot.Plot;
+import com.plotsquared.core.plot.PlotArea;
+import com.plotsquared.core.plot.PlotId;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import de.craftplay.plotextras.feature.FeatureToggleService;
@@ -23,6 +26,7 @@ import org.bukkit.util.BoundingBox;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -81,6 +85,7 @@ public final class PlotUtilityService {
         placeholders.put("plot_category", data.getString(path + ".category", "-"));
         placeholders.put("plot_tags", String.join(", ", data.getStringList(path + ".tags")));
         placeholders.put("plot_access_mode", data.getString(path + ".access-mode", "normal"));
+        placeholders.put("plot_locked_message", data.getString(path + ".locked-message", "-"));
         placeholders.put("plot_guestbook_entries", String.valueOf(guestbook(basePlot, Integer.MAX_VALUE).size()));
         placeholders.put("plot_open_requests", String.valueOf(listOpenRequests().stream()
                 .filter(entry -> entry.plotKey().equals(plotKey(basePlot)))
@@ -156,6 +161,47 @@ public final class PlotUtilityService {
         data.set(path + ".locked-message", blank(message, "-"));
         save();
         return true;
+    }
+
+    public String accessMode(final Plot plot) {
+        final Plot basePlot = base(plot);
+        if (basePlot == null) {
+            return "normal";
+        }
+        return data.getString(profilePath(basePlot) + ".access-mode", "normal").toLowerCase(Locale.ROOT);
+    }
+
+    public String lockedMessage(final Plot plot) {
+        final Plot basePlot = base(plot);
+        if (basePlot == null) {
+            return "Dieses Plot ist aktuell nicht öffentlich.";
+        }
+        return data.getString(profilePath(basePlot) + ".locked-message", "Dieses Plot ist aktuell nicht öffentlich.");
+    }
+
+    public boolean canVisit(final Player player, final Plot plot) {
+        final Plot basePlot = base(plot);
+        if (player == null || basePlot == null || !featureToggleService.isEnabled("player.visit-mode")) {
+            return true;
+        }
+        if (player.hasPermission("craftplayplotextras.visit.bypass") || player.hasPermission("craftplayplotextras.admin")) {
+            return true;
+        }
+
+        final UUID playerId = player.getUniqueId();
+        if (basePlot.isOwner(playerId)) {
+            return true;
+        }
+        if (basePlot.getDenied().contains(playerId)) {
+            return false;
+        }
+
+        final boolean trusted = basePlot.getTrusted().contains(playerId) || basePlot.getMembers().contains(playerId);
+        return switch (accessMode(basePlot)) {
+            case "private", "members", "friends" -> trusted;
+            case "locked" -> false;
+            default -> true;
+        };
     }
 
     public boolean toggleFavorite(final Player player, final Plot plot) {
@@ -243,6 +289,27 @@ public final class PlotUtilityService {
                 .toList();
     }
 
+    public boolean canManageGuestbook(final Player player, final Plot plot) {
+        return player != null && base(plot) != null
+                && (plotService.canManageRoles(player, plot)
+                || player.hasPermission("craftplayplotextras.guestbook.manage")
+                || player.hasPermission("craftplayplotextras.admin"));
+    }
+
+    public boolean deleteGuestbookEntry(final Player player, final Plot plot, final String id) {
+        final Plot basePlot = base(plot);
+        if (basePlot == null || id == null || id.isBlank() || !canManageGuestbook(player, basePlot)) {
+            return false;
+        }
+        final String path = "guestbook." + sanitize(plotKey(basePlot)) + "." + id;
+        if (!data.contains(path)) {
+            return false;
+        }
+        data.set(path, null);
+        save();
+        return true;
+    }
+
     public UtilityRequestEntry createRequest(final Player player, final Plot plot, final String type, final String note) {
         final Plot basePlot = base(plot);
         if (player == null || basePlot == null || !featureToggleService.isEnabled("player.requests")) {
@@ -323,6 +390,10 @@ public final class PlotUtilityService {
         return entries;
     }
 
+    public UtilityRequestEntry request(final String id) {
+        return getRequest(id);
+    }
+
     public boolean closeRequest(final Player actor, final String id, final String response) {
         if (!canHandleRequests(actor)) {
             return false;
@@ -366,6 +437,135 @@ public final class PlotUtilityService {
         return closeRequest(actor, id, "Trust-Anfrage angenommen.");
     }
 
+    public TemporaryTrustEntry createTemporaryTrust(
+            final Player actor,
+            final Plot plot,
+            final OfflinePlayer target,
+            final Duration duration
+    ) {
+        final Plot basePlot = base(plot);
+        if (actor == null || basePlot == null || target == null || duration == null
+                || duration.isZero() || duration.isNegative()
+                || !featureToggleService.isEnabled("player.temporary-trusts")
+                || !plotService.canInviteMembers(actor, basePlot)) {
+            return null;
+        }
+        if (basePlot.isOwner(target.getUniqueId())) {
+            return null;
+        }
+
+        final boolean wasTrusted = basePlot.getTrusted().contains(target.getUniqueId());
+        for (final Plot connectedPlot : basePlot.getConnectedPlots()) {
+            connectedPlot.removeDenied(target.getUniqueId());
+            connectedPlot.addTrusted(target.getUniqueId());
+        }
+
+        final Instant now = Instant.now();
+        final Instant expiresAt = now.plus(duration);
+        final TemporaryTrustEntry entry = new TemporaryTrustEntry(
+                target.getUniqueId(),
+                target.getName() == null ? target.getUniqueId().toString() : target.getName(),
+                plotKey(basePlot),
+                actor.getName(),
+                now,
+                expiresAt
+        );
+        final String path = "temporary-trusts." + sanitize(entry.plotKey()) + "." + entry.playerUuid();
+        data.set(path + ".player-name", entry.playerName());
+        data.set(path + ".plot-key", entry.plotKey());
+        data.set(path + ".created-by", entry.createdBy());
+        data.set(path + ".created-at", entry.createdAt().toString());
+        data.set(path + ".expires-at", entry.expiresAt().toString());
+        data.set(path + ".was-trusted", wasTrusted);
+        save();
+        return entry;
+    }
+
+    public boolean removeTemporaryTrust(final Player actor, final Plot plot, final UUID targetId) {
+        final Plot basePlot = base(plot);
+        if (actor == null || basePlot == null || targetId == null
+                || !featureToggleService.isEnabled("player.temporary-trusts")
+                || !plotService.canUntrustMembers(actor, basePlot)) {
+            return false;
+        }
+        return removeTemporaryTrust(basePlot, targetId);
+    }
+
+    public List<TemporaryTrustEntry> temporaryTrusts(final Plot plot) {
+        final Plot basePlot = base(plot);
+        if (basePlot == null) {
+            return List.of();
+        }
+        final ConfigurationSection section = data.getConfigurationSection("temporary-trusts." + sanitize(plotKey(basePlot)));
+        if (section == null) {
+            return List.of();
+        }
+        final List<TemporaryTrustEntry> entries = new ArrayList<>();
+        for (final String uuidText : section.getKeys(false)) {
+            final ConfigurationSection entrySection = section.getConfigurationSection(uuidText);
+            if (entrySection == null) {
+                continue;
+            }
+            try {
+                entries.add(new TemporaryTrustEntry(
+                        UUID.fromString(uuidText),
+                        entrySection.getString("player-name", uuidText),
+                        entrySection.getString("plot-key", plotKey(basePlot)),
+                        entrySection.getString("created-by", "-"),
+                        Instant.parse(entrySection.getString("created-at", Instant.EPOCH.toString())),
+                        Instant.parse(entrySection.getString("expires-at", Instant.EPOCH.toString()))
+                ));
+            } catch (final RuntimeException exception) {
+                plugin.getLogger().warning("Ungueltiger temporaerer Trust ignoriert: " + uuidText);
+            }
+        }
+        return entries.stream()
+                .sorted(Comparator.comparing(TemporaryTrustEntry::expiresAt))
+                .toList();
+    }
+
+    public int revokeExpiredTemporaryTrusts() {
+        final ConfigurationSection plots = data.getConfigurationSection("temporary-trusts");
+        if (plots == null) {
+            return 0;
+        }
+        int removed = 0;
+        final Instant now = Instant.now();
+        for (final String sanitizedPlotKey : new ArrayList<>(plots.getKeys(false))) {
+            final ConfigurationSection entries = plots.getConfigurationSection(sanitizedPlotKey);
+            if (entries == null) {
+                continue;
+            }
+            for (final String uuidText : new ArrayList<>(entries.getKeys(false))) {
+                final ConfigurationSection entry = entries.getConfigurationSection(uuidText);
+                if (entry == null) {
+                    continue;
+                }
+                try {
+                    final Instant expiresAt = Instant.parse(entry.getString("expires-at", Instant.EPOCH.toString()));
+                    if (expiresAt.isAfter(now)) {
+                        continue;
+                    }
+                    final Plot plot = getPlotByKey(entry.getString("plot-key", ""));
+                    if (plot != null) {
+                        removeTemporaryTrust(plot, UUID.fromString(uuidText));
+                        removed++;
+                    } else {
+                        data.set("temporary-trusts." + sanitizedPlotKey + "." + uuidText, null);
+                        removed++;
+                    }
+                } catch (final RuntimeException exception) {
+                    data.set("temporary-trusts." + sanitizedPlotKey + "." + uuidText, null);
+                    removed++;
+                }
+            }
+        }
+        if (removed > 0) {
+            save();
+        }
+        return removed;
+    }
+
     public boolean canHandleRequests(final Player player) {
         return featureToggleService.isEnabled("team.requests")
                 && (player.hasPermission("craftplayplotextras.requests.manage") || player.hasPermission("craftplayplotextras.admin"));
@@ -407,6 +607,39 @@ public final class PlotUtilityService {
                         .thenComparing(PlotProfileEntry::ownerName, String.CASE_INSENSITIVE_ORDER))
                 .limit(25)
                 .toList();
+    }
+
+    public Plot getPlotByKey(final String key) {
+        if (key == null || !key.contains(":")) {
+            return null;
+        }
+        final String[] parts = key.split(":", 2);
+        final PlotId plotId = PlotId.fromStringOrNull(parts[1].replace('-', ';'));
+        if (plotId == null) {
+            return null;
+        }
+        final PlotArea area = PlotSquared.get().getPlotAreaManager().getPlotArea(parts[0], null);
+        return area == null ? null : area.getPlot(plotId);
+    }
+
+    public boolean teleportToPlot(final Player player, final String key) {
+        final Plot plot = getPlotByKey(key);
+        if (player == null || plot == null) {
+            return false;
+        }
+        final com.plotsquared.core.location.Location home = plot.getHomeSynchronous();
+        final World world = Bukkit.getWorld(home.getWorldName());
+        if (world == null) {
+            return false;
+        }
+        return player.teleport(new org.bukkit.Location(
+                world,
+                home.getX() + 0.5D,
+                home.getY(),
+                home.getZ() + 0.5D,
+                home.getYaw(),
+                home.getPitch()
+        ));
     }
 
     public int cleanupOwnedPlot(final Player player, final Plot plot, final String rawMode) {
@@ -564,6 +797,19 @@ public final class PlotUtilityService {
                 .filter(entry -> entry.id().equalsIgnoreCase(id))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private boolean removeTemporaryTrust(final Plot plot, final UUID targetId) {
+        final String path = "temporary-trusts." + sanitize(plotKey(plot)) + "." + targetId;
+        final boolean wasTrusted = data.getBoolean(path + ".was-trusted", false);
+        if (!wasTrusted) {
+            for (final Plot connectedPlot : plot.getConnectedPlots()) {
+                connectedPlot.removeTrusted(targetId);
+            }
+        }
+        data.set(path, null);
+        save();
+        return true;
     }
 
     private void saveRequest(final UtilityRequestEntry entry) {
@@ -756,6 +1002,16 @@ public final class PlotUtilityService {
             String note,
             String completedBy,
             Instant completedAt
+    ) {
+    }
+
+    public record TemporaryTrustEntry(
+            UUID playerUuid,
+            String playerName,
+            String plotKey,
+            String createdBy,
+            Instant createdAt,
+            Instant expiresAt
     ) {
     }
 }

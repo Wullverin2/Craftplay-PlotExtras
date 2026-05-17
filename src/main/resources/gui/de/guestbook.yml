@@ -1,0 +1,53 @@
+# Gästebuch des aktuellen Plots.
+title: "&8Gästebuch"
+size: 54
+
+fill:
+  enabled: true
+  material: LIME_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  write:
+    slot: 4
+    material: WRITABLE_BOOK
+    name: "&aEintrag schreiben"
+    lore:
+      - "&7Die Nachricht wird nur"
+      - "&7von dir im Chat eingegeben."
+    actions:
+      - "GUESTBOOK_SIGN_PROMPT"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:plot-tools"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: guestbook
+  slots: [10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29,30,31,32,33,34]
+  entry-item:
+    material: PAPER
+    name: "&a{guestbook_player}"
+    lore:
+      - "&7Datum: &f{guestbook_created}"
+      - "&f{guestbook_message}"
+      - "&8Plotbesitzer/Team: Klick löscht."
+    actions:
+      - "DELETE_GUESTBOOK_ENTRY:{guestbook_id}"
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&eSeite {page}/{pages}"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eSeite {page}/{pages}"

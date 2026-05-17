@@ -1,0 +1,54 @@
+# Teamansicht für offene Plot-Anfragen.
+title: "&8Plot-Anfragen"
+size: 54
+
+fill:
+  enabled: true
+  material: CYAN_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: PAPER
+    name: "&bOffene Anfragen"
+    lore:
+      - "&7Klick auf eine Anfrage"
+      - "&7schließt sie als erledigt."
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:team-tools"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: plot-requests
+  scope: open
+  slots: [10,11,12,13,14,15,16,19,20,21,22,23,24,25,28,29,30,31,32,33,34]
+  request-item:
+    material: PAPER
+    name: "&e{request_id}"
+    lore:
+      - "&7Spieler: &f{request_player}"
+      - "&7Typ: &f{request_type}"
+      - "&7Plot: &f{request_plot_key}"
+      - "&8{request_note}"
+      - "&cKlicken zum Schließen."
+    actions:
+      - "CLOSE_REQUEST:{request_id}"
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&eSeite {page}/{pages}"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eSeite {page}/{pages}"

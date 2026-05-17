@@ -17,13 +17,13 @@ items:
     material: PAPER
     name: "&bAnfragen"
     actions:
-      - "PLAYER_COMMAND:pe requests list"
+      - "OPEN:team-requests"
   reports:
     slots: [13, 14]
     material: BELL
     name: "&cMeldungen"
     actions:
-      - "PLAYER_COMMAND:pe reports list"
+      - "OPEN:reports"
   moderation:
     slots: [16, 17]
     material: PACKED_ICE
@@ -53,13 +53,19 @@ items:
     material: LECTERN
     name: "&bStatistik"
     actions:
-      - "PLAYER_COMMAND:pe stats"
+      - "OPEN:statistics"
   validate:
     slot: 41
     material: KNOWLEDGE_BOOK
     name: "&bConfig"
     actions:
-      - "PLAYER_COMMAND:pe validate"
+      - "OPEN:config-issues"
+  features:
+    slot: 43
+    material: COMPARATOR
+    name: "&dFeatures"
+    actions:
+      - "OPEN:feature-toggles"
   back:
     slot: 45
     material: ARROW

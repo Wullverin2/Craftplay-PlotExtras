@@ -21,9 +21,12 @@ import de.craftplay.plotextras.plot.PlotRoleService;
 import de.craftplay.plotextras.plot.PlotService;
 import de.craftplay.plotextras.plotmeta.PlotMetaService;
 import de.craftplay.plotextras.redstone.RedstoneLagProtectionService;
+import de.craftplay.plotextras.report.PlotReportEntry;
+import de.craftplay.plotextras.report.PlotReportService;
 import de.craftplay.plotextras.util.SlotParser;
 import de.craftplay.plotextras.util.TextUtil;
 import de.craftplay.plotextras.utility.PlotUtilityService;
+import de.craftplay.plotextras.validation.ConfigValidationService;
 import de.craftplay.plotextras.warp.PlotWarpEntry;
 import de.craftplay.plotextras.warp.PlotWarpService;
 import org.bukkit.Bukkit;
@@ -79,6 +82,8 @@ public final class GuiManager implements Listener {
     private final PlotMetaService plotMetaService;
     private final PlotWarpService plotWarpService;
     private final PlotUtilityService plotUtilityService;
+    private final PlotReportService plotReportService;
+    private final ConfigValidationService configValidationService;
     private final FeatureToggleService featureToggleService;
     @SuppressWarnings("unused")
     private final PlayerDataManager playerDataManager;
@@ -88,6 +93,7 @@ public final class GuiManager implements Listener {
     private final Map<UUID, UUID> selectedMembers = new ConcurrentHashMap<>();
     private final Map<UUID, String> selectedBackups = new ConcurrentHashMap<>();
     private final Map<UUID, UUID> backupViewOwners = new ConcurrentHashMap<>();
+    private final Map<UUID, List<PlotUtilityService.PlotProfileEntry>> searchResults = new ConcurrentHashMap<>();
     private final Map<UUID, ChatInput> pendingChatInputs = new ConcurrentHashMap<>();
 
     public GuiManager(
@@ -104,6 +110,8 @@ public final class GuiManager implements Listener {
             final PlotMetaService plotMetaService,
             final PlotWarpService plotWarpService,
             final PlotUtilityService plotUtilityService,
+            final PlotReportService plotReportService,
+            final ConfigValidationService configValidationService,
             final FeatureToggleService featureToggleService,
             final PlayerDataManager playerDataManager
     ) {
@@ -120,6 +128,8 @@ public final class GuiManager implements Listener {
         this.plotMetaService = plotMetaService;
         this.plotWarpService = plotWarpService;
         this.plotUtilityService = plotUtilityService;
+        this.plotReportService = plotReportService;
+        this.configValidationService = configValidationService;
         this.featureToggleService = featureToggleService;
         this.playerDataManager = playerDataManager;
     }
@@ -361,6 +371,14 @@ public final class GuiManager implements Listener {
             case "audit-log" -> renderAuditLog(player, inventory, holder, dynamic, placeholders, page);
             case "redstone-alerts" -> renderRedstoneAlerts(player, inventory, holder, dynamic, placeholders, page);
             case "plot-warps" -> renderPlotWarps(player, inventory, holder, dynamic, placeholders, page);
+            case "plot-search" -> renderPlotSearch(player, inventory, holder, dynamic, placeholders, page);
+            case "guestbook" -> renderGuestbook(player, inventory, holder, dynamic, placeholders, page);
+            case "plot-requests" -> renderPlotRequests(player, inventory, holder, dynamic, placeholders, page);
+            case "plot-reports" -> renderPlotReports(player, inventory, holder, dynamic, placeholders, page);
+            case "build-tasks" -> renderBuildTasks(player, inventory, holder, dynamic, placeholders, page);
+            case "config-issues" -> renderConfigIssues(player, inventory, holder, dynamic, placeholders, page);
+            case "statistics" -> renderStatistics(player, inventory, holder, dynamic, placeholders, page);
+            case "feature-toggles" -> renderFeatureToggles(player, inventory, holder, dynamic, placeholders, page);
             case "languages" -> renderLanguages(player, inventory, holder, dynamic, placeholders, page);
             default -> plugin.getLogger().warning("Unknown dynamic GUI type: " + type);
         }
@@ -710,6 +728,291 @@ public final class GuiManager implements Listener {
             if (item != null && isValidSlot(inventory, slot)) {
                 inventory.setItem(slot, item);
                 holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderPlotSearch(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty()) {
+            return;
+        }
+        final List<PlotUtilityService.PlotProfileEntry> entries = searchResults.getOrDefault(player.getUniqueId(), List.of());
+        final PageSlice<PlotUtilityService.PlotProfileEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("result-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PlotUtilityService.PlotProfileEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("result_plot_key", entry.plotKey());
+            itemPlaceholders.put("result_world", entry.world());
+            itemPlaceholders.put("result_plot", entry.plotId());
+            itemPlaceholders.put("result_owner", entry.ownerName());
+            itemPlaceholders.put("result_description", entry.description());
+            itemPlaceholders.put("result_category", entry.category());
+            itemPlaceholders.put("result_tags", String.join(", ", entry.tags()));
+            itemPlaceholders.put("result_access_mode", entry.accessMode());
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                final List<String> actions = readActions(template).isEmpty()
+                        ? List.of("TELEPORT_PLOT_KEY:" + entry.plotKey())
+                        : resolveActions(player, readActions(template), itemPlaceholders);
+                inventory.setItem(slot, item);
+                holder.setActions(slot, actions);
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderGuestbook(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (slots.isEmpty() || plot == null) {
+            return;
+        }
+        final List<PlotUtilityService.GuestbookEntry> entries = plotUtilityService.guestbook(plot, Integer.MAX_VALUE);
+        final PageSlice<PlotUtilityService.GuestbookEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("entry-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PlotUtilityService.GuestbookEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("guestbook_id", entry.id());
+            itemPlaceholders.put("guestbook_created", BACKUP_TIME_FORMAT.format(entry.createdAt()));
+            itemPlaceholders.put("guestbook_player", entry.playerName());
+            itemPlaceholders.put("guestbook_message", entry.message());
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderPlotRequests(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty()) {
+            return;
+        }
+        final String scope = dynamic.getString("scope", "own").toLowerCase(Locale.ROOT);
+        final List<PlotUtilityService.UtilityRequestEntry> entries = switch (scope) {
+            case "open" -> plotUtilityService.canHandleRequests(player) ? plotUtilityService.listOpenRequests() : List.of();
+            case "all" -> plotUtilityService.canHandleRequests(player) ? plotUtilityService.listRequests() : List.of();
+            default -> plotUtilityService.listOwnRequests(player);
+        };
+        final PageSlice<PlotUtilityService.UtilityRequestEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("request-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PlotUtilityService.UtilityRequestEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("request_id", entry.id());
+            itemPlaceholders.put("request_type", entry.type());
+            itemPlaceholders.put("request_status", entry.status());
+            itemPlaceholders.put("request_created", BACKUP_TIME_FORMAT.format(entry.createdAt()));
+            itemPlaceholders.put("request_player", entry.requesterName());
+            itemPlaceholders.put("request_plot_key", entry.plotKey());
+            itemPlaceholders.put("request_owner", entry.ownerName());
+            itemPlaceholders.put("request_note", entry.note());
+            itemPlaceholders.put("request_response", entry.response());
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderPlotReports(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty() || !plotReportService.canView(player)) {
+            return;
+        }
+        final boolean all = dynamic.getBoolean("show-closed", false);
+        final List<PlotReportEntry> entries = all ? plotReportService.listAll() : plotReportService.listOpen();
+        final PageSlice<PlotReportEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("report-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PlotReportEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("report_id", entry.id());
+            itemPlaceholders.put("report_created", BACKUP_TIME_FORMAT.format(entry.createdAt()));
+            itemPlaceholders.put("report_player", entry.reporterName());
+            itemPlaceholders.put("report_plot_key", entry.plotKey());
+            itemPlaceholders.put("report_owner", entry.ownerName());
+            itemPlaceholders.put("report_reason", entry.reason());
+            itemPlaceholders.put("report_status", entry.status());
+            itemPlaceholders.put("report_note", entry.note());
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderBuildTasks(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty() || !plotUtilityService.canManageBuildTasks(player)) {
+            return;
+        }
+        final List<PlotUtilityService.BuildTaskEntry> entries = plotUtilityService.listBuildTasks(dynamic.getBoolean("show-closed", false));
+        final PageSlice<PlotUtilityService.BuildTaskEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("task-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PlotUtilityService.BuildTaskEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("task_id", entry.id());
+            itemPlaceholders.put("task_status", entry.status());
+            itemPlaceholders.put("task_created", BACKUP_TIME_FORMAT.format(entry.createdAt()));
+            itemPlaceholders.put("task_created_by", entry.createdBy());
+            itemPlaceholders.put("task_plot_key", entry.plotKey());
+            itemPlaceholders.put("task_title", entry.title());
+            itemPlaceholders.put("task_note", entry.note());
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderConfigIssues(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty() || !configValidationService.canValidate(player)) {
+            return;
+        }
+        final List<String> entries = configValidationService.validate();
+        final PageSlice<String> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("issue-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final String issue = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("issue", issue);
+            itemPlaceholders.put("issue_number", String.valueOf(index + 1 + slice.page() * slots.size()));
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, List.of());
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderStatistics(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty() || (!player.hasPermission("craftplayplotextras.statistics") && !player.hasPermission("craftplayplotextras.admin"))) {
+            return;
+        }
+        final List<Map.Entry<String, Integer>> entries = new ArrayList<>(plotUtilityService.statistics().entrySet());
+        entries.add(Map.entry("openReports", plotReportService.listOpen().size()));
+        entries.add(Map.entry("allBackups", plotBackupService.listAllBackups().size()));
+        final PageSlice<Map.Entry<String, Integer>> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("stat-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final Map.Entry<String, Integer> entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("stat_key", entry.getKey());
+            itemPlaceholders.put("stat_display", humanizeValue("stat", entry.getKey()));
+            itemPlaceholders.put("stat_value", String.valueOf(entry.getValue()));
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, List.of());
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderFeatureToggles(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty() || (!player.hasPermission("craftplayplotextras.features.manage") && !player.hasPermission("craftplayplotextras.admin"))) {
+            return;
+        }
+        final List<Map.Entry<String, Boolean>> entries = new ArrayList<>(featureToggleService.allFeatureToggles().entrySet());
+        final PageSlice<Map.Entry<String, Boolean>> slice = slice(entries, slots.size(), page);
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final Map.Entry<String, Boolean> entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("feature", entry.getKey());
+            itemPlaceholders.put("feature_state", languageManager.getRawMessage(player, entry.getValue() ? "state-enabled" : "state-disabled"));
+            itemPlaceholders.put("feature_state_color", entry.getValue() ? "&a" : "&c");
+            final ConfigurationSection template = dynamic.getConfigurationSection(entry.getValue() ? "enabled-item" : "disabled-item");
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, List.of("TOGGLE_FEATURE:" + entry.getKey()));
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
@@ -1178,6 +1481,46 @@ public final class GuiManager implements Listener {
                 deletePlotWarp(player, action.substring("DELETE_PLOT_WARP:".length()));
                 return;
             }
+            if (upperAction.equals("SEARCH_PLOTS_PROMPT")) {
+                startSearchPrompt(player);
+                return;
+            }
+            if (upperAction.startsWith("TELEPORT_PLOT_KEY:")) {
+                teleportPlotKey(player, action.substring("TELEPORT_PLOT_KEY:".length()));
+                return;
+            }
+            if (upperAction.equals("GUESTBOOK_SIGN_PROMPT")) {
+                startGuestbookPrompt(player);
+                return;
+            }
+            if (upperAction.startsWith("DELETE_GUESTBOOK_ENTRY:")) {
+                deleteGuestbookEntry(player, action.substring("DELETE_GUESTBOOK_ENTRY:".length()));
+                return;
+            }
+            if (upperAction.startsWith("REQUEST_PROMPT:")) {
+                startRequestPrompt(player, action.substring("REQUEST_PROMPT:".length()));
+                return;
+            }
+            if (upperAction.startsWith("CLOSE_REQUEST:")) {
+                closeRequest(player, action.substring("CLOSE_REQUEST:".length()));
+                return;
+            }
+            if (upperAction.startsWith("ACCEPT_TRUST_REQUEST:")) {
+                acceptTrustRequest(player, action.substring("ACCEPT_TRUST_REQUEST:".length()));
+                return;
+            }
+            if (upperAction.startsWith("CLOSE_REPORT:")) {
+                closeReport(player, action.substring("CLOSE_REPORT:".length()));
+                return;
+            }
+            if (upperAction.startsWith("COMPLETE_BUILD_TASK:")) {
+                completeBuildTask(player, action.substring("COMPLETE_BUILD_TASK:".length()));
+                return;
+            }
+            if (upperAction.startsWith("TOGGLE_FEATURE:")) {
+                toggleFeature(player, action.substring("TOGGLE_FEATURE:".length()));
+                return;
+            }
             if (upperAction.startsWith("COMMAND:")) {
                 runCommand(player, action.substring("COMMAND:".length()));
                 continue;
@@ -1466,6 +1809,34 @@ public final class GuiManager implements Listener {
         sendMessage(player, "warp-set-input", Map.of());
     }
 
+    private void startSearchPrompt(final Player player) {
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.SEARCH_PLOTS, ""));
+        player.closeInventory();
+        sendMessage(player, "search-input", Map.of());
+    }
+
+    private void startGuestbookPrompt(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.GUESTBOOK_SIGN, ""));
+        player.closeInventory();
+        sendMessage(player, "guestbook-input", Map.of());
+    }
+
+    private void startRequestPrompt(final Player player, final String type) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.CREATE_REQUEST, type));
+        player.closeInventory();
+        sendMessage(player, "request-input", Map.of("type", type));
+    }
+
     private void handleChatInput(final Player player, final ChatInput input, final String message) {
         if (message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("abbrechen")) {
             if (input.type() == ChatInputType.INVITE_MEMBER) {
@@ -1480,6 +1851,15 @@ public final class GuiManager implements Listener {
             } else if (input.type() == ChatInputType.SET_WARP) {
                 sendMessage(player, "warp-input-cancelled", Map.of());
                 scheduleOpen(player, "plot-warps", 0);
+            } else if (input.type() == ChatInputType.SEARCH_PLOTS) {
+                sendMessage(player, "search-cancelled", Map.of());
+                scheduleOpen(player, "plot-search", 0);
+            } else if (input.type() == ChatInputType.GUESTBOOK_SIGN) {
+                sendMessage(player, "guestbook-cancelled", Map.of());
+                scheduleOpen(player, "guestbook", 0);
+            } else if (input.type() == ChatInputType.CREATE_REQUEST) {
+                sendMessage(player, "request-cancelled", Map.of());
+                scheduleOpen(player, "requests", 0);
             } else {
                 sendMessage(player, "role-input-cancelled", Map.of());
                 scheduleOpen(player, "roles", 0);
@@ -1504,6 +1884,21 @@ public final class GuiManager implements Listener {
 
         if (input.type() == ChatInputType.SET_WARP) {
             handleWarpSetInput(player, message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.SEARCH_PLOTS) {
+            handleSearchInput(player, message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.GUESTBOOK_SIGN) {
+            handleGuestbookInput(player, message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.CREATE_REQUEST) {
+            handleRequestInput(player, input.roleId(), message);
             return;
         }
 
@@ -1620,6 +2015,45 @@ public final class GuiManager implements Listener {
             sendMessage(player, "warp-failed", Map.of("warp", message));
         }
         scheduleOpen(player, "plot-warps", 0);
+    }
+
+    private void handleSearchInput(final Player player, final String message) {
+        final List<PlotUtilityService.PlotProfileEntry> results = plotUtilityService.searchProfiles(message);
+        searchResults.put(player.getUniqueId(), results);
+        sendMessage(player, "search-results", Map.of("count", String.valueOf(results.size())));
+        scheduleOpen(player, "plot-search", 0);
+    }
+
+    private void handleGuestbookInput(final Player player, final String message) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        final PlotUtilityService.GuestbookEntry entry = plotUtilityService.signGuestbook(player, plot, message);
+        if (entry == null) {
+            sendMessage(player, "guestbook-failed", Map.of());
+        } else {
+            auditLogService.log(player, plot, "Gästebuch-Eintrag erstellt", entry.id());
+            sendMessage(player, "guestbook-signed", Map.of());
+        }
+        scheduleOpen(player, "guestbook", 0);
+    }
+
+    private void handleRequestInput(final Player player, final String type, final String message) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        final PlotUtilityService.UtilityRequestEntry entry = plotUtilityService.createRequest(player, plot, type, message);
+        if (entry == null) {
+            sendMessage(player, "request-failed", Map.of("type", type));
+        } else {
+            auditLogService.log(player, plot, "Plot-Anfrage erstellt", entry.id());
+            sendMessage(player, "request-created", Map.of("request", entry.id(), "type", entry.type()));
+        }
+        scheduleOpen(player, "requests", 0);
     }
 
     private void selectRole(final Player player, final String rawAction) {
@@ -1923,6 +2357,79 @@ public final class GuiManager implements Listener {
             sendMessage(player, "warp-unknown", Map.of("warp", warpId));
         }
         scheduleOpen(player, "plot-warps", 0);
+    }
+
+    private void teleportPlotKey(final Player player, final String plotKey) {
+        if (plotUtilityService.teleportToPlot(player, plotKey)) {
+            sendMessage(player, "plot-teleported", Map.of("plot", plotKey));
+        } else {
+            sendMessage(player, "plot-teleport-failed", Map.of("plot", plotKey));
+            scheduleOpen(player, "plot-search", 0);
+        }
+    }
+
+    private void deleteGuestbookEntry(final Player player, final String entryId) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (plotUtilityService.deleteGuestbookEntry(player, plot, entryId)) {
+            auditLogService.log(player, plot, "Gästebuch-Eintrag gelöscht", entryId);
+            sendMessage(player, "guestbook-deleted", Map.of("entry", entryId));
+        } else {
+            sendMessage(player, "guestbook-delete-failed", Map.of("entry", entryId));
+        }
+        scheduleOpen(player, "guestbook", 0);
+    }
+
+    private void closeRequest(final Player player, final String requestId) {
+        if (plotUtilityService.closeRequest(player, requestId, "Per GUI geschlossen.")) {
+            sendMessage(player, "request-closed", Map.of("request", requestId));
+        } else {
+            sendMessage(player, "request-close-failed", Map.of("request", requestId));
+        }
+        scheduleOpen(player, "team-requests", 0);
+    }
+
+    private void acceptTrustRequest(final Player player, final String requestId) {
+        if (plotUtilityService.acceptTrustRequest(player, requestId)) {
+            sendMessage(player, "request-trust-accepted", Map.of("request", requestId));
+        } else {
+            sendMessage(player, "request-trust-failed", Map.of("request", requestId));
+        }
+        scheduleOpen(player, "team-requests", 0);
+    }
+
+    private void closeReport(final Player player, final String reportId) {
+        if (plotReportService.close(player, reportId, "Per GUI geschlossen.")) {
+            sendMessage(player, "report-closed", Map.of("report", reportId));
+        } else {
+            sendMessage(player, "report-close-failed", Map.of("report", reportId));
+        }
+        scheduleOpen(player, "reports", 0);
+    }
+
+    private void completeBuildTask(final Player player, final String taskId) {
+        if (plotUtilityService.completeBuildTask(player, taskId)) {
+            sendMessage(player, "build-task-completed", Map.of("task", taskId));
+        } else {
+            sendMessage(player, "build-task-failed", Map.of("task", taskId));
+        }
+        scheduleOpen(player, "build-tasks", 0);
+    }
+
+    private void toggleFeature(final Player player, final String feature) {
+        if (!player.hasPermission("craftplayplotextras.features.manage") && !player.hasPermission("craftplayplotextras.admin")) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final boolean enabled = featureToggleService.toggleFeature(feature);
+        sendMessage(player, "feature-toggle-set", Map.of(
+                "feature", feature,
+                "state", languageManager.getRawMessage(player, enabled ? "state-enabled" : "state-disabled")
+        ));
+        scheduleOpen(player, "feature-toggles", 0);
     }
 
     private boolean canManageRolesHere(final Player player) {
@@ -2293,6 +2800,9 @@ public final class GuiManager implements Listener {
         INVITE_MEMBER,
         PLOT_NOTE,
         TEAM_NOTE,
-        SET_WARP
+        SET_WARP,
+        SEARCH_PLOTS,
+        GUESTBOOK_SIGN,
+        CREATE_REQUEST
     }
 }

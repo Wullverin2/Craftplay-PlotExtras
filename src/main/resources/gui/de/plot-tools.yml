@@ -44,7 +44,7 @@ items:
       - "&7Einträge ansehen oder"
       - "&7per Befehl schreiben."
     actions:
-      - "PLAYER_COMMAND:pe guestbook list"
+      - "OPEN:guestbook"
   search:
     slot: 16
     material: SPYGLASS
@@ -54,7 +54,7 @@ items:
       - "&7Kategorien und Texten."
       - "&8/pe search <Suchwort>"
     actions:
-      - "MESSAGE:&eNutze &f/pe search <Suchwort>&e."
+      - "OPEN:plot-search"
   favorite:
     slot: 28
     material: EMERALD
@@ -72,7 +72,7 @@ items:
       - "&7Zeigt deine offenen und"
       - "&7bearbeiteten Plot-Anfragen."
     actions:
-      - "PLAYER_COMMAND:pe request list"
+      - "OPEN:requests"
   trust-request:
     slot: 32
     material: PLAYER_HEAD

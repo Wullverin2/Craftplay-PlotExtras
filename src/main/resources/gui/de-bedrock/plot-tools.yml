@@ -32,7 +32,7 @@ items:
     material: WRITABLE_BOOK
     name: "&aGaestebuch"
     actions:
-      - "PLAYER_COMMAND:pe guestbook list"
+      - "OPEN:guestbook"
   favorite:
     slots: [28, 29]
     material: EMERALD
@@ -44,7 +44,7 @@ items:
     material: PAPER
     name: "&aAnfragen"
     actions:
-      - "PLAYER_COMMAND:pe request list"
+      - "OPEN:requests"
   cleanup:
     slots: [34, 35]
     material: HOPPER

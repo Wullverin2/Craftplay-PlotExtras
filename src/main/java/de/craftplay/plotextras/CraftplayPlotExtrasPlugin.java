@@ -10,6 +10,7 @@ import com.plotsquared.core.events.PlayerLeavePlotEvent;
 import com.plotsquared.core.events.PlayerPlotLimitEvent;
 import com.plotsquared.core.events.Result;
 import com.plotsquared.core.player.PlotPlayer;
+import com.plotsquared.core.plot.Plot;
 import de.craftplay.plotextras.audit.AuditLogService;
 import de.craftplay.plotextras.backup.PlotBackupService;
 import de.craftplay.plotextras.command.PlotExtrasCommand;
@@ -36,6 +37,7 @@ import de.craftplay.plotextras.utility.PlotUtilityService;
 import de.craftplay.plotextras.validation.ConfigValidationService;
 import de.craftplay.plotextras.warp.PlotWarpService;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -53,6 +55,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
@@ -71,6 +74,7 @@ import java.util.UUID;
 public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Listener {
 
     private final Map<UUID, FlightState> rememberedFlightStates = new HashMap<>();
+    private final Map<UUID, Location> lastAllowedLocations = new HashMap<>();
     private final PlotAPI plotApi = new PlotAPI();
 
     private PlayerDataManager playerDataManager;
@@ -140,7 +144,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotPerformanceService = new PlotPerformanceService(this, featureToggleService);
         competitionService = new CompetitionService(this, featureToggleService);
         configValidationService = new ConfigValidationService(this, featureToggleService);
-        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, bedrockService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, plotUtilityService, featureToggleService, playerDataManager);
+        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, bedrockService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, plotUtilityService, plotReportService, configValidationService, featureToggleService, playerDataManager);
 
         furnitureProtectionManager.registerFlags();
         furnitureProtectionManager.reload();
@@ -149,6 +153,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotMetaService.load();
         plotWarpService.load();
         plotUtilityService.load();
+        plotUtilityService.revokeExpiredTemporaryTrusts();
         playerDataManager.load();
         plotRoleService.load();
         plotBackupService.load();
@@ -174,6 +179,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotApi.registerListener(plotBackupService);
         registerCommands();
         startFlightStateScanner();
+        startTemporaryTrustScanner();
 
         getLogger().info("Flight stays untouched in PlotSquared worlds and is disabled in non-plot worlds.");
         if (cmiAvailable && useCmiCommand) {
@@ -194,6 +200,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
             // PlotSquared may already be shutting down.
         }
         rememberedFlightStates.clear();
+        lastAllowedLocations.clear();
     }
 
     public void reloadPlugin() {
@@ -208,6 +215,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotMetaService.load();
         plotWarpService.load();
         plotUtilityService.load();
+        plotUtilityService.revokeExpiredTemporaryTrusts();
         playerDataManager.load();
         plotRoleService.load();
         plotBackupService.load();
@@ -325,6 +333,29 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
             return;
         }
         rememberedFlightStates.remove(event.getPlayer().getUniqueId());
+        lastAllowedLocations.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerMove(final PlayerMoveEvent event) {
+        if (!isEnabled() || plotUtilityService == null || !feature("player.visit-mode")) {
+            return;
+        }
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX()
+                && event.getFrom().getBlockY() == event.getTo().getBlockY()
+                && event.getFrom().getBlockZ() == event.getTo().getBlockZ()
+                && event.getFrom().getWorld().equals(event.getTo().getWorld())) {
+            return;
+        }
+        final Player player = event.getPlayer();
+        if (!isPlotWorld(player.getWorld())) {
+            lastAllowedLocations.put(player.getUniqueId(), player.getLocation());
+            return;
+        }
+        final Plot currentPlot = plotService.getCurrentPlot(player);
+        if (currentPlot == null || plotUtilityService.canVisit(player, currentPlot)) {
+            lastAllowedLocations.put(player.getUniqueId(), event.getFrom().clone());
+        }
     }
 
     @EventHandler
@@ -409,6 +440,15 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
             return;
         }
         final Player player = getBukkitPlayer(event.getPlotPlayer());
+        if (player != null && !plotUtilityService.canVisit(player, event.getPlot())) {
+            final Location fallback = lastAllowedLocations.getOrDefault(player.getUniqueId(), player.getWorld().getSpawnLocation());
+            getServer().getScheduler().runTask(this, () -> player.teleport(fallback));
+            languageManager.send(player, "visit-denied", Map.of(
+                    "mode", plotUtilityService.accessMode(event.getPlot()),
+                    "message", plotUtilityService.lockedMessage(event.getPlot())
+            ));
+            return;
+        }
         if (player != null && feature("player.plot-visits")) {
             plotMetaService.recordVisit(event.getPlot(), player);
         }
@@ -525,6 +565,18 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
                 }
             }
         }, interval, interval);
+    }
+
+    private void startTemporaryTrustScanner() {
+        getServer().getScheduler().runTaskTimer(this, () -> {
+            if (!isEnabled() || plotUtilityService == null || !feature("player.temporary-trusts")) {
+                return;
+            }
+            final int revoked = plotUtilityService.revokeExpiredTemporaryTrusts();
+            if (revoked > 0) {
+                debug("Removed expired temporary plot trusts: " + revoked);
+            }
+        }, 20L * 60L, 20L * 60L);
     }
 
     private void scheduleFlightRestore(final Player player) {

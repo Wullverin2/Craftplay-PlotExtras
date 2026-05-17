@@ -23,7 +23,7 @@ items:
       - "&7Trust, restore, backup,"
       - "&7move and support."
     actions:
-      - "PLAYER_COMMAND:pe requests list"
+      - "OPEN:team-requests"
   reports:
     slot: 12
     material: BELL
@@ -32,7 +32,7 @@ items:
       - "&7View and close"
       - "&7open plot reports."
     actions:
-      - "PLAYER_COMMAND:pe reports list"
+      - "OPEN:reports"
   moderation:
     slot: 14
     material: PACKED_ICE
@@ -85,7 +85,7 @@ items:
     lore:
       - "&7View builder tasks."
     actions:
-      - "PLAYER_COMMAND:pe buildtask list"
+      - "OPEN:build-tasks"
   create-backup:
     slot: 37
     material: CHEST_MINECART
@@ -103,7 +103,7 @@ items:
       - "&7Profiles, requests,"
       - "&7backups and tasks."
     actions:
-      - "PLAYER_COMMAND:pe stats"
+      - "OPEN:statistics"
   validate:
     slot: 41
     material: KNOWLEDGE_BOOK
@@ -112,7 +112,16 @@ items:
       - "&7Checks GUIs and"
       - "&7configuration files."
     actions:
-      - "PLAYER_COMMAND:pe validate"
+      - "OPEN:config-issues"
+  features:
+    slot: 42
+    material: COMPARATOR
+    name: "&dFeatures"
+    lore:
+      - "&7Enable or disable"
+      - "&7individual options."
+    actions:
+      - "OPEN:feature-toggles"
   inspector:
     slot: 43
     material: COMPASS

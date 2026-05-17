@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
@@ -232,6 +233,13 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             return handlePlayerRequest(player, args);
+        }
+
+        if (subCommand.equals("temptrust") || subCommand.equals("zeittrust")) {
+            if (!feature(player, "player.temporary-trusts")) {
+                return true;
+            }
+            return handleTemporaryTrust(player, args);
         }
 
         if (subCommand.equals("requests") || subCommand.equals("anfragen")) {
@@ -743,6 +751,66 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                         + " &8- &f/pe requests"));
             }
         }
+        return true;
+    }
+
+    private boolean handleTemporaryTrust(final Player player, final String[] args) {
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        final String action = args.length >= 2 ? args[1].toLowerCase(Locale.ROOT) : "list";
+        if (action.equals("list") || action.equals("liste")) {
+            final List<PlotUtilityService.TemporaryTrustEntry> entries = plugin.getPlotUtilityService().temporaryTrusts(plot);
+            player.sendMessage(TextUtil.component("&8&m----------------"));
+            player.sendMessage(TextUtil.component("&aTemporäre Trusts &8(" + entries.size() + ")"));
+            if (entries.isEmpty()) {
+                player.sendMessage(TextUtil.component("&7Keine temporären Trusts aktiv."));
+            }
+            for (final PlotUtilityService.TemporaryTrustEntry entry : entries.stream().limit(12).toList()) {
+                player.sendMessage(TextUtil.component("&e" + entry.playerName()
+                        + " &7bis &f" + BACKUP_TIME_FORMAT.format(entry.expiresAt())
+                        + " &8(" + entry.playerUuid() + ")"));
+            }
+            player.sendMessage(TextUtil.component("&8/pe temptrust add <Spieler> <30m|2h|7d>"));
+            player.sendMessage(TextUtil.component("&8/pe temptrust remove <Spieler>"));
+            player.sendMessage(TextUtil.component("&8&m----------------"));
+            return true;
+        }
+        if (action.equals("add") || action.equals("trust") || action.equals("geben")) {
+            if (args.length < 4) {
+                player.sendMessage(TextUtil.component("&cNutze: &e/pe temptrust add <Spieler> <30m|2h|7d>"));
+                return true;
+            }
+            final OfflinePlayer target = Bukkit.getOfflinePlayer(args[2]);
+            final Duration duration = parseDuration(args[3]);
+            final PlotUtilityService.TemporaryTrustEntry entry = plugin.getPlotUtilityService().createTemporaryTrust(player, plot, target, duration);
+            if (entry == null) {
+                player.sendMessage(TextUtil.component("&cTemporärer Trust konnte nicht gesetzt werden."));
+                return true;
+            }
+            plugin.getAuditLogService().log(player, plot, "Temporärer Trust gesetzt", entry.playerName() + " bis " + BACKUP_TIME_FORMAT.format(entry.expiresAt()));
+            player.sendMessage(TextUtil.component("&a" + entry.playerName() + " ist temporär bis &e" + BACKUP_TIME_FORMAT.format(entry.expiresAt()) + " &avertraut."));
+            return true;
+        }
+        if (action.equals("remove") || action.equals("del") || action.equals("entfernen")) {
+            if (args.length < 3) {
+                player.sendMessage(TextUtil.component("&cNutze: &e/pe temptrust remove <Spieler>"));
+                return true;
+            }
+            final OfflinePlayer target = Bukkit.getOfflinePlayer(args[2]);
+            if (plugin.getPlotUtilityService().removeTemporaryTrust(player, plot, target.getUniqueId())) {
+                plugin.getAuditLogService().log(player, plot, "Temporärer Trust entfernt", target.getName() == null ? args[2] : target.getName());
+                player.sendMessage(TextUtil.component("&aTemporärer Trust wurde entfernt."));
+            } else {
+                player.sendMessage(TextUtil.component("&cTemporärer Trust konnte nicht entfernt werden."));
+            }
+            return true;
+        }
+        player.sendMessage(TextUtil.component("&e/pe temptrust list"));
+        player.sendMessage(TextUtil.component("&e/pe temptrust add <Spieler> <30m|2h|7d>"));
+        player.sendMessage(TextUtil.component("&e/pe temptrust remove <Spieler>"));
         return true;
     }
 
@@ -1432,6 +1500,26 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                 || normalized.equals("1");
     }
 
+    private Duration parseDuration(final String input) {
+        if (input == null || input.isBlank()) {
+            return Duration.ofHours(1);
+        }
+        final String normalized = input.toLowerCase(Locale.ROOT).trim();
+        final long amount;
+        try {
+            amount = Long.parseLong(normalized.substring(0, normalized.length() - 1));
+        } catch (final RuntimeException exception) {
+            return Duration.ofHours(1);
+        }
+        return switch (normalized.charAt(normalized.length() - 1)) {
+            case 'm' -> Duration.ofMinutes(amount);
+            case 'h' -> Duration.ofHours(amount);
+            case 'd' -> Duration.ofDays(amount);
+            case 'w' -> Duration.ofDays(amount * 7L);
+            default -> Duration.ofHours(Math.max(1L, amount));
+        };
+    }
+
     private boolean useCooldown(final Player player, final String key) {
         if (plugin.getCooldownService().tryUse(player, key)) {
             return true;
@@ -1474,7 +1562,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (args.length == 1) {
-            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team", "dashboard", "info", "tools", "teamtools", "assistant", "profile", "guestbook", "request", "requests", "search", "favorite", "cleanup", "selfcheck", "stats", "permcheck", "buildtask", "buildermode", "warp", "warps", "report", "reports", "mod", "performance", "contest", "validate"), args[0]);
+            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team", "dashboard", "info", "tools", "teamtools", "assistant", "profile", "guestbook", "request", "requests", "temptrust", "search", "favorite", "cleanup", "selfcheck", "stats", "permcheck", "buildtask", "buildermode", "warp", "warps", "report", "reports", "mod", "performance", "contest", "validate"), args[0]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("open")) {
             return filter(plugin.getFeatureToggleService().enabledGuiIds(plugin.getGuiManager().getGuiIds()), args[1]);
@@ -1515,6 +1603,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         if (args.length >= 2 && (args[0].equalsIgnoreCase("requests") || args[0].equalsIgnoreCase("anfragen"))) {
             return completeTeamRequestCommand(args);
         }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("temptrust") || args[0].equalsIgnoreCase("zeittrust"))) {
+            return completeTemporaryTrustCommand(args);
+        }
         if (args.length >= 2 && (args[0].equalsIgnoreCase("cleanup") || args[0].equalsIgnoreCase("aufraeumen") || args[0].equalsIgnoreCase("aufräumen"))) {
             return completeCleanupCommand(args);
         }
@@ -1533,6 +1624,16 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                 languages.add(language.code());
             }
             return filter(languages, args[1]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeTemporaryTrustCommand(final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("list", "add", "remove"), args[1]);
+        }
+        if (args.length == 4 && (args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("trust"))) {
+            return filter(List.of("30m", "1h", "2h", "1d", "7d"), args[3]);
         }
         return Collections.emptyList();
     }

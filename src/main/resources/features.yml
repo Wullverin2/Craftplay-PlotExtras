@@ -141,6 +141,10 @@ features:
       # Spieleranfragen an Plotbesitzer oder Team, z. B. Trust, Backup, Restore oder Umzug.
       enabled: true
 
+    temporary-trusts:
+      # Temporäre Trusts, die automatisch nach Ablauf entfernt werden.
+      enabled: true
+
     cleanup:
       # Spieler können harmlose Entity-Arten auf dem eigenen Plot bereinigen.
       enabled: true
@@ -157,17 +161,6 @@ features:
       teleport:
         enabled: true
       delete:
-        enabled: true
-
-    requests:
-      # Teamübersicht und Bearbeitung von Spieleranfragen.
-      enabled: true
-    builder:
-      # Builder-Werkzeuge wie Builder-Modus und Bauaufgaben.
-      enabled: true
-      mode:
-        enabled: true
-      tasks:
         enabled: true
 
     reports:
@@ -284,6 +277,9 @@ features:
         enabled: true
     redstone-alerts:
       enabled: true
+    requests:
+      # Teamübersicht und Bearbeitung von Spieleranfragen.
+      enabled: true
     permission-checker:
       # Reservierter Schalter für Rechte-Debug/Anzeige in Team-GUIs.
       enabled: true
@@ -293,6 +289,16 @@ features:
     statistics:
       # Reservierter Schalter für spätere Team-Statistiken.
       enabled: true
+    feature-toggles:
+      # Admin-GUI zum Ein- und Ausschalten einzelner Features aus features.yml.
+      enabled: true
+    builder:
+      # Builder-Werkzeuge wie Builder-Modus und Bauaufgaben.
+      enabled: true
+      mode:
+        enabled: true
+      tasks:
+        enabled: true
 
     reports:
       # Teamübersicht für Plot-Meldungen.

@@ -5,10 +5,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 
 public final class FeatureToggleService {
 
@@ -43,6 +46,15 @@ public final class FeatureToggleService {
             Map.entry("plot-dashboard", "player.dashboard"),
             Map.entry("plot-warps", "player.plot-warps"),
             Map.entry("plot-tools", "player.tools"),
+            Map.entry("plot-search", "player.plot-search"),
+            Map.entry("guestbook", "player.guestbook"),
+            Map.entry("requests", "player.requests"),
+            Map.entry("team-requests", "team.requests"),
+            Map.entry("reports", "team.reports"),
+            Map.entry("build-tasks", "team.builder.tasks"),
+            Map.entry("config-issues", "team.config-validator"),
+            Map.entry("statistics", "team.statistics"),
+            Map.entry("feature-toggles", "team.feature-toggles"),
             Map.entry("backups", "team.backups"),
             Map.entry("backup-restore-confirm", "team.backups.restore"),
             Map.entry("team-inspector", "team.inspector"),
@@ -117,6 +129,27 @@ public final class FeatureToggleService {
         return isEnabled(featureForGui(guiId));
     }
 
+    public Map<String, Boolean> allFeatureToggles() {
+        if (config == null) {
+            reload();
+        }
+        final Map<String, Boolean> toggles = new LinkedHashMap<>();
+        collectFeatureToggles(config.getConfigurationSection("features"), "", toggles);
+        return toggles;
+    }
+
+    public boolean toggleFeature(final String feature) {
+        final String normalized = normalize(feature);
+        if (normalized.isBlank() || normalized.equals("enabled")) {
+            return false;
+        }
+        final String path = "features." + normalized + ".enabled";
+        final boolean newValue = !config.getBoolean(path, true);
+        config.set(path, newValue);
+        save();
+        return newValue;
+    }
+
     public String featureForGui(final String guiId) {
         if (guiId == null || guiId.isBlank()) {
             return "";
@@ -136,6 +169,14 @@ public final class FeatureToggleService {
             case "audit-log" -> "team.audit-log";
             case "redstone-alerts" -> "team.redstone-alerts";
             case "plot-warps" -> "player.plot-warps";
+            case "plot-search" -> "player.plot-search";
+            case "guestbook" -> "player.guestbook";
+            case "plot-requests" -> "player.requests";
+            case "plot-reports" -> "team.reports";
+            case "build-tasks" -> "team.builder.tasks";
+            case "config-issues" -> "team.config-validator";
+            case "statistics" -> "team.statistics";
+            case "feature-toggles" -> "team.feature-toggles";
             case "languages" -> "player.language";
             default -> "";
         };
@@ -236,6 +277,27 @@ public final class FeatureToggleService {
         if (normalized.startsWith("delete_plot_warp:")) {
             return "player.plot-warps.delete";
         }
+        if (normalized.equals("search_plots_prompt") || normalized.startsWith("teleport_plot_key:")) {
+            return "player.plot-search";
+        }
+        if (normalized.equals("guestbook_sign_prompt") || normalized.startsWith("delete_guestbook_entry:")) {
+            return "player.guestbook";
+        }
+        if (normalized.startsWith("request_prompt:")) {
+            return "player.requests";
+        }
+        if (normalized.startsWith("close_request:") || normalized.startsWith("accept_trust_request:")) {
+            return "team.requests";
+        }
+        if (normalized.startsWith("close_report:")) {
+            return "team.reports.close";
+        }
+        if (normalized.startsWith("complete_build_task:")) {
+            return "team.builder.tasks";
+        }
+        if (normalized.startsWith("toggle_feature:")) {
+            return "team.feature-toggles";
+        }
         if (normalized.startsWith("player_command:pe reports")) {
             return "team.reports";
         }
@@ -321,5 +383,36 @@ public final class FeatureToggleService {
 
     private String normalize(final String value) {
         return value.toLowerCase(Locale.ROOT).trim();
+    }
+
+    private void collectFeatureToggles(
+            final ConfigurationSection section,
+            final String path,
+            final Map<String, Boolean> toggles
+    ) {
+        if (section == null) {
+            return;
+        }
+        for (final String key : section.getKeys(false)) {
+            if (key.equals("enabled")) {
+                if (!path.isBlank()) {
+                    toggles.put(path, section.getBoolean("enabled", true));
+                }
+                continue;
+            }
+            final ConfigurationSection child = section.getConfigurationSection(key);
+            if (child != null) {
+                collectFeatureToggles(child, path.isBlank() ? key : path + "." + key, toggles);
+            }
+        }
+    }
+
+    private void save() {
+        final File file = new File(plugin.getDataFolder(), "features.yml");
+        try {
+            config.save(file);
+        } catch (final IOException exception) {
+            plugin.getLogger().log(Level.WARNING, "Could not save features.yml.", exception);
+        }
     }
 }
