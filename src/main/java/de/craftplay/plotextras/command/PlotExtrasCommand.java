@@ -3,13 +3,17 @@ package de.craftplay.plotextras.command;
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
 import de.craftplay.plotextras.audit.AuditLogEntry;
 import de.craftplay.plotextras.backup.PlotBackupEntry;
+import de.craftplay.plotextras.competition.CompetitionEntry;
 import de.craftplay.plotextras.language.LanguageDefinition;
+import de.craftplay.plotextras.performance.PlotPerformanceSnapshot;
 import de.craftplay.plotextras.plot.PlotRole;
 import de.craftplay.plotextras.plot.PlotRolePermission;
 import de.craftplay.plotextras.plot.PlotRoleService;
+import de.craftplay.plotextras.report.PlotReportEntry;
 import de.craftplay.plotextras.util.TextUtil;
 import de.craftplay.plotextras.warp.PlotWarpEntry;
 import com.plotsquared.core.plot.Plot;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -110,6 +114,48 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             return handleWarps(player, args);
+        }
+
+        if (subCommand.equals("report") || subCommand.equals("melden") || subCommand.equals("meldung")) {
+            if (!feature(player, "player.reports")) {
+                return true;
+            }
+            return createReport(player, args);
+        }
+
+        if (subCommand.equals("reports") || subCommand.equals("meldungen")) {
+            if (!feature(player, "team.reports")) {
+                return true;
+            }
+            return handleReports(player, args);
+        }
+
+        if (subCommand.equals("moderation") || subCommand.equals("moderate") || subCommand.equals("mod")) {
+            if (!feature(player, "team.moderation")) {
+                return true;
+            }
+            return handleModeration(player, args);
+        }
+
+        if (subCommand.equals("performance") || subCommand.equals("perf") || subCommand.equals("lag")) {
+            if (!feature(player, "team.performance")) {
+                return true;
+            }
+            return handlePerformance(player);
+        }
+
+        if (subCommand.equals("contest") || subCommand.equals("competition") || subCommand.equals("wettbewerb")) {
+            if (!feature(player, "player.competitions")) {
+                return true;
+            }
+            return handleCompetition(player, args);
+        }
+
+        if (subCommand.equals("validate") || subCommand.equals("configcheck")) {
+            if (!feature(player, "team.config-validator")) {
+                return true;
+            }
+            return handleValidate(player);
         }
 
         if (subCommand.equals("inspect") || subCommand.equals("inspector") || subCommand.equals("team")) {
@@ -220,6 +266,235 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         player.sendMessage(TextUtil.component("&8/pe warp set <Name>"));
         player.sendMessage(TextUtil.component("&8/pe warp tp <Name>"));
         player.sendMessage(TextUtil.component("&8/pe warp delete <Name>"));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean createReport(final Player player, final String[] args) {
+        if (!plugin.getPlotReportService().canCreate(player)) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        final String reason = args.length >= 2 ? join(args, 1) : "Keine Begründung angegeben.";
+        final PlotReportEntry report = plugin.getPlotReportService().create(player, plot, reason);
+        if (report == null) {
+            player.sendMessage(TextUtil.component("&cMeldung konnte nicht erstellt werden."));
+            return true;
+        }
+        plugin.getAuditLogService().log(player, plot, "Plot gemeldet", report.id() + ": " + reason);
+        player.sendMessage(TextUtil.component("&aMeldung &e" + report.id() + " &awurde an das Team gesendet."));
+        for (final Player online : Bukkit.getOnlinePlayers()) {
+            if (plugin.getPlotReportService().canView(online)) {
+                online.sendMessage(TextUtil.component("&cNeue Plot-Meldung &e" + report.id()
+                        + " &7von &f" + player.getName()
+                        + " &7auf &f" + report.plotKey()
+                        + " &8- &f/pe reports"));
+            }
+        }
+        return true;
+    }
+
+    private boolean handleReports(final Player player, final String[] args) {
+        if (!plugin.getPlotReportService().canView(player)) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        final String action = args.length >= 2 ? args[1].toLowerCase(Locale.ROOT) : "list";
+        if (action.equals("close") || action.equals("done") || action.equals("erledigt")) {
+            if (args.length < 3 || !plugin.getPlotReportService().canClose(player)) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            final String note = args.length >= 4 ? join(args, 3) : "Erledigt.";
+            if (plugin.getPlotReportService().close(player, args[2], note)) {
+                player.sendMessage(TextUtil.component("&aMeldung &e" + args[2] + " &awurde geschlossen."));
+            } else {
+                player.sendMessage(TextUtil.component("&cMeldung &e" + args[2] + " &cwurde nicht gefunden."));
+            }
+            return true;
+        }
+
+        final List<PlotReportEntry> reports = action.equals("all") ? plugin.getPlotReportService().listAll() : plugin.getPlotReportService().listOpen();
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aPlot-Meldungen &8(" + reports.size() + ")"));
+        if (reports.isEmpty()) {
+            player.sendMessage(TextUtil.component("&7Keine Meldungen gefunden."));
+        }
+        for (final PlotReportEntry report : reports.stream().limit(10).toList()) {
+            player.sendMessage(TextUtil.component("&e" + report.id()
+                    + " &7| &f" + report.plotKey()
+                    + " &7| &f" + report.reporterName()
+                    + " &7| &c" + report.status()
+                    + " &7| &8" + report.reason()));
+        }
+        player.sendMessage(TextUtil.component("&8/pe reports close <id> <Notiz>"));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleModeration(final Player player, final String[] args) {
+        if (!plugin.getPlotModerationService().canModerate(player)) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        final String action = args.length >= 2 ? args[1].toLowerCase(Locale.ROOT) : "help";
+        if (action.equals("list") || action.equals("liste")) {
+            player.sendMessage(TextUtil.component("&8&m----------------"));
+            player.sendMessage(TextUtil.component("&aGesperrte Plots"));
+            for (final String line : plugin.getPlotModerationService().listFrozen()) {
+                player.sendMessage(TextUtil.component("&e" + line));
+            }
+            player.sendMessage(TextUtil.component("&8&m----------------"));
+            return true;
+        }
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        if (action.equals("freeze") || action.equals("sperren")) {
+            final String reason = args.length >= 3 ? join(args, 2) : "Teamprüfung";
+            if (plugin.getPlotModerationService().freeze(player, plot, reason)) {
+                plugin.getAuditLogService().log(player, plot, "Plot eingefroren", reason);
+                player.sendMessage(TextUtil.component("&aDer aktuelle Plot wurde eingefroren."));
+            } else {
+                player.sendMessage(TextUtil.component("&cDer Plot konnte nicht eingefroren werden."));
+            }
+            return true;
+        }
+        if (action.equals("unfreeze") || action.equals("freigeben")) {
+            if (plugin.getPlotModerationService().unfreeze(player, plot)) {
+                plugin.getAuditLogService().log(player, plot, "Plot-Freeze aufgehoben", "-");
+                player.sendMessage(TextUtil.component("&aDer aktuelle Plot wurde freigegeben."));
+            } else {
+                player.sendMessage(TextUtil.component("&cDer Plot war nicht eingefroren."));
+            }
+            return true;
+        }
+        if (action.equals("cleanup") || action.equals("clean")) {
+            final String mode = args.length >= 3 ? args[2] : "drops";
+            final int removed = plugin.getPlotModerationService().cleanup(player, plot, mode);
+            if (removed >= 0) {
+                plugin.getAuditLogService().log(player, plot, "Plot-Cleanup", mode + ": " + removed);
+                player.sendMessage(TextUtil.component("&aEntfernt: &e" + removed + " &7(" + mode + ")"));
+            } else {
+                player.sendMessage(TextUtil.component("&cCleanup konnte nicht ausgeführt werden."));
+            }
+            return true;
+        }
+        player.sendMessage(TextUtil.component("&e/pe mod freeze <Grund>"));
+        player.sendMessage(TextUtil.component("&e/pe mod unfreeze"));
+        player.sendMessage(TextUtil.component("&e/pe mod cleanup <drops|projectiles|monsters|animals|vehicles|all>"));
+        player.sendMessage(TextUtil.component("&e/pe mod list"));
+        return true;
+    }
+
+    private boolean handlePerformance(final Player player) {
+        if (!plugin.getPlotPerformanceService().canView(player)) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        final PlotPerformanceSnapshot snapshot = plugin.getPlotPerformanceService().snapshot(plot);
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aPerformance: &f" + snapshot.plotKey()));
+        player.sendMessage(TextUtil.component("&7Entities gesamt: &f" + snapshot.totalEntities()));
+        snapshot.entityCounts().entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(10)
+                .forEach(entry -> player.sendMessage(TextUtil.component("&e" + entry.getKey() + " &7- &f" + entry.getValue())));
+        for (final String warning : snapshot.warnings()) {
+            player.sendMessage(TextUtil.component("&6" + warning));
+        }
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleCompetition(final Player player, final String[] args) {
+        final String action = args.length >= 2 ? args[1].toLowerCase(Locale.ROOT) : "list";
+        if (action.equals("join") || action.equals("teilnehmen")) {
+            if (!plugin.getCompetitionService().canJoin(player)) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+            if (plot == null) {
+                plugin.getLanguageManager().send(player, "no-plot");
+                return true;
+            }
+            final String competition = args.length >= 3 ? args[2] : "default";
+            final String note = args.length >= 4 ? join(args, 3) : "-";
+            final CompetitionEntry entry = plugin.getCompetitionService().join(player, plot, competition, note);
+            if (entry == null) {
+                player.sendMessage(TextUtil.component("&cTeilnahme konnte nicht gespeichert werden."));
+            } else {
+                plugin.getAuditLogService().log(player, plot, "Wettbewerb angemeldet", entry.competition());
+                player.sendMessage(TextUtil.component("&aPlot wurde für Wettbewerb &e" + entry.competition() + " &aangemeldet."));
+            }
+            return true;
+        }
+        if (action.equals("score") || action.equals("bewerten")) {
+            if (args.length < 4 || !plugin.getCompetitionService().canJudge(player)) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            final int score;
+            try {
+                score = Integer.parseInt(args[3]);
+            } catch (final NumberFormatException exception) {
+                player.sendMessage(TextUtil.component("&cBitte gib eine Zahl zwischen 0 und 100 an."));
+                return true;
+            }
+            final String note = args.length >= 5 ? join(args, 4) : "-";
+            if (plugin.getCompetitionService().score(player, args[2], score, note)) {
+                player.sendMessage(TextUtil.component("&aBewertung gespeichert."));
+            } else {
+                player.sendMessage(TextUtil.component("&cEintrag wurde nicht gefunden."));
+            }
+            return true;
+        }
+        final String competition = args.length >= 3 ? args[2] : "";
+        final List<CompetitionEntry> entries = plugin.getCompetitionService().list(competition);
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aWettbewerbe &8(" + entries.size() + ")"));
+        for (final CompetitionEntry entry : entries.stream().limit(10).toList()) {
+            player.sendMessage(TextUtil.component("&e" + entry.id()
+                    + " &7| &f" + entry.ownerName()
+                    + " &7| &f" + entry.plotKey()
+                    + " &7| &a" + entry.score()));
+        }
+        player.sendMessage(TextUtil.component("&8/pe contest join <Name> <Notiz>"));
+        player.sendMessage(TextUtil.component("&8/pe contest score <id> <0-100> <Notiz>"));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleValidate(final Player player) {
+        if (!plugin.getConfigValidationService().canValidate(player)) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        final List<String> issues = plugin.getConfigValidationService().validate();
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aConfig-Check &8(" + issues.size() + " Hinweise)"));
+        if (issues.isEmpty()) {
+            player.sendMessage(TextUtil.component("&aKeine Fehler gefunden."));
+        }
+        for (final String issue : issues.stream().limit(20).toList()) {
+            player.sendMessage(TextUtil.component("&c" + issue));
+        }
+        if (issues.size() > 20) {
+            player.sendMessage(TextUtil.component("&7Weitere Hinweise: &f" + (issues.size() - 20)));
+        }
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
@@ -663,7 +938,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (args.length == 1) {
-            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team", "dashboard", "info", "warp", "warps"), args[0]);
+            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team", "dashboard", "info", "warp", "warps", "report", "reports", "mod", "performance", "contest", "validate"), args[0]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("open")) {
             return filter(plugin.getFeatureToggleService().enabledGuiIds(plugin.getGuiManager().getGuiIds()), args[1]);
@@ -683,12 +958,51 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         if (args.length >= 2 && (args[0].equalsIgnoreCase("warp") || args[0].equalsIgnoreCase("warps"))) {
             return completeWarpCommand(sender, args);
         }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("reports") || args[0].equalsIgnoreCase("meldungen"))) {
+            return completeReportsCommand(args);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("mod") || args[0].equalsIgnoreCase("moderation") || args[0].equalsIgnoreCase("moderate"))) {
+            return completeModerationCommand(args);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("contest") || args[0].equalsIgnoreCase("competition") || args[0].equalsIgnoreCase("wettbewerb"))) {
+            return completeCompetitionCommand(args);
+        }
         if (args.length == 2 && args[0].equalsIgnoreCase("language")) {
             final List<String> languages = new ArrayList<>();
             for (final LanguageDefinition language : plugin.getLanguageManager().getLanguages()) {
                 languages.add(language.code());
             }
             return filter(languages, args[1]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeReportsCommand(final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("list", "all", "close"), args[1]);
+        }
+        if (args.length == 3 && args[1].equalsIgnoreCase("close")) {
+            return filter(plugin.getPlotReportService().listOpen().stream().map(PlotReportEntry::id).toList(), args[2]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeModerationCommand(final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("freeze", "unfreeze", "cleanup", "list"), args[1]);
+        }
+        if (args.length == 3 && args[1].equalsIgnoreCase("cleanup")) {
+            return filter(List.of("drops", "projectiles", "monsters", "animals", "vehicles", "all"), args[2]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeCompetitionCommand(final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("join", "list", "score"), args[1]);
+        }
+        if (args.length == 3 && args[1].equalsIgnoreCase("score")) {
+            return filter(plugin.getCompetitionService().list("").stream().map(CompetitionEntry::id).toList(), args[2]);
         }
         return Collections.emptyList();
     }

@@ -8,6 +8,7 @@ import com.plotsquared.core.plot.PlotId;
 import com.plotsquared.core.plot.schematic.Schematic;
 import com.plotsquared.core.util.SchematicHandler;
 import com.plotsquared.core.util.task.RunnableVal;
+import com.sk89q.jnbt.CompoundTag;
 import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.plot.PlotService;
 import org.bukkit.Bukkit;
@@ -203,11 +204,15 @@ public final class PlotBackupService {
                 .sorted(String.CASE_INSENSITIVE_ORDER)
                 .toList();
 
-        final boolean started = schematicHandler.exportAll(List.of(basePlot), ownerFolder, backupId, () -> Bukkit.getScheduler().runTask(plugin, () -> {
+        final File schematicFile = new File(ownerFolder, backupId + ".schem");
+        schematicHandler.getCompoundTag(basePlot).whenComplete((compoundTag, throwable) -> Bukkit.getScheduler().runTask(plugin, () -> {
             try {
-                final File schematicFile = findSchematic(ownerFolder, backupId);
-                if (schematicFile == null) {
-                    plugin.getLogger().warning("Plot backup finished but no schematic file was found for " + backupId + ".");
+                if (throwable != null || compoundTag == null) {
+                    plugin.getLogger().log(Level.WARNING, "Could not create schematic data for plot backup " + backupId + ".", throwable);
+                    return;
+                }
+                if (!saveSchematic(schematicHandler, compoundTag, schematicFile)) {
+                    plugin.getLogger().warning("Plot backup failed because the schematic file could not be written: " + schematicFile.getAbsolutePath());
                     return;
                 }
                 saveEntry(new PlotBackupEntry(
@@ -223,16 +228,11 @@ public final class PlotBackupService {
                         plotIds,
                         schematicFile
                 ));
-                plugin.getLogger().info("Created plot backup " + backupId + " for " + ownerName + " (" + mergeSize + ").");
+                plugin.getLogger().info("Created plot schematic backup " + schematicFile.getName() + " for " + ownerName + " (" + mergeSize + ").");
             } finally {
                 runningBackups.remove(runningKey);
             }
         }));
-
-        if (!started) {
-            runningBackups.remove(runningKey);
-            plugin.getLogger().warning("Could not start plot backup " + backupId + ".");
-        }
     }
 
     private void reloadEntries() {
@@ -339,6 +339,14 @@ public final class PlotBackupService {
         }
         final File[] files = folder.listFiles((dir, name) -> name.startsWith(backupId + "."));
         return files == null || files.length == 0 ? null : files[0];
+    }
+
+    private boolean saveSchematic(final SchematicHandler schematicHandler, final CompoundTag compoundTag, final File schematicFile) {
+        final File parent = schematicFile.getParentFile();
+        if (parent != null && !parent.exists() && !parent.mkdirs()) {
+            return false;
+        }
+        return schematicHandler.save(compoundTag, schematicFile.getAbsolutePath()) && schematicFile.exists();
     }
 
     private String ownerName(final UUID ownerUuid) {

@@ -27,6 +27,8 @@ Paper/Bukkit-Addon für Craftplay mit PlotSquared-Extras:
 - unterstützt optionale Items aus HeadDatabase
 - unterstützt PlaceholderAPI, inklusive konfigurierbarer Platzhalter für Jobs, CMI-Geld und Quests
 
+Zusätzlich enthält der aktuelle Ausbau Plot-Meldungen, Team-Moderation mit Freeze und Cleanup, Performance-Schnappschüsse, Plot-Wettbewerbe, Config-Validierung und Schematic-Backups als `.schem`-Dateien.
+
 ## Befehle
 
 ```text
@@ -40,6 +42,16 @@ Paper/Bukkit-Addon für Craftplay mit PlotSquared-Extras:
 /plotextras role delete <id>
 /plotextras role permission <id> <Recht> <on|off>
 /plotextras role assign <Spieler> <id>
+/plotextras report <Grund>
+/plotextras reports list
+/plotextras reports close <id> <Notiz>
+/plotextras mod freeze <Grund>
+/plotextras mod unfreeze
+/plotextras mod cleanup <drops|projectiles|monsters|animals|vehicles|all>
+/plotextras performance
+/plotextras contest join <Name> <Notiz>
+/plotextras contest score <id> <0-100> <Notiz>
+/plotextras validate
 /plotextras reload
 ```
 
@@ -56,6 +68,15 @@ craftplayplotextras.decor.wall.3
 craftplayplotextras.decor.wall.4
 craftplayplotextras.decor.wall.5
 craftplayplotextras.entitylimit.bypass
+craftplayplotextras.report.create
+craftplayplotextras.report.view
+craftplayplotextras.report.close
+craftplayplotextras.moderation.manage
+craftplayplotextras.moderation.bypass
+craftplayplotextras.performance.view
+craftplayplotextras.config.validate
+craftplayplotextras.competition.join
+craftplayplotextras.competition.judge
 craftplayplotextras.admin
 ```
 

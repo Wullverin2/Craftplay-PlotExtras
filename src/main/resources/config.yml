@@ -76,6 +76,15 @@ audit-log:
   # Maximale Anzahl gespeicherter Einträge. Ältere Einträge werden automatisch entfernt.
   max-entries: 5000
 
+team-tools:
+  performance:
+    # Ab dieser Gesamtzahl an Entities markiert /pe performance den Plot als auffällig.
+    entity-warning-threshold: 150
+    # Ab dieser Gesamtzahl an Entities markiert /pe performance den Plot als kritisch.
+    entity-critical-threshold: 300
+    # Ab dieser Zahl pro Entity-Typ wird der Typ einzeln als auffällig genannt.
+    single-type-warning-threshold: 80
+
 integrations:
   # Diese Werte werden über PlaceholderAPI aufgelöst und stehen in GUI-Dateien als
   # {jobs}, {cmi_money}, {quests_completed} und {quests_total} zur Verfügung.

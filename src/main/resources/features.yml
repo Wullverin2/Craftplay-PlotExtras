@@ -120,6 +120,14 @@ features:
       delete:
         enabled: true
 
+    reports:
+      # Spieler können den aktuellen Plot mit Grund an das Team melden.
+      enabled: true
+
+    competitions:
+      # Spieler können Plots für Wettbewerbe anmelden.
+      enabled: true
+
     plot-limits:
       # Hartes Plotlimit über Permission-Werte wie plots.plot.84.
       enabled: true
@@ -224,6 +232,31 @@ features:
     statistics:
       # Reservierter Schalter für spätere Team-Statistiken.
       enabled: true
+
+    reports:
+      # Teamübersicht für Plot-Meldungen.
+      enabled: true
+      close:
+        enabled: true
+    moderation:
+      # Teamfunktionen zum Einfrieren, Freigeben und Bereinigen von Plots.
+      enabled: true
+      freeze:
+        enabled: true
+        block-spawns:
+          enabled: true
+        block-redstone:
+          enabled: true
+      cleanup:
+        enabled: true
+    performance:
+      # Performance-Schnappschuss für den aktuellen Plot.
+      enabled: true
+    competitions:
+      # Teamfunktionen für Bauwettbewerbe.
+      enabled: true
+      judge:
+        enabled: true
 
   integrations:
     # Externe Integrationen.

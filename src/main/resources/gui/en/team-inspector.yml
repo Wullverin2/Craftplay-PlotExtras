@@ -64,6 +64,46 @@ items:
       - "&7Shows entities and limits."
     actions:
       - "OPEN:entity-limits"
+  reports:
+    slot: 25
+    permission: "craftplayplotextras.report.view"
+    material: BELL
+    name: "&cPlot Reports"
+    lore:
+      - "&7Lists open reports"
+      - "&7in chat."
+    actions:
+      - "PLAYER_COMMAND:pe reports list"
+  performance:
+    slot: 28
+    permission: "craftplayplotextras.performance.view"
+    material: CLOCK
+    name: "&ePerformance"
+    lore:
+      - "&7Counts entities and shows"
+      - "&7warnings for this plot."
+    actions:
+      - "PLAYER_COMMAND:pe performance"
+  freeze:
+    slot: 29
+    permission: "craftplayplotextras.moderation.manage"
+    material: PACKED_ICE
+    name: "&bFreeze Plot"
+    lore:
+      - "&7Blocks building, interaction,"
+      - "&7spawns and redstone."
+    actions:
+      - "PLAYER_COMMAND:pe mod freeze GUI freeze"
+  unfreeze:
+    slot: 30
+    permission: "craftplayplotextras.moderation.manage"
+    material: HONEYCOMB
+    name: "&aUnfreeze Plot"
+    lore:
+      - "&7Removes the plot freeze"
+      - "&7from the current plot."
+    actions:
+      - "PLAYER_COMMAND:pe mod unfreeze"
   redstone-enable:
     slot: 31
     material: REDSTONE_BLOCK
@@ -82,6 +122,16 @@ items:
       - "&7with teleport and release."
     actions:
       - "OPEN:redstone-alerts"
+  cleanup-drops:
+    slot: 34
+    permission: "craftplayplotextras.moderation.manage"
+    material: HOPPER
+    name: "&eRemove Drops"
+    lore:
+      - "&7Removes items and XP"
+      - "&7from the current plot."
+    actions:
+      - "PLAYER_COMMAND:pe mod cleanup drops"
   plot-info:
     slot: 33
     material: PAPER
@@ -127,6 +177,26 @@ items:
     name: "&fStatus: Normal"
     actions:
       - "SET_PLOT_STATUS:normal"
+  validate:
+    slot: 42
+    permission: "craftplayplotextras.config.validate"
+    material: COMPASS
+    name: "&bValidate Config"
+    lore:
+      - "&7Checks materials, slots"
+      - "&7and missing files."
+    actions:
+      - "PLAYER_COMMAND:pe validate"
+  contests:
+    slot: 43
+    permission: "craftplayplotextras.competition.judge"
+    material: GOLD_BLOCK
+    name: "&6Competitions"
+    lore:
+      - "&7Lists plots registered"
+      - "&7for competitions."
+    actions:
+      - "PLAYER_COMMAND:pe contest list"
   back:
     slot: 45
     material: ARROW

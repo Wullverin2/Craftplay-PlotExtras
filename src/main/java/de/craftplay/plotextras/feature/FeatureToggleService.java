@@ -234,6 +234,24 @@ public final class FeatureToggleService {
         if (normalized.startsWith("delete_plot_warp:")) {
             return "player.plot-warps.delete";
         }
+        if (normalized.startsWith("player_command:pe report")) {
+            return "player.reports";
+        }
+        if (normalized.startsWith("player_command:pe reports")) {
+            return "team.reports";
+        }
+        if (normalized.startsWith("player_command:pe mod")) {
+            return "team.moderation";
+        }
+        if (normalized.startsWith("player_command:pe performance")) {
+            return "team.performance";
+        }
+        if (normalized.startsWith("player_command:pe validate")) {
+            return "team.config-validator";
+        }
+        if (normalized.startsWith("player_command:pe contest")) {
+            return "player.competitions";
+        }
         if (normalized.startsWith("command:")
                 || normalized.startsWith("player_command:")
                 || normalized.startsWith("console_command:")) {

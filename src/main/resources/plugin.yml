@@ -63,6 +63,33 @@ permissions:
   craftplayplotextras.plotmeta.status:
     description: Allows changing the visible status of a plot.
     default: op
+  craftplayplotextras.report.create:
+    description: Allows players to report the current plot.
+    default: true
+  craftplayplotextras.report.view:
+    description: Allows team members to view plot reports.
+    default: op
+  craftplayplotextras.report.close:
+    description: Allows team members to close plot reports.
+    default: op
+  craftplayplotextras.moderation.manage:
+    description: Allows freezing, unfreezing and cleaning plots.
+    default: op
+  craftplayplotextras.moderation.bypass:
+    description: Bypasses plot freeze restrictions.
+    default: op
+  craftplayplotextras.performance.view:
+    description: Allows viewing plot performance snapshots.
+    default: op
+  craftplayplotextras.config.validate:
+    description: Allows running the configuration validator.
+    default: op
+  craftplayplotextras.competition.join:
+    description: Allows joining plot competitions.
+    default: true
+  craftplayplotextras.competition.judge:
+    description: Allows scoring plot competition entries.
+    default: op
   craftplayplotextras.decor:
     description: Allows changing plot wall and border blocks through the GUI.
     default: true

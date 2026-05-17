@@ -13,6 +13,7 @@ import com.plotsquared.core.player.PlotPlayer;
 import de.craftplay.plotextras.audit.AuditLogService;
 import de.craftplay.plotextras.backup.PlotBackupService;
 import de.craftplay.plotextras.command.PlotExtrasCommand;
+import de.craftplay.plotextras.competition.CompetitionService;
 import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.furniture.FurnitureProtectionManager;
 import de.craftplay.plotextras.gui.GuiManager;
@@ -20,12 +21,16 @@ import de.craftplay.plotextras.integration.HeadDatabaseService;
 import de.craftplay.plotextras.integration.PlaceholderService;
 import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.limit.EntityLimitService;
+import de.craftplay.plotextras.moderation.PlotModerationService;
+import de.craftplay.plotextras.performance.PlotPerformanceService;
 import de.craftplay.plotextras.player.PlayerDataManager;
 import de.craftplay.plotextras.plot.PlotRoleService;
 import de.craftplay.plotextras.plot.PlotService;
 import de.craftplay.plotextras.plotmeta.PlotMetaService;
 import de.craftplay.plotextras.redstone.RedstoneLagProtectionService;
+import de.craftplay.plotextras.report.PlotReportService;
 import de.craftplay.plotextras.resource.ResourceInstaller;
+import de.craftplay.plotextras.validation.ConfigValidationService;
 import de.craftplay.plotextras.warp.PlotWarpService;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -74,6 +79,11 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     private AuditLogService auditLogService;
     private PlotBackupService plotBackupService;
     private RedstoneLagProtectionService redstoneLagProtectionService;
+    private PlotReportService plotReportService;
+    private PlotModerationService plotModerationService;
+    private PlotPerformanceService plotPerformanceService;
+    private CompetitionService competitionService;
+    private ConfigValidationService configValidationService;
     private PlotRoleService plotRoleService;
     private PlotMetaService plotMetaService;
     private PlotWarpService plotWarpService;
@@ -116,6 +126,11 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotService = new PlotService(this, plotRoleService);
         plotBackupService = new PlotBackupService(this, plotService, featureToggleService);
         redstoneLagProtectionService = new RedstoneLagProtectionService(this, plotService, auditLogService, featureToggleService);
+        plotReportService = new PlotReportService(this, featureToggleService);
+        plotModerationService = new PlotModerationService(this, featureToggleService);
+        plotPerformanceService = new PlotPerformanceService(this, featureToggleService);
+        competitionService = new CompetitionService(this, featureToggleService);
+        configValidationService = new ConfigValidationService(this, featureToggleService);
         guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, featureToggleService, playerDataManager);
 
         furnitureProtectionManager.registerFlags();
@@ -128,6 +143,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotRoleService.load();
         plotBackupService.load();
         redstoneLagProtectionService.reload();
+        plotReportService.load();
+        plotModerationService.load();
+        competitionService.load();
         languageManager.load();
         placeholderService.reload();
         headDatabaseService.reload();
@@ -139,6 +157,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         getServer().getPluginManager().registerEvents(entityLimitService, this);
         getServer().getPluginManager().registerEvents(guiManager, this);
         getServer().getPluginManager().registerEvents(redstoneLagProtectionService, this);
+        getServer().getPluginManager().registerEvents(plotModerationService, this);
         plotApi.registerListener(this);
         plotApi.registerListener(plotBackupService);
         registerCommands();
@@ -180,6 +199,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotRoleService.load();
         plotBackupService.load();
         redstoneLagProtectionService.reload();
+        plotReportService.load();
+        plotModerationService.load();
+        competitionService.load();
         languageManager.load();
         placeholderService.reload();
         headDatabaseService.reload();
@@ -221,6 +243,26 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     public RedstoneLagProtectionService getRedstoneLagProtectionService() {
         return redstoneLagProtectionService;
+    }
+
+    public PlotReportService getPlotReportService() {
+        return plotReportService;
+    }
+
+    public PlotModerationService getPlotModerationService() {
+        return plotModerationService;
+    }
+
+    public PlotPerformanceService getPlotPerformanceService() {
+        return plotPerformanceService;
+    }
+
+    public CompetitionService getCompetitionService() {
+        return competitionService;
+    }
+
+    public ConfigValidationService getConfigValidationService() {
+        return configValidationService;
     }
 
     public FeatureToggleService getFeatureToggleService() {

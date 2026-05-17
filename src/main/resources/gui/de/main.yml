@@ -63,6 +63,24 @@ items:
       - "&7Verfügbare Dateien werden automatisch geladen."
     actions:
       - "OPEN_LANGUAGE"
+  report:
+    slot: 33
+    material: BELL
+    name: "&cPlot melden"
+    lore:
+      - "&7Sendet eine Meldung zum"
+      - "&7aktuellen Plot an das Team."
+    actions:
+      - "PLAYER_COMMAND:pe report GUI-Meldung"
+  contest:
+    slot: 34
+    material: GOLDEN_APPLE
+    name: "&6Wettbewerb"
+    lore:
+      - "&7Meldet dieses Plot für"
+      - "&7den Standard-Wettbewerb an."
+    actions:
+      - "PLAYER_COMMAND:pe contest join default GUI-Anmeldung"
   info:
     slot: 13
     material: PLAYER_HEAD

@@ -63,6 +63,24 @@ items:
       - "&7Available files are loaded automatically."
     actions:
       - "OPEN_LANGUAGE"
+  report:
+    slot: 33
+    material: BELL
+    name: "&cReport Plot"
+    lore:
+      - "&7Sends a report for"
+      - "&7the current plot to staff."
+    actions:
+      - "PLAYER_COMMAND:pe report GUI report"
+  contest:
+    slot: 34
+    material: GOLDEN_APPLE
+    name: "&6Competition"
+    lore:
+      - "&7Registers this plot for"
+      - "&7the default competition."
+    actions:
+      - "PLAYER_COMMAND:pe contest join default GUI entry"
   info:
     slot: 13
     material: PLAYER_HEAD
