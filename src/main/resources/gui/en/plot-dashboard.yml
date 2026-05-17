@@ -4,15 +4,15 @@ size: 54
 
 fill:
   enabled: true
-  material: BLUE_STAINED_GLASS_PANE
+  material: LIGHT_BLUE_STAINED_GLASS_PANE
   name: " "
 
 items:
   overview:
-    slot: 13
+    slot: 4
     material: PLAYER_HEAD
     head-database: "9382"
-    name: "&ePlot Dashboard"
+    name: "&ePlot Overview"
     lore:
       - "&7Plot: &f{plot_world} {plot_id}"
       - "&7Owner: &f{plot_owner}"
@@ -22,28 +22,8 @@ items:
       - "&7Favorites: &f{plot_likes}"
       - "&7Warps: &f{plot_warps}"
       - "&7Plots: &f{plot_count}&7/&f{plot_max}"
-  note:
-    slot: 20
-    material: WRITABLE_BOOK
-    name: "&aPlot Note"
-    lore:
-      - "&7Current:"
-      - "&f{plot_owner_note}"
-      - "&8Owners can change it."
-    actions:
-      - "PLOT_NOTE_PROMPT"
-  like:
-    slot: 21
-    material: EMERALD
-    name: "&aFavorite"
-    lore:
-      - "&7Marks this plot"
-      - "&7as a favorite."
-      - "&7Current: &f{plot_likes}"
-    actions:
-      - "TOGGLE_PLOT_LIKE"
   settings:
-    slot: 22
+    slot: 10
     material: COMPARATOR
     name: "&aSettings"
     lore:
@@ -52,15 +32,41 @@ items:
     actions:
       - "OPEN:settings"
   flags:
-    slot: 23
+    slot: 11
     material: REDSTONE_TORCH
     name: "&aFlags"
     lore:
-      - "&7View and edit plot flags."
+      - "&7View and change"
+      - "&7plot flags."
     actions:
       - "OPEN:flags"
+  decor:
+    slot: 12
+    material: GRASS_BLOCK
+    name: "&aDecor"
+    lore:
+      - "&7Change wall and border."
+    actions:
+      - "OPEN:decor"
+  members:
+    slot: 13
+    material: PLAYER_HEAD
+    name: "&aMembers"
+    lore:
+      - "&7Members, trusts"
+      - "&7and roles."
+    actions:
+      - "OPEN:members"
+  warps:
+    slot: 14
+    material: ENDER_PEARL
+    name: "&aPlot Warps"
+    lore:
+      - "&7Saved places: &f{plot_warps}"
+    actions:
+      - "OPEN:plot-warps"
   entity-limits:
-    slot: 24
+    slot: 15
     material: ARMOR_STAND
     name: "&aEntity Limits"
     lore:
@@ -68,44 +74,8 @@ items:
       - "&7and maximum values."
     actions:
       - "OPEN:entity-limits"
-  members:
-    slot: 30
-    material: PLAYER_HEAD
-    name: "&aMembers"
-    lore:
-      - "&7Members and roles."
-    actions:
-      - "OPEN:members"
-  warps:
-    slot: 29
-    material: ENDER_PEARL
-    name: "&aPlot Warps"
-    lore:
-      - "&7Saved locations on"
-      - "&7this plot: &f{plot_warps}"
-    actions:
-      - "OPEN:plot-warps"
-  decor:
-    slot: 31
-    material: GRASS_BLOCK
-    name: "&aDecor"
-    lore:
-      - "&7Change wall and border."
-    actions:
-      - "OPEN:decor"
-  team-note:
-    slot: 32
-    permission: "craftplayplotextras.plotmeta.team"
-    material: KNOWLEDGE_BOOK
-    name: "&bTeam Note"
-    lore:
-      - "&7Current:"
-      - "&f{plot_team_note}"
-      - "&8Staff only."
-    actions:
-      - "TEAM_NOTE_PROMPT"
   presets:
-    slot: 33
+    slot: 16
     material: MAP
     name: "&aPresets"
     lore:
@@ -113,6 +83,53 @@ items:
       - "&7common plot settings."
     actions:
       - "OPEN:flag-presets"
+  note:
+    slot: 21
+    material: WRITABLE_BOOK
+    name: "&aPlot Note"
+    lore:
+      - "&7Current:"
+      - "&f{plot_owner_note}"
+    actions:
+      - "PLOT_NOTE_PROMPT"
+  like:
+    slot: 22
+    material: EMERALD
+    name: "&aFavorite"
+    lore:
+      - "&7Current: &f{plot_likes}"
+      - "&7Click to toggle."
+    actions:
+      - "TOGGLE_PLOT_LIKE"
+  report:
+    slot: 23
+    material: BELL
+    name: "&cReport Plot"
+    lore:
+      - "&7Reports this plot"
+      - "&7to staff."
+    actions:
+      - "PLAYER_COMMAND:pe report Dashboard report"
+  contest:
+    slot: 24
+    material: GOLDEN_APPLE
+    name: "&6Competition"
+    lore:
+      - "&7Registers this plot for"
+      - "&7the default competition."
+    actions:
+      - "PLAYER_COMMAND:pe contest join default Dashboard entry"
+  team-note:
+    slot: 31
+    permission: "craftplayplotextras.plotmeta.team"
+    material: KNOWLEDGE_BOOK
+    name: "&bStaff Note"
+    lore:
+      - "&7Current:"
+      - "&f{plot_team_note}"
+      - "&8Staff only."
+    actions:
+      - "TEAM_NOTE_PROMPT"
   back:
     slot: 45
     material: ARROW

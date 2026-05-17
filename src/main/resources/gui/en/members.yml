@@ -10,7 +10,7 @@ fill:
 
 items:
   invite:
-    slot: 3
+    slot: 11
     material: PLAYER_HEAD
     name: "&aInvite player"
     lore:
@@ -20,7 +20,7 @@ items:
     actions:
       - "INVITE_MEMBER_PROMPT"
   plot-members-command:
-    slot: 4
+    slot: 13
     material: NAME_TAG
     name: "&aPlotSquared Members"
     lore:
@@ -28,7 +28,7 @@ items:
     commands:
       - "player:plot members"
   roles:
-    slot: 5
+    slot: 15
     material: BOOK
     name: "&aPlot Roles"
     lore:
@@ -52,7 +52,7 @@ items:
 dynamic:
   enabled: true
   type: members
-  slots: "10-16,19-25,28-34"
+  slots: "19-25,28-34,37-43"
   owner-item:
     material: PLAYER_HEAD
     skull-owner: "{member_name}"

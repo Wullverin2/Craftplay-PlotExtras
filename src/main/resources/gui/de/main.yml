@@ -5,17 +5,48 @@ size: 54
 
 fill:
   enabled: true
-  material: BLACK_STAINED_GLASS_PANE
+  material: GRAY_STAINED_GLASS_PANE
   name: " "
 
 items:
-  flags:
+  info:
+    slot: 4
+    material: PLAYER_HEAD
+    head-database: "9382"
+    name: "&ePlot-Übersicht"
+    lore:
+      - "&7Plots: &f{plot_count}&7/&f{plot_max}"
+      - "&7Geld: &f{cmi_money}"
+      - "&7Jobs: &f{jobs}"
+      - "&7Quests: &f{quests_completed}&7/&f{quests_total}"
+      - "&8Aktuelles Plot: &f{plot_id}"
+    actions:
+      - "OPEN:plot-dashboard"
+  dashboard:
+    slot: 19
+    material: MAP
+    name: "&aDashboard"
+    lore:
+      - "&7Status, Notizen, Warps"
+      - "&7und Schnellaktionen."
+    actions:
+      - "OPEN:plot-dashboard"
+  settings:
     slot: 20
+    material: COMPARATOR
+    name: "&aPloteinstellungen"
+    lore:
+      - "&7Home, Wetter, Zeit"
+      - "&7und Plotbiom."
+    actions:
+      - "OPEN:settings"
+  flags:
+    slot: 21
     material: REDSTONE_TORCH
     name: "&aPlotflags"
     lore:
-      - "&7Schalte PlotSquared-Flags ein oder aus."
-      - "&8Aktuelles Plot: &f{plot_id}"
+      - "&7Schalte PlotSquared-Flags"
+      - "&7ein oder aus."
     actions:
       - "OPEN:flags"
   decor:
@@ -23,48 +54,39 @@ items:
     material: GRASS_BLOCK
     name: "&aDeko"
     lore:
-      - "&7Ändere Wand- und Randblöcke."
-      - "&8Nur für deinen aktuellen Plot."
+      - "&7Ändere Wand und Rand"
+      - "&7für dein aktuelles Plot."
     actions:
       - "OPEN:decor"
   members:
-    slot: 24
+    slot: 23
     material: PLAYER_HEAD
     name: "&aMitglieder"
     lore:
-      - "&7Übersicht über Besitzer,"
-      - "&7Mitglieder, Trusts und Sperren."
+      - "&7Mitglieder, Trusts,"
+      - "&7Sperren und Rollen."
     actions:
       - "OPEN:members"
-  settings:
-    slot: 30
-    material: COMPARATOR
-    name: "&aPloteinstellungen"
-    lore:
-      - "&7Infos und Schnellaktionen."
-      - "&8Owner: &f{plot_owner}"
-    actions:
-      - "OPEN:plot-dashboard"
   entity-limits:
-    slot: 31
+    slot: 24
     material: ARMOR_STAND
     name: "&aEntity-Limits"
     lore:
-      - "&7Zeigt, wie viele Entities"
-      - "&7du auf dem Plot setzen kannst."
+      - "&7Zeigt aktuelle Entities"
+      - "&7und maximale Werte."
     actions:
       - "OPEN:entity-limits"
   language:
-    slot: 32
+    slot: 25
     material: WRITABLE_BOOK
     name: "&aSprache"
     lore:
       - "&7Aktuell: &f{language}"
-      - "&7Verfügbare Dateien werden automatisch geladen."
+      - "&7Sprachen werden automatisch geladen."
     actions:
       - "OPEN_LANGUAGE"
   report:
-    slot: 33
+    slot: 30
     material: BELL
     name: "&cPlot melden"
     lore:
@@ -73,7 +95,7 @@ items:
     actions:
       - "PLAYER_COMMAND:pe report GUI-Meldung"
   contest:
-    slot: 34
+    slot: 32
     material: GOLDEN_APPLE
     name: "&6Wettbewerb"
     lore:
@@ -81,26 +103,14 @@ items:
       - "&7den Standard-Wettbewerb an."
     actions:
       - "PLAYER_COMMAND:pe contest join default GUI-Anmeldung"
-  info:
-    slot: 13
-    material: PLAYER_HEAD
-    head-database: "9382"
-    name: "&ePlot-Info"
-    lore:
-      - "&7Plots: &f{plot_count}&7/&f{plot_max}"
-      - "&7Geld: &f{cmi_money}"
-      - "&7Jobs: &f{jobs}"
-      - "&7Quests: &f{quests_completed}&7/&f{quests_total}"
-    actions:
-      - "OPEN:settings"
   team-inspector:
     slot: 46
     permission: "craftplayplotextras.audit.view"
     material: SPYGLASS
     name: "&bTeam-Inspektor"
     lore:
-      - "&7Plot prüfen, Logs ansehen"
-      - "&7und Supportdaten öffnen."
+      - "&7Supportdaten, Logs"
+      - "&7und Teamwerkzeuge."
     actions:
       - "OPEN:team-inspector"
   audit-log:
@@ -109,7 +119,8 @@ items:
     material: WRITABLE_BOOK
     name: "&bAuditlog"
     lore:
-      - "&7Zeigt die letzten Plotaktionen."
+      - "&7Zeigt die letzten"
+      - "&7Plotaktionen."
     actions:
       - "OPEN:audit-log"
   close:

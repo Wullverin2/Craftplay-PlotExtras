@@ -1,21 +1,52 @@
-# English main GUI.
-# title, size, fill, items, slots, material, name, lore, HeadDatabase and actions can be changed freely.
+# Main GUI for English.
+# title, size, fill, items, slots, material, name, lore, HeadDatabase and actions can be customized freely.
 title: "&8Plot Menu"
 size: 54
 
 fill:
   enabled: true
-  material: BLACK_STAINED_GLASS_PANE
+  material: GRAY_STAINED_GLASS_PANE
   name: " "
 
 items:
-  flags:
+  info:
+    slot: 4
+    material: PLAYER_HEAD
+    head-database: "9382"
+    name: "&ePlot Overview"
+    lore:
+      - "&7Plots: &f{plot_count}&7/&f{plot_max}"
+      - "&7Money: &f{cmi_money}"
+      - "&7Jobs: &f{jobs}"
+      - "&7Quests: &f{quests_completed}&7/&f{quests_total}"
+      - "&8Current plot: &f{plot_id}"
+    actions:
+      - "OPEN:plot-dashboard"
+  dashboard:
+    slot: 19
+    material: MAP
+    name: "&aDashboard"
+    lore:
+      - "&7Status, notes, warps"
+      - "&7and quick actions."
+    actions:
+      - "OPEN:plot-dashboard"
+  settings:
     slot: 20
+    material: COMPARATOR
+    name: "&aPlot Settings"
+    lore:
+      - "&7Home, weather, time"
+      - "&7and plot biome."
+    actions:
+      - "OPEN:settings"
+  flags:
+    slot: 21
     material: REDSTONE_TORCH
     name: "&aPlot Flags"
     lore:
-      - "&7Toggle PlotSquared flags."
-      - "&8Current plot: &f{plot_id}"
+      - "&7Toggle PlotSquared flags"
+      - "&7on or off."
     actions:
       - "OPEN:flags"
   decor:
@@ -23,48 +54,39 @@ items:
     material: GRASS_BLOCK
     name: "&aDecor"
     lore:
-      - "&7Change wall and border blocks."
-      - "&8Only for your current plot."
+      - "&7Change wall and border"
+      - "&7for your current plot."
     actions:
       - "OPEN:decor"
   members:
-    slot: 24
+    slot: 23
     material: PLAYER_HEAD
     name: "&aMembers"
     lore:
-      - "&7View owner, members,"
-      - "&7trusted and denied players."
+      - "&7Members, trusts,"
+      - "&7denies and roles."
     actions:
       - "OPEN:members"
-  settings:
-    slot: 30
-    material: COMPARATOR
-    name: "&aPlot Settings"
-    lore:
-      - "&7Info and quick actions."
-      - "&8Owner: &f{plot_owner}"
-    actions:
-      - "OPEN:plot-dashboard"
   entity-limits:
-    slot: 31
+    slot: 24
     material: ARMOR_STAND
     name: "&aEntity Limits"
     lore:
-      - "&7Shows current and maximum"
-      - "&7entities for this plot."
+      - "&7Shows current entities"
+      - "&7and maximum values."
     actions:
       - "OPEN:entity-limits"
   language:
-    slot: 32
+    slot: 25
     material: WRITABLE_BOOK
     name: "&aLanguage"
     lore:
       - "&7Current: &f{language}"
-      - "&7Available files are loaded automatically."
+      - "&7Languages load automatically."
     actions:
       - "OPEN_LANGUAGE"
   report:
-    slot: 33
+    slot: 30
     material: BELL
     name: "&cReport Plot"
     lore:
@@ -73,7 +95,7 @@ items:
     actions:
       - "PLAYER_COMMAND:pe report GUI report"
   contest:
-    slot: 34
+    slot: 32
     material: GOLDEN_APPLE
     name: "&6Competition"
     lore:
@@ -81,26 +103,14 @@ items:
       - "&7the default competition."
     actions:
       - "PLAYER_COMMAND:pe contest join default GUI entry"
-  info:
-    slot: 13
-    material: PLAYER_HEAD
-    head-database: "9382"
-    name: "&ePlot Info"
-    lore:
-      - "&7Plots: &f{plot_count}&7/&f{plot_max}"
-      - "&7Money: &f{cmi_money}"
-      - "&7Jobs: &f{jobs}"
-      - "&7Quests: &f{quests_completed}&7/&f{quests_total}"
-    actions:
-      - "OPEN:settings"
   team-inspector:
     slot: 46
     permission: "craftplayplotextras.audit.view"
     material: SPYGLASS
     name: "&bTeam Inspector"
     lore:
-      - "&7Review plot, logs and"
-      - "&7support data."
+      - "&7Support data, logs"
+      - "&7and staff tools."
     actions:
       - "OPEN:team-inspector"
   audit-log:
@@ -109,7 +119,8 @@ items:
     material: WRITABLE_BOOK
     name: "&bAudit Log"
     lore:
-      - "&7Shows recent plot actions."
+      - "&7Shows recent"
+      - "&7plot actions."
     actions:
       - "OPEN:audit-log"
   close:
@@ -117,6 +128,6 @@ items:
     material: BARRIER
     name: "&cClose"
     lore:
-      - "&7Close this menu."
+      - "&7Close this window."
     actions:
       - "CLOSE"

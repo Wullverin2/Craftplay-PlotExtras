@@ -4,15 +4,15 @@ size: 54
 
 fill:
   enabled: true
-  material: BLUE_STAINED_GLASS_PANE
+  material: LIGHT_BLUE_STAINED_GLASS_PANE
   name: " "
 
 items:
   overview:
-    slot: 13
+    slot: 4
     material: PLAYER_HEAD
     head-database: "9382"
-    name: "&ePlot-Dashboard"
+    name: "&ePlot-Übersicht"
     lore:
       - "&7Plot: &f{plot_world} {plot_id}"
       - "&7Besitzer: &f{plot_owner}"
@@ -22,28 +22,8 @@ items:
       - "&7Favoriten: &f{plot_likes}"
       - "&7Warps: &f{plot_warps}"
       - "&7Plots: &f{plot_count}&7/&f{plot_max}"
-  note:
-    slot: 20
-    material: WRITABLE_BOOK
-    name: "&aPlotnotiz"
-    lore:
-      - "&7Aktuell:"
-      - "&f{plot_owner_note}"
-      - "&8Besitzer können sie ändern."
-    actions:
-      - "PLOT_NOTE_PROMPT"
-  like:
-    slot: 21
-    material: EMERALD
-    name: "&aFavorisieren"
-    lore:
-      - "&7Markiert dieses Plot"
-      - "&7als Favorit."
-      - "&7Aktuell: &f{plot_likes}"
-    actions:
-      - "TOGGLE_PLOT_LIKE"
   settings:
-    slot: 22
+    slot: 10
     material: COMPARATOR
     name: "&aEinstellungen"
     lore:
@@ -52,7 +32,7 @@ items:
     actions:
       - "OPEN:settings"
   flags:
-    slot: 23
+    slot: 11
     material: REDSTONE_TORCH
     name: "&aFlags"
     lore:
@@ -60,8 +40,33 @@ items:
       - "&7und ändern."
     actions:
       - "OPEN:flags"
+  decor:
+    slot: 12
+    material: GRASS_BLOCK
+    name: "&aDeko"
+    lore:
+      - "&7Wand und Rand ändern."
+    actions:
+      - "OPEN:decor"
+  members:
+    slot: 13
+    material: PLAYER_HEAD
+    name: "&aMitglieder"
+    lore:
+      - "&7Mitglieder, Trusts"
+      - "&7und Rollen."
+    actions:
+      - "OPEN:members"
+  warps:
+    slot: 14
+    material: ENDER_PEARL
+    name: "&aPlot-Warps"
+    lore:
+      - "&7Gespeicherte Orte: &f{plot_warps}"
+    actions:
+      - "OPEN:plot-warps"
   entity-limits:
-    slot: 24
+    slot: 15
     material: ARMOR_STAND
     name: "&aEntity-Limits"
     lore:
@@ -69,33 +74,53 @@ items:
       - "&7und Maximalwerte."
     actions:
       - "OPEN:entity-limits"
-  members:
-    slot: 30
-    material: PLAYER_HEAD
-    name: "&aMitglieder"
+  presets:
+    slot: 16
+    material: MAP
+    name: "&aPresets"
     lore:
-      - "&7Mitglieder und Rollen."
+      - "&7Schnelle Vorlagen für"
+      - "&7typische Plot-Einstellungen."
     actions:
-      - "OPEN:members"
-  warps:
-    slot: 29
-    material: ENDER_PEARL
-    name: "&aPlot-Warps"
+      - "OPEN:flag-presets"
+  note:
+    slot: 21
+    material: WRITABLE_BOOK
+    name: "&aPlotnotiz"
     lore:
-      - "&7Gespeicherte Orte auf"
-      - "&7diesem Plot: &f{plot_warps}"
+      - "&7Aktuell:"
+      - "&f{plot_owner_note}"
     actions:
-      - "OPEN:plot-warps"
-  decor:
-    slot: 31
-    material: GRASS_BLOCK
-    name: "&aDeko"
+      - "PLOT_NOTE_PROMPT"
+  like:
+    slot: 22
+    material: EMERALD
+    name: "&aFavorisieren"
     lore:
-      - "&7Wand und Rand ändern."
+      - "&7Aktuell: &f{plot_likes}"
+      - "&7Klicke zum Umschalten."
     actions:
-      - "OPEN:decor"
+      - "TOGGLE_PLOT_LIKE"
+  report:
+    slot: 23
+    material: BELL
+    name: "&cPlot melden"
+    lore:
+      - "&7Meldet dieses Plot"
+      - "&7an das Team."
+    actions:
+      - "PLAYER_COMMAND:pe report Dashboard-Meldung"
+  contest:
+    slot: 24
+    material: GOLDEN_APPLE
+    name: "&6Wettbewerb"
+    lore:
+      - "&7Meldet dieses Plot für"
+      - "&7den Standard-Wettbewerb an."
+    actions:
+      - "PLAYER_COMMAND:pe contest join default Dashboard-Anmeldung"
   team-note:
-    slot: 32
+    slot: 31
     permission: "craftplayplotextras.plotmeta.team"
     material: KNOWLEDGE_BOOK
     name: "&bTeamnotiz"
@@ -105,15 +130,6 @@ items:
       - "&8Nur Teammitglieder."
     actions:
       - "TEAM_NOTE_PROMPT"
-  presets:
-    slot: 33
-    material: MAP
-    name: "&aPresets"
-    lore:
-      - "&7Schnelle Vorlagen für"
-      - "&7typische Plot-Einstellungen."
-    actions:
-      - "OPEN:flag-presets"
   back:
     slot: 45
     material: ARROW
