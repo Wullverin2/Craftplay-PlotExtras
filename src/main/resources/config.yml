@@ -42,6 +42,8 @@ plot-backups:
   manual:
     # Wenn true, koennen Admins ueber den Backup-Unterbefehl oder das Team-GUI manuelle Schematic-Backups starten.
     enabled: true
+  # 0 deaktiviert das automatische Loeschen alter Backups. Wichtige Backups werden nie automatisch geloescht.
+  retention-days: 0
   automatic:
     # Wenn true, wird vor dem Loeschen oder Ablaufloeschen eines Plots ein Backup gestartet.
     on-delete: true

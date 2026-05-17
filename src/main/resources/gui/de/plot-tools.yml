@@ -55,6 +55,24 @@ items:
       - "&8Suchwort wird im Chat eingegeben."
     actions:
       - "OPEN:plot-search"
+  top-plots:
+    slot: 37
+    material: GOLD_INGOT
+    name: "&6Top-Plots"
+    lore:
+      - "&7Beliebte und aktive"
+      - "&7öffentliche Plots finden."
+    actions:
+      - "OPEN:top-plots"
+  mailbox:
+    slot: 38
+    material: WRITABLE_BOOK
+    name: "&aMailbox"
+    lore:
+      - "&7Nachrichten für dieses"
+      - "&7Plot lesen oder schreiben."
+    actions:
+      - "OPEN:mailbox"
   favorite:
     slot: 28
     material: EMERALD

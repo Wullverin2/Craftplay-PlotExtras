@@ -128,6 +128,14 @@ features:
       # Persönliche Favoritenliste für Plots.
       enabled: true
 
+    option-favorites:
+      # Persoenliche Favoriten fuer Deko-, Zeit-, Wetter- und Biomoptionen.
+      enabled: true
+
+    undo:
+      # Letzte Deko- oder Einstellungs-Aenderung auf dem Plot zuruecknehmen.
+      enabled: true
+
     plot-profile:
       # Plotbeschreibung, Kategorie, Tags und Besuchsmodus.
       enabled: true
@@ -136,8 +144,24 @@ features:
       # Suche nach Plotprofilen, Tags, Kategorien und Beschreibungen.
       enabled: true
 
+    top-plots:
+      # Ranglisten nach Besuchen, Wochenbesuchen, Tagesbesuchen oder Likes.
+      enabled: true
+
+    random-plot:
+      # Teleportiert Spieler zu einem zufaelligen oeffentlichen Plotprofil.
+      enabled: true
+
     guestbook:
       # Öffentliches Gästebuch pro Plot.
+      enabled: true
+
+    mailbox:
+      # Private Nachrichtenbox fuer Plotbesitzer und berechtigte Rollen.
+      enabled: true
+
+    multi-homes:
+      # Mehrere benannte Plot-Homes mit optionaler Rollenfreigabe.
       enabled: true
 
     requests:

@@ -1,0 +1,53 @@
+# Bedrock: mehrere Plot-Homes.
+title: "&8Plot-Homes"
+size: 54
+bedrock:
+  content: "Homes: {plot_homes}\nEin Home anklicken zum Teleportieren."
+
+fill:
+  enabled: true
+  material: LIGHT_GRAY_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  add:
+    slot: 4
+    material: LIME_DYE
+    name: "&aHome setzen"
+    lore:
+      - "&7Format: id; Name; Rolle"
+    actions:
+      - "SET_NAMED_HOME_PROMPT"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:settings"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: "plot-homes"
+  slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+  home-item:
+    material: ENDER_PEARL
+    name: "&a{home_display}"
+    lore:
+      - "&7Rolle: &f{home_role}"
+      - "&7Ort: &f{home_world} {home_x} {home_y} {home_z}"
+    actions:
+      - "PLOT_HOME_CLICK:{home_id}"
+  previous-item:
+    slot: 47
+    material: ARROW
+    name: "&eVorherige Seite"
+  next-item:
+    slot: 51
+    material: ARROW
+    name: "&eNächste Seite"

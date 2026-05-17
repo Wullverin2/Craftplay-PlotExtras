@@ -53,6 +53,7 @@ public final class EntityLimitService implements Listener {
     private final Map<String, LimitRule> limitRules = new LinkedHashMap<>();
     private final Map<String, RegionCacheEntry> regionCache = new LinkedHashMap<>();
     private final Map<String, CountCacheEntry> countCache = new LinkedHashMap<>();
+    private final Map<String, Long> warningCooldowns = new LinkedHashMap<>();
 
     public EntityLimitService(final JavaPlugin plugin, final LanguageManager languageManager, final FeatureToggleService featureToggleService) {
         this.plugin = plugin;
@@ -67,6 +68,7 @@ public final class EntityLimitService implements Listener {
         limitRules.clear();
         regionCache.clear();
         countCache.clear();
+        warningCooldowns.clear();
 
         final ConfigurationSection limitsSection = config.getConfigurationSection("limits");
         if (limitsSection == null) {
@@ -104,6 +106,7 @@ public final class EntityLimitService implements Listener {
     public void onEntityPlace(final EntityPlaceEvent event) {
         final LimitCheck check = check(event.getPlayer(), event.getEntity().getType(), event.getEntity().getUniqueId(), event.getEntity().getLocation());
         if (check.allowed()) {
+            warnIfNearLimit(event.getPlayer(), event.getEntity().getType(), event.getEntity().getUniqueId(), event.getEntity().getLocation());
             return;
         }
         event.setCancelled(true);
@@ -114,6 +117,7 @@ public final class EntityLimitService implements Listener {
     public void onHangingPlace(final HangingPlaceEvent event) {
         final LimitCheck check = check(event.getPlayer(), event.getEntity().getType(), event.getEntity().getUniqueId(), event.getEntity().getLocation());
         if (check.allowed()) {
+            warnIfNearLimit(event.getPlayer(), event.getEntity().getType(), event.getEntity().getUniqueId(), event.getEntity().getLocation());
             return;
         }
         event.setCancelled(true);
@@ -139,6 +143,7 @@ public final class EntityLimitService implements Listener {
         final Player player = event.getBreeder() instanceof Player breeder ? breeder : null;
         final LimitCheck check = check(player, event.getEntity().getType(), event.getEntity().getUniqueId(), event.getEntity().getLocation());
         if (check.allowed()) {
+            warnIfNearLimit(player, event.getEntity().getType(), event.getEntity().getUniqueId(), event.getEntity().getLocation());
             return;
         }
         event.setCancelled(true);
@@ -167,6 +172,7 @@ public final class EntityLimitService implements Listener {
         final Player player = shooter instanceof Player shooterPlayer ? shooterPlayer : null;
         final LimitCheck check = check(player, event.getEntity().getType(), event.getEntity().getUniqueId(), event.getEntity().getLocation());
         if (check.allowed()) {
+            warnIfNearLimit(player, event.getEntity().getType(), event.getEntity().getUniqueId(), event.getEntity().getLocation());
             return;
         }
         event.setCancelled(true);
@@ -203,6 +209,7 @@ public final class EntityLimitService implements Listener {
 
         final LimitCheck check = check(event.getPlayer(), entityType, null, spawnLocation);
         if (check.allowed()) {
+            warnIfNearLimit(event.getPlayer(), entityType, null, spawnLocation);
             return;
         }
         event.setCancelled(true);
@@ -427,6 +434,50 @@ public final class EntityLimitService implements Listener {
         ));
     }
 
+    private void warnIfNearLimit(final Player player, final EntityType entityType, final UUID ignoredEntityId, final Location location) {
+        if (player == null || !settings.enabled() || !featureToggleService.isEnabled("limits.enforce")
+                || !settings.warningsEnabled() || hasBypass(player) || !isCountable(entityType)) {
+            return;
+        }
+        final Plot plot = getPlot(location);
+        if (plot == null || !plot.hasOwner()) {
+            return;
+        }
+        for (final LimitRule rule : matchingRules(entityType)) {
+            final int limit = limitFor(player, rule);
+            if (limit <= 0) {
+                continue;
+            }
+            final int current = countEntities(plot, rule, ignoredEntityId) + 1;
+            final int percent = (int) Math.floor((current * 100D) / limit);
+            int matchedThreshold = -1;
+            for (final int threshold : settings.warningPercentages()) {
+                if (percent >= threshold) {
+                    matchedThreshold = Math.max(matchedThreshold, threshold);
+                }
+            }
+            if (matchedThreshold < 0) {
+                continue;
+            }
+            final String cooldownKey = player.getUniqueId() + "|" + plotKey(plot) + "|" + rule.id() + "|" + matchedThreshold;
+            final long now = System.currentTimeMillis();
+            final Long nextAllowed = warningCooldowns.get(cooldownKey);
+            if (nextAllowed != null && nextAllowed > now) {
+                continue;
+            }
+            warningCooldowns.put(cooldownKey, now + settings.warningCooldownMillis());
+            languageManager.send(player, "entity-limit-warning", Map.of(
+                    "limit", rule.display(),
+                    "count", String.valueOf(current),
+                    "max", String.valueOf(limit),
+                    "remaining", String.valueOf(Math.max(0, limit - current)),
+                    "percent", String.valueOf(percent),
+                    "threshold", String.valueOf(matchedThreshold)
+            ));
+            return;
+        }
+    }
+
     private boolean hasBypass(final Player player) {
         return player != null
                 && (player.hasPermission("craftplayplotextras.admin") || player.hasPermission(settings.bypassPermission()));
@@ -478,6 +529,9 @@ public final class EntityLimitService implements Listener {
             boolean limitProjectiles,
             long regionCacheMillis,
             long countCacheMillis,
+            boolean warningsEnabled,
+            List<Integer> warningPercentages,
+            long warningCooldownMillis,
             String bypassPermission,
             Set<EntityType> excludedTypes,
             Set<CreatureSpawnEvent.SpawnReason> limitedSpawnReasons
@@ -492,6 +546,9 @@ public final class EntityLimitService implements Listener {
                     true,
                     5000L,
                     1000L,
+                    true,
+                    List.of(80, 100),
+                    30000L,
                     "craftplayplotextras.entitylimit.bypass",
                     Set.of(EntityType.PLAYER, EntityType.UNKNOWN),
                     Set.of(
@@ -519,6 +576,9 @@ public final class EntityLimitService implements Listener {
                     section.getBoolean("limit-projectiles", defaults.limitProjectiles()),
                     Math.max(0L, section.getLong("region-cache-millis", defaults.regionCacheMillis())),
                     Math.max(0L, section.getLong("count-cache-millis", defaults.countCacheMillis())),
+                    section.getBoolean("warnings.enabled", defaults.warningsEnabled()),
+                    EntityLimitService.warningPercentages(section.getIntegerList("warnings.percentages"), defaults.warningPercentages()),
+                    Math.max(0L, section.getLong("warnings.cooldown-seconds", defaults.warningCooldownMillis() / 1000L)) * 1000L,
                     section.getString("bypass-permission", defaults.bypassPermission()),
                     entityTypes(section.getStringList("excluded-types"), defaults.excludedTypes()),
                     spawnReasons(section.getStringList("limited-spawn-reasons"), defaults.limitedSpawnReasons())
@@ -636,5 +696,16 @@ public final class EntityLimitService implements Listener {
             }
         }
         return reasons.isEmpty() ? fallback : Set.copyOf(reasons);
+    }
+
+    private static List<Integer> warningPercentages(final List<Integer> values, final List<Integer> fallback) {
+        if (values.isEmpty()) {
+            return fallback;
+        }
+        final List<Integer> percentages = values.stream()
+                .filter(value -> value > 0)
+                .sorted()
+                .toList();
+        return percentages.isEmpty() ? fallback : percentages;
     }
 }

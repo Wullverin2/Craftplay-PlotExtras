@@ -69,6 +69,7 @@ public final class PlotBackupService {
         }
         data = YamlConfiguration.loadConfiguration(dataFile);
         reloadEntries();
+        pruneExpiredBackups();
     }
 
     @Subscribe
@@ -181,6 +182,58 @@ public final class PlotBackupService {
         return createBackup(plot, "manual-" + sanitize(blank(reason, "admin")), actor.getName());
     }
 
+    public boolean setComment(final Player actor, final String backupId, final String comment) {
+        if (!canManage(actor)) {
+            return false;
+        }
+        final PlotBackupEntry entry = getBackup(backupId).orElse(null);
+        if (entry == null) {
+            return false;
+        }
+        saveEntry(new PlotBackupEntry(
+                entry.id(),
+                entry.ownerUuid(),
+                entry.ownerName(),
+                entry.createdAt(),
+                entry.reason(),
+                entry.sourceWorld(),
+                entry.sourcePlot(),
+                entry.mergeSize(),
+                entry.plotCount(),
+                entry.sourcePlots(),
+                entry.schematicFile(),
+                blank(comment, ""),
+                entry.important()
+        ));
+        return true;
+    }
+
+    public boolean toggleImportant(final Player actor, final String backupId) {
+        if (!canManage(actor)) {
+            return false;
+        }
+        final PlotBackupEntry entry = getBackup(backupId).orElse(null);
+        if (entry == null) {
+            return false;
+        }
+        saveEntry(new PlotBackupEntry(
+                entry.id(),
+                entry.ownerUuid(),
+                entry.ownerName(),
+                entry.createdAt(),
+                entry.reason(),
+                entry.sourceWorld(),
+                entry.sourcePlot(),
+                entry.mergeSize(),
+                entry.plotCount(),
+                entry.sourcePlots(),
+                entry.schematicFile(),
+                entry.comment(),
+                !entry.important()
+        ));
+        return true;
+    }
+
     private void createAutomaticBackup(final Plot plot, final String reason) {
         createBackup(plot, reason, "System");
     }
@@ -246,7 +299,9 @@ public final class PlotBackupService {
                         mergeSize,
                         connectedPlots.size(),
                         plotIds,
-                        schematicFile
+                        schematicFile,
+                        "",
+                        false
                 ));
                 plugin.getLogger().info("Created plot schematic backup " + schematicFile.getName() + " for " + ownerName + " (" + mergeSize + ") by " + actorName + ".");
             } finally {
@@ -281,7 +336,9 @@ public final class PlotBackupService {
                         entrySection.getString("merge-size", "1x1"),
                         entrySection.getInt("plot-count", 1),
                         entrySection.getStringList("source-plots"),
-                        new File(filePath)
+                        new File(filePath),
+                        entrySection.getString("comment", ""),
+                        entrySection.getBoolean("important", false)
                 );
                 backups.put(entry.id(), entry);
             } catch (final IllegalArgumentException exception) {
@@ -302,12 +359,46 @@ public final class PlotBackupService {
         data.set(path + ".plot-count", entry.plotCount());
         data.set(path + ".source-plots", entry.sourcePlots());
         data.set(path + ".schematic-file", entry.schematicFile().getAbsolutePath());
+        data.set(path + ".comment", entry.comment());
+        data.set(path + ".important", entry.important());
         try {
             data.save(dataFile);
             backups.put(entry.id(), entry);
         } catch (final Exception exception) {
             plugin.getLogger().log(Level.WARNING, "Could not save plot backup metadata.", exception);
         }
+    }
+
+    private void pruneExpiredBackups() {
+        final int retentionDays = plugin.getConfig().getInt("plot-backups.retention-days", 0);
+        if (retentionDays <= 0 || backups.isEmpty()) {
+            return;
+        }
+        final Instant deleteBefore = Instant.now().minusSeconds(retentionDays * 86400L);
+        final List<String> expired = backups.values().stream()
+                .filter(entry -> !entry.important())
+                .filter(entry -> entry.createdAt().isBefore(deleteBefore))
+                .map(PlotBackupEntry::id)
+                .toList();
+        if (expired.isEmpty()) {
+            return;
+        }
+        for (final String id : expired) {
+            final PlotBackupEntry entry = backups.remove(id);
+            if (entry == null) {
+                continue;
+            }
+            if (entry.schematicFile().exists() && !entry.schematicFile().delete()) {
+                plugin.getLogger().warning("Could not delete expired plot backup file: " + entry.schematicFile().getAbsolutePath());
+            }
+            data.set("backups." + id, null);
+        }
+        try {
+            data.save(dataFile);
+        } catch (final Exception exception) {
+            plugin.getLogger().log(Level.WARNING, "Could not save plot backup metadata after retention cleanup.", exception);
+        }
+        plugin.getLogger().info("Removed " + expired.size() + " expired plot backups. Important backups were kept.");
     }
 
     private boolean shouldBackup(final PlotUnlinkEvent.REASON reason) {

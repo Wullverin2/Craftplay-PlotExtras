@@ -50,6 +50,12 @@ items:
     name: "&aPlot Home"
     actions:
       - "TELEPORT_PLOT_HOME"
+  homes:
+    slot: 30
+    material: COMPASS
+    name: "&aMore Homes"
+    actions:
+      - "OPEN:plot-homes"
   sethome:
     slot: 31
     material: COMPASS

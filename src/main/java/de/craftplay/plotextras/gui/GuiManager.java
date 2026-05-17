@@ -108,6 +108,7 @@ public final class GuiManager implements Listener {
     private final Map<UUID, String> selectedBackups = new ConcurrentHashMap<>();
     private final Map<UUID, UUID> backupViewOwners = new ConcurrentHashMap<>();
     private final Map<UUID, List<PlotUtilityService.PlotProfileEntry>> searchResults = new ConcurrentHashMap<>();
+    private final Map<UUID, String> selectedTopModes = new ConcurrentHashMap<>();
     private final Map<UUID, ChatInput> pendingChatInputs = new ConcurrentHashMap<>();
 
     public GuiManager(
@@ -487,8 +488,11 @@ public final class GuiManager implements Listener {
             case "audit-log" -> renderAuditLog(player, inventory, holder, dynamic, placeholders, page);
             case "redstone-alerts" -> renderRedstoneAlerts(player, inventory, holder, dynamic, placeholders, page);
             case "plot-warps" -> renderPlotWarps(player, inventory, holder, dynamic, placeholders, page);
+            case "plot-homes" -> renderPlotHomes(player, inventory, holder, dynamic, placeholders, page);
             case "plot-search" -> renderPlotSearch(player, inventory, holder, dynamic, placeholders, page);
+            case "top-plots" -> renderTopPlots(player, inventory, holder, dynamic, placeholders, page);
             case "guestbook" -> renderGuestbook(player, inventory, holder, dynamic, placeholders, page);
+            case "mailbox" -> renderMailbox(player, inventory, holder, dynamic, placeholders, page);
             case "plot-requests" -> renderPlotRequests(player, inventory, holder, dynamic, placeholders, page);
             case "temporary-trusts" -> renderTemporaryTrusts(player, inventory, holder, dynamic, placeholders, page);
             case "plot-reports" -> renderPlotReports(player, inventory, holder, dynamic, placeholders, page);
@@ -711,6 +715,8 @@ public final class GuiManager implements Listener {
             itemPlaceholders.put("backup_plot", backup.sourcePlot());
             itemPlaceholders.put("backup_merge", backup.mergeSize());
             itemPlaceholders.put("backup_plot_count", String.valueOf(backup.plotCount()));
+            itemPlaceholders.put("backup_comment", backup.comment().isBlank() ? "-" : backup.comment());
+            itemPlaceholders.put("backup_important", backup.important() ? "ja" : "nein");
 
             final ItemStack item = buildItem(player, template, null, itemPlaceholders);
             final int slot = slots.get(index);
@@ -853,6 +859,46 @@ public final class GuiManager implements Listener {
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
     }
 
+    private void renderPlotHomes(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (slots.isEmpty() || plot == null) {
+            return;
+        }
+
+        final List<PlotUtilityService.HomeEntry> entries = plotUtilityService.visibleHomes(player, plot);
+        final PageSlice<PlotUtilityService.HomeEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("home-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PlotUtilityService.HomeEntry home = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("home_id", home.id());
+            itemPlaceholders.put("home_display", home.display());
+            itemPlaceholders.put("home_world", home.world());
+            itemPlaceholders.put("home_x", String.valueOf(Math.round(home.x())));
+            itemPlaceholders.put("home_y", String.valueOf(Math.round(home.y())));
+            itemPlaceholders.put("home_z", String.valueOf(Math.round(home.z())));
+            itemPlaceholders.put("home_role", home.role().isBlank() ? "-" : home.role());
+            itemPlaceholders.put("home_created_by", home.createdBy());
+            itemPlaceholders.put("home_created", BACKUP_TIME_FORMAT.format(home.createdAt()));
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
     private void renderPlotSearch(
             final Player player,
             final Inventory inventory,
@@ -893,6 +939,48 @@ public final class GuiManager implements Listener {
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
     }
 
+    private void renderTopPlots(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty()) {
+            return;
+        }
+        final String mode = selectedTopModes.getOrDefault(player.getUniqueId(), dynamic.getString("default-mode", "visits"));
+        final List<PlotMetaService.TopPlotEntry> entries = plotMetaService.topPlots(mode, Math.max(slots.size(), dynamic.getInt("limit", 100)));
+        final PageSlice<PlotMetaService.TopPlotEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("plot-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PlotMetaService.TopPlotEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            final String plotKey = entry.world() + ":" + entry.plotId().replace(';', '-');
+            itemPlaceholders.put("top_rank", String.valueOf(index + 1 + slice.page() * slots.size()));
+            itemPlaceholders.put("top_mode", mode);
+            itemPlaceholders.put("top_plot_key", plotKey);
+            itemPlaceholders.put("top_world", entry.world());
+            itemPlaceholders.put("top_plot", entry.plotId());
+            itemPlaceholders.put("top_score", String.valueOf(entry.score()));
+            itemPlaceholders.put("top_visits", String.valueOf(entry.visits()));
+            itemPlaceholders.put("top_visits_today", String.valueOf(entry.visitsToday()));
+            itemPlaceholders.put("top_visits_week", String.valueOf(entry.visitsWeek()));
+            itemPlaceholders.put("top_likes", String.valueOf(entry.likes()));
+            itemPlaceholders.put("top_last_visitor", entry.lastVisitor());
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
     private void renderGuestbook(
             final Player player,
             final Inventory inventory,
@@ -918,6 +1006,43 @@ public final class GuiManager implements Listener {
             itemPlaceholders.put("guestbook_created", BACKUP_TIME_FORMAT.format(entry.createdAt()));
             itemPlaceholders.put("guestbook_player", entry.playerName());
             itemPlaceholders.put("guestbook_message", entry.message());
+
+            final ItemStack item = buildItem(player, template, fallbackTemplate, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, canManage ? resolveActions(player, readActions(template, fallbackTemplate), itemPlaceholders) : List.of());
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderMailbox(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (slots.isEmpty() || plot == null) {
+            return;
+        }
+        final List<PlotUtilityService.MailboxEntry> entries = plotUtilityService.mailbox(plot, Integer.MAX_VALUE);
+        final boolean canManage = plotUtilityService.canManageMailbox(player, plot);
+        final PageSlice<PlotUtilityService.MailboxEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection(canManage ? "entry-item" : "readonly-entry-item");
+        final ConfigurationSection fallbackTemplate = dynamic.getConfigurationSection("entry-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PlotUtilityService.MailboxEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("mail_id", entry.id());
+            itemPlaceholders.put("mail_created", BACKUP_TIME_FORMAT.format(entry.createdAt()));
+            itemPlaceholders.put("mail_player", entry.playerName());
+            itemPlaceholders.put("mail_message", entry.message());
+            itemPlaceholders.put("mail_status", entry.status());
 
             final ItemStack item = buildItem(player, template, fallbackTemplate, itemPlaceholders);
             final int slot = slots.get(index);
@@ -1682,6 +1807,14 @@ public final class GuiManager implements Listener {
                 setComponent(player, action);
                 return;
             }
+            if (upperAction.equals("UNDO_LAST_CHANGE")) {
+                undoLastChange(player, holder);
+                return;
+            }
+            if (upperAction.startsWith("TOGGLE_OPTION_FAVORITE:")) {
+                toggleOptionFavorite(player, holder, action.substring("TOGGLE_OPTION_FAVORITE:".length()));
+                return;
+            }
             if (upperAction.equals("SHOW_PLOT_INFO")) {
                 showPlotInfo(player);
                 return;
@@ -1746,6 +1879,14 @@ public final class GuiManager implements Listener {
                 restoreSelectedBackup(player);
                 return;
             }
+            if (upperAction.equals("BACKUP_COMMENT_PROMPT")) {
+                startBackupCommentPrompt(player);
+                return;
+            }
+            if (upperAction.equals("TOGGLE_SELECTED_BACKUP_IMPORTANT")) {
+                toggleSelectedBackupImportant(player);
+                return;
+            }
             if (upperAction.equals("PLOT_NOTE_PROMPT")) {
                 startPlotNotePrompt(player);
                 return;
@@ -1770,20 +1911,44 @@ public final class GuiManager implements Listener {
                 startWarpSetPrompt(player);
                 return;
             }
+            if (upperAction.equals("SET_NAMED_HOME_PROMPT")) {
+                startNamedHomePrompt(player);
+                return;
+            }
             if (upperAction.startsWith("PLOT_WARP_CLICK:")) {
                 handlePlotWarpClick(player, event, action.substring("PLOT_WARP_CLICK:".length()));
+                return;
+            }
+            if (upperAction.startsWith("PLOT_HOME_CLICK:")) {
+                handlePlotHomeClick(player, event, action.substring("PLOT_HOME_CLICK:".length()));
                 return;
             }
             if (upperAction.startsWith("TELEPORT_PLOT_WARP:")) {
                 teleportPlotWarp(player, action.substring("TELEPORT_PLOT_WARP:".length()));
                 return;
             }
+            if (upperAction.startsWith("TELEPORT_PLOT_HOME:")) {
+                teleportNamedHome(player, action.substring("TELEPORT_PLOT_HOME:".length()));
+                return;
+            }
             if (upperAction.startsWith("DELETE_PLOT_WARP:")) {
                 deletePlotWarp(player, action.substring("DELETE_PLOT_WARP:".length()));
                 return;
             }
+            if (upperAction.startsWith("DELETE_PLOT_HOME:")) {
+                deleteNamedHome(player, action.substring("DELETE_PLOT_HOME:".length()));
+                return;
+            }
             if (upperAction.equals("SEARCH_PLOTS_PROMPT")) {
                 startSearchPrompt(player);
+                return;
+            }
+            if (upperAction.startsWith("SET_TOP_MODE:")) {
+                setTopMode(player, action.substring("SET_TOP_MODE:".length()));
+                return;
+            }
+            if (upperAction.equals("RANDOM_PUBLIC_PLOT")) {
+                randomPublicPlot(player);
                 return;
             }
             if (upperAction.startsWith("TELEPORT_PLOT_KEY:")) {
@@ -1794,8 +1959,16 @@ public final class GuiManager implements Listener {
                 startGuestbookPrompt(player);
                 return;
             }
+            if (upperAction.equals("MAILBOX_SIGN_PROMPT")) {
+                startMailboxPrompt(player);
+                return;
+            }
             if (upperAction.startsWith("DELETE_GUESTBOOK_ENTRY:")) {
                 deleteGuestbookEntry(player, action.substring("DELETE_GUESTBOOK_ENTRY:".length()));
+                return;
+            }
+            if (upperAction.startsWith("DELETE_MAILBOX_ENTRY:")) {
+                deleteMailboxEntry(player, action.substring("DELETE_MAILBOX_ENTRY:".length()));
                 return;
             }
             if (upperAction.startsWith("REQUEST_PROMPT:")) {
@@ -2017,7 +2190,10 @@ public final class GuiManager implements Listener {
             return;
         }
         final String flagDisplay = languageManager.getString(player, "settings." + flag, humanizeSettingName(flag));
+        final String previous = plotService.getFlagValue(plot, flag, "reset");
         if (plotService.setFlagValue(player, flag, value)) {
+            plotUtilityService.pushHistory(player, plot, "setting", flag, previous, value, flagDisplay);
+            plotUtilityService.recordAppliedState(plot, "setting", flag, value, valueDisplay);
             auditLogService.log(player, plot, "Einstellung geändert", flagDisplay + " -> " + valueDisplay);
             sendMessage(player, "flag-value-set", Map.of("flag", flagDisplay, "value", valueDisplay));
         } else {
@@ -2042,7 +2218,10 @@ public final class GuiManager implements Listener {
             sendMessage(player, "not-owner", Map.of());
             return;
         }
+        final String previous = blankInput(plotUtilityService.appliedState(plot, "setting", "biome"), "reset");
         if (plotService.setBiome(player, biome)) {
+            plotUtilityService.pushHistory(player, plot, "setting", "biome", previous, biome, "Biom");
+            plotUtilityService.recordAppliedState(plot, "setting", "biome", biome, biomeDisplay);
             auditLogService.log(player, plot, "Biom geändert", biomeDisplay);
             sendMessage(player, "biome-started", Map.of("biome", biomeDisplay));
         } else {
@@ -2108,13 +2287,64 @@ public final class GuiManager implements Listener {
             sendMessage(player, "not-owner", Map.of());
             return;
         }
-        player.closeInventory();
+        final String previous = blankInput(plotUtilityService.appliedState(plot, "component", component), "reset");
         if (plotService.setComponent(player, component, pattern)) {
+            plotUtilityService.pushHistory(player, plot, "component", component, previous, pattern, optionDisplay);
+            plotUtilityService.recordAppliedState(plot, "component", component, pattern, optionDisplay);
             auditLogService.log(player, plot, humanizeComponent(component) + " geändert", optionDisplay + " (" + pattern + ")");
             sendMessage(player, "component-started", Map.of("component", componentDisplay, "pattern", optionDisplay));
         } else {
             sendMessage(player, "component-failed", Map.of("component", componentDisplay, "pattern", optionDisplay));
         }
+    }
+
+    private void undoLastChange(final Player player, final GuiHolder holder) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        final PlotUtilityService.UndoEntry undo = plotUtilityService.popLastUndo(plot);
+        if (undo == null) {
+            sendMessage(player, "undo-empty", Map.of());
+            return;
+        }
+
+        boolean success = false;
+        if (undo.group().equalsIgnoreCase("component")) {
+            success = plotService.setComponent(player, undo.key(), undo.previous());
+            if (success) {
+                plotUtilityService.recordAppliedState(plot, "component", undo.key(), undo.previous(), undo.previous());
+            }
+        } else if (undo.group().equalsIgnoreCase("setting") && undo.key().equalsIgnoreCase("biome")) {
+            success = plotService.setBiome(player, undo.previous());
+            if (success) {
+                plotUtilityService.recordAppliedState(plot, "setting", "biome", undo.previous(), undo.previous());
+            }
+        } else if (undo.group().equalsIgnoreCase("setting")) {
+            success = plotService.setFlagValue(player, undo.key(), undo.previous());
+            if (success) {
+                plotUtilityService.recordAppliedState(plot, "setting", undo.key(), undo.previous(), undo.previous());
+            }
+        }
+
+        if (success) {
+            auditLogService.log(player, plot, "Änderung zurückgenommen", undo.display() + " -> " + undo.previous());
+            sendMessage(player, "undo-done", Map.of("change", undo.display(), "value", undo.previous()));
+        } else {
+            sendMessage(player, "undo-failed", Map.of("change", undo.display()));
+        }
+        scheduleOpen(player, holder.guiId(), holder.page());
+    }
+
+    private void toggleOptionFavorite(final Player player, final GuiHolder holder, final String rawAction) {
+        final String[] parts = rawAction.split(":", 2);
+        if (parts.length < 2) {
+            return;
+        }
+        final boolean added = plotUtilityService.toggleOptionFavorite(player, parts[0], parts[1]);
+        sendMessage(player, added ? "option-favorite-added" : "option-favorite-removed", Map.of("option", parts[1]));
+        scheduleOpen(player, holder.guiId(), holder.page());
     }
 
     private void showPlotInfo(final Player player) {
@@ -2231,6 +2461,21 @@ public final class GuiManager implements Listener {
         sendMessage(player, "warp-set-input", Map.of());
     }
 
+    private void startNamedHomePrompt(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canModifySetting(player, plot, "home")) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.SET_NAMED_HOME, ""));
+        player.closeInventory();
+        sendMessage(player, "home-set-input", Map.of());
+    }
+
     private void startSearchPrompt(final Player player) {
         pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.SEARCH_PLOTS, ""));
         player.closeInventory();
@@ -2246,6 +2491,17 @@ public final class GuiManager implements Listener {
         pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.GUESTBOOK_SIGN, ""));
         player.closeInventory();
         sendMessage(player, "guestbook-input", Map.of());
+    }
+
+    private void startMailboxPrompt(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.MAILBOX_SIGN, ""));
+        player.closeInventory();
+        sendMessage(player, "mailbox-input", Map.of());
     }
 
     private void startRequestPrompt(final Player player, final String type) {
@@ -2297,12 +2553,18 @@ public final class GuiManager implements Listener {
             } else if (input.type() == ChatInputType.SET_WARP) {
                 sendMessage(player, "warp-input-cancelled", Map.of());
                 scheduleOpen(player, "plot-warps", 0);
+            } else if (input.type() == ChatInputType.SET_NAMED_HOME) {
+                sendMessage(player, "home-input-cancelled", Map.of());
+                scheduleOpen(player, "plot-homes", 0);
             } else if (input.type() == ChatInputType.SEARCH_PLOTS) {
                 sendMessage(player, "search-cancelled", Map.of());
                 scheduleOpen(player, "plot-search", 0);
             } else if (input.type() == ChatInputType.GUESTBOOK_SIGN) {
                 sendMessage(player, "guestbook-cancelled", Map.of());
                 scheduleOpen(player, "guestbook", 0);
+            } else if (input.type() == ChatInputType.MAILBOX_SIGN) {
+                sendMessage(player, "mailbox-cancelled", Map.of());
+                scheduleOpen(player, "mailbox", 0);
             } else if (input.type() == ChatInputType.CREATE_REQUEST) {
                 sendMessage(player, "request-cancelled", Map.of());
                 scheduleOpen(player, "requests", 0);
@@ -2315,6 +2577,9 @@ public final class GuiManager implements Listener {
             } else if (input.type() == ChatInputType.CREATE_BUILD_TASK) {
                 sendMessage(player, "build-task-cancelled", Map.of());
                 scheduleOpen(player, "build-tasks", 0);
+            } else if (input.type() == ChatInputType.BACKUP_COMMENT) {
+                sendMessage(player, "backup-comment-cancelled", Map.of());
+                scheduleOpen(player, "backup-restore-confirm", 0);
             } else {
                 sendMessage(player, "role-input-cancelled", Map.of());
                 scheduleOpen(player, "roles", 0);
@@ -2342,6 +2607,11 @@ public final class GuiManager implements Listener {
             return;
         }
 
+        if (input.type() == ChatInputType.SET_NAMED_HOME) {
+            handleNamedHomeInput(player, message);
+            return;
+        }
+
         if (input.type() == ChatInputType.SEARCH_PLOTS) {
             handleSearchInput(player, message);
             return;
@@ -2349,6 +2619,11 @@ public final class GuiManager implements Listener {
 
         if (input.type() == ChatInputType.GUESTBOOK_SIGN) {
             handleGuestbookInput(player, message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.MAILBOX_SIGN) {
+            handleMailboxInput(player, message);
             return;
         }
 
@@ -2369,6 +2644,11 @@ public final class GuiManager implements Listener {
 
         if (input.type() == ChatInputType.CREATE_BUILD_TASK) {
             handleBuildTaskInput(player, message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.BACKUP_COMMENT) {
+            handleBackupCommentInput(player, input, message);
             return;
         }
 
@@ -2523,6 +2803,29 @@ public final class GuiManager implements Listener {
         scheduleOpen(player, "plot-warps", 0);
     }
 
+    private void handleNamedHomeInput(final Player player, final String message) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canModifySetting(player, plot, "home")) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+        final String[] parts = message.split(";", 3);
+        final String id = blankInput(parts[0], "home");
+        final String display = parts.length >= 2 ? blankInput(parts[1], id) : id;
+        final String role = parts.length >= 3 ? blankInput(parts[2], "") : "";
+        if (plotUtilityService.setNamedHome(player, plot, id, display, role)) {
+            auditLogService.log(player, plot, "Named Home gesetzt", id + " (" + display + ")");
+            sendMessage(player, "home-set", Map.of("home", display));
+        } else {
+            sendMessage(player, "home-set-failed", Map.of("home", display));
+        }
+        scheduleOpen(player, "plot-homes", 0);
+    }
+
     private void handleSearchInput(final Player player, final String message) {
         final List<PlotUtilityService.PlotProfileEntry> results = plotUtilityService.searchProfiles(message);
         searchResults.put(player.getUniqueId(), results);
@@ -2544,6 +2847,22 @@ public final class GuiManager implements Listener {
             sendMessage(player, "guestbook-signed", Map.of());
         }
         scheduleOpen(player, "guestbook", 0);
+    }
+
+    private void handleMailboxInput(final Player player, final String message) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        final PlotUtilityService.MailboxEntry entry = plotUtilityService.signMailbox(player, plot, message);
+        if (entry == null) {
+            sendMessage(player, "mailbox-failed", Map.of());
+        } else {
+            auditLogService.log(player, plot, "Mailbox-Eintrag erstellt", entry.id());
+            sendMessage(player, "mailbox-signed", Map.of());
+        }
+        scheduleOpen(player, "mailbox", 0);
     }
 
     private void handleRequestInput(final Player player, final String type, final String message) {
@@ -2877,6 +3196,33 @@ public final class GuiManager implements Listener {
         }
     }
 
+    private void startBackupCommentPrompt(final Player player) {
+        if (!plotBackupService.canManage(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final String backupId = selectedBackups.get(player.getUniqueId());
+        if (backupId == null || plotBackupService.getBackup(backupId).isEmpty()) {
+            player.sendMessage(TextUtil.component("&cEs ist kein Backup ausgewählt."));
+            scheduleOpen(player, "backups", 0);
+            return;
+        }
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.BACKUP_COMMENT, backupId));
+        player.closeInventory();
+        sendMessage(player, "backup-comment-input", Map.of("backup", backupId));
+    }
+
+    private void toggleSelectedBackupImportant(final Player player) {
+        final String backupId = selectedBackups.get(player.getUniqueId());
+        if (backupId == null || !plotBackupService.toggleImportant(player, backupId)) {
+            sendMessage(player, "backup-important-failed", Map.of("backup", backupId == null ? "-" : backupId));
+            scheduleOpen(player, "backups", 0);
+            return;
+        }
+        sendMessage(player, "backup-important-toggled", Map.of("backup", backupId));
+        scheduleOpen(player, "backup-restore-confirm", 0);
+    }
+
     private void setPlotStatus(final Player player, final String status) {
         final Plot plot = plotService.getCurrentPlot(player);
         if (plot == null) {
@@ -2946,6 +3292,47 @@ public final class GuiManager implements Listener {
         scheduleOpen(player, "plot-warps", 0);
     }
 
+    private void handlePlotHomeClick(final Player player, final InventoryClickEvent event, final String homeId) {
+        if (event != null && event.isShiftClick() && event.isRightClick()) {
+            deleteNamedHome(player, homeId);
+            return;
+        }
+        teleportNamedHome(player, homeId);
+    }
+
+    private void teleportNamedHome(final Player player, final String homeId) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (plotUtilityService.teleportNamedHome(player, plot, homeId)) {
+            sendMessage(player, "home-teleported", Map.of("home", homeId));
+        } else {
+            sendMessage(player, "home-unknown", Map.of("home", homeId));
+            scheduleOpen(player, "plot-homes", 0);
+        }
+    }
+
+    private void deleteNamedHome(final Player player, final String homeId) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canModifySetting(player, plot, "home")) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+        if (plotUtilityService.deleteNamedHome(player, plot, homeId)) {
+            auditLogService.log(player, plot, "Named Home gelöscht", homeId);
+            sendMessage(player, "home-deleted", Map.of("home", homeId));
+        } else {
+            sendMessage(player, "home-unknown", Map.of("home", homeId));
+        }
+        scheduleOpen(player, "plot-homes", 0);
+    }
+
     private void teleportPlotKey(final Player player, final String plotKey) {
         if (plotUtilityService.teleportToPlot(player, plotKey)) {
             sendMessage(player, "plot-teleported", Map.of("plot", plotKey));
@@ -2953,6 +3340,21 @@ public final class GuiManager implements Listener {
             sendMessage(player, "plot-teleport-failed", Map.of("plot", plotKey));
             scheduleOpen(player, "plot-search", 0);
         }
+    }
+
+    private void setTopMode(final Player player, final String mode) {
+        selectedTopModes.put(player.getUniqueId(), blankInput(mode, "visits").toLowerCase(Locale.ROOT));
+        scheduleOpen(player, "top-plots", 0);
+    }
+
+    private void randomPublicPlot(final Player player) {
+        final PlotUtilityService.PlotProfileEntry entry = plotUtilityService.randomPublicProfile();
+        if (entry == null || !plotUtilityService.teleportToPlot(player, entry.plotKey())) {
+            sendMessage(player, "random-plot-failed", Map.of());
+            scheduleOpen(player, "top-plots", 0);
+            return;
+        }
+        sendMessage(player, "plot-teleported", Map.of("plot", entry.plotKey()));
     }
 
     private void deleteGuestbookEntry(final Player player, final String entryId) {
@@ -2968,6 +3370,21 @@ public final class GuiManager implements Listener {
             sendMessage(player, "guestbook-delete-failed", Map.of("entry", entryId));
         }
         scheduleOpen(player, "guestbook", 0);
+    }
+
+    private void deleteMailboxEntry(final Player player, final String entryId) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (plotUtilityService.deleteMailboxEntry(player, plot, entryId)) {
+            auditLogService.log(player, plot, "Mailbox-Eintrag gelöscht", entryId);
+            sendMessage(player, "mailbox-deleted", Map.of("entry", entryId));
+        } else {
+            sendMessage(player, "mailbox-delete-failed", Map.of("entry", entryId));
+        }
+        scheduleOpen(player, "mailbox", 0);
     }
 
     private void closeRequest(final Player player, final String requestId) {
@@ -3399,6 +3816,15 @@ public final class GuiManager implements Listener {
         scheduleOpen(player, "build-tasks", 0);
     }
 
+    private void handleBackupCommentInput(final Player player, final ChatInput input, final String message) {
+        if (plotBackupService.setComment(player, input.roleId(), message)) {
+            sendMessage(player, "backup-comment-set", Map.of("backup", input.roleId()));
+        } else {
+            sendMessage(player, "backup-comment-failed", Map.of("backup", input.roleId()));
+        }
+        scheduleOpen(player, "backup-restore-confirm", 0);
+    }
+
     private void completeBuildTask(final Player player, final String taskId) {
         if (plotUtilityService.completeBuildTask(player, taskId)) {
             sendMessage(player, "build-task-completed", Map.of("task", taskId));
@@ -3583,6 +4009,8 @@ public final class GuiManager implements Listener {
                     placeholders.put("selected_backup_plot", backup.sourcePlot());
                     placeholders.put("selected_backup_merge", backup.mergeSize());
                     placeholders.put("selected_backup_plot_count", String.valueOf(backup.plotCount()));
+                    placeholders.put("selected_backup_comment", backup.comment().isBlank() ? "-" : backup.comment());
+                    placeholders.put("selected_backup_important", backup.important() ? "ja" : "nein");
                 },
                 () -> {
                     placeholders.put("selected_backup_owner", "-");
@@ -3592,6 +4020,8 @@ public final class GuiManager implements Listener {
                     placeholders.put("selected_backup_plot", "-");
                     placeholders.put("selected_backup_merge", "-");
                     placeholders.put("selected_backup_plot_count", "-");
+                    placeholders.put("selected_backup_comment", "-");
+                    placeholders.put("selected_backup_important", "-");
                 }
         );
         return placeholders;
@@ -3885,11 +4315,14 @@ public final class GuiManager implements Listener {
         PLOT_NOTE,
         TEAM_NOTE,
         SET_WARP,
+        SET_NAMED_HOME,
         SEARCH_PLOTS,
         GUESTBOOK_SIGN,
+        MAILBOX_SIGN,
         CREATE_REQUEST,
         CREATE_TEMPORARY_TRUST,
         SCORE_COMPETITION,
-        CREATE_BUILD_TASK
+        CREATE_BUILD_TASK,
+        BACKUP_COMMENT
     }
 }

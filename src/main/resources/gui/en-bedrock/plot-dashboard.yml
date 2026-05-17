@@ -47,6 +47,30 @@ items:
     name: "&aWarps"
     actions:
       - "OPEN:plot-warps"
+  homes:
+    slot: 25
+    material: COMPASS
+    name: "&aHomes"
+    actions:
+      - "OPEN:plot-homes"
+  top-plots:
+    slot: 29
+    material: GOLD_INGOT
+    name: "&6Top Plots"
+    actions:
+      - "OPEN:top-plots"
+  mailbox:
+    slot: 30
+    material: WRITABLE_BOOK
+    name: "&aMailbox"
+    actions:
+      - "OPEN:mailbox"
+  undo:
+    slot: 32
+    material: RECOVERY_COMPASS
+    name: "&eUndo"
+    actions:
+      - "UNDO_LAST_CHANGE"
   entity-limits:
     slot: 15
     material: ARMOR_STAND

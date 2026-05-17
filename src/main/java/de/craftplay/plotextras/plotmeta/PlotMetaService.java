@@ -9,9 +9,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +51,8 @@ public final class PlotMetaService {
         placeholders.put("plot_owner_note", ownerNote(basePlot));
         placeholders.put("plot_team_note", teamNote(basePlot));
         placeholders.put("plot_visits", String.valueOf(visits(basePlot)));
+        placeholders.put("plot_visits_today", String.valueOf(visitsToday(basePlot)));
+        placeholders.put("plot_visits_week", String.valueOf(visitsThisWeek(basePlot)));
         placeholders.put("plot_likes", String.valueOf(likes(basePlot)));
         placeholders.put("plot_last_visitor", string(basePlot, "last-visitor", "-"));
         placeholders.put("plot_last_visit", string(basePlot, "last-visit", "-"));
@@ -65,6 +71,8 @@ public final class PlotMetaService {
         data.set(path + ".world", basePlot.getWorldName());
         data.set(path + ".plot-id", basePlot.getId().toString());
         data.set(path + ".visits", visits(basePlot) + 1);
+        data.set(path + ".visits-daily." + LocalDate.now(), data.getInt(path + ".visits-daily." + LocalDate.now(), 0) + 1);
+        data.set(path + ".visits-weekly." + weekKey(), data.getInt(path + ".visits-weekly." + weekKey(), 0) + 1);
         data.set(path + ".last-visitor", player.getName());
         data.set(path + ".last-visit", Instant.now().toString());
         save();
@@ -143,6 +151,60 @@ public final class PlotMetaService {
                 && (player.hasPermission("craftplayplotextras.plotmeta.status") || player.hasPermission("craftplayplotextras.admin"));
     }
 
+    public int visitsToday(final Plot plot) {
+        final Plot basePlot = base(plot);
+        return basePlot == null ? 0 : data.getInt(path(basePlot) + ".visits-daily." + LocalDate.now(), 0);
+    }
+
+    public int visitsThisWeek(final Plot plot) {
+        final Plot basePlot = base(plot);
+        return basePlot == null ? 0 : data.getInt(path(basePlot) + ".visits-weekly." + weekKey(), 0);
+    }
+
+    public List<TopPlotEntry> topPlots(final String mode, final int limit) {
+        final ConfigurationSection section = data.getConfigurationSection("plots");
+        if (section == null) {
+            return List.of();
+        }
+        final String normalizedMode = mode == null ? "visits" : mode.toLowerCase(Locale.ROOT);
+        final List<TopPlotEntry> entries = new ArrayList<>();
+        for (final String key : section.getKeys(false)) {
+            final ConfigurationSection plotSection = section.getConfigurationSection(key);
+            if (plotSection == null) {
+                continue;
+            }
+            final int visits = plotSection.getInt("visits", 0);
+            final int likes = plotSection.getStringList("likes").size();
+            final int today = plotSection.getInt("visits-daily." + LocalDate.now(), 0);
+            final int week = plotSection.getInt("visits-weekly." + weekKey(), 0);
+            final int score = switch (normalizedMode) {
+                case "likes", "favorites", "favoriten" -> likes;
+                case "today", "daily", "tag" -> today;
+                case "week", "weekly", "woche" -> week;
+                default -> visits;
+            };
+            if (score <= 0) {
+                continue;
+            }
+            entries.add(new TopPlotEntry(
+                    plotSection.getString("world", "-"),
+                    plotSection.getString("plot-id", "-"),
+                    score,
+                    visits,
+                    today,
+                    week,
+                    likes,
+                    stringFromSection(plotSection, "last-visitor", "-")
+            ));
+        }
+        return entries.stream()
+                .sorted(Comparator.comparingInt(TopPlotEntry::score).reversed()
+                        .thenComparing(TopPlotEntry::world, String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(TopPlotEntry::plotId, String.CASE_INSENSITIVE_ORDER))
+                .limit(Math.max(1, limit))
+                .toList();
+    }
+
     private String status(final Plot plot) {
         return normalizeStatus(string(plot, "status", "normal"));
     }
@@ -185,6 +247,11 @@ public final class PlotMetaService {
         return data.getString(path(plot) + "." + key, fallback);
     }
 
+    private String stringFromSection(final ConfigurationSection section, final String key, final String fallback) {
+        final String value = section.getString(key, fallback);
+        return value == null || value.isBlank() ? fallback : value;
+    }
+
     private int integer(final Plot plot, final String key, final int fallback) {
         if (plot == null) {
             return fallback;
@@ -205,6 +272,11 @@ public final class PlotMetaService {
         return value == null ? "-" : value.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_.-]", "_");
     }
 
+    private String weekKey() {
+        final LocalDate now = LocalDate.now();
+        return now.getYear() + "-w" + now.get(java.time.temporal.WeekFields.ISO.weekOfWeekBasedYear());
+    }
+
     private String normalizeStatus(final String value) {
         final String normalized = value == null ? "normal" : value.toLowerCase(Locale.ROOT).replace('_', '-').trim();
         return switch (normalized) {
@@ -219,5 +291,17 @@ public final class PlotMetaService {
         } catch (final IOException exception) {
             plugin.getLogger().log(Level.WARNING, "Plot-Metadaten konnten nicht gespeichert werden.", exception);
         }
+    }
+
+    public record TopPlotEntry(
+            String world,
+            String plotId,
+            int score,
+            int visits,
+            int visitsToday,
+            int visitsWeek,
+            int likes,
+            String lastVisitor
+    ) {
     }
 }

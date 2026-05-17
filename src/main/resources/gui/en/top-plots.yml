@@ -1,0 +1,86 @@
+# Top plots by visits, daily/weekly visits or likes.
+title: "&8Top Plots"
+size: 54
+
+fill:
+  enabled: true
+  material: ORANGE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  visits:
+    slot: 10
+    material: SPYGLASS
+    name: "&aTotal visits"
+    actions:
+      - "SET_TOP_MODE:visits"
+  today:
+    slot: 11
+    material: CLOCK
+    name: "&aVisits today"
+    actions:
+      - "SET_TOP_MODE:today"
+  week:
+    slot: 12
+    material: FILLED_MAP
+    name: "&aVisits this week"
+    actions:
+      - "SET_TOP_MODE:week"
+  likes:
+    slot: 13
+    material: EMERALD
+    name: "&aFavorites"
+    actions:
+      - "SET_TOP_MODE:likes"
+  random:
+    slot: 16
+    material: ENDER_EYE
+    name: "&dRandom plot"
+    lore:
+      - "&7Teleports you to a"
+      - "&7public plot profile."
+    actions:
+      - "RANDOM_PUBLIC_PLOT"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "OPEN:plot-tools"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: "top-plots"
+  default-mode: "visits"
+  limit: 100
+  slots: [19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+  plot-item:
+    material: PLAYER_HEAD
+    name: "&6#{top_rank} &e{top_plot}"
+    lore:
+      - "&7World: &f{top_world}"
+      - "&7Score: &f{top_score}"
+      - "&7Visits: &f{top_visits}"
+      - "&7Today/week: &f{top_visits_today}&7/&f{top_visits_week}"
+      - "&7Favorites: &f{top_likes}"
+      - "&8Click teleports."
+    actions:
+      - "TELEPORT_PLOT_KEY:{top_plot_key}"
+  previous-item:
+    slot: 47
+    material: ARROW
+    name: "&ePrevious Page"
+    lore:
+      - "&7Page {page}/{pages}"
+  next-item:
+    slot: 51
+    material: ARROW
+    name: "&eNext Page"
+    lore:
+      - "&7Page {page}/{pages}"

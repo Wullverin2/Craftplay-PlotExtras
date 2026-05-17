@@ -1,0 +1,68 @@
+# Multiple plot homes. Chat format: id; name; role
+title: "&8Plot Homes"
+size: 54
+
+fill:
+  enabled: true
+  material: LIGHT_GRAY_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: COMPASS
+    name: "&eSaved Homes"
+    lore:
+      - "&7Homes: &f{plot_homes}"
+      - "&7Left-click: teleport"
+      - "&7Shift + right-click: delete"
+  add:
+    slot: 40
+    material: LIME_DYE
+    name: "&aSet home"
+    lore:
+      - "&7Saves your current position."
+      - "&8Format: id; name; role"
+    actions:
+      - "SET_NAMED_HOME_PROMPT"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "OPEN:settings"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: "plot-homes"
+  slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+  home-item:
+    material: ENDER_PEARL
+    name: "&a{home_display}"
+    lore:
+      - "&7ID: &f{home_id}"
+      - "&7Role: &f{home_role}"
+      - "&7Location: &f{home_world} {home_x} {home_y} {home_z}"
+      - "&7Created by: &f{home_created_by}"
+      - "&8Left-click teleports."
+      - "&8Shift + right-click deletes."
+    actions:
+      - "PLOT_HOME_CLICK:{home_id}"
+  previous-item:
+    slot: 47
+    material: ARROW
+    name: "&ePrevious Page"
+    lore:
+      - "&7Page {page}/{pages}"
+  next-item:
+    slot: 51
+    material: ARROW
+    name: "&eNext Page"
+    lore:
+      - "&7Page {page}/{pages}"

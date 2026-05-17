@@ -55,6 +55,15 @@ items:
       - "&7Teleportiert dich zu deinem Plot-Home."
     actions:
       - "TELEPORT_PLOT_HOME"
+  homes:
+    slot: 30
+    material: COMPASS
+    name: "&aWeitere Homes"
+    lore:
+      - "&7Benannte Homes mit"
+      - "&7Rollenfreigabe verwalten."
+    actions:
+      - "OPEN:plot-homes"
   sethome:
     slot: 31
     material: COMPASS

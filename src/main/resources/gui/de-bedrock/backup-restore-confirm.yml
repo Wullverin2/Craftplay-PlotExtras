@@ -17,6 +17,8 @@ items:
       - "&7Backup: &f{selected_backup_id}"
       - "&7Datum: &f{selected_backup_created}"
       - "&7Grund: &f{selected_backup_reason}"
+      - "&7Wichtig: &f{selected_backup_important}"
+      - "&7Kommentar: &f{selected_backup_comment}"
       - "&7Quelle: &f{selected_backup_world} {selected_backup_plot}"
       - "&cZiel ist der Plot, auf dem du gerade stehst."
   cancel:
@@ -25,6 +27,18 @@ items:
     name: "&eAbbrechen"
     actions:
       - "OPEN:backups"
+  comment:
+    slot: 3
+    material: WRITABLE_BOOK
+    name: "&aKommentar setzen"
+    actions:
+      - "BACKUP_COMMENT_PROMPT"
+  important:
+    slot: 5
+    material: NETHER_STAR
+    name: "&eWichtig umschalten"
+    actions:
+      - "TOGGLE_SELECTED_BACKUP_IMPORTANT"
   confirm:
     slot: 15
     material: LIME_CONCRETE

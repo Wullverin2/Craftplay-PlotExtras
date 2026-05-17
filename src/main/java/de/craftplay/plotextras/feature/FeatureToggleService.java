@@ -48,9 +48,12 @@ public final class FeatureToggleService {
             Map.entry("entity-limits", "player.entity-limits"),
             Map.entry("plot-dashboard", "player.dashboard"),
             Map.entry("plot-warps", "player.plot-warps"),
+            Map.entry("plot-homes", "player.multi-homes"),
             Map.entry("plot-tools", "player.tools"),
             Map.entry("plot-search", "player.plot-search"),
+            Map.entry("top-plots", "player.top-plots"),
             Map.entry("guestbook", "player.guestbook"),
+            Map.entry("mailbox", "player.mailbox"),
             Map.entry("requests", "player.requests"),
             Map.entry("temporary-trusts", "player.temporary-trusts"),
             Map.entry("team-requests", "team.requests"),
@@ -176,8 +179,11 @@ public final class FeatureToggleService {
             case "audit-log" -> "team.audit-log";
             case "redstone-alerts" -> "team.redstone-alerts";
             case "plot-warps" -> "player.plot-warps";
+            case "plot-homes" -> "player.multi-homes";
             case "plot-search" -> "player.plot-search";
+            case "top-plots" -> "player.top-plots";
             case "guestbook" -> "player.guestbook";
+            case "mailbox" -> "player.mailbox";
             case "plot-requests" -> "player.requests";
             case "temporary-trusts" -> "player.temporary-trusts";
             case "plot-reports" -> "team.reports";
@@ -234,6 +240,12 @@ public final class FeatureToggleService {
         if (normalized.startsWith("set_component:")) {
             return "player.decor";
         }
+        if (normalized.equals("undo_last_change")) {
+            return "player.undo";
+        }
+        if (normalized.startsWith("toggle_option_favorite:")) {
+            return "player.option-favorites";
+        }
         if (normalized.equals("role_create_prompt")
                 || normalized.equals("role_rename_prompt")
                 || normalized.equals("role_delete_selected")
@@ -267,6 +279,9 @@ public final class FeatureToggleService {
         if (normalized.equals("restore_selected_backup")) {
             return "team.backups.restore";
         }
+        if (normalized.equals("backup_comment_prompt") || normalized.equals("toggle_selected_backup_important")) {
+            return "team.backups";
+        }
         if (normalized.equals("plot_note_prompt")) {
             return "player.plot-notes";
         }
@@ -282,6 +297,12 @@ public final class FeatureToggleService {
         if (normalized.equals("warp_set_prompt")) {
             return "player.plot-warps.set";
         }
+        if (normalized.equals("set_named_home_prompt")
+                || normalized.startsWith("plot_home_click:")
+                || normalized.startsWith("teleport_plot_home:")
+                || normalized.startsWith("delete_plot_home:")) {
+            return "player.multi-homes";
+        }
         if (normalized.startsWith("plot_warp_click:") || normalized.startsWith("teleport_plot_warp:")) {
             return "player.plot-warps.teleport";
         }
@@ -291,8 +312,17 @@ public final class FeatureToggleService {
         if (normalized.equals("search_plots_prompt") || normalized.startsWith("teleport_plot_key:")) {
             return "player.plot-search";
         }
+        if (normalized.startsWith("set_top_mode:")) {
+            return "player.top-plots";
+        }
+        if (normalized.equals("random_public_plot")) {
+            return "player.random-plot";
+        }
         if (normalized.equals("guestbook_sign_prompt") || normalized.startsWith("delete_guestbook_entry:")) {
             return "player.guestbook";
+        }
+        if (normalized.equals("mailbox_sign_prompt") || normalized.startsWith("delete_mailbox_entry:")) {
+            return "player.mailbox";
         }
         if (normalized.startsWith("request_prompt:")) {
             return "player.requests";

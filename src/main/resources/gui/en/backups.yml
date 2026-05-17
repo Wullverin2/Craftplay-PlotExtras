@@ -35,6 +35,8 @@ dynamic:
       - "&7ID: &f{backup_id}"
       - "&7Date: &f{backup_created}"
       - "&7Reason: &f{backup_reason}"
+      - "&7Important: &f{backup_important}"
+      - "&7Comment: &f{backup_comment}"
       - "&7Source: &f{backup_world} {backup_plot}"
       - "&7Plots: &f{backup_plot_count}"
       - "&eClick to select."

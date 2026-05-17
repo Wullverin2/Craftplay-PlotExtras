@@ -214,6 +214,19 @@ public final class PlotService {
         return Boolean.parseBoolean(String.valueOf(value));
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public String getFlagValue(final Plot plot, final String flagName, final String fallback) {
+        if (plot == null) {
+            return fallback;
+        }
+        final Class flagClass = GlobalFlagContainer.getInstance().getFlagClassFromString(normalizeFlagName(flagName));
+        if (flagClass == null) {
+            return fallback;
+        }
+        final Object value = plot.getFlag(flagClass);
+        return value == null ? fallback : String.valueOf(value);
+    }
+
     public Boolean toggleFlag(final Player player, final String flagName) {
         final Plot plot = getCurrentPlot(player);
         if (!canModifyFlags(player, plot) || !canUseFlag(player, flagName)) {
@@ -266,11 +279,19 @@ public final class PlotService {
         if (flagClass == null) {
             return false;
         }
+        boolean changed = false;
+        final Plot basePlot = plot.getBasePlot(false);
         if (isResetValue(value)) {
-            plot.removeFlag(flagClass);
-            return true;
+            for (final Plot connectedPlot : basePlot.getConnectedPlots()) {
+                connectedPlot.removeFlag(flagClass);
+                changed = true;
+            }
+            return changed;
         }
-        return plot.setFlag(flagClass, value);
+        for (final Plot connectedPlot : basePlot.getConnectedPlots()) {
+            changed |= connectedPlot.setFlag(flagClass, value);
+        }
+        return changed;
     }
 
     public boolean setBiome(final Player player, final String biomeName) {

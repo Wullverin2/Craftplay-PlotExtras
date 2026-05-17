@@ -65,6 +65,41 @@ items:
       - "&7Saved places: &f{plot_warps}"
     actions:
       - "OPEN:plot-warps"
+  homes:
+    slot: 30
+    material: COMPASS
+    name: "&aPlot Homes"
+    lore:
+      - "&7Named homes: &f{plot_homes}"
+      - "&7with optional role access."
+    actions:
+      - "OPEN:plot-homes"
+  top-plots:
+    slot: 32
+    material: GOLD_INGOT
+    name: "&6Top Plots"
+    lore:
+      - "&7Rankings and"
+      - "&7random public plots."
+    actions:
+      - "OPEN:top-plots"
+  mailbox:
+    slot: 33
+    material: WRITABLE_BOOK
+    name: "&aMailbox"
+    lore:
+      - "&7Messages: &f{plot_mailbox_entries}"
+    actions:
+      - "OPEN:mailbox"
+  undo:
+    slot: 34
+    material: RECOVERY_COMPASS
+    name: "&eUndo Last Change"
+    lore:
+      - "&7Reverts the latest decor"
+      - "&7or setting change."
+    actions:
+      - "UNDO_LAST_CHANGE"
   entity-limits:
     slot: 15
     material: ARMOR_STAND

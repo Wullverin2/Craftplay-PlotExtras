@@ -112,6 +112,12 @@ permissions:
   craftplayplotextras.guestbook.manage:
     description: Allows deleting guestbook entries on plots.
     default: op
+  craftplayplotextras.mailbox.manage:
+    description: Allows deleting mailbox entries on plots.
+    default: op
+  craftplayplotextras.home.bypass:
+    description: Allows using role-restricted named plot homes.
+    default: op
   craftplayplotextras.visit.bypass:
     description: Bypasses plot profile visit-mode restrictions.
     default: op

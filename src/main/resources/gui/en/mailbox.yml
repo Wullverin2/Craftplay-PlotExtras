@@ -1,0 +1,71 @@
+# Plot mailbox. Owners and permitted members can delete entries.
+title: "&8Plot Mailbox"
+size: 54
+
+fill:
+  enabled: true
+  material: YELLOW_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: WRITABLE_BOOK
+    name: "&eMailbox"
+    lore:
+      - "&7Messages: &f{plot_mailbox_entries}"
+      - "&7Entries are visible in this plot menu."
+  write:
+    slot: 40
+    material: PAPER
+    name: "&aWrite message"
+    lore:
+      - "&7Writes a message"
+      - "&7to this plot mailbox."
+    actions:
+      - "MAILBOX_SIGN_PROMPT"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "OPEN:plot-tools"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: "mailbox"
+  slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+  entry-item:
+    material: PAPER
+    name: "&a{mail_player}"
+    lore:
+      - "&7Date: &f{mail_created}"
+      - "&7Status: &f{mail_status}"
+      - "&f{mail_message}"
+      - "&8Click deletes this entry."
+    actions:
+      - "DELETE_MAILBOX_ENTRY:{mail_id}"
+  readonly-entry-item:
+    material: PAPER
+    name: "&a{mail_player}"
+    lore:
+      - "&7Date: &f{mail_created}"
+      - "&f{mail_message}"
+  previous-item:
+    slot: 47
+    material: ARROW
+    name: "&ePrevious Page"
+    lore:
+      - "&7Page {page}/{pages}"
+  next-item:
+    slot: 51
+    material: ARROW
+    name: "&eNext Page"
+    lore:
+      - "&7Page {page}/{pages}"

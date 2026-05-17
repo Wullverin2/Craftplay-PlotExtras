@@ -39,6 +39,18 @@ items:
     name: "&aSearch"
     actions:
       - "OPEN:plot-search"
+  top-plots:
+    slot: 24
+    material: GOLD_INGOT
+    name: "&6Top Plots"
+    actions:
+      - "OPEN:top-plots"
+  mailbox:
+    slot: 25
+    material: WRITABLE_BOOK
+    name: "&aMailbox"
+    actions:
+      - "OPEN:mailbox"
   favorite:
     slot: 14
     material: EMERALD

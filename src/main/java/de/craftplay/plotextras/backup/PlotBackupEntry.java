@@ -16,6 +16,8 @@ public record PlotBackupEntry(
         String mergeSize,
         int plotCount,
         List<String> sourcePlots,
-        File schematicFile
+        File schematicFile,
+        String comment,
+        boolean important
 ) {
 }

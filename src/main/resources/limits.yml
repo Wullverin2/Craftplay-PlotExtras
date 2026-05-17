@@ -19,6 +19,15 @@ settings:
   region-cache-millis: 5000
   # Cachezeit für Entity-Zählungen in Millisekunden. 1000 bedeutet: maximal einmal pro Sekunde pro Plot/Limit neu zählen.
   count-cache-millis: 1000
+  warnings:
+    # Wenn true, erhalten Spieler vor dem harten Limit Warnungen.
+    enabled: true
+    # Prozentwerte, bei denen gewarnt wird. 80 bedeutet: Warnung ab 80 Prozent Auslastung.
+    percentages:
+      - 80
+      - 100
+    # Cooldown pro Spieler, Plot, Limit und Prozentwert in Sekunden.
+    cooldown-seconds: 30
   # Spieler mit dieser Permission umgehen alle Entity-Limits.
   bypass-permission: craftplayplotextras.entitylimit.bypass
   # Diese Entity-Typen werden nicht mitgezaehlt und nicht limitiert.
