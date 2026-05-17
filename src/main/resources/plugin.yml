@@ -1,0 +1,11 @@
+name: CraftplayPlotExtras
+version: ${project.version}
+main: de.craftplay.plotextras.CraftplayPlotExtrasPlugin
+api-version: '1.21'
+depend:
+  - PlotSquared
+softdepend:
+  - CMI
+  - Multiverse-Core
+author: Codex
+description: Extra PlotSquared helpers for Craftplay, including fly protection and named entity persistence.
