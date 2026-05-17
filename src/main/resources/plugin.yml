@@ -90,6 +90,24 @@ permissions:
   craftplayplotextras.competition.judge:
     description: Allows scoring plot competition entries.
     default: op
+  craftplayplotextras.teamtools:
+    description: Allows opening the central team tools GUI.
+    default: op
+  craftplayplotextras.requests.manage:
+    description: Allows managing player plot requests.
+    default: op
+  craftplayplotextras.statistics:
+    description: Allows viewing PlotExtras statistics.
+    default: op
+  craftplayplotextras.permissioncheck:
+    description: Allows checking CraftplayPlotExtras and plot limit permissions for online players.
+    default: op
+  craftplayplotextras.builder.mode:
+    description: Allows toggling the builder mode marker.
+    default: op
+  craftplayplotextras.builder.tasks:
+    description: Allows creating and completing builder plot tasks.
+    default: op
   craftplayplotextras.decor:
     description: Allows changing plot wall and border blocks through the GUI.
     default: true

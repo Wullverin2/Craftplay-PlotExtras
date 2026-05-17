@@ -1,0 +1,114 @@
+# Spieler-Werkzeuge fuer Plotprofil, Suche, Gaestebuch, Anfragen und Cleanup.
+title: "&8Plot-Werkzeuge"
+size: 54
+
+fill:
+  enabled: true
+  material: GREEN_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 4
+    material: COMPASS
+    name: "&eWerkzeug-Übersicht"
+    lore:
+      - "&7Kategorie: &f{plot_category}"
+      - "&7Tags: &f{plot_tags}"
+      - "&7Besuchsmodus: &f{plot_access_mode}"
+      - "&7Gästebuch: &f{plot_guestbook_entries}"
+      - "&7Offene Anfragen: &f{plot_open_requests}"
+  assistant:
+    slot: 10
+    material: KNOWLEDGE_BOOK
+    name: "&aPlot-Assistent"
+    lore:
+      - "&7Zeigt dir die wichtigsten"
+      - "&7nächsten Schritte für dein Plot."
+    actions:
+      - "PLAYER_COMMAND:pe assistant"
+  profile:
+    slot: 12
+    material: NAME_TAG
+    name: "&aPlotprofil"
+    lore:
+      - "&7Beschreibung, Kategorie,"
+      - "&7Tags und Besuchsmodus."
+    actions:
+      - "PLAYER_COMMAND:pe profile show"
+  guestbook:
+    slot: 14
+    material: WRITABLE_BOOK
+    name: "&aGästebuch"
+    lore:
+      - "&7Einträge ansehen oder"
+      - "&7per Befehl schreiben."
+    actions:
+      - "PLAYER_COMMAND:pe guestbook list"
+  search:
+    slot: 16
+    material: SPYGLASS
+    name: "&aPlotsuche"
+    lore:
+      - "&7Suche nach Tags,"
+      - "&7Kategorien und Texten."
+      - "&8/pe search <Suchwort>"
+    actions:
+      - "MESSAGE:&eNutze &f/pe search <Suchwort>&e."
+  favorite:
+    slot: 28
+    material: EMERALD
+    name: "&aFavorit umschalten"
+    lore:
+      - "&7Speichert oder entfernt"
+      - "&7dieses Plot in deiner Liste."
+    actions:
+      - "PLAYER_COMMAND:pe favorite"
+  own-requests:
+    slot: 30
+    material: PAPER
+    name: "&aMeine Anfragen"
+    lore:
+      - "&7Zeigt deine offenen und"
+      - "&7bearbeiteten Plot-Anfragen."
+    actions:
+      - "PLAYER_COMMAND:pe request list"
+  trust-request:
+    slot: 32
+    material: PLAYER_HEAD
+    name: "&aTrust anfragen"
+    lore:
+      - "&7Erstellt eine Trust-Anfrage"
+      - "&7für das aktuelle Plot."
+    actions:
+      - "PLAYER_COMMAND:pe request trust GUI-Anfrage"
+  selfcheck:
+    slot: 34
+    material: CLOCK
+    name: "&aSelbstcheck"
+    lore:
+      - "&7Zeigt Entities und"
+      - "&7Performance-Hinweise."
+    actions:
+      - "PLAYER_COMMAND:pe selfcheck"
+  cleanup:
+    slot: 40
+    material: HOPPER
+    name: "&aDrops aufräumen"
+    lore:
+      - "&7Entfernt Drops auf deinem"
+      - "&7eigenen Plot."
+    actions:
+      - "PLAYER_COMMAND:pe cleanup drops"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:plot-dashboard"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"

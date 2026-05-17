@@ -119,6 +119,15 @@ items:
       - "&7den Standard-Wettbewerb an."
     actions:
       - "PLAYER_COMMAND:pe contest join default Dashboard-Anmeldung"
+  tools:
+    slot: 29
+    material: COMPASS
+    name: "&aPlot-Werkzeuge"
+    lore:
+      - "&7Profil, Suche,"
+      - "&7Gästebuch und Anfragen."
+    actions:
+      - "OPEN:plot-tools"
   team-note:
     slot: 31
     permission: "craftplayplotextras.plotmeta.team"

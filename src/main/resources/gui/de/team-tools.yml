@@ -1,0 +1,127 @@
+# Team-Werkzeuge fuer Support, Moderation, Leitung und Builder.
+title: "&8Team-Werkzeuge"
+size: 54
+
+fill:
+  enabled: true
+  material: CYAN_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 4
+    material: SPYGLASS
+    name: "&bTeam-Übersicht"
+    lore:
+      - "&7Schnellzugriff für"
+      - "&7Support und Administration."
+  requests:
+    slot: 10
+    material: PAPER
+    name: "&bPlot-Anfragen"
+    lore:
+      - "&7Trust, Restore, Backup,"
+      - "&7Umzug und Support."
+    actions:
+      - "PLAYER_COMMAND:pe requests list"
+  reports:
+    slot: 12
+    material: BELL
+    name: "&cMeldungen"
+    lore:
+      - "&7Offene Plotmeldungen"
+      - "&7ansehen und schließen."
+    actions:
+      - "PLAYER_COMMAND:pe reports list"
+  moderation:
+    slot: 14
+    material: PACKED_ICE
+    name: "&bModeration"
+    lore:
+      - "&7Freeze, Cleanup"
+      - "&7und gesperrte Plots."
+    actions:
+      - "PLAYER_COMMAND:pe mod list"
+  performance:
+    slot: 16
+    material: CLOCK
+    name: "&bPerformance"
+    lore:
+      - "&7Snapshot für das"
+      - "&7aktuelle Plot."
+    actions:
+      - "PLAYER_COMMAND:pe performance"
+  backups:
+    slot: 28
+    material: CHEST
+    name: "&bBackups"
+    lore:
+      - "&7Schematic-Backups"
+      - "&7anzeigen und wiederherstellen."
+    actions:
+      - "OPEN:backups"
+  audit:
+    slot: 30
+    material: WRITABLE_BOOK
+    name: "&bAuditlog"
+    lore:
+      - "&7Letzte Team- und"
+      - "&7Plotaktionen."
+    actions:
+      - "OPEN:audit-log"
+  redstone:
+    slot: 32
+    material: REDSTONE_BLOCK
+    name: "&cRedstone-Alarme"
+    lore:
+      - "&7Lagmaschinen-Alarme"
+      - "&7prüfen."
+    actions:
+      - "OPEN:redstone-alerts"
+  builder:
+    slot: 34
+    material: BRICKS
+    name: "&bBuilder-Aufgaben"
+    lore:
+      - "&7Bauaufgaben anzeigen."
+    actions:
+      - "PLAYER_COMMAND:pe buildtask list"
+  stats:
+    slot: 39
+    material: LECTERN
+    name: "&bStatistik"
+    lore:
+      - "&7Profile, Anfragen,"
+      - "&7Backups und Aufgaben."
+    actions:
+      - "PLAYER_COMMAND:pe stats"
+  validate:
+    slot: 41
+    material: KNOWLEDGE_BOOK
+    name: "&bConfig-Check"
+    lore:
+      - "&7Prüft GUIs und"
+      - "&7Konfigurationen."
+    actions:
+      - "PLAYER_COMMAND:pe validate"
+  inspector:
+    slot: 43
+    material: COMPASS
+    name: "&bInspektor"
+    lore:
+      - "&7Zurück zum aktuellen"
+      - "&7Plot-Inspektor."
+    actions:
+      - "OPEN:team-inspector"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:main"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"

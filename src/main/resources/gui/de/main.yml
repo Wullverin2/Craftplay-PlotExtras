@@ -103,6 +103,15 @@ items:
       - "&7den Standard-Wettbewerb an."
     actions:
       - "PLAYER_COMMAND:pe contest join default GUI-Anmeldung"
+  tools:
+    slot: 31
+    material: COMPASS
+    name: "&aWerkzeuge"
+    lore:
+      - "&7Plotprofil, Suche,"
+      - "&7Gästebuch und Cleanup."
+    actions:
+      - "OPEN:plot-tools"
   team-inspector:
     slot: 46
     permission: "craftplayplotextras.audit.view"
@@ -123,6 +132,16 @@ items:
       - "&7Plotaktionen."
     actions:
       - "OPEN:audit-log"
+  team-tools:
+    slot: 48
+    permission: "craftplayplotextras.teamtools"
+    material: COMPASS
+    name: "&bTeam-Werkzeuge"
+    lore:
+      - "&7Anfragen, Reports,"
+      - "&7Builder und Statistiken."
+    actions:
+      - "OPEN:team-tools"
   close:
     slot: 49
     material: BARRIER

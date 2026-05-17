@@ -30,6 +30,7 @@ import de.craftplay.plotextras.plotmeta.PlotMetaService;
 import de.craftplay.plotextras.redstone.RedstoneLagProtectionService;
 import de.craftplay.plotextras.report.PlotReportService;
 import de.craftplay.plotextras.resource.ResourceInstaller;
+import de.craftplay.plotextras.utility.PlotUtilityService;
 import de.craftplay.plotextras.validation.ConfigValidationService;
 import de.craftplay.plotextras.warp.PlotWarpService;
 import org.bukkit.GameMode;
@@ -87,6 +88,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     private PlotRoleService plotRoleService;
     private PlotMetaService plotMetaService;
     private PlotWarpService plotWarpService;
+    private PlotUtilityService plotUtilityService;
     private FeatureToggleService featureToggleService;
     private PlotService plotService;
     private GuiManager guiManager;
@@ -124,6 +126,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotMetaService = new PlotMetaService(this, featureToggleService);
         plotWarpService = new PlotWarpService(this, featureToggleService);
         plotService = new PlotService(this, plotRoleService);
+        plotUtilityService = new PlotUtilityService(this, plotService, featureToggleService);
         plotBackupService = new PlotBackupService(this, plotService, featureToggleService);
         redstoneLagProtectionService = new RedstoneLagProtectionService(this, plotService, auditLogService, featureToggleService);
         plotReportService = new PlotReportService(this, featureToggleService);
@@ -131,7 +134,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotPerformanceService = new PlotPerformanceService(this, featureToggleService);
         competitionService = new CompetitionService(this, featureToggleService);
         configValidationService = new ConfigValidationService(this, featureToggleService);
-        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, featureToggleService, playerDataManager);
+        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, plotUtilityService, featureToggleService, playerDataManager);
 
         furnitureProtectionManager.registerFlags();
         furnitureProtectionManager.reload();
@@ -139,6 +142,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         auditLogService.load();
         plotMetaService.load();
         plotWarpService.load();
+        plotUtilityService.load();
         playerDataManager.load();
         plotRoleService.load();
         plotBackupService.load();
@@ -195,6 +199,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         auditLogService.load();
         plotMetaService.load();
         plotWarpService.load();
+        plotUtilityService.load();
         playerDataManager.load();
         plotRoleService.load();
         plotBackupService.load();
@@ -231,6 +236,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     public PlotWarpService getPlotWarpService() {
         return plotWarpService;
+    }
+
+    public PlotUtilityService getPlotUtilityService() {
+        return plotUtilityService;
     }
 
     public PlotBackupService getPlotBackupService() {

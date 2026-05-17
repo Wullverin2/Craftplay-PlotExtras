@@ -11,6 +11,7 @@ import de.craftplay.plotextras.plot.PlotRolePermission;
 import de.craftplay.plotextras.plot.PlotRoleService;
 import de.craftplay.plotextras.report.PlotReportEntry;
 import de.craftplay.plotextras.util.TextUtil;
+import de.craftplay.plotextras.utility.PlotUtilityService;
 import de.craftplay.plotextras.warp.PlotWarpEntry;
 import com.plotsquared.core.plot.Plot;
 import org.bukkit.Bukkit;
@@ -20,6 +21,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -182,6 +184,117 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             }
             plugin.getGuiManager().open(player, "plot-dashboard", 0);
             return true;
+        }
+
+        if (subCommand.equals("tools") || subCommand.equals("werkzeuge")) {
+            if (!feature(player, "player.tools")) {
+                return true;
+            }
+            plugin.getGuiManager().open(player, "plot-tools", 0);
+            return true;
+        }
+
+        if (subCommand.equals("teamtools") || subCommand.equals("teamwerkzeuge")) {
+            if (!feature(player, "team.tools")) {
+                return true;
+            }
+            if (!player.hasPermission("craftplayplotextras.teamtools") && !player.hasPermission("craftplayplotextras.admin")) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            plugin.getGuiManager().open(player, "team-tools", 0);
+            return true;
+        }
+
+        if (subCommand.equals("assistant") || subCommand.equals("assistent")) {
+            if (!feature(player, "player.assistant")) {
+                return true;
+            }
+            return handleAssistant(player);
+        }
+
+        if (subCommand.equals("profile") || subCommand.equals("profil")) {
+            if (!feature(player, "player.plot-profile")) {
+                return true;
+            }
+            return handleProfile(player, args);
+        }
+
+        if (subCommand.equals("guestbook") || subCommand.equals("gaestebuch") || subCommand.equals("gästebuch")) {
+            if (!feature(player, "player.guestbook")) {
+                return true;
+            }
+            return handleGuestbook(player, args);
+        }
+
+        if (subCommand.equals("request") || subCommand.equals("anfrage")) {
+            if (!feature(player, "player.requests")) {
+                return true;
+            }
+            return handlePlayerRequest(player, args);
+        }
+
+        if (subCommand.equals("requests") || subCommand.equals("anfragen")) {
+            if (!feature(player, "team.requests")) {
+                return true;
+            }
+            return handleTeamRequests(player, args);
+        }
+
+        if (subCommand.equals("search") || subCommand.equals("suche")) {
+            if (!feature(player, "player.plot-search")) {
+                return true;
+            }
+            return handleSearch(player, args);
+        }
+
+        if (subCommand.equals("favorite") || subCommand.equals("favorit")) {
+            if (!feature(player, "player.plot-favorites")) {
+                return true;
+            }
+            return handleFavorite(player, args);
+        }
+
+        if (subCommand.equals("cleanup") || subCommand.equals("aufräumen") || subCommand.equals("aufraeumen")) {
+            if (!feature(player, "player.cleanup")) {
+                return true;
+            }
+            return handlePlayerCleanup(player, args);
+        }
+
+        if (subCommand.equals("selfcheck") || subCommand.equals("check")) {
+            if (!feature(player, "player.assistant")) {
+                return true;
+            }
+            return handleSelfCheck(player);
+        }
+
+        if (subCommand.equals("stats") || subCommand.equals("statistik")) {
+            if (!feature(player, "team.statistics")) {
+                return true;
+            }
+            return handleStats(player);
+        }
+
+        if (subCommand.equals("permcheck") || subCommand.equals("rechtecheck")) {
+            if (!feature(player, "team.permission-checker")) {
+                return true;
+            }
+            return handlePermCheck(player, args);
+        }
+
+        if (subCommand.equals("buildtask") || subCommand.equals("bauaufgabe")) {
+            if (!feature(player, "team.builder.tasks")) {
+                return true;
+            }
+            return handleBuildTask(player, args);
+        }
+
+        if (subCommand.equals("buildermode") || subCommand.equals("baumodus")) {
+            if (!feature(player, "team.builder.mode")) {
+                return true;
+            }
+            return handleBuilderMode(player, args);
         }
 
         player.sendMessage(TextUtil.component(plugin.getLanguageManager().getRawMessage(player, "help")));
@@ -496,6 +609,379 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(TextUtil.component("&7Weitere Hinweise: &f" + (issues.size() - 20)));
         }
         player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleAssistant(final Player player) {
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aPlot-Assistent"));
+        player.sendMessage(TextUtil.component("&7Plots: &f" + plugin.getPlotService().getPlotPlaceholders(player).get("plot_count")
+                + "&7/&f" + plugin.getPlotService().getPlotLimit(player)));
+        if (plot == null) {
+            player.sendMessage(TextUtil.component("&cDu stehst auf keinem Plot."));
+            player.sendMessage(TextUtil.component("&8Tipp: &f/plot auto &8oder das PlotSquared-Claim-Menue nutzen."));
+        } else {
+            final Map<String, String> meta = plugin.getPlotUtilityService().placeholders(plot);
+            player.sendMessage(TextUtil.component("&7Plot: &f" + meta.getOrDefault("plot_access_mode", "normal")
+                    + " &8| &7Kategorie: &f" + meta.getOrDefault("plot_category", "-")));
+            player.sendMessage(TextUtil.component("&7Beschreibung: &f" + meta.getOrDefault("plot_description", "-")));
+            player.sendMessage(TextUtil.component("&7Tags: &f" + meta.getOrDefault("plot_tags", "-")));
+            player.sendMessage(TextUtil.component("&8/pe profile description <Text> &7- Beschreibung setzen"));
+            player.sendMessage(TextUtil.component("&8/pe profile tags shop,farm,deko &7- Tags setzen"));
+            player.sendMessage(TextUtil.component("&8/pe selfcheck &7- Entities und Warnungen anzeigen"));
+        }
+        player.sendMessage(TextUtil.component("&8/pe tools &7- Spieler-Werkzeuge öffnen"));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleProfile(final Player player, final String[] args) {
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        final PlotUtilityService utility = plugin.getPlotUtilityService();
+        if (args.length < 2 || args[1].equalsIgnoreCase("show")) {
+            final Map<String, String> meta = utility.placeholders(plot);
+            player.sendMessage(TextUtil.component("&8&m----------------"));
+            player.sendMessage(TextUtil.component("&aPlotprofil"));
+            player.sendMessage(TextUtil.component("&7Beschreibung: &f" + meta.getOrDefault("plot_description", "-")));
+            player.sendMessage(TextUtil.component("&7Kategorie: &f" + meta.getOrDefault("plot_category", "-")));
+            player.sendMessage(TextUtil.component("&7Tags: &f" + meta.getOrDefault("plot_tags", "-")));
+            player.sendMessage(TextUtil.component("&7Besuchsmodus: &f" + meta.getOrDefault("plot_access_mode", "normal")));
+            player.sendMessage(TextUtil.component("&8/pe profile description <Text>"));
+            player.sendMessage(TextUtil.component("&8/pe profile category <Kategorie>"));
+            player.sendMessage(TextUtil.component("&8/pe profile tags tag1,tag2"));
+            player.sendMessage(TextUtil.component("&8/pe profile access <normal|public|private|members|locked>"));
+            player.sendMessage(TextUtil.component("&8&m----------------"));
+            return true;
+        }
+        final String action = args[1].toLowerCase(Locale.ROOT);
+        final boolean changed = switch (action) {
+            case "description", "beschreibung" -> args.length >= 3 && utility.setDescription(player, plot, join(args, 2));
+            case "category", "kategorie" -> args.length >= 3 && utility.setCategory(player, plot, join(args, 2));
+            case "tags" -> args.length >= 3 && utility.setTags(player, plot, join(args, 2));
+            case "access", "visitmode", "besuchsmodus" -> args.length >= 3 && utility.setAccessMode(player, plot, args[2]);
+            case "lockmessage", "sperrnachricht" -> args.length >= 3 && utility.setLockedMessage(player, plot, join(args, 2));
+            default -> false;
+        };
+        if (!changed) {
+            player.sendMessage(TextUtil.component("&cProfil konnte nicht geändert werden. Prüfe Rechte und Eingabe."));
+            return true;
+        }
+        plugin.getAuditLogService().log(player, plot, "Plotprofil geändert", action);
+        player.sendMessage(TextUtil.component("&aPlotprofil wurde gespeichert."));
+        return true;
+    }
+
+    private boolean handleGuestbook(final Player player, final String[] args) {
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        if (args.length >= 2 && (args[1].equalsIgnoreCase("sign") || args[1].equalsIgnoreCase("write") || args[1].equalsIgnoreCase("schreiben"))) {
+            if (args.length < 3) {
+                player.sendMessage(TextUtil.component("&cNutze: &e/pe guestbook sign <Nachricht>"));
+                return true;
+            }
+            final PlotUtilityService.GuestbookEntry entry = plugin.getPlotUtilityService().signGuestbook(player, plot, join(args, 2));
+            player.sendMessage(TextUtil.component(entry == null ? "&cEintrag konnte nicht gespeichert werden." : "&aGästebuch-Eintrag gespeichert."));
+            return true;
+        }
+        final List<PlotUtilityService.GuestbookEntry> entries = plugin.getPlotUtilityService().guestbook(plot, 8);
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aGästebuch &8(" + entries.size() + ")"));
+        if (entries.isEmpty()) {
+            player.sendMessage(TextUtil.component("&7Noch keine Einträge."));
+        }
+        for (final PlotUtilityService.GuestbookEntry entry : entries) {
+            player.sendMessage(TextUtil.component("&e" + entry.playerName() + " &7- &f" + entry.message()));
+        }
+        player.sendMessage(TextUtil.component("&8/pe guestbook sign <Nachricht>"));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handlePlayerRequest(final Player player, final String[] args) {
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (args.length >= 2 && args[1].equalsIgnoreCase("list")) {
+            return listOwnRequests(player);
+        }
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        if (args.length < 2) {
+            player.sendMessage(TextUtil.component("&e/pe request <trust|move|backup|restore|design|support> <Notiz>"));
+            player.sendMessage(TextUtil.component("&e/pe request list"));
+            return true;
+        }
+        final String note = args.length >= 3 ? join(args, 2) : "-";
+        final PlotUtilityService.UtilityRequestEntry entry = plugin.getPlotUtilityService().createRequest(player, plot, args[1], note);
+        if (entry == null) {
+            player.sendMessage(TextUtil.component("&cAnfrage konnte nicht erstellt werden."));
+            return true;
+        }
+        player.sendMessage(TextUtil.component("&aAnfrage &e" + entry.id() + " &awurde erstellt."));
+        for (final Player online : Bukkit.getOnlinePlayers()) {
+            if (plugin.getPlotUtilityService().canHandleRequests(online)) {
+                online.sendMessage(TextUtil.component("&eNeue Plot-Anfrage &f" + entry.id()
+                        + " &7von &f" + player.getName()
+                        + " &7auf &f" + entry.plotKey()
+                        + " &8- &f/pe requests"));
+            }
+        }
+        return true;
+    }
+
+    private boolean listOwnRequests(final Player player) {
+        final List<PlotUtilityService.UtilityRequestEntry> entries = plugin.getPlotUtilityService().listOwnRequests(player);
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aDeine Anfragen &8(" + entries.size() + ")"));
+        for (final PlotUtilityService.UtilityRequestEntry entry : entries.stream().limit(10).toList()) {
+            player.sendMessage(TextUtil.component("&e" + entry.id() + " &7| &f" + entry.type()
+                    + " &7| &f" + entry.status() + " &7| &8" + entry.note()));
+        }
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleTeamRequests(final Player player, final String[] args) {
+        if (!plugin.getPlotUtilityService().canHandleRequests(player)) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        final String action = args.length >= 2 ? args[1].toLowerCase(Locale.ROOT) : "list";
+        if (action.equals("close") || action.equals("done")) {
+            if (args.length < 3) {
+                player.sendMessage(TextUtil.component("&cNutze: &e/pe requests close <id> <Antwort>"));
+                return true;
+            }
+            final String response = args.length >= 4 ? join(args, 3) : "Erledigt.";
+            player.sendMessage(TextUtil.component(plugin.getPlotUtilityService().closeRequest(player, args[2], response)
+                    ? "&aAnfrage geschlossen."
+                    : "&cAnfrage konnte nicht geschlossen werden."));
+            return true;
+        }
+        if (action.equals("accepttrust") || action.equals("trust")) {
+            if (args.length < 3) {
+                player.sendMessage(TextUtil.component("&cNutze: &e/pe requests accepttrust <id>"));
+                return true;
+            }
+            player.sendMessage(TextUtil.component(plugin.getPlotUtilityService().acceptTrustRequest(player, args[2])
+                    ? "&aTrust-Anfrage angenommen."
+                    : "&cTrust-Anfrage konnte nicht angenommen werden. Stehe auf dem passenden Plot."));
+            return true;
+        }
+        final List<PlotUtilityService.UtilityRequestEntry> entries = action.equals("all")
+                ? plugin.getPlotUtilityService().listRequests()
+                : plugin.getPlotUtilityService().listOpenRequests();
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aPlot-Anfragen &8(" + entries.size() + ")"));
+        for (final PlotUtilityService.UtilityRequestEntry entry : entries.stream().limit(12).toList()) {
+            player.sendMessage(TextUtil.component("&e" + entry.id()
+                    + " &7| &f" + entry.type()
+                    + " &7| &f" + entry.requesterName()
+                    + " &7| &f" + entry.plotKey()
+                    + " &7| &8" + entry.note()));
+        }
+        player.sendMessage(TextUtil.component("&8/pe requests accepttrust <id>"));
+        player.sendMessage(TextUtil.component("&8/pe requests close <id> <Antwort>"));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleSearch(final Player player, final String[] args) {
+        if (args.length < 2) {
+            player.sendMessage(TextUtil.component("&cNutze: &e/pe search <Tag|Kategorie|Text>"));
+            return true;
+        }
+        final List<PlotUtilityService.PlotProfileEntry> results = plugin.getPlotUtilityService().searchProfiles(join(args, 1));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aPlotsuche &8(" + results.size() + ")"));
+        if (results.isEmpty()) {
+            player.sendMessage(TextUtil.component("&7Keine passenden Plotprofile gefunden."));
+        }
+        for (final PlotUtilityService.PlotProfileEntry entry : results.stream().limit(10).toList()) {
+            player.sendMessage(TextUtil.component("&e" + entry.plotKey()
+                    + " &7| &f" + entry.ownerName()
+                    + " &7| &a" + entry.category()
+                    + " &7| &8" + String.join(", ", entry.tags())));
+        }
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleFavorite(final Player player, final String[] args) {
+        if (args.length >= 2 && args[1].equalsIgnoreCase("list")) {
+            final List<String> favorites = plugin.getPlotUtilityService().favorites(player);
+            player.sendMessage(TextUtil.component("&8&m----------------"));
+            player.sendMessage(TextUtil.component("&aFavoriten &8(" + favorites.size() + ")"));
+            favorites.stream().limit(15).forEach(key -> player.sendMessage(TextUtil.component("&e" + key)));
+            player.sendMessage(TextUtil.component("&8&m----------------"));
+            return true;
+        }
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        final boolean added = plugin.getPlotUtilityService().toggleFavorite(player, plot);
+        player.sendMessage(TextUtil.component(added ? "&aPlot wurde zu deinen Favoriten hinzugefügt." : "&7Plot wurde aus deinen Favoriten entfernt."));
+        return true;
+    }
+
+    private boolean handlePlayerCleanup(final Player player, final String[] args) {
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        final String mode = args.length >= 2 ? args[1] : "drops";
+        final int removed = plugin.getPlotUtilityService().cleanupOwnedPlot(player, plot, mode);
+        if (removed < 0) {
+            player.sendMessage(TextUtil.component("&cCleanup konnte nicht ausgeführt werden. Nur Plotbesitzer können das nutzen."));
+            return true;
+        }
+        plugin.getAuditLogService().log(player, plot, "Spieler-Cleanup", mode + ": " + removed);
+        player.sendMessage(TextUtil.component("&aEntfernt: &e" + removed + " &7(" + mode + ")"));
+        return true;
+    }
+
+    private boolean handleSelfCheck(final Player player) {
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        if (plot == null) {
+            plugin.getLanguageManager().send(player, "no-plot");
+            return true;
+        }
+        final PlotPerformanceSnapshot snapshot = plugin.getPlotPerformanceService().snapshot(plot);
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aPlot-Selbstcheck"));
+        player.sendMessage(TextUtil.component("&7Entities gesamt: &f" + snapshot.totalEntities()));
+        snapshot.entityCounts().entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(8)
+                .forEach(entry -> player.sendMessage(TextUtil.component("&e" + entry.getKey() + " &7- &f" + entry.getValue())));
+        if (snapshot.warnings().isEmpty()) {
+            player.sendMessage(TextUtil.component("&aKeine Performance-Warnungen gefunden."));
+        }
+        for (final String warning : snapshot.warnings()) {
+            player.sendMessage(TextUtil.component("&6" + warning));
+        }
+        player.sendMessage(TextUtil.component("&8/pe cleanup drops &7- Drops aufräumen"));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleStats(final Player player) {
+        if (!player.hasPermission("craftplayplotextras.statistics") && !player.hasPermission("craftplayplotextras.admin")) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        final Map<String, Integer> stats = plugin.getPlotUtilityService().statistics();
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aPlotExtras Statistik"));
+        stats.forEach((key, value) -> player.sendMessage(TextUtil.component("&e" + key + " &7- &f" + value)));
+        player.sendMessage(TextUtil.component("&7Reports offen: &f" + plugin.getPlotReportService().listOpen().size()));
+        player.sendMessage(TextUtil.component("&7Backups gesamt: &f" + plugin.getPlotBackupService().listAllBackups().size()));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handlePermCheck(final Player player, final String[] args) {
+        if (!player.hasPermission("craftplayplotextras.permissioncheck") && !player.hasPermission("craftplayplotextras.admin")) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        if (args.length < 2) {
+            player.sendMessage(TextUtil.component("&cNutze: &e/pe permcheck <Spieler>"));
+            return true;
+        }
+        final Player target = Bukkit.getPlayerExact(args[1]);
+        if (target == null) {
+            player.sendMessage(TextUtil.component("&cDer Spieler muss online sein."));
+            return true;
+        }
+        final List<String> permissions = target.getEffectivePermissions().stream()
+                .filter(PermissionAttachmentInfo::getValue)
+                .map(PermissionAttachmentInfo::getPermission)
+                .filter(permission -> permission.startsWith("craftplayplotextras.") || permission.startsWith("plots.plot."))
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .toList();
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aRechtecheck: &f" + target.getName()));
+        player.sendMessage(TextUtil.component("&7Plotlimit: &f" + plugin.getPlotService().getPlotLimit(target)));
+        permissions.stream().limit(30).forEach(permission -> player.sendMessage(TextUtil.component("&e" + permission)));
+        if (permissions.size() > 30) {
+            player.sendMessage(TextUtil.component("&7Weitere Rechte: &f" + (permissions.size() - 30)));
+        }
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleBuildTask(final Player player, final String[] args) {
+        if (!plugin.getPlotUtilityService().canManageBuildTasks(player)) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        final String action = args.length >= 2 ? args[1].toLowerCase(Locale.ROOT) : "list";
+        if (action.equals("create") || action.equals("neu")) {
+            final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+            if (plot == null) {
+                plugin.getLanguageManager().send(player, "no-plot");
+                return true;
+            }
+            if (args.length < 3) {
+                player.sendMessage(TextUtil.component("&cNutze: &e/pe buildtask create <Titel> | <Notiz>"));
+                return true;
+            }
+            final String raw = join(args, 2);
+            final String[] parts = raw.split("\\|", 2);
+            final PlotUtilityService.BuildTaskEntry entry = plugin.getPlotUtilityService().createBuildTask(
+                    player,
+                    plot,
+                    parts[0].trim(),
+                    parts.length >= 2 ? parts[1].trim() : "-"
+            );
+            player.sendMessage(TextUtil.component(entry == null ? "&cBauaufgabe konnte nicht erstellt werden." : "&aBauaufgabe &e" + entry.id() + " &aerstellt."));
+            return true;
+        }
+        if (action.equals("done") || action.equals("close")) {
+            if (args.length < 3) {
+                player.sendMessage(TextUtil.component("&cNutze: &e/pe buildtask done <id>"));
+                return true;
+            }
+            player.sendMessage(TextUtil.component(plugin.getPlotUtilityService().completeBuildTask(player, args[2])
+                    ? "&aBauaufgabe abgeschlossen."
+                    : "&cBauaufgabe wurde nicht gefunden."));
+            return true;
+        }
+        final boolean all = action.equals("all");
+        final List<PlotUtilityService.BuildTaskEntry> entries = plugin.getPlotUtilityService().listBuildTasks(all);
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aBauaufgaben &8(" + entries.size() + ")"));
+        for (final PlotUtilityService.BuildTaskEntry entry : entries.stream().limit(12).toList()) {
+            player.sendMessage(TextUtil.component("&e" + entry.id()
+                    + " &7| &f" + entry.status()
+                    + " &7| &f" + entry.plotKey()
+                    + " &7| &a" + entry.title()));
+        }
+        player.sendMessage(TextUtil.component("&8/pe buildtask create <Titel> | <Notiz>"));
+        player.sendMessage(TextUtil.component("&8/pe buildtask done <id>"));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        return true;
+    }
+
+    private boolean handleBuilderMode(final Player player, final String[] args) {
+        final boolean enabled = args.length < 2 || parseEnabled(args[1]);
+        if (!plugin.getPlotUtilityService().setBuilderMode(player, enabled)) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        player.sendMessage(TextUtil.component(enabled ? "&aBuilder-Modus aktiviert." : "&7Builder-Modus deaktiviert."));
         return true;
     }
 
@@ -938,7 +1424,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (args.length == 1) {
-            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team", "dashboard", "info", "warp", "warps", "report", "reports", "mod", "performance", "contest", "validate"), args[0]);
+            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team", "dashboard", "info", "tools", "teamtools", "assistant", "profile", "guestbook", "request", "requests", "search", "favorite", "cleanup", "selfcheck", "stats", "permcheck", "buildtask", "buildermode", "warp", "warps", "report", "reports", "mod", "performance", "contest", "validate"), args[0]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("open")) {
             return filter(plugin.getFeatureToggleService().enabledGuiIds(plugin.getGuiManager().getGuiIds()), args[1]);
@@ -966,6 +1452,30 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length >= 2 && (args[0].equalsIgnoreCase("contest") || args[0].equalsIgnoreCase("competition") || args[0].equalsIgnoreCase("wettbewerb"))) {
             return completeCompetitionCommand(args);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("profile") || args[0].equalsIgnoreCase("profil"))) {
+            return completeProfileCommand(args);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("guestbook") || args[0].equalsIgnoreCase("gaestebuch") || args[0].equalsIgnoreCase("gästebuch"))) {
+            return completeGuestbookCommand(args);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("request") || args[0].equalsIgnoreCase("anfrage"))) {
+            return completeRequestCommand(args);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("requests") || args[0].equalsIgnoreCase("anfragen"))) {
+            return completeTeamRequestCommand(args);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("cleanup") || args[0].equalsIgnoreCase("aufraeumen") || args[0].equalsIgnoreCase("aufräumen"))) {
+            return completeCleanupCommand(args);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("favorite") || args[0].equalsIgnoreCase("favorit"))) {
+            return filter(List.of("list", "toggle"), args[1]);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("buildtask") || args[0].equalsIgnoreCase("bauaufgabe"))) {
+            return completeBuildTaskCommand(args);
+        }
+        if (args.length >= 2 && (args[0].equalsIgnoreCase("buildermode") || args[0].equalsIgnoreCase("baumodus"))) {
+            return filter(List.of("on", "off"), args[1]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("language")) {
             final List<String> languages = new ArrayList<>();
@@ -1003,6 +1513,57 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length == 3 && args[1].equalsIgnoreCase("score")) {
             return filter(plugin.getCompetitionService().list("").stream().map(CompetitionEntry::id).toList(), args[2]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeProfileCommand(final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("show", "description", "category", "tags", "access", "lockmessage"), args[1]);
+        }
+        if (args.length == 3 && args[1].equalsIgnoreCase("access")) {
+            return filter(List.of("normal", "public", "private", "members", "friends", "locked"), args[2]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeGuestbookCommand(final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("list", "sign"), args[1]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeRequestCommand(final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("trust", "move", "backup", "restore", "design", "support", "list"), args[1]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeTeamRequestCommand(final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("list", "all", "accepttrust", "close"), args[1]);
+        }
+        if (args.length == 3 && (args[1].equalsIgnoreCase("accepttrust") || args[1].equalsIgnoreCase("close"))) {
+            return filter(plugin.getPlotUtilityService().listOpenRequests().stream().map(PlotUtilityService.UtilityRequestEntry::id).toList(), args[2]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeCleanupCommand(final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("drops", "projectiles", "monsters", "animals", "vehicles", "all"), args[1]);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> completeBuildTaskCommand(final String[] args) {
+        if (args.length == 2) {
+            return filter(List.of("list", "all", "create", "done"), args[1]);
+        }
+        if (args.length == 3 && args[1].equalsIgnoreCase("done")) {
+            return filter(plugin.getPlotUtilityService().listBuildTasks(false).stream().map(PlotUtilityService.BuildTaskEntry::id).toList(), args[2]);
         }
         return Collections.emptyList();
     }

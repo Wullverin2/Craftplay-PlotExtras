@@ -29,6 +29,14 @@ features:
       # Plot-Dashboard mit Status, Notizen, Likes, Besucherzahlen, Warps und Limits.
       enabled: true
 
+    tools:
+      # Zusatzmenü für Spielerwerkzeuge wie Assistent, Suche, Gästebuch und Cleanup.
+      enabled: true
+
+    assistant:
+      # Neuer-Spieler-/Plot-Assistent mit Status, Tipps und Schnellübersicht.
+      enabled: true
+
     flags:
       # Flags-GUI und einzelne Flag-Umschaltungen.
       enabled: true
@@ -110,6 +118,34 @@ features:
       # Besucherzähler und letzter Besucher.
       enabled: true
 
+    plot-favorites:
+      # Persönliche Favoritenliste für Plots.
+      enabled: true
+
+    plot-profile:
+      # Plotbeschreibung, Kategorie, Tags und Besuchsmodus.
+      enabled: true
+
+    plot-search:
+      # Suche nach Plotprofilen, Tags, Kategorien und Beschreibungen.
+      enabled: true
+
+    guestbook:
+      # Öffentliches Gästebuch pro Plot.
+      enabled: true
+
+    requests:
+      # Spieleranfragen an Plotbesitzer oder Team, z. B. Trust, Backup, Restore oder Umzug.
+      enabled: true
+
+    cleanup:
+      # Spieler können harmlose Entity-Arten auf dem eigenen Plot bereinigen.
+      enabled: true
+
+    visit-mode:
+      # Speichert Besuchsmodi wie öffentlich, privat, Mitglieder oder gesperrt im Plotprofil.
+      enabled: true
+
     plot-warps:
       # Plot-Warp-System.
       enabled: true
@@ -118,6 +154,17 @@ features:
       teleport:
         enabled: true
       delete:
+        enabled: true
+
+    requests:
+      # Teamübersicht und Bearbeitung von Spieleranfragen.
+      enabled: true
+    builder:
+      # Builder-Werkzeuge wie Builder-Modus und Bauaufgaben.
+      enabled: true
+      mode:
+        enabled: true
+      tasks:
         enabled: true
 
     reports:
@@ -211,6 +258,9 @@ features:
   team:
     # Teamfunktionen für Leitung, Admin, Mod, Supporter, Support JR und Builder.
     enabled: true
+    tools:
+      # Zentrales Team-Werkzeugmenü.
+      enabled: true
     inspector:
       enabled: true
     audit-log:

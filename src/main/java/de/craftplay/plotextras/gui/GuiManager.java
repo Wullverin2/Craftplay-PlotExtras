@@ -22,6 +22,7 @@ import de.craftplay.plotextras.plotmeta.PlotMetaService;
 import de.craftplay.plotextras.redstone.RedstoneLagProtectionService;
 import de.craftplay.plotextras.util.SlotParser;
 import de.craftplay.plotextras.util.TextUtil;
+import de.craftplay.plotextras.utility.PlotUtilityService;
 import de.craftplay.plotextras.warp.PlotWarpEntry;
 import de.craftplay.plotextras.warp.PlotWarpService;
 import org.bukkit.Bukkit;
@@ -75,6 +76,7 @@ public final class GuiManager implements Listener {
     private final RedstoneLagProtectionService redstoneLagProtectionService;
     private final PlotMetaService plotMetaService;
     private final PlotWarpService plotWarpService;
+    private final PlotUtilityService plotUtilityService;
     private final FeatureToggleService featureToggleService;
     @SuppressWarnings("unused")
     private final PlayerDataManager playerDataManager;
@@ -98,6 +100,7 @@ public final class GuiManager implements Listener {
             final RedstoneLagProtectionService redstoneLagProtectionService,
             final PlotMetaService plotMetaService,
             final PlotWarpService plotWarpService,
+            final PlotUtilityService plotUtilityService,
             final FeatureToggleService featureToggleService,
             final PlayerDataManager playerDataManager
     ) {
@@ -112,6 +115,7 @@ public final class GuiManager implements Listener {
         this.redstoneLagProtectionService = redstoneLagProtectionService;
         this.plotMetaService = plotMetaService;
         this.plotWarpService = plotWarpService;
+        this.plotUtilityService = plotUtilityService;
         this.featureToggleService = featureToggleService;
         this.playerDataManager = playerDataManager;
     }
@@ -1988,6 +1992,7 @@ public final class GuiManager implements Listener {
     private Map<String, String> createPlaceholders(final Player player) {
         final Map<String, String> placeholders = new HashMap<>(plotService.getPlotPlaceholders(player));
         placeholders.putAll(plotMetaService.placeholders(plotService.getCurrentPlot(player)));
+        placeholders.putAll(plotUtilityService.placeholders(plotService.getCurrentPlot(player)));
         placeholders.put("plot_warps", String.valueOf(plotWarpService.listWarps(plotService.getCurrentPlot(player)).size()));
         placeholders.put("language", languageManager.getPlayerLanguage(player));
         placeholders.putAll(placeholderService.getIntegrationPlaceholders(player));

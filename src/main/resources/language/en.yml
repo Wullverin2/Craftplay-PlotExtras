@@ -17,7 +17,7 @@ messages:
   feature-disabled: "&cThis feature is currently disabled: &e{feature}&c."
   unknown-language: "&cThe language &e{language} &cwas not found."
   language-set: "&aYour language has been set to &e{language}&a."
-  help: "&e/plotextras &7- opens the plot GUI. &e/plotextras language &7- choose your language."
+  help: "&e/plotextras &7- opens the plot GUI. &e/plotextras tools &7- player tools. &e/plotextras teamtools &7- team tools."
   no-plot: "&cYou are not standing on a plot."
   not-owner: "&cYou can only edit your own plot or merged plot while standing on it."
   plot-limit-reached: "&cYou reached your plot limit: &e{plot_count}&7/&e{plot_max}&c."

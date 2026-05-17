@@ -17,7 +17,7 @@ messages:
   feature-disabled: "&cDiese Funktion ist derzeit deaktiviert: &e{feature}&c."
   unknown-language: "&cDie Sprache &e{language} &cwurde nicht gefunden."
   language-set: "&aDeine Sprache wurde auf &e{language} &agesetzt."
-  help: "&e/plotextras &7- öffnet das Plot-GUI. &e/plotextras language &7- Sprache wählen."
+  help: "&e/plotextras &7- öffnet das Plot-GUI. &e/plotextras tools &7- Spieler-Werkzeuge. &e/plotextras teamtools &7- Team-Werkzeuge."
   no-plot: "&cDu stehst auf keinem Plot."
   not-owner: "&cDu kannst nur deinen eigenen Plot oder Plotmerge bearbeiten, auf dem du gerade stehst."
   plot-limit-reached: "&cDu hast dein Plot-Limit erreicht: &e{plot_count}&7/&e{plot_max}&c."

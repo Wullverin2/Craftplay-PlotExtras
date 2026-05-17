@@ -42,9 +42,11 @@ public final class FeatureToggleService {
             Map.entry("entity-limits", "player.entity-limits"),
             Map.entry("plot-dashboard", "player.dashboard"),
             Map.entry("plot-warps", "player.plot-warps"),
+            Map.entry("plot-tools", "player.tools"),
             Map.entry("backups", "team.backups"),
             Map.entry("backup-restore-confirm", "team.backups.restore"),
             Map.entry("team-inspector", "team.inspector"),
+            Map.entry("team-tools", "team.tools"),
             Map.entry("audit-log", "team.audit-log"),
             Map.entry("redstone-alerts", "team.redstone-alerts")
     );
@@ -234,11 +236,11 @@ public final class FeatureToggleService {
         if (normalized.startsWith("delete_plot_warp:")) {
             return "player.plot-warps.delete";
         }
-        if (normalized.startsWith("player_command:pe report")) {
-            return "player.reports";
-        }
         if (normalized.startsWith("player_command:pe reports")) {
             return "team.reports";
+        }
+        if (normalized.startsWith("player_command:pe report")) {
+            return "player.reports";
         }
         if (normalized.startsWith("player_command:pe mod")) {
             return "team.moderation";
@@ -251,6 +253,45 @@ public final class FeatureToggleService {
         }
         if (normalized.startsWith("player_command:pe contest")) {
             return "player.competitions";
+        }
+        if (normalized.startsWith("player_command:pe tools")) {
+            return "player.tools";
+        }
+        if (normalized.startsWith("player_command:pe assistant")) {
+            return "player.assistant";
+        }
+        if (normalized.startsWith("player_command:pe profile")) {
+            return "player.plot-profile";
+        }
+        if (normalized.startsWith("player_command:pe guestbook")) {
+            return "player.guestbook";
+        }
+        if (normalized.startsWith("player_command:pe search")) {
+            return "player.plot-search";
+        }
+        if (normalized.startsWith("player_command:pe cleanup")) {
+            return "player.cleanup";
+        }
+        if (normalized.startsWith("player_command:pe favorite")) {
+            return "player.plot-favorites";
+        }
+        if (normalized.startsWith("player_command:pe teamtools")) {
+            return "team.tools";
+        }
+        if (normalized.startsWith("player_command:pe requests")) {
+            return "team.requests";
+        }
+        if (normalized.startsWith("player_command:pe request")) {
+            return "player.requests";
+        }
+        if (normalized.startsWith("player_command:pe stats")) {
+            return "team.statistics";
+        }
+        if (normalized.startsWith("player_command:pe permcheck")) {
+            return "team.permission-checker";
+        }
+        if (normalized.startsWith("player_command:pe buildtask") || normalized.startsWith("player_command:pe buildermode")) {
+            return "team.builder";
         }
         if (normalized.startsWith("command:")
                 || normalized.startsWith("player_command:")
