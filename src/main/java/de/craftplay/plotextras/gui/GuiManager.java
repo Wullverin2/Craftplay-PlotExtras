@@ -55,6 +55,8 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -395,6 +397,7 @@ public final class GuiManager implements Listener {
             case "plot-search" -> renderPlotSearch(player, inventory, holder, dynamic, placeholders, page);
             case "guestbook" -> renderGuestbook(player, inventory, holder, dynamic, placeholders, page);
             case "plot-requests" -> renderPlotRequests(player, inventory, holder, dynamic, placeholders, page);
+            case "temporary-trusts" -> renderTemporaryTrusts(player, inventory, holder, dynamic, placeholders, page);
             case "plot-reports" -> renderPlotReports(player, inventory, holder, dynamic, placeholders, page);
             case "build-tasks" -> renderBuildTasks(player, inventory, holder, dynamic, placeholders, page);
             case "permission-check" -> renderPermissionCheck(player, inventory, holder, dynamic, placeholders, page);
@@ -865,6 +868,44 @@ public final class GuiManager implements Listener {
             itemPlaceholders.put("request_owner", entry.ownerName());
             itemPlaceholders.put("request_note", entry.note());
             itemPlaceholders.put("request_response", entry.response());
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderTemporaryTrusts(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (slots.isEmpty() || plot == null) {
+            return;
+        }
+
+        final List<PlotUtilityService.TemporaryTrustEntry> entries = plotUtilityService.temporaryTrusts(plot);
+        final PageSlice<PlotUtilityService.TemporaryTrustEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("entry-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PlotUtilityService.TemporaryTrustEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("temptrust_player", entry.playerName());
+            itemPlaceholders.put("temptrust_uuid", entry.playerUuid().toString());
+            itemPlaceholders.put("temptrust_plot_key", entry.plotKey());
+            itemPlaceholders.put("temptrust_created_by", entry.createdBy());
+            itemPlaceholders.put("temptrust_created", BACKUP_TIME_FORMAT.format(entry.createdAt()));
+            itemPlaceholders.put("temptrust_expires", BACKUP_TIME_FORMAT.format(entry.expiresAt()));
+            itemPlaceholders.put("temptrust_remaining", formatDuration(player, Duration.between(Instant.now(), entry.expiresAt())));
 
             final ItemStack item = buildItem(player, template, null, itemPlaceholders);
             final int slot = slots.get(index);
@@ -1664,6 +1705,14 @@ public final class GuiManager implements Listener {
                 startRequestPrompt(player, action.substring("REQUEST_PROMPT:".length()));
                 return;
             }
+            if (upperAction.startsWith("TEMPTRUST_ADD_PROMPT:")) {
+                startTemporaryTrustPrompt(player, action.substring("TEMPTRUST_ADD_PROMPT:".length()));
+                return;
+            }
+            if (upperAction.startsWith("TEMPTRUST_REMOVE:")) {
+                removeTemporaryTrust(player, event, action.substring("TEMPTRUST_REMOVE:".length()));
+                return;
+            }
             if (upperAction.startsWith("CLOSE_REQUEST:")) {
                 closeRequest(player, action.substring("CLOSE_REQUEST:".length()));
                 return;
@@ -2076,6 +2125,16 @@ public final class GuiManager implements Listener {
         sendMessage(player, "request-input", Map.of("type", type));
     }
 
+    private void startTemporaryTrustPrompt(final Player player, final String durationText) {
+        if (!canInviteMembersHere(player)) {
+            return;
+        }
+        final Duration duration = parseDuration(durationText);
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.CREATE_TEMPORARY_TRUST, durationText.trim()));
+        player.closeInventory();
+        sendMessage(player, "temptrust-input", Map.of("duration", formatDuration(player, duration)));
+    }
+
     private void startBuildTaskCreatePrompt(final Player player) {
         if (!plotUtilityService.canManageBuildTasks(player)) {
             sendMessage(player, "no-permission", Map.of());
@@ -2113,6 +2172,9 @@ public final class GuiManager implements Listener {
             } else if (input.type() == ChatInputType.CREATE_REQUEST) {
                 sendMessage(player, "request-cancelled", Map.of());
                 scheduleOpen(player, "requests", 0);
+            } else if (input.type() == ChatInputType.CREATE_TEMPORARY_TRUST) {
+                sendMessage(player, "temptrust-cancelled", Map.of());
+                scheduleOpen(player, "temporary-trusts", 0);
             } else if (input.type() == ChatInputType.SCORE_COMPETITION) {
                 player.sendMessage(TextUtil.component("&7Bewertung abgebrochen."));
                 scheduleOpen(player, "competitions", 0);
@@ -2158,6 +2220,11 @@ public final class GuiManager implements Listener {
 
         if (input.type() == ChatInputType.CREATE_REQUEST) {
             handleRequestInput(player, input.roleId(), message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.CREATE_TEMPORARY_TRUST) {
+            handleTemporaryTrustInput(player, input, message);
             return;
         }
 
@@ -2231,6 +2298,42 @@ public final class GuiManager implements Listener {
         }
         sendRoleResult(player, result, targetName);
         scheduleOpen(player, "members", 0);
+    }
+
+    private void handleTemporaryTrustInput(final Player player, final ChatInput input, final String message) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canInviteMembers(player, plot)) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+        if (message.isBlank()) {
+            pendingChatInputs.put(player.getUniqueId(), input);
+            sendMessage(player, "temptrust-invalid", Map.of());
+            return;
+        }
+
+        final OfflinePlayer target = Bukkit.getOfflinePlayer(message);
+        final String targetName = target.getName() == null ? message : target.getName();
+        final Duration duration = parseDuration(input.roleId());
+        final PlotUtilityService.TemporaryTrustEntry entry = plotUtilityService.createTemporaryTrust(player, plot, target, duration);
+        if (entry == null) {
+            sendMessage(player, "temptrust-failed", Map.of("player", targetName));
+            scheduleOpen(player, "temporary-trusts", 0);
+            return;
+        }
+
+        auditLogService.log(player, plot, "Temporärer Trust gesetzt",
+                entry.playerName() + " bis " + BACKUP_TIME_FORMAT.format(entry.expiresAt()));
+        sendMessage(player, "temptrust-created", Map.of(
+                "player", entry.playerName(),
+                "duration", formatDuration(player, duration),
+                "expires", BACKUP_TIME_FORMAT.format(entry.expiresAt())
+        ));
+        scheduleOpen(player, "temporary-trusts", 0);
     }
 
     private void handlePlotNoteInput(final Player player, final String message) {
@@ -2524,6 +2627,44 @@ public final class GuiManager implements Listener {
         }
         sendRoleResult(player, result, memberName);
         scheduleOpen(player, "member-roles", 0);
+    }
+
+    private void removeTemporaryTrust(final Player player, final InventoryClickEvent event, final String uuidText) {
+        if (!event.isShiftClick() || !event.isRightClick()) {
+            sendMessage(player, "temptrust-remove-shift-right", Map.of("player", uuidText));
+            return;
+        }
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canUntrustMembers(player, plot)) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+
+        final UUID targetId;
+        try {
+            targetId = UUID.fromString(uuidText.trim());
+        } catch (final IllegalArgumentException exception) {
+            sendMessage(player, "temptrust-remove-failed", Map.of("player", uuidText));
+            scheduleOpen(player, "temporary-trusts", 0);
+            return;
+        }
+
+        final String targetName = plotUtilityService.temporaryTrusts(plot).stream()
+                .filter(entry -> entry.playerUuid().equals(targetId))
+                .map(PlotUtilityService.TemporaryTrustEntry::playerName)
+                .findFirst()
+                .orElse(memberName(targetId));
+        if (plotUtilityService.removeTemporaryTrust(player, plot, targetId)) {
+            auditLogService.log(player, plot, "Temporärer Trust entfernt", targetName);
+            sendMessage(player, "temptrust-removed", Map.of("player", targetName));
+        } else {
+            sendMessage(player, "temptrust-remove-failed", Map.of("player", targetName));
+        }
+        scheduleOpen(player, "temporary-trusts", 0);
     }
 
     private void selectBackup(final Player player, final String rawAction) {
@@ -3169,6 +3310,50 @@ public final class GuiManager implements Listener {
         return name == null ? memberId.toString() : name;
     }
 
+    private Duration parseDuration(final String input) {
+        if (input == null || input.isBlank()) {
+            return Duration.ofHours(1);
+        }
+        final String normalized = input.toLowerCase(Locale.ROOT).trim();
+        final long amount;
+        try {
+            amount = Long.parseLong(normalized.substring(0, normalized.length() - 1));
+        } catch (final RuntimeException exception) {
+            return Duration.ofHours(1);
+        }
+        return switch (normalized.charAt(normalized.length() - 1)) {
+            case 'm' -> Duration.ofMinutes(Math.max(1L, amount));
+            case 'h' -> Duration.ofHours(Math.max(1L, amount));
+            case 'd' -> Duration.ofDays(Math.max(1L, amount));
+            case 'w' -> Duration.ofDays(Math.max(1L, amount) * 7L);
+            default -> Duration.ofHours(Math.max(1L, amount));
+        };
+    }
+
+    private String formatDuration(final Player player, final Duration duration) {
+        final boolean english = languageManager.getPlayerLanguage(player).toLowerCase(Locale.ROOT).startsWith("en");
+        if (duration == null || duration.isZero() || duration.isNegative()) {
+            return english ? "expired" : "abgelaufen";
+        }
+        final long days = duration.toDays();
+        final long hours = duration.minusDays(days).toHours();
+        final long minutes = duration.minusDays(days).minusHours(hours).toMinutes();
+        final List<String> parts = new ArrayList<>();
+        if (days > 0) {
+            parts.add(days + (english ? (days == 1 ? " day" : " days") : (days == 1 ? " Tag" : " Tage")));
+        }
+        if (hours > 0) {
+            parts.add(hours + (english ? (hours == 1 ? " hour" : " hours") : (hours == 1 ? " Stunde" : " Stunden")));
+        }
+        if (minutes > 0 || parts.isEmpty()) {
+            final long shownMinutes = Math.max(1L, minutes);
+            parts.add(shownMinutes + (english
+                    ? (shownMinutes == 1 ? " minute" : " minutes")
+                    : (shownMinutes == 1 ? " Minute" : " Minuten")));
+        }
+        return String.join(" ", parts);
+    }
+
     private void runCommand(final Player player, final String commandAction) {
         final String[] parts = commandAction.split(":", 2);
         if (parts.length < 2) {
@@ -3198,6 +3383,7 @@ public final class GuiManager implements Listener {
         placeholders.putAll(plotMetaService.placeholders(plotService.getCurrentPlot(player)));
         placeholders.putAll(plotUtilityService.placeholders(plotService.getCurrentPlot(player)));
         placeholders.put("plot_warps", String.valueOf(plotWarpService.listWarps(plotService.getCurrentPlot(player)).size()));
+        placeholders.put("temporary_trusts", String.valueOf(plotUtilityService.temporaryTrusts(plotService.getCurrentPlot(player)).size()));
         placeholders.put("language", languageManager.getPlayerLanguage(player));
         placeholders.putAll(placeholderService.getIntegrationPlaceholders(player));
         final String selectedRoleId = selectedRoles.getOrDefault(player.getUniqueId(), "-");
@@ -3526,6 +3712,7 @@ public final class GuiManager implements Listener {
         SEARCH_PLOTS,
         GUESTBOOK_SIGN,
         CREATE_REQUEST,
+        CREATE_TEMPORARY_TRUST,
         SCORE_COMPETITION,
         CREATE_BUILD_TASK
     }

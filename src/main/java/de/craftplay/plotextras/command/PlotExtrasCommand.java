@@ -384,9 +384,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         for (final PlotWarpEntry warp : warps) {
             player.sendMessage(TextUtil.component("&e" + warp.id() + " &7- &f" + warp.displayName()));
         }
-        player.sendMessage(TextUtil.component("&8/pe warp set <Name>"));
-        player.sendMessage(TextUtil.component("&8/pe warp tp <Name>"));
-        player.sendMessage(TextUtil.component("&8/pe warp delete <Name>"));
+        player.sendMessage(TextUtil.component("&8Unterbefehle: &fwarp set <Name>&8, &fwarp tp <Name>&8, &fwarp delete <Name>"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
@@ -417,7 +415,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                 online.sendMessage(TextUtil.component("&cNeue Plot-Meldung &e" + report.id()
                         + " &7von &f" + player.getName()
                         + " &7auf &f" + report.plotKey()
-                        + " &8- &f/pe reports"));
+                        + " &8- &fReports im Team-GUI öffnen"));
             }
         }
         return true;
@@ -456,7 +454,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                     + " &7| &c" + report.status()
                     + " &7| &8" + report.reason()));
         }
-        player.sendMessage(TextUtil.component("&8/pe reports close <id> <Notiz>"));
+        player.sendMessage(TextUtil.component("&8Unterbefehl: &freports close <id> <Notiz>"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
@@ -511,10 +509,8 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             }
             return true;
         }
-        player.sendMessage(TextUtil.component("&e/pe mod freeze <Grund>"));
-        player.sendMessage(TextUtil.component("&e/pe mod unfreeze"));
-        player.sendMessage(TextUtil.component("&e/pe mod cleanup <drops|projectiles|monsters|animals|vehicles|all>"));
-        player.sendMessage(TextUtil.component("&e/pe mod list"));
+        player.sendMessage(TextUtil.component("&eTeam-GUI: &7Moderation, Cleanup und gesperrte Plots"));
+        player.sendMessage(TextUtil.component("&8Unterbefehle: &fmod freeze <Grund>&8, &fmod unfreeze&8, &fmod cleanup <Typ>&8, &fmod list"));
         return true;
     }
 
@@ -596,8 +592,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                     + " &7| &f" + entry.plotKey()
                     + " &7| &a" + entry.score()));
         }
-        player.sendMessage(TextUtil.component("&8/pe contest join <Name> <Notiz>"));
-        player.sendMessage(TextUtil.component("&8/pe contest score <id> <0-100> <Notiz>"));
+        player.sendMessage(TextUtil.component("&8Unterbefehle: &fcontest join <Name> <Notiz>&8, &fcontest score <id> <0-100> <Notiz>"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
@@ -638,11 +633,10 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                     + " &8| &7Kategorie: &f" + meta.getOrDefault("plot_category", "-")));
             player.sendMessage(TextUtil.component("&7Beschreibung: &f" + meta.getOrDefault("plot_description", "-")));
             player.sendMessage(TextUtil.component("&7Tags: &f" + meta.getOrDefault("plot_tags", "-")));
-            player.sendMessage(TextUtil.component("&8/pe profile description <Text> &7- Beschreibung setzen"));
-            player.sendMessage(TextUtil.component("&8/pe profile tags shop,farm,deko &7- Tags setzen"));
-            player.sendMessage(TextUtil.component("&8/pe selfcheck &7- Entities und Warnungen anzeigen"));
+            player.sendMessage(TextUtil.component("&8Plotprofil-GUI: &7Beschreibung, Tags und Besuchsmodus bearbeiten"));
+            player.sendMessage(TextUtil.component("&8Selbstcheck-GUI: &7Entities und Warnungen anzeigen"));
         }
-        player.sendMessage(TextUtil.component("&8/pe tools &7- Spieler-Werkzeuge öffnen"));
+        player.sendMessage(TextUtil.component("&8Spieler-Werkzeuge können über das Hauptmenü geöffnet werden."));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
@@ -662,10 +656,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(TextUtil.component("&7Kategorie: &f" + meta.getOrDefault("plot_category", "-")));
             player.sendMessage(TextUtil.component("&7Tags: &f" + meta.getOrDefault("plot_tags", "-")));
             player.sendMessage(TextUtil.component("&7Besuchsmodus: &f" + meta.getOrDefault("plot_access_mode", "normal")));
-            player.sendMessage(TextUtil.component("&8/pe profile description <Text>"));
-            player.sendMessage(TextUtil.component("&8/pe profile category <Kategorie>"));
-            player.sendMessage(TextUtil.component("&8/pe profile tags tag1,tag2"));
-            player.sendMessage(TextUtil.component("&8/pe profile access <normal|public|private|members|locked>"));
+            player.sendMessage(TextUtil.component("&8Plotprofil-GUI: &7Beschreibung, Kategorie, Tags und Besuchsmodus bearbeiten"));
+            player.sendMessage(TextUtil.component("&8Unterbefehle: &fprofile description <Text>&8, &fprofile category <Kategorie>&8, &fprofile tags tag1,tag2"));
+            player.sendMessage(TextUtil.component("&8Unterbefehl: &fprofile access <normal|public|private|members|locked>"));
             player.sendMessage(TextUtil.component("&8&m----------------"));
             return true;
         }
@@ -698,7 +691,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             if (args.length < 3) {
-                player.sendMessage(TextUtil.component("&cNutze: &e/pe guestbook sign <Nachricht>"));
+                player.sendMessage(TextUtil.component("&cNutze: &eguestbook sign <Nachricht>"));
                 return true;
             }
             final PlotUtilityService.GuestbookEntry entry = plugin.getPlotUtilityService().signGuestbook(player, plot, join(args, 2));
@@ -714,7 +707,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         for (final PlotUtilityService.GuestbookEntry entry : entries) {
             player.sendMessage(TextUtil.component("&e" + entry.playerName() + " &7- &f" + entry.message()));
         }
-        player.sendMessage(TextUtil.component("&8/pe guestbook sign <Nachricht>"));
+        player.sendMessage(TextUtil.component("&8Unterbefehl: &fguestbook sign <Nachricht>"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
@@ -732,8 +725,8 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if (args.length < 2) {
-            player.sendMessage(TextUtil.component("&e/pe request <trust|move|backup|restore|design|support> <Notiz>"));
-            player.sendMessage(TextUtil.component("&e/pe request list"));
+            player.sendMessage(TextUtil.component("&eAnfragen-GUI: &7Anfrage erstellen oder eigene Anfragen ansehen"));
+            player.sendMessage(TextUtil.component("&8Unterbefehle: &frequest <trust|move|backup|restore|design|support> <Notiz>&8, &frequest list"));
             return true;
         }
         final String note = args.length >= 3 ? join(args, 2) : "-";
@@ -748,7 +741,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                 online.sendMessage(TextUtil.component("&eNeue Plot-Anfrage &f" + entry.id()
                         + " &7von &f" + player.getName()
                         + " &7auf &f" + entry.plotKey()
-                        + " &8- &f/pe requests"));
+                        + " &8- &fAnfragen im Team-GUI öffnen"));
             }
         }
         return true;
@@ -773,14 +766,14 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                         + " &7bis &f" + BACKUP_TIME_FORMAT.format(entry.expiresAt())
                         + " &8(" + entry.playerUuid() + ")"));
             }
-            player.sendMessage(TextUtil.component("&8/pe temptrust add <Spieler> <30m|2h|7d>"));
-            player.sendMessage(TextUtil.component("&8/pe temptrust remove <Spieler>"));
+            player.sendMessage(TextUtil.component("&8Temporäre Trusts können im Mitglieder-GUI verwaltet werden."));
+            player.sendMessage(TextUtil.component("&8Unterbefehle: &ftemptrust add <Spieler> <30m|2h|7d>&8, &ftemptrust remove <Spieler>"));
             player.sendMessage(TextUtil.component("&8&m----------------"));
             return true;
         }
         if (action.equals("add") || action.equals("trust") || action.equals("geben")) {
             if (args.length < 4) {
-                player.sendMessage(TextUtil.component("&cNutze: &e/pe temptrust add <Spieler> <30m|2h|7d>"));
+                player.sendMessage(TextUtil.component("&cNutze: &etemptrust add <Spieler> <30m|2h|7d>"));
                 return true;
             }
             final OfflinePlayer target = Bukkit.getOfflinePlayer(args[2]);
@@ -796,7 +789,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (action.equals("remove") || action.equals("del") || action.equals("entfernen")) {
             if (args.length < 3) {
-                player.sendMessage(TextUtil.component("&cNutze: &e/pe temptrust remove <Spieler>"));
+                player.sendMessage(TextUtil.component("&cNutze: &etemptrust remove <Spieler>"));
                 return true;
             }
             final OfflinePlayer target = Bukkit.getOfflinePlayer(args[2]);
@@ -808,9 +801,8 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             }
             return true;
         }
-        player.sendMessage(TextUtil.component("&e/pe temptrust list"));
-        player.sendMessage(TextUtil.component("&e/pe temptrust add <Spieler> <30m|2h|7d>"));
-        player.sendMessage(TextUtil.component("&e/pe temptrust remove <Spieler>"));
+        player.sendMessage(TextUtil.component("&eTemporäre Trusts: &7im Mitglieder-GUI oder über die Unterbefehle"));
+        player.sendMessage(TextUtil.component("&8temptrust list &7| &8temptrust add <Spieler> <30m|2h|7d> &7| &8temptrust remove <Spieler>"));
         return true;
     }
 
@@ -834,7 +826,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         final String action = args.length >= 2 ? args[1].toLowerCase(Locale.ROOT) : "list";
         if (action.equals("close") || action.equals("done")) {
             if (args.length < 3) {
-                player.sendMessage(TextUtil.component("&cNutze: &e/pe requests close <id> <Antwort>"));
+                player.sendMessage(TextUtil.component("&cNutze: &erequests close <id> <Antwort>"));
                 return true;
             }
             final String response = args.length >= 4 ? join(args, 3) : "Erledigt.";
@@ -845,7 +837,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (action.equals("accepttrust") || action.equals("trust")) {
             if (args.length < 3) {
-                player.sendMessage(TextUtil.component("&cNutze: &e/pe requests accepttrust <id>"));
+                player.sendMessage(TextUtil.component("&cNutze: &erequests accepttrust <id>"));
                 return true;
             }
             player.sendMessage(TextUtil.component(plugin.getPlotUtilityService().acceptTrustRequest(player, args[2])
@@ -865,15 +857,15 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                     + " &7| &f" + entry.plotKey()
                     + " &7| &8" + entry.note()));
         }
-        player.sendMessage(TextUtil.component("&8/pe requests accepttrust <id>"));
-        player.sendMessage(TextUtil.component("&8/pe requests close <id> <Antwort>"));
+        player.sendMessage(TextUtil.component("&8Team-GUI: &7Anfragen annehmen oder schließen"));
+        player.sendMessage(TextUtil.component("&8Unterbefehle: &frequests accepttrust <id>&8, &frequests close <id> <Antwort>"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
 
     private boolean handleSearch(final Player player, final String[] args) {
         if (args.length < 2) {
-            player.sendMessage(TextUtil.component("&cNutze: &e/pe search <Tag|Kategorie|Text>"));
+            player.sendMessage(TextUtil.component("&cNutze: &esearch <Tag|Kategorie|Text>"));
             return true;
         }
         if (!useCooldown(player, "search")) {
@@ -954,7 +946,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         for (final String warning : snapshot.warnings()) {
             player.sendMessage(TextUtil.component("&6" + warning));
         }
-        player.sendMessage(TextUtil.component("&8/pe cleanup drops &7- Drops aufräumen"));
+        player.sendMessage(TextUtil.component("&8Cleanup-GUI: &7Drops und Warnungen aufräumen"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
@@ -980,7 +972,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if (args.length < 2) {
-            player.sendMessage(TextUtil.component("&cNutze: &e/pe permcheck <Spieler>"));
+            player.sendMessage(TextUtil.component("&cNutze: &epermcheck <Spieler>"));
             return true;
         }
         final Player target = Bukkit.getPlayerExact(args[1]);
@@ -1018,7 +1010,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             if (args.length < 3) {
-                player.sendMessage(TextUtil.component("&cNutze: &e/pe buildtask create <Titel> | <Notiz>"));
+                player.sendMessage(TextUtil.component("&cNutze: &ebuildtask create <Titel> | <Notiz>"));
                 return true;
             }
             final String raw = join(args, 2);
@@ -1034,7 +1026,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (action.equals("done") || action.equals("close")) {
             if (args.length < 3) {
-                player.sendMessage(TextUtil.component("&cNutze: &e/pe buildtask done <id>"));
+                player.sendMessage(TextUtil.component("&cNutze: &ebuildtask done <id>"));
                 return true;
             }
             player.sendMessage(TextUtil.component(plugin.getPlotUtilityService().completeBuildTask(player, args[2])
@@ -1052,8 +1044,8 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                     + " &7| &f" + entry.plotKey()
                     + " &7| &a" + entry.title()));
         }
-        player.sendMessage(TextUtil.component("&8/pe buildtask create <Titel> | <Notiz>"));
-        player.sendMessage(TextUtil.component("&8/pe buildtask done <id>"));
+        player.sendMessage(TextUtil.component("&8Builder-GUI: &7Bauaufgaben erstellen und abschließen"));
+        player.sendMessage(TextUtil.component("&8Unterbefehle: &fbuildtask create <Titel> | <Notiz>&8, &fbuildtask done <id>"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
@@ -1095,7 +1087,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                     + " &7| &f" + entry.world() + " " + entry.plotId()
                     + " &7| &8" + entry.details()));
         }
-        player.sendMessage(TextUtil.component("&8/pe audit gui &7- Auditlog-GUI öffnen"));
+        player.sendMessage(TextUtil.component("&8Auditlog-GUI: &7Einträge filtern und prüfen"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
@@ -1315,8 +1307,8 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             player.sendMessage(TextUtil.component("&e" + role.id() + " &7- &f" + role.displayName()
                     + " &8| &7" + plugin.getPlotRoleService().permissionSummary(role)));
         }
-        player.sendMessage(TextUtil.component("&8/pe role create <id> <Name>"));
-        player.sendMessage(TextUtil.component("&8/pe role permission <id> <Recht> <on|off>"));
+        player.sendMessage(TextUtil.component("&8Rollen-GUI: &7Rollen anlegen, Rechte setzen und Spieler zuweisen"));
+        player.sendMessage(TextUtil.component("&8Unterbefehle: &frole create <id> <Name>&8, &frole permission <id> <Recht> <on|off>"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
     }
 
@@ -1365,8 +1357,8 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                     + " &7| &f" + backup.mergeSize()
                     + " &7| &f" + BACKUP_TIME_FORMAT.format(backup.createdAt())));
         }
-        player.sendMessage(TextUtil.component("&8/pe backup info <id>"));
-        player.sendMessage(TextUtil.component("&8/pe backup restore <id> &7- auf aktuellen Plot wiederherstellen"));
+        player.sendMessage(TextUtil.component("&8Backup-GUI: &7Details ansehen und Backups wiederherstellen"));
+        player.sendMessage(TextUtil.component("&8Unterbefehle: &fbackup info <id>&8, &fbackup restore <id>"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
@@ -1454,21 +1446,17 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
     private void sendBackupHelp(final Player player) {
         player.sendMessage(TextUtil.component("&8&m----------------"));
         player.sendMessage(TextUtil.component("&aPlot-Backup Befehle"));
-        player.sendMessage(TextUtil.component("&e/pe backup create <Grund> &7- aktuelles Plot sichern"));
-        player.sendMessage(TextUtil.component("&e/pe backup list <Spieler> &7- Backups ansehen"));
-        player.sendMessage(TextUtil.component("&e/pe backup gui <Spieler> &7- Backup-GUI öffnen"));
-        player.sendMessage(TextUtil.component("&e/pe backup info <id> &7- Details anzeigen"));
-        player.sendMessage(TextUtil.component("&e/pe backup restore <id> &7- auf aktuellen Plot wiederherstellen"));
+        player.sendMessage(TextUtil.component("&eBackup-GUI: &7Backups ansehen, sichern und wiederherstellen"));
+        player.sendMessage(TextUtil.component("&8Unterbefehle: &fbackup create <Grund>&8, &fbackup list <Spieler>&8, &fbackup gui <Spieler>"));
+        player.sendMessage(TextUtil.component("&8Unterbefehle: &fbackup info <id>&8, &fbackup restore <id>"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
     }
 
     private void sendRedstoneHelp(final Player player) {
         player.sendMessage(TextUtil.component("&8&m----------------"));
         player.sendMessage(TextUtil.component("&aRedstone-Schutz Befehle"));
-        player.sendMessage(TextUtil.component("&e/pe redstone tp <Alarm-ID> &7- zum erkannten Block teleportieren"));
-        player.sendMessage(TextUtil.component("&e/pe redstone enable <Alarm-ID> &7- Redstone fuer den Alarm-Plot aktivieren"));
-        player.sendMessage(TextUtil.component("&e/pe redstone enable &7- Redstone auf deinem aktuellen Plot aktivieren"));
-        player.sendMessage(TextUtil.component("&e/pe redstone gui &7- offene Redstone-Alarme anzeigen"));
+        player.sendMessage(TextUtil.component("&eRedstone-GUI: &7offene Alarme ansehen und Redstone reaktivieren"));
+        player.sendMessage(TextUtil.component("&8Unterbefehle: &fredstone tp <Alarm-ID>&8, &fredstone enable <Alarm-ID>&8, &fredstone gui"));
         player.sendMessage(TextUtil.component("&8&m----------------"));
     }
 

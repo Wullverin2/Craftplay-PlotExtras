@@ -36,6 +36,15 @@ items:
       - "&7for this plot."
     actions:
       - "OPEN:roles"
+  temporary-trusts:
+    slot: 17
+    material: CLOCK
+    name: "&bTemporary Trusts"
+    lore:
+      - "&7View and manage temporary"
+      - "&7trusts for this plot."
+    actions:
+      - "OPEN:temporary-trusts"
   back:
     slot: 45
     material: ARROW

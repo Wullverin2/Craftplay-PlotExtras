@@ -52,6 +52,7 @@ public final class FeatureToggleService {
             Map.entry("plot-search", "player.plot-search"),
             Map.entry("guestbook", "player.guestbook"),
             Map.entry("requests", "player.requests"),
+            Map.entry("temporary-trusts", "player.temporary-trusts"),
             Map.entry("team-requests", "team.requests"),
             Map.entry("reports", "team.reports"),
             Map.entry("build-tasks", "team.builder.tasks"),
@@ -178,6 +179,7 @@ public final class FeatureToggleService {
             case "plot-search" -> "player.plot-search";
             case "guestbook" -> "player.guestbook";
             case "plot-requests" -> "player.requests";
+            case "temporary-trusts" -> "player.temporary-trusts";
             case "plot-reports" -> "team.reports";
             case "build-tasks" -> "team.builder.tasks";
             case "permission-check" -> "team.permission-checker";
@@ -294,6 +296,9 @@ public final class FeatureToggleService {
         }
         if (normalized.startsWith("request_prompt:")) {
             return "player.requests";
+        }
+        if (normalized.startsWith("temptrust_add_prompt:") || normalized.startsWith("temptrust_remove:")) {
+            return "player.temporary-trusts";
         }
         if (normalized.startsWith("close_request:") || normalized.startsWith("accept_trust_request:")) {
             return "team.requests";

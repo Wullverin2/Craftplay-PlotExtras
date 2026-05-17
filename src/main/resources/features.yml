@@ -25,7 +25,7 @@ features:
         enabled: true
 
     language:
-      # Sprach-GUI und /pe language.
+      # Sprach-GUI und Sprachwechsel.
       enabled: true
 
     dashboard:

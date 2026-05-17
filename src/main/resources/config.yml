@@ -40,7 +40,7 @@ plot-backups:
   # Aktiviert das automatische Backup-System fuer Plots.
   enabled: true
   manual:
-    # Wenn true, koennen Admins ueber /pe backup create oder das Team-GUI manuelle Schematic-Backups starten.
+    # Wenn true, koennen Admins ueber den Backup-Unterbefehl oder das Team-GUI manuelle Schematic-Backups starten.
     enabled: true
   automatic:
     # Wenn true, wird vor dem Loeschen oder Ablaufloeschen eines Plots ein Backup gestartet.
@@ -98,9 +98,9 @@ audit-log:
 
 team-tools:
   performance:
-    # Ab dieser Gesamtzahl an Entities markiert /pe performance den Plot als auffällig.
+    # Ab dieser Gesamtzahl an Entities markiert der Performance-Check den Plot als auffällig.
     entity-warning-threshold: 150
-    # Ab dieser Gesamtzahl an Entities markiert /pe performance den Plot als kritisch.
+    # Ab dieser Gesamtzahl an Entities markiert der Performance-Check den Plot als kritisch.
     entity-critical-threshold: 300
     # Ab dieser Zahl pro Entity-Typ wird der Typ einzeln als auffällig genannt.
     single-type-warning-threshold: 80

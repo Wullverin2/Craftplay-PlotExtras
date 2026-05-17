@@ -1,0 +1,100 @@
+# Bedrock GUI for temporary trusts on the current plot.
+# Players are automatically removed from the trust list when the time expires.
+title: "&8Temporary Trusts"
+size: 54
+
+fill:
+  enabled: true
+  material: BLUE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: CLOCK
+    name: "&bTemporary Trusts"
+    lore:
+      - "&7Active temporary trusts: &f{temporary_trusts}"
+      - "&7Trusts are removed"
+      - "&7automatically when expired."
+  add-30m:
+    slot: 10
+    material: LIME_DYE
+    name: "&a30 Minutes"
+    lore:
+      - "&7Type the player name"
+      - "&7into chat afterwards."
+    actions:
+      - "TEMPTRUST_ADD_PROMPT:30m"
+  add-2h:
+    slot: 11
+    material: LIME_DYE
+    name: "&a2 Hours"
+    lore:
+      - "&7Type the player name"
+      - "&7into chat afterwards."
+    actions:
+      - "TEMPTRUST_ADD_PROMPT:2h"
+  add-1d:
+    slot: 12
+    material: LIME_DYE
+    name: "&a1 Day"
+    lore:
+      - "&7Type the player name"
+      - "&7into chat afterwards."
+    actions:
+      - "TEMPTRUST_ADD_PROMPT:1d"
+  add-7d:
+    slot: 13
+    material: LIME_DYE
+    name: "&a7 Days"
+    lore:
+      - "&7Type the player name"
+      - "&7into chat afterwards."
+    actions:
+      - "TEMPTRUST_ADD_PROMPT:7d"
+  members:
+    slot: 15
+    material: PLAYER_HEAD
+    name: "&aMembers"
+    lore:
+      - "&7Back to the member overview."
+    actions:
+      - "OPEN:members"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "OPEN:members"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: temporary-trusts
+  slots: "19-25,28-34,37-43"
+  entry-item:
+    material: PLAYER_HEAD
+    skull-owner: "{temptrust_player}"
+    name: "&b{temptrust_player}"
+    lore:
+      - "&7Expires: &f{temptrust_expires}"
+      - "&7Remaining: &f{temptrust_remaining}"
+      - "&7Created by: &f{temptrust_created_by}"
+      - "&8{temptrust_uuid}"
+      - "&cShift + Right-click: remove"
+    actions:
+      - "TEMPTRUST_REMOVE:{temptrust_uuid}"
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&ePrevious Page"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNext Page"
