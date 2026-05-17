@@ -1,0 +1,59 @@
+# Deko-GUI: Rand-Kategorie Farbe.
+title: "&8Rand: Farbe"
+size: 54
+
+fill:
+  enabled: true
+  material: GREEN_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  tab-wall:
+    slot: 10
+    material: STONE_BRICKS
+    name: "&eWand"
+    lore:
+      - "&7Öffnet die Wand-Kategorien."
+    actions:
+      - "OPEN:decor"
+  tab-border:
+    slot: 11
+    material: LIME_STAINED_GLASS_PANE
+    name: "&aRand"
+    lore:
+      - "&7Aktiver Tab"
+    glow: true
+  categories:
+    slot: 45
+    material: ARROW
+    name: "&eRand-Kategorien"
+    actions:
+      - "OPEN:decor-border"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: components
+  components:
+    - border
+  categories:
+    - color
+  slots: "19-25,28-34,37-43"
+  option-item:
+    name: "&a{option_display}"
+    lore:
+      - "&7Kategorie: &f{category_display}"
+      - "&7Klicke, um den Rand auf diesen Block zu setzen."
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&eVorherige Seite"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNächste Seite"

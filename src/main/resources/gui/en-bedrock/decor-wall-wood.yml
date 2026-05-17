@@ -1,0 +1,61 @@
+# Decor GUI: Wall category wood.
+title: "&8Wall: Wood"
+size: 54
+
+fill:
+  enabled: true
+  material: BROWN_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  tab-wall:
+    slot: 10
+    material: LIME_STAINED_GLASS_PANE
+    name: "&aWall"
+    lore:
+      - "&7Active tab"
+    glow: true
+  tab-border:
+    slot: 11
+    material: GRASS_BLOCK
+    name: "&eBorder"
+    lore:
+      - "&7Opens the border categories."
+    actions:
+      - "OPEN:decor-border"
+  categories:
+    slot: 45
+    material: ARROW
+    name: "&eWall Categories"
+    actions:
+      - "OPEN:decor"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: components
+  components:
+    - wall
+  categories:
+    - wood
+  slots: "19-25,28-34,37-43"
+  option-item:
+    name: "&a{option_display}"
+    lore:
+      - "&7Category: &f{category_display}"
+      - "&7Value group: &f{permission_group}"
+      - "&7Permission: &8{permission}"
+      - "&7Click to set the wall to this block."
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&ePrevious Page"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNext Page"

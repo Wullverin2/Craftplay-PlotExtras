@@ -1,0 +1,96 @@
+# English role assignment GUI.
+title: "&8Roles: {selected_member_name}"
+size: 54
+
+fill:
+  enabled: true
+  material: BLUE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  remove:
+    slot: 2
+    material: REDSTONE_BLOCK
+    name: "&cRemove from plot"
+    lore:
+      - "&7Removes this player from"
+      - "&7this plot or merged plot."
+      - "&cShift + right-click to continue."
+      - "&7Requires: members.untrust"
+    actions:
+      - "UNTRUST_SELECTED_MEMBER_PROMPT"
+  info:
+    slot: 4
+    material: PLAYER_HEAD
+    skull-owner: "{selected_member_name}"
+    name: "&a{selected_member_name}"
+    lore:
+      - "&7Current role: &f{selected_member_role}"
+      - "&8{selected_member_uuid}"
+  promote:
+    slot: 6
+    material: LIME_DYE
+    name: "&aPromote"
+    lore:
+      - "&7Set the next higher role."
+      - "&7Requires: members.promote"
+    actions:
+      - "PROMOTE_SELECTED_MEMBER"
+  demote:
+    slot: 7
+    material: ORANGE_DYE
+    name: "&eDemote"
+    lore:
+      - "&7Set the next lower role."
+      - "&7Requires: members.demote"
+    actions:
+      - "DEMOTE_SELECTED_MEMBER"
+  clear:
+    slot: 8
+    material: BARRIER
+    name: "&cRemove Direct Role"
+    lore:
+      - "&7Trusted will apply again"
+      - "&7through PlotSquared if present."
+    actions:
+      - "UNASSIGN_SELECTED_MEMBER_ROLE"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "OPEN:members"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: member-role-options
+  slots: "10-16,19-25,28-34"
+  selected-role-item:
+    material: LIME_STAINED_GLASS_PANE
+    name: "&a{role_name}"
+    lore:
+      - "&7ID: &f{role_id}"
+      - "&7Permissions: &f{role_permissions}"
+      - "&aCurrent role"
+    glow: true
+  role-item:
+    material: BOOK
+    name: "&e{role_name}"
+    lore:
+      - "&7ID: &f{role_id}"
+      - "&7Permissions: &f{role_permissions}"
+      - "&eClick to assign."
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&ePrevious Page"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNext Page"

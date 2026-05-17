@@ -1,0 +1,55 @@
+title: "&8Settings: Plot Biome"
+size: 54
+
+fill:
+  enabled: true
+  material: LIGHT_GRAY_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  tab-home:
+    slot: 10
+    material: WHITE_STAINED_GLASS_PANE
+    name: "&eHome"
+    actions:
+      - "OPEN:settings"
+  tab-weather:
+    slot: 11
+    material: WATER_BUCKET
+    name: "&eWeather"
+    actions:
+      - "OPEN:settings-weather"
+  tab-time:
+    slot: 12
+    material: CLOCK
+    name: "&eTime"
+    actions:
+      - "OPEN:settings-time"
+  tab-biome:
+    slot: 13
+    material: LIME_STAINED_GLASS_PANE
+    name: "&aPlot Biome"
+    glow: true
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "BACK"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: config-options
+  source: plot-settings.biome.options
+  slots: "19-25,28-34"
+  option-item:
+    name: "&a{option_display}"
+    lore:
+      - "&7Sets plot biome to &f{option_display}&7."
+      - "&7Click to apply."

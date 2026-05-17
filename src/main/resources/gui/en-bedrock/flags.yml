@@ -1,0 +1,57 @@
+# English flags GUI.
+# dynamic.type flags creates buttons from the Boolean flags configured in config.yml.
+title: "&8Plot Flags"
+size: 54
+
+fill:
+  enabled: true
+  material: GRAY_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "BACK"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: flags
+  slots: "10-16,19-25,28-34"
+  enabled-item:
+    material: LIME_DYE
+    name: "&a{flag_display}"
+    lore:
+      - "&7{flag_description}"
+      - ""
+      - "&7State: {flag_state_color}{flag_state}"
+      - "&7Click to toggle."
+    glow: true
+  disabled-item:
+    material: GRAY_DYE
+    name: "&c{flag_display}"
+    lore:
+      - "&7{flag_description}"
+      - ""
+      - "&7State: {flag_state_color}{flag_state}"
+      - "&7Click to toggle."
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&ePrevious Page"
+    lore:
+      - "&7Page &f{page}&7/&f{pages}"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNext Page"
+    lore:
+      - "&7Page &f{page}&7/&f{pages}"

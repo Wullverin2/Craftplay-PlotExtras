@@ -1,0 +1,89 @@
+# Rollen-GUI für Deutsch.
+# Rollen werden pro aktuellem Plot oder Plotmerge gespeichert.
+title: "&8Plot-Rollen"
+size: 54
+
+fill:
+  enabled: true
+  material: PURPLE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  create:
+    slot: 11
+    material: EMERALD
+    name: "&aNeue Rolle"
+    lore:
+      - "&7Klicke und schreibe danach"
+      - "&e<id> <Name> &7in den Chat."
+    actions:
+      - "ROLE_CREATE_PROMPT"
+  help:
+    slot: 13
+    material: WRITABLE_BOOK
+    name: "&aRollen verwalten"
+    lore:
+      - "&7Alles hier ist klickbar."
+      - "&7Rollenname und neue Rollen"
+      - "&7laufen über Chat-Eingabe."
+  permissions:
+    slot: 15
+    material: PAPER
+    name: "&eMögliche Rechte"
+    lore:
+      - "&7flags"
+      - "&7decor.wall"
+      - "&7decor.border"
+      - "&7settings.home"
+      - "&7settings.weather"
+      - "&7settings.time"
+      - "&7settings.biome"
+      - "&7members.invite"
+      - "&7members.untrust"
+      - "&7members.promote"
+      - "&7members.demote"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:members"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: plot-roles
+  slots: "19-25,28-34,37-43"
+  protected-role-item:
+    material: NETHER_STAR
+    name: "&6{role_name}"
+    lore:
+      - "&7ID: &f{role_id}"
+      - "&7Rechte: &f{role_permissions}"
+      - "&cDiese Rolle kann nicht gelöscht werden."
+      - "&eKlicke zum Bearbeiten."
+    actions:
+      - "SELECT_ROLE:{role_id}:role-edit"
+    glow: true
+  role-item:
+    material: BOOK
+    name: "&a{role_name}"
+    lore:
+      - "&7ID: &f{role_id}"
+      - "&7Rechte: &f{role_permissions}"
+      - "&eKlicke zum Bearbeiten."
+    actions:
+      - "SELECT_ROLE:{role_id}:role-edit"
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&eVorherige Seite"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNächste Seite"

@@ -1,5 +1,6 @@
 # Team-Werkzeuge fuer Support, Moderation, Leitung und Builder.
 title: "&8Team-Werkzeuge"
+permission: "craftplayplotextras.teamtools"
 size: 54
 
 fill:
@@ -17,6 +18,7 @@ items:
       - "&7Support und Administration."
   requests:
     slot: 10
+    permission: "craftplayplotextras.requests.manage"
     material: PAPER
     name: "&bPlot-Anfragen"
     lore:
@@ -26,6 +28,7 @@ items:
       - "OPEN:team-requests"
   reports:
     slot: 12
+    permission: "craftplayplotextras.report.view"
     material: BELL
     name: "&cMeldungen"
     lore:
@@ -35,6 +38,7 @@ items:
       - "OPEN:reports"
   moderation:
     slot: 14
+    permission: "craftplayplotextras.moderation.manage"
     material: PACKED_ICE
     name: "&bModeration"
     lore:
@@ -44,6 +48,7 @@ items:
       - "PLAYER_COMMAND:pe mod list"
   performance:
     slot: 16
+    permission: "craftplayplotextras.performance.view"
     material: CLOCK
     name: "&bPerformance"
     lore:
@@ -53,6 +58,7 @@ items:
       - "PLAYER_COMMAND:pe performance"
   backups:
     slot: 28
+    permission: "craftplayplotextras.backup.admin"
     material: CHEST
     name: "&bBackups"
     lore:
@@ -62,6 +68,7 @@ items:
       - "OPEN:backups"
   audit:
     slot: 30
+    permission: "craftplayplotextras.audit.view"
     material: WRITABLE_BOOK
     name: "&bAuditlog"
     lore:
@@ -71,6 +78,7 @@ items:
       - "OPEN:audit-log"
   redstone:
     slot: 32
+    permission: "craftplayplotextras.redstone.notify"
     material: REDSTONE_BLOCK
     name: "&cRedstone-Alarme"
     lore:
@@ -80,6 +88,7 @@ items:
       - "OPEN:redstone-alerts"
   builder:
     slot: 34
+    permission: "craftplayplotextras.builder.tasks"
     material: BRICKS
     name: "&bBuilder-Aufgaben"
     lore:
@@ -88,6 +97,7 @@ items:
       - "OPEN:build-tasks"
   create-backup:
     slot: 37
+    permission: "craftplayplotextras.backup.create"
     material: CHEST_MINECART
     name: "&bAktuelles Plot sichern"
     lore:
@@ -97,6 +107,7 @@ items:
       - "PLAYER_COMMAND:pe backup create GUI-Team"
   stats:
     slot: 39
+    permission: "craftplayplotextras.statistics"
     material: LECTERN
     name: "&bStatistik"
     lore:
@@ -106,6 +117,7 @@ items:
       - "OPEN:statistics"
   validate:
     slot: 41
+    permission: "craftplayplotextras.config.validate"
     material: KNOWLEDGE_BOOK
     name: "&bConfig-Check"
     lore:
@@ -115,6 +127,7 @@ items:
       - "OPEN:config-issues"
   features:
     slot: 42
+    permission: "craftplayplotextras.features.manage"
     material: COMPARATOR
     name: "&dFeatures"
     lore:
@@ -124,6 +137,7 @@ items:
       - "OPEN:feature-toggles"
   inspector:
     slot: 43
+    permission: "craftplayplotextras.audit.view"
     material: COMPASS
     name: "&bInspektor"
     lore:

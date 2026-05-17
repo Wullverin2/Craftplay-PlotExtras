@@ -1,0 +1,89 @@
+# English roles GUI.
+# Roles are stored per current plot or merged plot.
+title: "&8Plot Roles"
+size: 54
+
+fill:
+  enabled: true
+  material: PURPLE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  create:
+    slot: 11
+    material: EMERALD
+    name: "&aNew Role"
+    lore:
+      - "&7Click and type"
+      - "&e<id> <name> &7into chat."
+    actions:
+      - "ROLE_CREATE_PROMPT"
+  help:
+    slot: 13
+    material: WRITABLE_BOOK
+    name: "&aManage Roles"
+    lore:
+      - "&7Everything here is clickable."
+      - "&7Role names and new roles"
+      - "&7use chat input."
+  permissions:
+    slot: 15
+    material: PAPER
+    name: "&eAvailable Permissions"
+    lore:
+      - "&7flags"
+      - "&7decor.wall"
+      - "&7decor.border"
+      - "&7settings.home"
+      - "&7settings.weather"
+      - "&7settings.time"
+      - "&7settings.biome"
+      - "&7members.invite"
+      - "&7members.untrust"
+      - "&7members.promote"
+      - "&7members.demote"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "OPEN:members"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: plot-roles
+  slots: "19-25,28-34,37-43"
+  protected-role-item:
+    material: NETHER_STAR
+    name: "&6{role_name}"
+    lore:
+      - "&7ID: &f{role_id}"
+      - "&7Permissions: &f{role_permissions}"
+      - "&cThis role cannot be deleted."
+      - "&eClick to edit."
+    actions:
+      - "SELECT_ROLE:{role_id}:role-edit"
+    glow: true
+  role-item:
+    material: BOOK
+    name: "&a{role_name}"
+    lore:
+      - "&7ID: &f{role_id}"
+      - "&7Permissions: &f{role_permissions}"
+      - "&eClick to edit."
+    actions:
+      - "SELECT_ROLE:{role_id}:role-edit"
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&ePrevious Page"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNext Page"

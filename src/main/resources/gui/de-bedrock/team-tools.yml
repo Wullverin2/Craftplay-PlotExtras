@@ -1,5 +1,6 @@
 # Bedrock-Teamwerkzeuge.
 title: "&8Team-Werkzeuge"
+permission: "craftplayplotextras.teamtools"
 size: 54
 
 fill:
@@ -14,54 +15,63 @@ items:
     name: "&bTeam-Werkzeuge"
   requests:
     slots: [10, 11]
+    permission: "craftplayplotextras.requests.manage"
     material: PAPER
     name: "&bAnfragen"
     actions:
       - "OPEN:team-requests"
   reports:
     slots: [13, 14]
+    permission: "craftplayplotextras.report.view"
     material: BELL
     name: "&cMeldungen"
     actions:
       - "OPEN:reports"
   moderation:
     slots: [16, 17]
+    permission: "craftplayplotextras.moderation.manage"
     material: PACKED_ICE
     name: "&bModeration"
     actions:
       - "PLAYER_COMMAND:pe mod list"
   backups:
     slots: [28, 29]
+    permission: "craftplayplotextras.backup.admin"
     material: CHEST
     name: "&bBackups"
     actions:
       - "OPEN:backups"
   create-backup:
     slots: [31, 32]
+    permission: "craftplayplotextras.backup.create"
     material: CHEST_MINECART
     name: "&bPlot sichern"
     actions:
       - "PLAYER_COMMAND:pe backup create Bedrock-Team"
   redstone:
     slots: [34, 35]
+    permission: "craftplayplotextras.redstone.notify"
     material: REDSTONE_BLOCK
     name: "&cRedstone"
     actions:
       - "OPEN:redstone-alerts"
   stats:
     slot: 39
+    permission: "craftplayplotextras.statistics"
     material: LECTERN
     name: "&bStatistik"
     actions:
       - "OPEN:statistics"
   validate:
     slot: 41
+    permission: "craftplayplotextras.config.validate"
     material: KNOWLEDGE_BOOK
     name: "&bConfig"
     actions:
       - "OPEN:config-issues"
   features:
     slot: 43
+    permission: "craftplayplotextras.features.manage"
     material: COMPARATOR
     name: "&dFeatures"
     actions:

@@ -189,6 +189,11 @@ public final class GuiManager implements Listener {
             sendMessage(player, "unknown-gui", Map.of("gui", normalizedGuiId));
             return;
         }
+        final String permission = guiConfig.getString("permission", "");
+        if (!permission.isBlank() && !player.hasPermission(permission) && !player.hasPermission("craftplayplotextras.admin")) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
 
         final int size = normalizeSize(guiConfig.getInt("size", 54));
         final Map<String, String> placeholders = createPlaceholders(player);
@@ -787,8 +792,10 @@ public final class GuiManager implements Listener {
             return;
         }
         final List<PlotUtilityService.GuestbookEntry> entries = plotUtilityService.guestbook(plot, Integer.MAX_VALUE);
+        final boolean canManage = plotUtilityService.canManageGuestbook(player, plot);
         final PageSlice<PlotUtilityService.GuestbookEntry> slice = slice(entries, slots.size(), page);
-        final ConfigurationSection template = dynamic.getConfigurationSection("entry-item");
+        final ConfigurationSection template = dynamic.getConfigurationSection(canManage ? "entry-item" : "readonly-entry-item");
+        final ConfigurationSection fallbackTemplate = dynamic.getConfigurationSection("entry-item");
         for (int index = 0; index < slice.entries().size(); index++) {
             final PlotUtilityService.GuestbookEntry entry = slice.entries().get(index);
             final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
@@ -797,11 +804,11 @@ public final class GuiManager implements Listener {
             itemPlaceholders.put("guestbook_player", entry.playerName());
             itemPlaceholders.put("guestbook_message", entry.message());
 
-            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final ItemStack item = buildItem(player, template, fallbackTemplate, itemPlaceholders);
             final int slot = slots.get(index);
             if (item != null && isValidSlot(inventory, slot)) {
                 inventory.setItem(slot, item);
-                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+                holder.setActions(slot, canManage ? resolveActions(player, readActions(template, fallbackTemplate), itemPlaceholders) : List.of());
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
@@ -864,8 +871,10 @@ public final class GuiManager implements Listener {
         }
         final boolean all = dynamic.getBoolean("show-closed", false);
         final List<PlotReportEntry> entries = all ? plotReportService.listAll() : plotReportService.listOpen();
+        final boolean canClose = plotReportService.canClose(player);
         final PageSlice<PlotReportEntry> slice = slice(entries, slots.size(), page);
-        final ConfigurationSection template = dynamic.getConfigurationSection("report-item");
+        final ConfigurationSection template = dynamic.getConfigurationSection(canClose ? "report-item" : "readonly-report-item");
+        final ConfigurationSection fallbackTemplate = dynamic.getConfigurationSection("report-item");
         for (int index = 0; index < slice.entries().size(); index++) {
             final PlotReportEntry entry = slice.entries().get(index);
             final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
@@ -878,11 +887,11 @@ public final class GuiManager implements Listener {
             itemPlaceholders.put("report_status", entry.status());
             itemPlaceholders.put("report_note", entry.note());
 
-            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final ItemStack item = buildItem(player, template, fallbackTemplate, itemPlaceholders);
             final int slot = slots.get(index);
             if (item != null && isValidSlot(inventory, slot)) {
                 inventory.setItem(slot, item);
-                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+                holder.setActions(slot, canClose ? resolveActions(player, readActions(template, fallbackTemplate), itemPlaceholders) : List.of());
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);

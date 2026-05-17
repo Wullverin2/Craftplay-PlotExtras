@@ -43,6 +43,12 @@ dynamic:
       - "&8Owner/team: click to delete."
     actions:
       - "DELETE_GUESTBOOK_ENTRY:{guestbook_id}"
+  readonly-entry-item:
+    material: PAPER
+    name: "&a{guestbook_player}"
+    lore:
+      - "&7Date: &f{guestbook_created}"
+      - "&f{guestbook_message}"
   previous-item:
     slot: 48
     material: ARROW
