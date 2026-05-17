@@ -1,4 +1,4 @@
-# Alles bleibt automatisch: Plotwelten werden ueber PlotSquared erkannt.
+# Alles bleibt automatisch: Plotwelten werden über PlotSquared erkannt.
 # Multiverse-Core muss nicht konfiguriert werden, weil normale Weltwechsel-Events genutzt werden.
 
 # Verhindert, dass Fly beim Betreten oder Verlassen eines Plots in einer Plotwelt verloren geht.
@@ -15,7 +15,7 @@ use-cmi-command: true
 ignore-creative-and-spectator: true
 
 # Nach wie vielen Ticks Fly in Plotwelten wiederhergestellt wird.
-# Mehrere Werte helfen, falls PlotSquared/CMI den Status etwas spaeter aendert.
+# Mehrere Werte helfen, falls PlotSquared/CMI den Status etwas später ändert.
 restore-delay-ticks:
   - 1
   - 5
@@ -25,11 +25,11 @@ disable-delay-ticks:
   - 1
   - 5
 
-# Verhindert Despawn fuer Monster, Tiere und Villager, wenn sie mit einem Nametag benannt wurden.
+# Verhindert Despawn für Monster, Tiere und Villager, wenn sie mit einem Nametag benannt wurden.
 prevent-named-entity-despawn: true
 
-# Merkt sich in Plotwelten regelmaessig, ob ein Spieler Fly aktiv hatte.
+# Merkt sich in Plotwelten regelmäßig, ob ein Spieler Fly aktiv hatte.
 flight-state-scan-interval-ticks: 20
 
-# Nur fuer Fehlersuche einschalten.
+# Nur für Fehlersuche einschalten.
 debug: false
