@@ -22,8 +22,8 @@ items:
     name: "&eCurrent Plot"
     lore:
       - "&7Plot: &f{plot_world} {plot_id}"
-      - "&7Use &f/pe audit plot&7"
-      - "&7to filter this plot."
+      - "&7Entries show world,"
+      - "&7plot and action directly."
   back:
     slot: 46
     material: ARROW

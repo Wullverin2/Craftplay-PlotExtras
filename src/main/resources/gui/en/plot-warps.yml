@@ -51,9 +51,9 @@ dynamic:
       - "&7World: &f{warp_world}"
       - "&7Position: &f{warp_x}, {warp_y}, {warp_z}"
       - "&8Click: teleport"
-      - "&8Delete: /pe warp delete {warp_id}"
+      - "&8Shift + right-click: delete"
     actions:
-      - "TELEPORT_PLOT_WARP:{warp_id}"
+      - "PLOT_WARP_CLICK:{warp_id}"
   previous-item:
     slot: 48
     material: ARROW

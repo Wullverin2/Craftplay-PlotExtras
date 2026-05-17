@@ -52,7 +52,7 @@ items:
     lore:
       - "&7Search tags,"
       - "&7categories and text."
-      - "&8/pe search <query>"
+      - "&8Query is entered in chat."
     actions:
       - "OPEN:plot-search"
   favorite:

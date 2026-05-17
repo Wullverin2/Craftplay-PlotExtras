@@ -45,7 +45,7 @@ dynamic:
       - "&7Quelle: &f{redstone_alert_source}"
       - "&7Zeit: &f{redstone_alert_created}"
       - "&8Linksklick: teleportieren"
-      - "&8Danach: /pe redstone enable {redstone_alert_id}"
+      - "&8Danach im Team-Menü freigeben."
     actions:
       - "REDSTONE_TELEPORT:{redstone_alert_id}"
   previous-item:

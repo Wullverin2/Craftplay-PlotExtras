@@ -14,8 +14,11 @@ items:
     material: BRICKS
     name: "&6Offene Bauaufgaben"
     lore:
-      - "&7Neue Aufgaben werden per"
-      - "&f/pe buildtask create &7erstellt."
+      - "&7Klicken, um eine neue"
+      - "&7Bauaufgabe zu erstellen."
+      - "&8Titel und Notiz per Chat."
+    actions:
+      - "BUILD_TASK_CREATE_PROMPT"
   back:
     slot: 45
     material: ARROW

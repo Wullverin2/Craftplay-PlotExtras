@@ -280,7 +280,7 @@ public final class FeatureToggleService {
         if (normalized.equals("warp_set_prompt")) {
             return "player.plot-warps.set";
         }
-        if (normalized.startsWith("teleport_plot_warp:")) {
+        if (normalized.startsWith("plot_warp_click:") || normalized.startsWith("teleport_plot_warp:")) {
             return "player.plot-warps.teleport";
         }
         if (normalized.startsWith("delete_plot_warp:")) {
@@ -342,6 +342,9 @@ public final class FeatureToggleService {
         }
         if (normalized.startsWith("competition_score_prompt:")) {
             return "team.competitions.judge";
+        }
+        if (normalized.equals("build_task_create_prompt")) {
+            return "team.builder.tasks";
         }
         if (normalized.startsWith("complete_build_task:")) {
             return "team.builder.tasks";

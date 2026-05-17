@@ -1616,6 +1616,10 @@ public final class GuiManager implements Listener {
                 startTeamNotePrompt(player);
                 return;
             }
+            if (upperAction.equals("BUILD_TASK_CREATE_PROMPT")) {
+                startBuildTaskCreatePrompt(player);
+                return;
+            }
             if (upperAction.startsWith("SET_PLOT_STATUS:")) {
                 setPlotStatus(player, action.substring("SET_PLOT_STATUS:".length()));
                 return;
@@ -1626,6 +1630,10 @@ public final class GuiManager implements Listener {
             }
             if (upperAction.equals("WARP_SET_PROMPT")) {
                 startWarpSetPrompt(player);
+                return;
+            }
+            if (upperAction.startsWith("PLOT_WARP_CLICK:")) {
+                handlePlotWarpClick(player, event, action.substring("PLOT_WARP_CLICK:".length()));
                 return;
             }
             if (upperAction.startsWith("TELEPORT_PLOT_WARP:")) {
@@ -2068,6 +2076,20 @@ public final class GuiManager implements Listener {
         sendMessage(player, "request-input", Map.of("type", type));
     }
 
+    private void startBuildTaskCreatePrompt(final Player player) {
+        if (!plotUtilityService.canManageBuildTasks(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        if (plotService.getCurrentPlot(player) == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.CREATE_BUILD_TASK, ""));
+        player.closeInventory();
+        sendMessage(player, "build-task-input", Map.of());
+    }
+
     private void handleChatInput(final Player player, final ChatInput input, final String message) {
         if (message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("abbrechen")) {
             if (input.type() == ChatInputType.INVITE_MEMBER) {
@@ -2094,6 +2116,9 @@ public final class GuiManager implements Listener {
             } else if (input.type() == ChatInputType.SCORE_COMPETITION) {
                 player.sendMessage(TextUtil.component("&7Bewertung abgebrochen."));
                 scheduleOpen(player, "competitions", 0);
+            } else if (input.type() == ChatInputType.CREATE_BUILD_TASK) {
+                sendMessage(player, "build-task-cancelled", Map.of());
+                scheduleOpen(player, "build-tasks", 0);
             } else {
                 sendMessage(player, "role-input-cancelled", Map.of());
                 scheduleOpen(player, "roles", 0);
@@ -2138,6 +2163,11 @@ public final class GuiManager implements Listener {
 
         if (input.type() == ChatInputType.SCORE_COMPETITION) {
             handleCompetitionScoreInput(player, input, message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.CREATE_BUILD_TASK) {
+            handleBuildTaskInput(player, message);
             return;
         }
 
@@ -2577,6 +2607,14 @@ public final class GuiManager implements Listener {
             sendMessage(player, "warp-unknown", Map.of("warp", warpId));
             scheduleOpen(player, "plot-warps", 0);
         }
+    }
+
+    private void handlePlotWarpClick(final Player player, final InventoryClickEvent event, final String warpId) {
+        if (event.isShiftClick() && event.isRightClick()) {
+            deletePlotWarp(player, warpId);
+            return;
+        }
+        teleportPlotWarp(player, warpId);
     }
 
     private void deletePlotWarp(final Player player, final String warpId) {
@@ -3021,6 +3059,36 @@ public final class GuiManager implements Listener {
         scheduleOpen(player, "competitions", 0);
     }
 
+    private void handleBuildTaskInput(final Player player, final String message) {
+        if (!plotUtilityService.canManageBuildTasks(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+
+        final String[] parts = message.split("\\|", 2);
+        final String title = parts[0].trim();
+        if (title.isBlank()) {
+            pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.CREATE_BUILD_TASK, ""));
+            sendMessage(player, "build-task-invalid", Map.of());
+            return;
+        }
+
+        final String note = parts.length >= 2 && !parts[1].trim().isBlank() ? parts[1].trim() : "-";
+        final PlotUtilityService.BuildTaskEntry entry = plotUtilityService.createBuildTask(player, plot, title, note);
+        if (entry == null) {
+            sendMessage(player, "build-task-create-failed", Map.of());
+        } else {
+            auditLogService.log(player, plot, "Bauaufgabe erstellt", entry.id() + ": " + entry.title());
+            sendMessage(player, "build-task-created", Map.of("task", entry.id(), "title", entry.title()));
+        }
+        scheduleOpen(player, "build-tasks", 0);
+    }
+
     private void completeBuildTask(final Player player, final String taskId) {
         if (plotUtilityService.completeBuildTask(player, taskId)) {
             sendMessage(player, "build-task-completed", Map.of("task", taskId));
@@ -3458,6 +3526,7 @@ public final class GuiManager implements Listener {
         SEARCH_PLOTS,
         GUESTBOOK_SIGN,
         CREATE_REQUEST,
-        SCORE_COMPETITION
+        SCORE_COMPETITION,
+        CREATE_BUILD_TASK
     }
 }

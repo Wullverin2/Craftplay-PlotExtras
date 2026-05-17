@@ -52,7 +52,7 @@ items:
     lore:
       - "&7Suche nach Tags,"
       - "&7Kategorien und Texten."
-      - "&8/pe search <Suchwort>"
+      - "&8Suchwort wird im Chat eingegeben."
     actions:
       - "OPEN:plot-search"
   favorite:

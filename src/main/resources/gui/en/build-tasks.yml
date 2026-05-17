@@ -14,8 +14,11 @@ items:
     material: BRICKS
     name: "&6Open build tasks"
     lore:
-      - "&7Create new tasks with"
-      - "&f/pe buildtask create&7."
+      - "&7Click to create a"
+      - "&7new build task."
+      - "&8Title and note via chat."
+    actions:
+      - "BUILD_TASK_CREATE_PROMPT"
   back:
     slot: 45
     material: ARROW
