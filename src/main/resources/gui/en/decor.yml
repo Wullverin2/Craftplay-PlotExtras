@@ -1,0 +1,49 @@
+# Decor GUI: Wall categories.
+title: "&8Decor: Wall"
+size: 54
+
+fill:
+  enabled: true
+  material: BROWN_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  tab-wall:
+    slot: 10
+    material: LIME_STAINED_GLASS_PANE
+    name: "&aWall"
+    lore:
+      - "&7Active tab"
+    glow: true
+  tab-border:
+    slot: 11
+    material: GRASS_BLOCK
+    name: "&eBorder"
+    lore:
+      - "&7Opens the border categories."
+    actions:
+      - "OPEN:decor-border"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "BACK"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: component-categories
+  component: wall
+  target-format: "decor-wall-{category}"
+  slots: "20-24"
+  category-item:
+    name: "&a{category_display}"
+    lore:
+      - "&7Available blocks: &f{option_count}"
+      - "&7Click to open this category."

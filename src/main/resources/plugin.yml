@@ -7,5 +7,71 @@ depend:
 softdepend:
   - CMI
   - Multiverse-Core
+  - PlaceholderAPI
+  - HeadDatabase
+  - Jobs
+  - Quests
 author: Codex
-description: Extra PlotSquared helpers for Craftplay, including fly protection and named entity persistence.
+description: Extra PlotSquared helpers for Craftplay, including fly protection, named entity persistence and configurable plot GUIs.
+commands:
+  plotextras:
+    description: Opens the Craftplay plot GUI.
+    usage: /plotextras
+    aliases:
+      - plotgui
+      - pe
+permissions:
+  craftplayplotextras.use:
+    description: Allows opening the player plot GUI.
+    default: true
+  craftplayplotextras.flags:
+    description: Allows changing plot flags through the GUI.
+    default: true
+  craftplayplotextras.flags.furniture-interact:
+    description: Allows changing the furniture-interact plot flag through the GUI.
+    default: true
+  craftplayplotextras.flags.prevent-crop-trample:
+    description: Allows changing the prevent-crop-trample plot flag through the GUI.
+    default: true
+  craftplayplotextras.furniture.bypass:
+    description: Bypasses integrated datapack furniture protection checks.
+    default: op
+  craftplayplotextras.entitylimit.bypass:
+    description: Bypasses plot entity limits.
+    default: op
+  craftplayplotextras.backup.admin:
+    description: Allows listing plot backups.
+    default: op
+  craftplayplotextras.backup.restore:
+    description: Allows restoring plot backups to the current plot.
+    default: op
+  craftplayplotextras.redstone.notify:
+    description: Receives clickable redstone lag protection alerts.
+    default: op
+  craftplayplotextras.redstone.admin:
+    description: Allows teleporting to redstone alerts and re-enabling plot redstone.
+    default: op
+  craftplayplotextras.decor:
+    description: Allows changing plot wall and border blocks through the GUI.
+    default: true
+  craftplayplotextras.settings:
+    description: Allows changing plot weather, time and biome through the GUI.
+    default: true
+  craftplayplotextras.decor.wall.1:
+    description: Allows selecting value group 1 wall blocks.
+    default: true
+  craftplayplotextras.decor.wall.2:
+    description: Allows selecting value group 2 wall blocks.
+    default: op
+  craftplayplotextras.decor.wall.3:
+    description: Allows selecting value group 3 wall blocks.
+    default: op
+  craftplayplotextras.decor.wall.4:
+    description: Allows selecting value group 4 wall blocks.
+    default: op
+  craftplayplotextras.decor.wall.5:
+    description: Allows selecting value group 5 wall blocks.
+    default: op
+  craftplayplotextras.admin:
+    description: Allows reloads and bypasses plot owner checks.
+    default: op

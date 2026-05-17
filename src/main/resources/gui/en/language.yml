@@ -1,0 +1,47 @@
+# English language GUI.
+# All language/*.yml files are loaded automatically and shown here.
+title: "&8Choose Language"
+size: 54
+
+fill:
+  enabled: true
+  material: PURPLE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "BACK"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: languages
+  slots: "10-16,19-25,28-34"
+  selected-item:
+    name: "&a{language_native}"
+    lore:
+      - "&7Code: &f{language_code}"
+      - "&aActive"
+    glow: true
+  available-item:
+    name: "&e{language_native}"
+    lore:
+      - "&7Code: &f{language_code}"
+      - "&7Click to switch."
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&ePrevious Page"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNext Page"

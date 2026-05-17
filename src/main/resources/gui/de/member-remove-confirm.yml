@@ -1,0 +1,36 @@
+# Sicherheitsabfrage zum Entfernen eines Plot-Mitglieds.
+title: "&8Entfernen: {selected_member_name}"
+size: 27
+
+fill:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 11
+    material: PLAYER_HEAD
+    skull-owner: "{selected_member_name}"
+    name: "&e{selected_member_name}"
+    lore:
+      - "&7Aktuelle Rolle: &f{selected_member_role}"
+      - "&7Dieser Spieler wird von"
+      - "&7diesem Plot oder Plotmerge entfernt."
+  cancel:
+    slot: 13
+    material: BARRIER
+    name: "&eAbbrechen"
+    lore:
+      - "&7Zurück zur Rollenansicht."
+    actions:
+      - "OPEN:member-roles"
+  confirm:
+    slot: 15
+    material: RED_CONCRETE
+    name: "&cJa, entfernen"
+    lore:
+      - "&7Entfernt Trust, Mitgliedschaft"
+      - "&7und direkte Plotrolle."
+    actions:
+      - "CONFIRM_UNTRUST_SELECTED_MEMBER"

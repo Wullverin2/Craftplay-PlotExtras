@@ -1,0 +1,96 @@
+# Rollen-Zuweisung für Deutsch.
+title: "&8Rollen: {selected_member_name}"
+size: 54
+
+fill:
+  enabled: true
+  material: BLUE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  remove:
+    slot: 2
+    material: REDSTONE_BLOCK
+    name: "&cVom Plot entfernen"
+    lore:
+      - "&7Entfernt den Spieler von"
+      - "&7diesem Plot oder Plotmerge."
+      - "&cShift + Rechtsklick zum Fortfahren."
+      - "&7Benötigt: members.untrust"
+    actions:
+      - "UNTRUST_SELECTED_MEMBER_PROMPT"
+  info:
+    slot: 4
+    material: PLAYER_HEAD
+    skull-owner: "{selected_member_name}"
+    name: "&a{selected_member_name}"
+    lore:
+      - "&7Aktuelle Rolle: &f{selected_member_role}"
+      - "&8{selected_member_uuid}"
+  promote:
+    slot: 6
+    material: LIME_DYE
+    name: "&aBefördern"
+    lore:
+      - "&7Nächste höhere Rolle setzen."
+      - "&7Benötigt: members.promote"
+    actions:
+      - "PROMOTE_SELECTED_MEMBER"
+  demote:
+    slot: 7
+    material: ORANGE_DYE
+    name: "&eDegradieren"
+    lore:
+      - "&7Nächste niedrigere Rolle setzen."
+      - "&7Benötigt: members.demote"
+    actions:
+      - "DEMOTE_SELECTED_MEMBER"
+  clear:
+    slot: 8
+    material: BARRIER
+    name: "&cDirekte Rolle entfernen"
+    lore:
+      - "&7Trusted greift danach wieder"
+      - "&7über PlotSquared, falls vorhanden."
+    actions:
+      - "UNASSIGN_SELECTED_MEMBER_ROLE"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:members"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: member-role-options
+  slots: "10-16,19-25,28-34"
+  selected-role-item:
+    material: LIME_STAINED_GLASS_PANE
+    name: "&a{role_name}"
+    lore:
+      - "&7ID: &f{role_id}"
+      - "&7Rechte: &f{role_permissions}"
+      - "&aAktuelle Rolle"
+    glow: true
+  role-item:
+    material: BOOK
+    name: "&e{role_name}"
+    lore:
+      - "&7ID: &f{role_id}"
+      - "&7Rechte: &f{role_permissions}"
+      - "&eKlicke zum Zuweisen."
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&eVorherige Seite"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNächste Seite"

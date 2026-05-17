@@ -1,0 +1,35 @@
+# Sicherheitsabfrage fuer Backup-Wiederherstellungen.
+title: "&8Backup wiederherstellen"
+size: 27
+
+fill:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 11
+    material: FILLED_MAP
+    name: "&e{selected_backup_owner} &8- &f{selected_backup_merge}"
+    lore:
+      - "&7Backup: &f{selected_backup_id}"
+      - "&7Datum: &f{selected_backup_created}"
+      - "&7Grund: &f{selected_backup_reason}"
+      - "&7Quelle: &f{selected_backup_world} {selected_backup_plot}"
+      - "&cZiel ist der Plot, auf dem du gerade stehst."
+  cancel:
+    slot: 13
+    material: BARRIER
+    name: "&eAbbrechen"
+    actions:
+      - "OPEN:backups"
+  confirm:
+    slot: 15
+    material: LIME_CONCRETE
+    name: "&aWiederherstellen"
+    lore:
+      - "&7Fügt das Backup in den"
+      - "&7aktuellen Plot oder Plotmerge ein."
+    actions:
+      - "RESTORE_SELECTED_BACKUP"

@@ -1,0 +1,50 @@
+# Entity-Limit-GUI fuer Deutsch.
+title: "&8Entity-Limits"
+size: 54
+
+fill:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: BOOK
+    name: "&eEntity-Limits"
+    lore:
+      - "&7Plot: &f{plot_id}"
+      - "&7Gezählt wird dein aktuelles Plot oder Plotmerge."
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "BACK"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: entity-limits
+  slots: "19-25,28-34,37-43"
+  limit-item:
+    material: "{limit_material}"
+    name: "{limit_state_color}{limit_display}"
+    lore:
+      - "&7Aktuell: &f{limit_count}"
+      - "&7Maximum: &f{limit_max}"
+      - "&7Frei: &f{limit_remaining}"
+      - "&8{limit_description}"
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&eVorherige Seite"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNächste Seite"

@@ -1,0 +1,55 @@
+title: "&8Settings: Time"
+size: 54
+
+fill:
+  enabled: true
+  material: LIGHT_GRAY_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  tab-home:
+    slot: 10
+    material: WHITE_STAINED_GLASS_PANE
+    name: "&eHome"
+    actions:
+      - "OPEN:settings"
+  tab-weather:
+    slot: 11
+    material: WATER_BUCKET
+    name: "&eWeather"
+    actions:
+      - "OPEN:settings-weather"
+  tab-time:
+    slot: 12
+    material: LIME_STAINED_GLASS_PANE
+    name: "&aTime"
+    glow: true
+  tab-biome:
+    slot: 13
+    material: GRASS_BLOCK
+    name: "&ePlot Biome"
+    actions:
+      - "OPEN:settings-biome"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "BACK"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: config-options
+  source: plot-settings.time.options
+  slots: "28-34"
+  option-item:
+    name: "&a{option_display}"
+    lore:
+      - "&7Sets plot time to &f{option_display}&7."
+      - "&7Click to apply."

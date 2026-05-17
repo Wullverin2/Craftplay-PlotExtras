@@ -1,0 +1,36 @@
+# Confirmation GUI for removing a plot member.
+title: "&8Remove: {selected_member_name}"
+size: 27
+
+fill:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 11
+    material: PLAYER_HEAD
+    skull-owner: "{selected_member_name}"
+    name: "&e{selected_member_name}"
+    lore:
+      - "&7Current role: &f{selected_member_role}"
+      - "&7This player will be removed"
+      - "&7from this plot or merged plot."
+  cancel:
+    slot: 13
+    material: BARRIER
+    name: "&eCancel"
+    lore:
+      - "&7Back to the role view."
+    actions:
+      - "OPEN:member-roles"
+  confirm:
+    slot: 15
+    material: RED_CONCRETE
+    name: "&cYes, remove"
+    lore:
+      - "&7Removes trust, membership"
+      - "&7and direct plot role."
+    actions:
+      - "CONFIRM_UNTRUST_SELECTED_MEMBER"

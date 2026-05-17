@@ -1,0 +1,278 @@
+# Deutsche Sprachdatei.
+# Neue Sprachdateien können in diesen Ordner gelegt werden und erscheinen nach /plotextras reload automatisch im Sprach-GUI.
+meta:
+  name: "Deutsch"
+  native-name: "Deutsch"
+  item:
+    material: PLAYER_HEAD
+    name: "&aDeutsch"
+    lore:
+      - "&7Klicke, um Deutsch zu verwenden."
+
+messages:
+  no-permission: "&cDafür hast du keine Rechte."
+  player-only: "&cDieser Befehl ist nur für Spieler."
+  reloaded: "&aCraftplayPlotExtras wurde neu geladen."
+  unknown-gui: "&cDas GUI &e{gui} &cwurde nicht gefunden."
+  unknown-language: "&cDie Sprache &e{language} &cwurde nicht gefunden."
+  language-set: "&aDeine Sprache wurde auf &e{language} &agesetzt."
+  help: "&e/plotextras &7- öffnet das Plot-GUI. &e/plotextras language &7- Sprache wählen."
+  no-plot: "&cDu stehst auf keinem Plot."
+  not-owner: "&cDu kannst nur deinen eigenen Plot oder Plotmerge bearbeiten, auf dem du gerade stehst."
+  plot-limit-reached: "&cDu hast dein Plot-Limit erreicht: &e{plot_count}&7/&e{plot_max}&c."
+  plot-home-set: "&aDein Plot-Home wurde gesetzt."
+  plot-home-teleported: "&aDu wurdest zu deinem Plot-Home teleportiert."
+  plot-home-failed: "&cDas Plot-Home konnte nicht genutzt werden."
+  flag-enabled: "&aFlag &e{flag} &awurde aktiviert."
+  flag-disabled: "&cFlag &e{flag} &cwurde deaktiviert."
+  flag-value-set: "&aFlag &e{flag} &awurde auf &e{value} &agesetzt."
+  flag-failed: "&cFlag &e{flag} &ckonnte nicht geändert werden."
+  component-started: "&aSetze &e{component} &aauf &e{pattern}&a."
+  component-failed: "&cKonnte &e{component} &cnicht auf &e{pattern} &csetzen."
+  entity-limit-reached: "&cEntity-Limit erreicht: &e{limit} &7({count}/{max})&c."
+  biome-started: "&aDas Plotbiom wird auf &e{biome} &agesetzt."
+  biome-failed: "&cDas Plotbiom konnte nicht auf &e{biome} &cgesetzt werden."
+  role-help: "&e/pe role list&7, &e/pe role create <id> <Name>&7, &e/pe role rename <id> <Name>&7, &e/pe role delete <id>&7, &e/pe role permission <id> <Recht> <on|off>&7, &e/pe role assign <Spieler> <id>&7."
+  role-updated: "&aRolle &e{role} &awurde gespeichert."
+  role-deleted: "&aRolle &e{role} &awurde gelöscht."
+  role-invalid-id: "&cUngültige Rollen-ID. Nutze 2-32 Zeichen: a-z, 0-9, _ oder -."
+  role-exists: "&cDie Rolle &e{role} &cexistiert bereits."
+  role-unknown: "&cDie Rolle &e{role} &cwurde nicht gefunden."
+  role-delete-protected: "&cDie Rolle &e{role} &ckann nicht gelöscht werden."
+  role-owner-permissions-fixed: "&cDie Plotinhaber-Rolle hat immer alle Rechte."
+  role-permission-unknown: "&cDas Recht &e{permission} &cgibt es nicht. Möglich: &e{permissions}"
+  role-permission-set: "&aRecht &e{permission} &afür Rolle &e{role} &aist jetzt &e{state}&a."
+  role-assigned: "&a{player} wurde der Rolle &e{role} &azugewiesen."
+  role-unassigned: "&aDie direkte Rollen-Zuweisung für &e{player} &awurde entfernt."
+  role-promoted: "&a{player} wurde befördert. Neue Rolle: &e{role}&a."
+  role-demoted: "&a{player} wurde degradiert. Neue Rolle: &e{role}&a."
+  role-target-owner: "&cDer Plotinhaber kann nicht befördert oder degradiert werden."
+  role-no-next-rank: "&cFür diesen Spieler gibt es keine weitere passende Rolle."
+  role-member-unknown: "&cDer Spieler &e{player} &cwurde nicht gefunden."
+  role-input-create: "&aSchreibe die neue Rolle in den Chat: &e<id> <Name>&a. Mit &eabbrechen &aabbrechen."
+  role-input-rename: "&aSchreibe den neuen Namen für Rolle &e{role} &ain den Chat. Mit &eabbrechen &aabbrechen."
+  role-input-cancelled: "&7Rolleneingabe abgebrochen."
+  member-invite-input: "&aSchreibe den Spielernamen in den Chat. Nur du siehst diese Eingabe. Mit &eabbrechen &aabbrechen."
+  member-input-cancelled: "&7Mitgliedereingabe abgebrochen."
+  member-invited: "&a{player} wurde auf diesen Plot eingeladen."
+  member-removed: "&a{player} wurde von diesem Plot entfernt."
+  member-remove-shift-right: "&cNutze Shift + Rechtsklick, um das Entfernen von &e{player} &czu bestätigen."
+  state-enabled: "aktiv"
+  state-disabled: "inaktiv"
+  member-type-owner: "Besitzer"
+  member-type-member: "Mitglied"
+  member-type-trusted: "Vertraut"
+  member-type-denied: "Gesperrt"
+
+settings:
+  weather: "Wetter"
+  time: "Zeit"
+
+flags:
+  animal-attack:
+    name: "Tierangriffe"
+    description: "Legt fest, ob Tiere auf diesem Plot angreifen können."
+  animal-interact:
+    name: "Tier-Interaktion"
+    description: "Legt fest, ob Spieler mit Tieren interagieren können."
+  block-burn:
+    name: "Blöcke brennen"
+    description: "Legt fest, ob Feuer Blöcke auf dem Plot verbrennen darf."
+  block-ignition:
+    name: "Blöcke entzünden"
+    description: "Legt fest, ob Blöcke auf dem Plot Feuer fangen können."
+  chat:
+    name: "Plot-Chat"
+    description: "Steuert, ob der Plot-Chat auf diesem Plot genutzt wird."
+  concrete-harden:
+    name: "Beton härtet"
+    description: "Legt fest, ob Betonpulver auf dem Plot zu Beton wird."
+  copper-oxide:
+    name: "Kupfer oxidiert"
+    description: "Legt fest, ob Kupfer auf dem Plot altern darf."
+  coral-dry:
+    name: "Korallen trocknen"
+    description: "Legt fest, ob Korallen auf dem Plot austrocknen."
+  crop-grow:
+    name: "Pflanzen wachsen"
+    description: "Legt fest, ob Nutzpflanzen auf dem Plot wachsen."
+  deny-exit:
+    name: "Verlassen verweigern"
+    description: "Verhindert, dass betroffene Spieler das Plot verlassen."
+  deny-portal-travel:
+    name: "Portalreisen sperren"
+    description: "Legt fest, ob Portalreisen vom Plot aus blockiert werden."
+  deny-portals:
+    name: "Portale sperren"
+    description: "Legt fest, ob Portale auf dem Plot genutzt werden können."
+  device-interact:
+    name: "Geräte bedienen"
+    description: "Legt fest, ob Redstone-Geräte und ähnliche Blöcke bedient werden können."
+  disable-physics:
+    name: "Physik deaktivieren"
+    description: "Legt fest, ob Blockphysik auf dem Plot deaktiviert wird."
+  drop-protection:
+    name: "Drop-Schutz"
+    description: "Schützt gedroppte Items auf dem Plot vor fremdem Zugriff."
+  edit-sign:
+    name: "Schilder bearbeiten"
+    description: "Legt fest, ob Schilder auf dem Plot bearbeitet werden können."
+  entity-change-block:
+    name: "Entities verändern Blöcke"
+    description: "Legt fest, ob Entities Blöcke verändern dürfen."
+  explosion:
+    name: "Explosionen"
+    description: "Legt fest, ob Explosionen auf dem Plot Schaden verursachen."
+  fishing:
+    name: "Angeln"
+    description: "Legt fest, ob Spieler auf dem Plot angeln können."
+  fly:
+    name: "Fliegen"
+    description: "Legt fest, ob Spieler auf dem Plot fliegen können."
+  furniture-interact:
+    name: "Möbel benutzen"
+    description: "Legt fest, ob Gäste Möbel von FurniCraft oder Furniture auf diesem Plot benutzen dürfen."
+  forcefield:
+    name: "Kraftfeld"
+    description: "Hält fremde Spieler vom Plot fern, wenn PlotSquared dies unterstützt."
+  grass-grow:
+    name: "Gras wächst"
+    description: "Legt fest, ob Gras auf dem Plot wachsen und sich ausbreiten darf."
+  hanging-break:
+    name: "Hängendes abbauen"
+    description: "Legt fest, ob Bilder und Rahmen abgebaut werden können."
+  hanging-place:
+    name: "Hängendes platzieren"
+    description: "Legt fest, ob Bilder und Rahmen platziert werden können."
+  hide-info:
+    name: "Info verstecken"
+    description: "Versteckt bestimmte Plot-Informationen vor anderen Spielern."
+  hostile-attack:
+    name: "Monsterangriffe"
+    description: "Legt fest, ob feindliche Kreaturen angreifen können."
+  hostile-interact:
+    name: "Monster-Interaktion"
+    description: "Legt fest, ob Spieler mit feindlichen Kreaturen interagieren können."
+  ice-form:
+    name: "Eis bildet sich"
+    description: "Legt fest, ob Wasser auf dem Plot gefrieren kann."
+  ice-melt:
+    name: "Eis schmilzt"
+    description: "Legt fest, ob Eis auf dem Plot schmelzen darf."
+  instabreak:
+    name: "Sofortabbau"
+    description: "Legt fest, ob Blöcke auf dem Plot sofort abgebaut werden."
+  interaction-interact:
+    name: "Interaktionen"
+    description: "Legt fest, ob allgemeine Interaktionen mit Entities erlaubt sind."
+  invincible:
+    name: "Unverwundbar"
+    description: "Legt fest, ob Spieler auf dem Plot Schaden vermeiden."
+  item-drop:
+    name: "Items droppen"
+    description: "Legt fest, ob Spieler Items auf dem Plot droppen können."
+  kelp-grow:
+    name: "Seetang wächst"
+    description: "Legt fest, ob Seetang auf dem Plot wachsen darf."
+  leaf-decay:
+    name: "Blätter zerfallen"
+    description: "Legt fest, ob Blätter auf dem Plot zerfallen können."
+  lectern-read-book:
+    name: "Lesepulte lesen"
+    description: "Legt fest, ob Bücher in Lesepulten gelesen werden können."
+  liquid-flow:
+    name: "Flüssigkeiten fließen"
+    description: "Legt fest, ob Wasser und Lava auf dem Plot fließen dürfen."
+  misc-break:
+    name: "Sonstiges abbauen"
+    description: "Legt fest, ob sonstige geschützte Objekte abgebaut werden können."
+  misc-interact:
+    name: "Sonstiges benutzen"
+    description: "Legt fest, ob sonstige Objekte benutzt werden können."
+  misc-place:
+    name: "Sonstiges platzieren"
+    description: "Legt fest, ob sonstige Objekte platziert werden können."
+  mob-break:
+    name: "Mobs abbauen"
+    description: "Legt fest, ob Mobs plotbezogene Blöcke zerstören können."
+  mob-place:
+    name: "Mobs platzieren"
+    description: "Legt fest, ob Mobs Blöcke auf dem Plot platzieren können."
+  no-worldedit:
+    name: "WorldEdit sperren"
+    description: "Legt fest, ob WorldEdit auf dem Plot blockiert wird."
+  notify-enter:
+    name: "Betreten melden"
+    description: "Benachrichtigt Besitzer, wenn jemand das Plot betritt."
+  notify-leave:
+    name: "Verlassen melden"
+    description: "Benachrichtigt Besitzer, wenn jemand den Plot verlässt."
+  player-interact:
+    name: "Spieler-Interaktion"
+    description: "Legt fest, ob Spieler miteinander interagieren können."
+  plot-title:
+    name: "Plot-Titel"
+    description: "Legt fest, ob ein Titel beim Betreten angezeigt wird."
+  prevent-crop-trample:
+    name: "Felder vor Zertrampeln schützen"
+    description: "Verhindert, dass Spieler Ackerboden zertrampeln und dadurch Weizen oder andere Pflanzen abbrechen."
+  prevent-creative-copy:
+    name: "Creative-Kopieren verhindern"
+    description: "Verhindert das Kopieren bestimmter Inhalte im Kreativmodus."
+  projectile-change-block:
+    name: "Projektile verändern Blöcke"
+    description: "Legt fest, ob Projektile Blöcke verändern dürfen."
+  projectiles:
+    name: "Projektile"
+    description: "Legt fest, ob Projektile auf dem Plot funktionieren."
+  pve:
+    name: "PvE"
+    description: "Legt fest, ob Spieler gegen Kreaturen kämpfen können."
+  pvp:
+    name: "PvP"
+    description: "Legt fest, ob Spieler gegeneinander kämpfen können."
+  redstone:
+    name: "Redstone"
+    description: "Legt fest, ob Redstone auf dem Plot aktiv ist."
+  sculk-sensor-interact:
+    name: "Sculk-Sensoren"
+    description: "Legt fest, ob Sculk-Sensoren auf dem Plot reagieren."
+  snow-form:
+    name: "Schnee bildet sich"
+    description: "Legt fest, ob Schnee auf dem Plot entstehen darf."
+  snow-melt:
+    name: "Schnee schmilzt"
+    description: "Legt fest, ob Schnee auf dem Plot schmelzen darf."
+  soil-dry:
+    name: "Erde trocknet"
+    description: "Legt fest, ob Ackerboden auf dem Plot austrocknen darf."
+  tamed-attack:
+    name: "Gezahmte Tiere greifen an"
+    description: "Legt fest, ob gezähmte Tiere angreifen können."
+  tamed-interact:
+    name: "Gezahmte Tiere benutzen"
+    description: "Legt fest, ob Spieler mit gezähmten Tieren interagieren können."
+  tile-drop:
+    name: "Blockdaten droppen"
+    description: "Legt fest, ob Container- oder Blockdaten beim Abbauen droppen."
+  titles:
+    name: "Titel anzeigen"
+    description: "Legt fest, ob PlotSquared-Titel angezeigt werden."
+  untrusted-visit:
+    name: "Untrusted Besuch"
+    description: "Legt fest, ob nicht vertraute Spieler den Plot besuchen können."
+  vehicle-break:
+    name: "Fahrzeuge abbauen"
+    description: "Legt fest, ob Fahrzeuge abgebaut werden können."
+  vehicle-place:
+    name: "Fahrzeuge platzieren"
+    description: "Legt fest, ob Fahrzeuge platziert werden können."
+  vehicle-use:
+    name: "Fahrzeuge nutzen"
+    description: "Legt fest, ob Fahrzeuge benutzt werden können."
+  villager-interact:
+    name: "Dorfbewohner benutzen"
+    description: "Legt fest, ob Spieler mit Dorfbewohnern interagieren können."
+  vine-grow:
+    name: "Ranken wachsen"
+    description: "Legt fest, ob Ranken auf dem Plot wachsen dürfen."

@@ -1,0 +1,47 @@
+# Backup list for permitted staff members.
+title: "&8Plot Backups"
+size: 54
+
+fill:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: CHEST
+    name: "&aPlot Backups"
+    lore:
+      - "&7Click a backup to prepare"
+      - "&7a restore."
+      - "&7The restore target is your current plot."
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: plot-backups
+  slots: "10-16,19-25,28-34,37-43"
+  backup-item:
+    material: FILLED_MAP
+    name: "&e{backup_owner} &8- &f{backup_merge}"
+    lore:
+      - "&7ID: &f{backup_id}"
+      - "&7Date: &f{backup_created}"
+      - "&7Reason: &f{backup_reason}"
+      - "&7Source: &f{backup_world} {backup_plot}"
+      - "&7Plots: &f{backup_plot_count}"
+      - "&eClick to select."
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&ePrevious page"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNext page"

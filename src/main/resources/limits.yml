@@ -1,0 +1,1691 @@
+# Entity-Limits fuer Plots und Plotmerges.
+# Diese Datei wird beim Start installiert und bei Versionsupdates um fehlende neue Eintraege ergaenzt.
+# Jeder Abschnitt unter limits ist ein eigenes Limit. Mit enabled: false deaktivierst du nur dieses Limit.
+# Unter permission-limits gewinnt der hoechste Wert, fuer den der Spieler die Permission hat. -1 bedeutet unbegrenzt.
+
+settings:
+  # Aktiviert das Entity-Limit-System.
+  enabled: true
+  # Wenn true, werden bei gemergten Plots alle verbundenen Plotbereiche zusammen gezaehlt.
+  count-merged-plots: true
+  # Wenn true, zaehlen bei alten Gruppenlimits die konkreten Einzellimits zuerst. Dadurch bremsen alte Kategorien die neuen Einzelwerte nicht aus.
+  prefer-single-entity-limits: true
+  # Spieler mit dieser Permission umgehen alle Entity-Limits.
+  bypass-permission: craftplayplotextras.entitylimit.bypass
+  # Diese Entity-Typen werden nicht mitgezaehlt und nicht limitiert.
+  excluded-types:
+    - PLAYER
+    - UNKNOWN
+  # Diese CreatureSpawnEvent-Gruende werden aktiv begrenzt. Natuerliche Spawns bleiben standardmaessig frei.
+  limited-spawn-reasons:
+    - EGG
+    - DISPENSE_EGG
+    - BUCKET
+    - BREEDING
+    - BUILD_IRONGOLEM
+    - BUILD_SNOWMAN
+    - BUILD_WITHER
+
+limits:
+  total:
+    # Gesamtlimit fuer alle gezaehlten Entities auf dem Plot oder Plotmerge.
+    enabled: true
+    display: "Alle Entities"
+    description: "Alle gezaehlten Entities zusammen."
+    material: ARMOR_STAND
+    max: 120
+    types: []
+    permission-limits:
+      craftplayplotextras.entitylimit.total.200: 200
+      craftplayplotextras.entitylimit.total.400: 400
+      craftplayplotextras.entitylimit.total.unlimited: -1
+  acacia_boat:
+    enabled: true
+    display: "Akazienboot"
+    description: "Einzellimit fuer Akazienboot."
+    material: ACACIA_BOAT
+    max: 24
+    types:
+      - ACACIA_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.acacia_boat.48: 48
+      craftplayplotextras.entitylimit.acacia_boat.unlimited: -1
+  acacia_chest_boat:
+    enabled: true
+    display: "Akazientruhenboot"
+    description: "Einzellimit fuer Akazientruhenboot."
+    material: ACACIA_CHEST_BOAT
+    max: 24
+    types:
+      - ACACIA_CHEST_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.acacia_chest_boat.48: 48
+      craftplayplotextras.entitylimit.acacia_chest_boat.unlimited: -1
+  allay:
+    enabled: true
+    display: "Allay"
+    description: "Einzellimit fuer Allay."
+    material: ALLAY_SPAWN_EGG
+    max: 32
+    types:
+      - ALLAY
+    permission-limits:
+      craftplayplotextras.entitylimit.allay.64: 64
+      craftplayplotextras.entitylimit.allay.unlimited: -1
+  area_effect_cloud:
+    enabled: true
+    display: "Effektwolke"
+    description: "Einzellimit fuer Effektwolke."
+    material: SPLASH_POTION
+    max: 64
+    types:
+      - AREA_EFFECT_CLOUD
+    permission-limits:
+      craftplayplotextras.entitylimit.area_effect_cloud.128: 128
+      craftplayplotextras.entitylimit.area_effect_cloud.unlimited: -1
+  armadillo:
+    enabled: true
+    display: "Guerteltier"
+    description: "Einzellimit fuer Guerteltier."
+    material: ARMADILLO_SPAWN_EGG
+    max: 32
+    types:
+      - ARMADILLO
+    permission-limits:
+      craftplayplotextras.entitylimit.armadillo.64: 64
+      craftplayplotextras.entitylimit.armadillo.unlimited: -1
+  armor_stand:
+    enabled: true
+    display: "Ruestungsstaender"
+    description: "Einzellimit fuer Ruestungsstaender."
+    material: ARMOR_STAND
+    max: 40
+    types:
+      - ARMOR_STAND
+    permission-limits:
+      craftplayplotextras.entitylimit.armor_stand.80: 80
+      craftplayplotextras.entitylimit.armor_stand.unlimited: -1
+  arrow:
+    enabled: true
+    display: "Pfeil"
+    description: "Einzellimit fuer Pfeil."
+    material: ARROW
+    max: 128
+    types:
+      - ARROW
+    permission-limits:
+      craftplayplotextras.entitylimit.arrow.256: 256
+      craftplayplotextras.entitylimit.arrow.unlimited: -1
+  axolotl:
+    enabled: true
+    display: "Axolotl"
+    description: "Einzellimit fuer Axolotl."
+    material: AXOLOTL_SPAWN_EGG
+    max: 32
+    types:
+      - AXOLOTL
+    permission-limits:
+      craftplayplotextras.entitylimit.axolotl.64: 64
+      craftplayplotextras.entitylimit.axolotl.unlimited: -1
+  bamboo_chest_raft:
+    enabled: true
+    display: "Bambustruhenfloss"
+    description: "Einzellimit fuer Bambustruhenfloss."
+    material: BAMBOO_CHEST_RAFT
+    max: 24
+    types:
+      - BAMBOO_CHEST_RAFT
+    permission-limits:
+      craftplayplotextras.entitylimit.bamboo_chest_raft.48: 48
+      craftplayplotextras.entitylimit.bamboo_chest_raft.unlimited: -1
+  bamboo_raft:
+    enabled: true
+    display: "Bambusfloss"
+    description: "Einzellimit fuer Bambusfloss."
+    material: BAMBOO_RAFT
+    max: 24
+    types:
+      - BAMBOO_RAFT
+    permission-limits:
+      craftplayplotextras.entitylimit.bamboo_raft.48: 48
+      craftplayplotextras.entitylimit.bamboo_raft.unlimited: -1
+  bat:
+    enabled: true
+    display: "Fledermaus"
+    description: "Einzellimit fuer Fledermaus."
+    material: BAT_SPAWN_EGG
+    max: 32
+    types:
+      - BAT
+    permission-limits:
+      craftplayplotextras.entitylimit.bat.64: 64
+      craftplayplotextras.entitylimit.bat.unlimited: -1
+  bee:
+    enabled: true
+    display: "Biene"
+    description: "Einzellimit fuer Biene."
+    material: BEE_SPAWN_EGG
+    max: 32
+    types:
+      - BEE
+    permission-limits:
+      craftplayplotextras.entitylimit.bee.64: 64
+      craftplayplotextras.entitylimit.bee.unlimited: -1
+  birch_boat:
+    enabled: true
+    display: "Birkenboot"
+    description: "Einzellimit fuer Birkenboot."
+    material: BIRCH_BOAT
+    max: 24
+    types:
+      - BIRCH_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.birch_boat.48: 48
+      craftplayplotextras.entitylimit.birch_boat.unlimited: -1
+  birch_chest_boat:
+    enabled: true
+    display: "Birkentruhenboot"
+    description: "Einzellimit fuer Birkentruhenboot."
+    material: BIRCH_CHEST_BOAT
+    max: 24
+    types:
+      - BIRCH_CHEST_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.birch_chest_boat.48: 48
+      craftplayplotextras.entitylimit.birch_chest_boat.unlimited: -1
+  blaze:
+    enabled: true
+    display: "Blaze"
+    description: "Einzellimit fuer Blaze."
+    material: BLAZE_SPAWN_EGG
+    max: 32
+    types:
+      - BLAZE
+    permission-limits:
+      craftplayplotextras.entitylimit.blaze.64: 64
+      craftplayplotextras.entitylimit.blaze.unlimited: -1
+  block_display:
+    enabled: true
+    display: "Block-Display"
+    description: "Einzellimit fuer Block-Display."
+    material: ARMOR_STAND
+    max: 80
+    types:
+      - BLOCK_DISPLAY
+    permission-limits:
+      craftplayplotextras.entitylimit.block_display.160: 160
+      craftplayplotextras.entitylimit.block_display.unlimited: -1
+  bogged:
+    enabled: true
+    display: "Bogged"
+    description: "Einzellimit fuer Bogged."
+    material: BOGGED_SPAWN_EGG
+    max: 32
+    types:
+      - BOGGED
+    permission-limits:
+      craftplayplotextras.entitylimit.bogged.64: 64
+      craftplayplotextras.entitylimit.bogged.unlimited: -1
+  breeze:
+    enabled: true
+    display: "Breeze"
+    description: "Einzellimit fuer Breeze."
+    material: BREEZE_SPAWN_EGG
+    max: 32
+    types:
+      - BREEZE
+    permission-limits:
+      craftplayplotextras.entitylimit.breeze.64: 64
+      craftplayplotextras.entitylimit.breeze.unlimited: -1
+  breeze_wind_charge:
+    enabled: true
+    display: "Breeze-Windladung"
+    description: "Einzellimit fuer Breeze-Windladung."
+    material: WIND_CHARGE
+    max: 128
+    types:
+      - BREEZE_WIND_CHARGE
+    permission-limits:
+      craftplayplotextras.entitylimit.breeze_wind_charge.256: 256
+      craftplayplotextras.entitylimit.breeze_wind_charge.unlimited: -1
+  camel:
+    enabled: true
+    display: "Kamel"
+    description: "Einzellimit fuer Kamel."
+    material: CAMEL_SPAWN_EGG
+    max: 32
+    types:
+      - CAMEL
+    permission-limits:
+      craftplayplotextras.entitylimit.camel.64: 64
+      craftplayplotextras.entitylimit.camel.unlimited: -1
+  cat:
+    enabled: true
+    display: "Katze"
+    description: "Einzellimit fuer Katze."
+    material: CAT_SPAWN_EGG
+    max: 32
+    types:
+      - CAT
+    permission-limits:
+      craftplayplotextras.entitylimit.cat.64: 64
+      craftplayplotextras.entitylimit.cat.unlimited: -1
+  cave_spider:
+    enabled: true
+    display: "Hoehlenspinne"
+    description: "Einzellimit fuer Hoehlenspinne."
+    material: CAVE_SPIDER_SPAWN_EGG
+    max: 32
+    types:
+      - CAVE_SPIDER
+    permission-limits:
+      craftplayplotextras.entitylimit.cave_spider.64: 64
+      craftplayplotextras.entitylimit.cave_spider.unlimited: -1
+  cherry_boat:
+    enabled: true
+    display: "Kirschboot"
+    description: "Einzellimit fuer Kirschboot."
+    material: CHERRY_BOAT
+    max: 24
+    types:
+      - CHERRY_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.cherry_boat.48: 48
+      craftplayplotextras.entitylimit.cherry_boat.unlimited: -1
+  cherry_chest_boat:
+    enabled: true
+    display: "Kirschtruhenboot"
+    description: "Einzellimit fuer Kirschtruhenboot."
+    material: CHERRY_CHEST_BOAT
+    max: 24
+    types:
+      - CHERRY_CHEST_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.cherry_chest_boat.48: 48
+      craftplayplotextras.entitylimit.cherry_chest_boat.unlimited: -1
+  chest_minecart:
+    enabled: true
+    display: "Truhenminecart"
+    description: "Einzellimit fuer Truhenminecart."
+    material: CHEST_MINECART
+    max: 24
+    types:
+      - CHEST_MINECART
+    permission-limits:
+      craftplayplotextras.entitylimit.chest_minecart.48: 48
+      craftplayplotextras.entitylimit.chest_minecart.unlimited: -1
+  chicken:
+    enabled: true
+    display: "Huhn"
+    description: "Einzellimit fuer Huhn."
+    material: CHICKEN_SPAWN_EGG
+    max: 32
+    types:
+      - CHICKEN
+    permission-limits:
+      craftplayplotextras.entitylimit.chicken.64: 64
+      craftplayplotextras.entitylimit.chicken.unlimited: -1
+  cod:
+    enabled: true
+    display: "Kabeljau"
+    description: "Einzellimit fuer Kabeljau."
+    material: COD_SPAWN_EGG
+    max: 32
+    types:
+      - COD
+    permission-limits:
+      craftplayplotextras.entitylimit.cod.64: 64
+      craftplayplotextras.entitylimit.cod.unlimited: -1
+  command_block_minecart:
+    enabled: true
+    display: "Befehlsblockminecart"
+    description: "Einzellimit fuer Befehlsblockminecart."
+    material: COMMAND_BLOCK_MINECART
+    max: 24
+    types:
+      - COMMAND_BLOCK_MINECART
+    permission-limits:
+      craftplayplotextras.entitylimit.command_block_minecart.48: 48
+      craftplayplotextras.entitylimit.command_block_minecart.unlimited: -1
+  cow:
+    enabled: true
+    display: "Kuh"
+    description: "Einzellimit fuer Kuh."
+    material: COW_SPAWN_EGG
+    max: 32
+    types:
+      - COW
+    permission-limits:
+      craftplayplotextras.entitylimit.cow.64: 64
+      craftplayplotextras.entitylimit.cow.unlimited: -1
+  creaking:
+    enabled: true
+    display: "Creaking"
+    description: "Einzellimit fuer Creaking."
+    material: CREAKING_SPAWN_EGG
+    max: 32
+    types:
+      - CREAKING
+    permission-limits:
+      craftplayplotextras.entitylimit.creaking.64: 64
+      craftplayplotextras.entitylimit.creaking.unlimited: -1
+  creeper:
+    enabled: true
+    display: "Creeper"
+    description: "Einzellimit fuer Creeper."
+    material: CREEPER_SPAWN_EGG
+    max: 32
+    types:
+      - CREEPER
+    permission-limits:
+      craftplayplotextras.entitylimit.creeper.64: 64
+      craftplayplotextras.entitylimit.creeper.unlimited: -1
+  dark_oak_boat:
+    enabled: true
+    display: "Schwarzeichenboot"
+    description: "Einzellimit fuer Schwarzeichenboot."
+    material: DARK_OAK_BOAT
+    max: 24
+    types:
+      - DARK_OAK_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.dark_oak_boat.48: 48
+      craftplayplotextras.entitylimit.dark_oak_boat.unlimited: -1
+  dark_oak_chest_boat:
+    enabled: true
+    display: "Schwarzeichentruhenboot"
+    description: "Einzellimit fuer Schwarzeichentruhenboot."
+    material: DARK_OAK_CHEST_BOAT
+    max: 24
+    types:
+      - DARK_OAK_CHEST_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.dark_oak_chest_boat.48: 48
+      craftplayplotextras.entitylimit.dark_oak_chest_boat.unlimited: -1
+  dolphin:
+    enabled: true
+    display: "Delfin"
+    description: "Einzellimit fuer Delfin."
+    material: DOLPHIN_SPAWN_EGG
+    max: 32
+    types:
+      - DOLPHIN
+    permission-limits:
+      craftplayplotextras.entitylimit.dolphin.64: 64
+      craftplayplotextras.entitylimit.dolphin.unlimited: -1
+  donkey:
+    enabled: true
+    display: "Esel"
+    description: "Einzellimit fuer Esel."
+    material: DONKEY_SPAWN_EGG
+    max: 32
+    types:
+      - DONKEY
+    permission-limits:
+      craftplayplotextras.entitylimit.donkey.64: 64
+      craftplayplotextras.entitylimit.donkey.unlimited: -1
+  dragon_fireball:
+    enabled: true
+    display: "Drachenfeuerball"
+    description: "Einzellimit fuer Drachenfeuerball."
+    material: FIRE_CHARGE
+    max: 128
+    types:
+      - DRAGON_FIREBALL
+    permission-limits:
+      craftplayplotextras.entitylimit.dragon_fireball.256: 256
+      craftplayplotextras.entitylimit.dragon_fireball.unlimited: -1
+  drowned:
+    enabled: true
+    display: "Ertrunkener"
+    description: "Einzellimit fuer Ertrunkener."
+    material: DROWNED_SPAWN_EGG
+    max: 32
+    types:
+      - DROWNED
+    permission-limits:
+      craftplayplotextras.entitylimit.drowned.64: 64
+      craftplayplotextras.entitylimit.drowned.unlimited: -1
+  egg:
+    enabled: true
+    display: "Geworfenes Ei"
+    description: "Einzellimit fuer Geworfenes Ei."
+    material: EGG
+    max: 128
+    types:
+      - EGG
+    permission-limits:
+      craftplayplotextras.entitylimit.egg.256: 256
+      craftplayplotextras.entitylimit.egg.unlimited: -1
+  elder_guardian:
+    enabled: true
+    display: "Grosser Waechter"
+    description: "Einzellimit fuer Grosser Waechter."
+    material: ELDER_GUARDIAN_SPAWN_EGG
+    max: 32
+    types:
+      - ELDER_GUARDIAN
+    permission-limits:
+      craftplayplotextras.entitylimit.elder_guardian.64: 64
+      craftplayplotextras.entitylimit.elder_guardian.unlimited: -1
+  end_crystal:
+    enabled: true
+    display: "End Crystal"
+    description: "Einzellimit fuer End Crystal."
+    material: END_CRYSTAL
+    max: 32
+    types:
+      - END_CRYSTAL
+    permission-limits:
+      craftplayplotextras.entitylimit.end_crystal.64: 64
+      craftplayplotextras.entitylimit.end_crystal.unlimited: -1
+  ender_dragon:
+    enabled: true
+    display: "Enderdrache"
+    description: "Einzellimit fuer Enderdrache."
+    material: ENDER_DRAGON_SPAWN_EGG
+    max: 2
+    types:
+      - ENDER_DRAGON
+    permission-limits:
+      craftplayplotextras.entitylimit.ender_dragon.4: 4
+      craftplayplotextras.entitylimit.ender_dragon.unlimited: -1
+  ender_pearl:
+    enabled: true
+    display: "Enderperle"
+    description: "Einzellimit fuer Enderperle."
+    material: ENDER_PEARL
+    max: 128
+    types:
+      - ENDER_PEARL
+    permission-limits:
+      craftplayplotextras.entitylimit.ender_pearl.256: 256
+      craftplayplotextras.entitylimit.ender_pearl.unlimited: -1
+  enderman:
+    enabled: true
+    display: "Enderman"
+    description: "Einzellimit fuer Enderman."
+    material: ENDERMAN_SPAWN_EGG
+    max: 32
+    types:
+      - ENDERMAN
+    permission-limits:
+      craftplayplotextras.entitylimit.enderman.64: 64
+      craftplayplotextras.entitylimit.enderman.unlimited: -1
+  endermite:
+    enabled: true
+    display: "Endermite"
+    description: "Einzellimit fuer Endermite."
+    material: ENDERMITE_SPAWN_EGG
+    max: 32
+    types:
+      - ENDERMITE
+    permission-limits:
+      craftplayplotextras.entitylimit.endermite.64: 64
+      craftplayplotextras.entitylimit.endermite.unlimited: -1
+  evoker:
+    enabled: true
+    display: "Magier"
+    description: "Einzellimit fuer Magier."
+    material: EVOKER_SPAWN_EGG
+    max: 32
+    types:
+      - EVOKER
+    permission-limits:
+      craftplayplotextras.entitylimit.evoker.64: 64
+      craftplayplotextras.entitylimit.evoker.unlimited: -1
+  evoker_fangs:
+    enabled: true
+    display: "Magierfangzaehne"
+    description: "Einzellimit fuer Magierfangzaehne."
+    material: TOTEM_OF_UNDYING
+    max: 128
+    types:
+      - EVOKER_FANGS
+    permission-limits:
+      craftplayplotextras.entitylimit.evoker_fangs.256: 256
+      craftplayplotextras.entitylimit.evoker_fangs.unlimited: -1
+  experience_bottle:
+    enabled: true
+    display: "Erfahrungsflasche"
+    description: "Einzellimit fuer Erfahrungsflasche."
+    material: EXPERIENCE_BOTTLE
+    max: 128
+    types:
+      - EXPERIENCE_BOTTLE
+    permission-limits:
+      craftplayplotextras.entitylimit.experience_bottle.256: 256
+      craftplayplotextras.entitylimit.experience_bottle.unlimited: -1
+  experience_orb:
+    enabled: true
+    display: "Erfahrungskugel"
+    description: "Einzellimit fuer Erfahrungskugel."
+    material: EXPERIENCE_BOTTLE
+    max: 256
+    types:
+      - EXPERIENCE_ORB
+    permission-limits:
+      craftplayplotextras.entitylimit.experience_orb.512: 512
+      craftplayplotextras.entitylimit.experience_orb.unlimited: -1
+  eye_of_ender:
+    enabled: true
+    display: "Eye Of Ender"
+    description: "Einzellimit fuer Eye Of Ender."
+    material: ARMOR_STAND
+    max: 32
+    types:
+      - EYE_OF_ENDER
+    permission-limits:
+      craftplayplotextras.entitylimit.eye_of_ender.64: 64
+      craftplayplotextras.entitylimit.eye_of_ender.unlimited: -1
+  falling_block:
+    enabled: true
+    display: "Fallender Block"
+    description: "Einzellimit fuer Fallender Block."
+    material: SAND
+    max: 64
+    types:
+      - FALLING_BLOCK
+    permission-limits:
+      craftplayplotextras.entitylimit.falling_block.128: 128
+      craftplayplotextras.entitylimit.falling_block.unlimited: -1
+  fireball:
+    enabled: true
+    display: "Feuerball"
+    description: "Einzellimit fuer Feuerball."
+    material: FIRE_CHARGE
+    max: 128
+    types:
+      - FIREBALL
+    permission-limits:
+      craftplayplotextras.entitylimit.fireball.256: 256
+      craftplayplotextras.entitylimit.fireball.unlimited: -1
+  firework_rocket:
+    enabled: true
+    display: "Feuerwerksrakete"
+    description: "Einzellimit fuer Feuerwerksrakete."
+    material: FIREWORK_ROCKET
+    max: 64
+    types:
+      - FIREWORK_ROCKET
+    permission-limits:
+      craftplayplotextras.entitylimit.firework_rocket.128: 128
+      craftplayplotextras.entitylimit.firework_rocket.unlimited: -1
+  fishing_bobber:
+    enabled: true
+    display: "Angelhaken"
+    description: "Einzellimit fuer Angelhaken."
+    material: FISHING_ROD
+    max: 128
+    types:
+      - FISHING_BOBBER
+    permission-limits:
+      craftplayplotextras.entitylimit.fishing_bobber.256: 256
+      craftplayplotextras.entitylimit.fishing_bobber.unlimited: -1
+  fox:
+    enabled: true
+    display: "Fuchs"
+    description: "Einzellimit fuer Fuchs."
+    material: FOX_SPAWN_EGG
+    max: 32
+    types:
+      - FOX
+    permission-limits:
+      craftplayplotextras.entitylimit.fox.64: 64
+      craftplayplotextras.entitylimit.fox.unlimited: -1
+  frog:
+    enabled: true
+    display: "Frosch"
+    description: "Einzellimit fuer Frosch."
+    material: FROG_SPAWN_EGG
+    max: 32
+    types:
+      - FROG
+    permission-limits:
+      craftplayplotextras.entitylimit.frog.64: 64
+      craftplayplotextras.entitylimit.frog.unlimited: -1
+  furnace_minecart:
+    enabled: true
+    display: "Ofenminecart"
+    description: "Einzellimit fuer Ofenminecart."
+    material: FURNACE_MINECART
+    max: 24
+    types:
+      - FURNACE_MINECART
+    permission-limits:
+      craftplayplotextras.entitylimit.furnace_minecart.48: 48
+      craftplayplotextras.entitylimit.furnace_minecart.unlimited: -1
+  ghast:
+    enabled: true
+    display: "Ghast"
+    description: "Einzellimit fuer Ghast."
+    material: GHAST_SPAWN_EGG
+    max: 32
+    types:
+      - GHAST
+    permission-limits:
+      craftplayplotextras.entitylimit.ghast.64: 64
+      craftplayplotextras.entitylimit.ghast.unlimited: -1
+  giant:
+    enabled: true
+    display: "Riese"
+    description: "Einzellimit fuer Riese."
+    material: ARMOR_STAND
+    max: 32
+    types:
+      - GIANT
+    permission-limits:
+      craftplayplotextras.entitylimit.giant.64: 64
+      craftplayplotextras.entitylimit.giant.unlimited: -1
+  glow_item_frame:
+    enabled: true
+    display: "Leuchtrahmen"
+    description: "Einzellimit fuer Leuchtrahmen."
+    material: GLOW_ITEM_FRAME
+    max: 48
+    types:
+      - GLOW_ITEM_FRAME
+    permission-limits:
+      craftplayplotextras.entitylimit.glow_item_frame.96: 96
+      craftplayplotextras.entitylimit.glow_item_frame.unlimited: -1
+  glow_squid:
+    enabled: true
+    display: "Glow Squid"
+    description: "Einzellimit fuer Glow Squid."
+    material: GLOW_SQUID_SPAWN_EGG
+    max: 32
+    types:
+      - GLOW_SQUID
+    permission-limits:
+      craftplayplotextras.entitylimit.glow_squid.64: 64
+      craftplayplotextras.entitylimit.glow_squid.unlimited: -1
+  goat:
+    enabled: true
+    display: "Ziege"
+    description: "Einzellimit fuer Ziege."
+    material: GOAT_SPAWN_EGG
+    max: 32
+    types:
+      - GOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.goat.64: 64
+      craftplayplotextras.entitylimit.goat.unlimited: -1
+  guardian:
+    enabled: true
+    display: "Waechter"
+    description: "Einzellimit fuer Waechter."
+    material: GUARDIAN_SPAWN_EGG
+    max: 32
+    types:
+      - GUARDIAN
+    permission-limits:
+      craftplayplotextras.entitylimit.guardian.64: 64
+      craftplayplotextras.entitylimit.guardian.unlimited: -1
+  happy_ghast:
+    enabled: true
+    display: "Happy Ghast"
+    description: "Einzellimit fuer Happy Ghast."
+    material: HAPPY_GHAST_SPAWN_EGG
+    max: 32
+    types:
+      - HAPPY_GHAST
+    permission-limits:
+      craftplayplotextras.entitylimit.happy_ghast.64: 64
+      craftplayplotextras.entitylimit.happy_ghast.unlimited: -1
+  hoglin:
+    enabled: true
+    display: "Hoglin"
+    description: "Einzellimit fuer Hoglin."
+    material: HOGLIN_SPAWN_EGG
+    max: 32
+    types:
+      - HOGLIN
+    permission-limits:
+      craftplayplotextras.entitylimit.hoglin.64: 64
+      craftplayplotextras.entitylimit.hoglin.unlimited: -1
+  hopper_minecart:
+    enabled: true
+    display: "Trichterminecart"
+    description: "Einzellimit fuer Trichterminecart."
+    material: HOPPER_MINECART
+    max: 24
+    types:
+      - HOPPER_MINECART
+    permission-limits:
+      craftplayplotextras.entitylimit.hopper_minecart.48: 48
+      craftplayplotextras.entitylimit.hopper_minecart.unlimited: -1
+  horse:
+    enabled: true
+    display: "Pferd"
+    description: "Einzellimit fuer Pferd."
+    material: HORSE_SPAWN_EGG
+    max: 32
+    types:
+      - HORSE
+    permission-limits:
+      craftplayplotextras.entitylimit.horse.64: 64
+      craftplayplotextras.entitylimit.horse.unlimited: -1
+  husk:
+    enabled: true
+    display: "Wuestenzombie"
+    description: "Einzellimit fuer Wuestenzombie."
+    material: HUSK_SPAWN_EGG
+    max: 32
+    types:
+      - HUSK
+    permission-limits:
+      craftplayplotextras.entitylimit.husk.64: 64
+      craftplayplotextras.entitylimit.husk.unlimited: -1
+  illusioner:
+    enabled: true
+    display: "Illusionist"
+    description: "Einzellimit fuer Illusionist."
+    material: ARMOR_STAND
+    max: 32
+    types:
+      - ILLUSIONER
+    permission-limits:
+      craftplayplotextras.entitylimit.illusioner.64: 64
+      craftplayplotextras.entitylimit.illusioner.unlimited: -1
+  interaction:
+    enabled: true
+    display: "Interaktions-Entity"
+    description: "Einzellimit fuer Interaktions-Entity."
+    material: ARMOR_STAND
+    max: 80
+    types:
+      - INTERACTION
+    permission-limits:
+      craftplayplotextras.entitylimit.interaction.160: 160
+      craftplayplotextras.entitylimit.interaction.unlimited: -1
+  iron_golem:
+    enabled: true
+    display: "Eisengolem"
+    description: "Einzellimit fuer Eisengolem."
+    material: IRON_GOLEM_SPAWN_EGG
+    max: 32
+    types:
+      - IRON_GOLEM
+    permission-limits:
+      craftplayplotextras.entitylimit.iron_golem.64: 64
+      craftplayplotextras.entitylimit.iron_golem.unlimited: -1
+  item:
+    enabled: true
+    display: "Item"
+    description: "Einzellimit fuer Item."
+    material: CHEST
+    max: 256
+    types:
+      - ITEM
+    permission-limits:
+      craftplayplotextras.entitylimit.item.512: 512
+      craftplayplotextras.entitylimit.item.unlimited: -1
+  item_display:
+    enabled: true
+    display: "Item-Display"
+    description: "Einzellimit fuer Item-Display."
+    material: ARMOR_STAND
+    max: 80
+    types:
+      - ITEM_DISPLAY
+    permission-limits:
+      craftplayplotextras.entitylimit.item_display.160: 160
+      craftplayplotextras.entitylimit.item_display.unlimited: -1
+  item_frame:
+    enabled: true
+    display: "Itemrahmen"
+    description: "Einzellimit fuer Itemrahmen."
+    material: ITEM_FRAME
+    max: 48
+    types:
+      - ITEM_FRAME
+    permission-limits:
+      craftplayplotextras.entitylimit.item_frame.96: 96
+      craftplayplotextras.entitylimit.item_frame.unlimited: -1
+  jungle_boat:
+    enabled: true
+    display: "Dschungelboot"
+    description: "Einzellimit fuer Dschungelboot."
+    material: JUNGLE_BOAT
+    max: 24
+    types:
+      - JUNGLE_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.jungle_boat.48: 48
+      craftplayplotextras.entitylimit.jungle_boat.unlimited: -1
+  jungle_chest_boat:
+    enabled: true
+    display: "Dschungeltruhenboot"
+    description: "Einzellimit fuer Dschungeltruhenboot."
+    material: JUNGLE_CHEST_BOAT
+    max: 24
+    types:
+      - JUNGLE_CHEST_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.jungle_chest_boat.48: 48
+      craftplayplotextras.entitylimit.jungle_chest_boat.unlimited: -1
+  leash_knot:
+    enabled: true
+    display: "Leinenknoten"
+    description: "Einzellimit fuer Leinenknoten."
+    material: LEAD
+    max: 48
+    types:
+      - LEASH_KNOT
+    permission-limits:
+      craftplayplotextras.entitylimit.leash_knot.96: 96
+      craftplayplotextras.entitylimit.leash_knot.unlimited: -1
+  lightning_bolt:
+    enabled: true
+    display: "Blitz"
+    description: "Einzellimit fuer Blitz."
+    material: LIGHTNING_ROD
+    max: 64
+    types:
+      - LIGHTNING_BOLT
+    permission-limits:
+      craftplayplotextras.entitylimit.lightning_bolt.128: 128
+      craftplayplotextras.entitylimit.lightning_bolt.unlimited: -1
+  lingering_potion:
+    enabled: true
+    display: "Verweiltrank"
+    description: "Einzellimit fuer Verweiltrank."
+    material: LINGERING_POTION
+    max: 128
+    types:
+      - LINGERING_POTION
+    permission-limits:
+      craftplayplotextras.entitylimit.lingering_potion.256: 256
+      craftplayplotextras.entitylimit.lingering_potion.unlimited: -1
+  llama:
+    enabled: true
+    display: "Lama"
+    description: "Einzellimit fuer Lama."
+    material: LLAMA_SPAWN_EGG
+    max: 32
+    types:
+      - LLAMA
+    permission-limits:
+      craftplayplotextras.entitylimit.llama.64: 64
+      craftplayplotextras.entitylimit.llama.unlimited: -1
+  llama_spit:
+    enabled: true
+    display: "Lamaspucke"
+    description: "Einzellimit fuer Lamaspucke."
+    material: SLIME_BALL
+    max: 128
+    types:
+      - LLAMA_SPIT
+    permission-limits:
+      craftplayplotextras.entitylimit.llama_spit.256: 256
+      craftplayplotextras.entitylimit.llama_spit.unlimited: -1
+  magma_cube:
+    enabled: true
+    display: "Magmawuerfel"
+    description: "Einzellimit fuer Magmawuerfel."
+    material: MAGMA_CUBE_SPAWN_EGG
+    max: 32
+    types:
+      - MAGMA_CUBE
+    permission-limits:
+      craftplayplotextras.entitylimit.magma_cube.64: 64
+      craftplayplotextras.entitylimit.magma_cube.unlimited: -1
+  mangrove_boat:
+    enabled: true
+    display: "Mangrovenboot"
+    description: "Einzellimit fuer Mangrovenboot."
+    material: MANGROVE_BOAT
+    max: 24
+    types:
+      - MANGROVE_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.mangrove_boat.48: 48
+      craftplayplotextras.entitylimit.mangrove_boat.unlimited: -1
+  mangrove_chest_boat:
+    enabled: true
+    display: "Mangroventruhenboot"
+    description: "Einzellimit fuer Mangroventruhenboot."
+    material: MANGROVE_CHEST_BOAT
+    max: 24
+    types:
+      - MANGROVE_CHEST_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.mangrove_chest_boat.48: 48
+      craftplayplotextras.entitylimit.mangrove_chest_boat.unlimited: -1
+  marker:
+    enabled: true
+    display: "Marker"
+    description: "Einzellimit fuer Marker."
+    material: MAP
+    max: 80
+    types:
+      - MARKER
+    permission-limits:
+      craftplayplotextras.entitylimit.marker.160: 160
+      craftplayplotextras.entitylimit.marker.unlimited: -1
+  minecart:
+    enabled: true
+    display: "Minecart"
+    description: "Einzellimit fuer Minecart."
+    material: MINECART
+    max: 24
+    types:
+      - MINECART
+    permission-limits:
+      craftplayplotextras.entitylimit.minecart.48: 48
+      craftplayplotextras.entitylimit.minecart.unlimited: -1
+  mooshroom:
+    enabled: true
+    display: "Mooshroom"
+    description: "Einzellimit fuer Mooshroom."
+    material: MOOSHROOM_SPAWN_EGG
+    max: 32
+    types:
+      - MOOSHROOM
+    permission-limits:
+      craftplayplotextras.entitylimit.mooshroom.64: 64
+      craftplayplotextras.entitylimit.mooshroom.unlimited: -1
+  mule:
+    enabled: true
+    display: "Maultier"
+    description: "Einzellimit fuer Maultier."
+    material: MULE_SPAWN_EGG
+    max: 32
+    types:
+      - MULE
+    permission-limits:
+      craftplayplotextras.entitylimit.mule.64: 64
+      craftplayplotextras.entitylimit.mule.unlimited: -1
+  oak_boat:
+    enabled: true
+    display: "Eichenboot"
+    description: "Einzellimit fuer Eichenboot."
+    material: OAK_BOAT
+    max: 24
+    types:
+      - OAK_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.oak_boat.48: 48
+      craftplayplotextras.entitylimit.oak_boat.unlimited: -1
+  oak_chest_boat:
+    enabled: true
+    display: "Eichentruhenboot"
+    description: "Einzellimit fuer Eichentruhenboot."
+    material: OAK_CHEST_BOAT
+    max: 24
+    types:
+      - OAK_CHEST_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.oak_chest_boat.48: 48
+      craftplayplotextras.entitylimit.oak_chest_boat.unlimited: -1
+  ocelot:
+    enabled: true
+    display: "Ozelot"
+    description: "Einzellimit fuer Ozelot."
+    material: OCELOT_SPAWN_EGG
+    max: 32
+    types:
+      - OCELOT
+    permission-limits:
+      craftplayplotextras.entitylimit.ocelot.64: 64
+      craftplayplotextras.entitylimit.ocelot.unlimited: -1
+  ominous_item_spawner:
+    enabled: true
+    display: "Ominous Item Spawner"
+    description: "Einzellimit fuer Ominous Item Spawner."
+    material: ARMOR_STAND
+    max: 32
+    types:
+      - OMINOUS_ITEM_SPAWNER
+    permission-limits:
+      craftplayplotextras.entitylimit.ominous_item_spawner.64: 64
+      craftplayplotextras.entitylimit.ominous_item_spawner.unlimited: -1
+  painting:
+    enabled: true
+    display: "Gemaelde"
+    description: "Einzellimit fuer Gemaelde."
+    material: PAINTING
+    max: 48
+    types:
+      - PAINTING
+    permission-limits:
+      craftplayplotextras.entitylimit.painting.96: 96
+      craftplayplotextras.entitylimit.painting.unlimited: -1
+  pale_oak_boat:
+    enabled: true
+    display: "Blasseichenboot"
+    description: "Einzellimit fuer Blasseichenboot."
+    material: PALE_OAK_BOAT
+    max: 24
+    types:
+      - PALE_OAK_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.pale_oak_boat.48: 48
+      craftplayplotextras.entitylimit.pale_oak_boat.unlimited: -1
+  pale_oak_chest_boat:
+    enabled: true
+    display: "Blasseichentruhenboot"
+    description: "Einzellimit fuer Blasseichentruhenboot."
+    material: PALE_OAK_CHEST_BOAT
+    max: 24
+    types:
+      - PALE_OAK_CHEST_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.pale_oak_chest_boat.48: 48
+      craftplayplotextras.entitylimit.pale_oak_chest_boat.unlimited: -1
+  panda:
+    enabled: true
+    display: "Panda"
+    description: "Einzellimit fuer Panda."
+    material: PANDA_SPAWN_EGG
+    max: 32
+    types:
+      - PANDA
+    permission-limits:
+      craftplayplotextras.entitylimit.panda.64: 64
+      craftplayplotextras.entitylimit.panda.unlimited: -1
+  parrot:
+    enabled: true
+    display: "Papagei"
+    description: "Einzellimit fuer Papagei."
+    material: PARROT_SPAWN_EGG
+    max: 32
+    types:
+      - PARROT
+    permission-limits:
+      craftplayplotextras.entitylimit.parrot.64: 64
+      craftplayplotextras.entitylimit.parrot.unlimited: -1
+  phantom:
+    enabled: true
+    display: "Phantom"
+    description: "Einzellimit fuer Phantom."
+    material: PHANTOM_SPAWN_EGG
+    max: 32
+    types:
+      - PHANTOM
+    permission-limits:
+      craftplayplotextras.entitylimit.phantom.64: 64
+      craftplayplotextras.entitylimit.phantom.unlimited: -1
+  pig:
+    enabled: true
+    display: "Schwein"
+    description: "Einzellimit fuer Schwein."
+    material: PIG_SPAWN_EGG
+    max: 32
+    types:
+      - PIG
+    permission-limits:
+      craftplayplotextras.entitylimit.pig.64: 64
+      craftplayplotextras.entitylimit.pig.unlimited: -1
+  piglin:
+    enabled: true
+    display: "Piglin"
+    description: "Einzellimit fuer Piglin."
+    material: PIGLIN_SPAWN_EGG
+    max: 32
+    types:
+      - PIGLIN
+    permission-limits:
+      craftplayplotextras.entitylimit.piglin.64: 64
+      craftplayplotextras.entitylimit.piglin.unlimited: -1
+  piglin_brute:
+    enabled: true
+    display: "Piglin-Barbar"
+    description: "Einzellimit fuer Piglin-Barbar."
+    material: PIGLIN_BRUTE_SPAWN_EGG
+    max: 32
+    types:
+      - PIGLIN_BRUTE
+    permission-limits:
+      craftplayplotextras.entitylimit.piglin_brute.64: 64
+      craftplayplotextras.entitylimit.piglin_brute.unlimited: -1
+  pillager:
+    enabled: true
+    display: "Pluenderer"
+    description: "Einzellimit fuer Pluenderer."
+    material: PILLAGER_SPAWN_EGG
+    max: 32
+    types:
+      - PILLAGER
+    permission-limits:
+      craftplayplotextras.entitylimit.pillager.64: 64
+      craftplayplotextras.entitylimit.pillager.unlimited: -1
+  polar_bear:
+    enabled: true
+    display: "Eisbaer"
+    description: "Einzellimit fuer Eisbaer."
+    material: POLAR_BEAR_SPAWN_EGG
+    max: 32
+    types:
+      - POLAR_BEAR
+    permission-limits:
+      craftplayplotextras.entitylimit.polar_bear.64: 64
+      craftplayplotextras.entitylimit.polar_bear.unlimited: -1
+  pufferfish:
+    enabled: true
+    display: "Kugelfisch"
+    description: "Einzellimit fuer Kugelfisch."
+    material: PUFFERFISH_SPAWN_EGG
+    max: 32
+    types:
+      - PUFFERFISH
+    permission-limits:
+      craftplayplotextras.entitylimit.pufferfish.64: 64
+      craftplayplotextras.entitylimit.pufferfish.unlimited: -1
+  rabbit:
+    enabled: true
+    display: "Kaninchen"
+    description: "Einzellimit fuer Kaninchen."
+    material: RABBIT_SPAWN_EGG
+    max: 32
+    types:
+      - RABBIT
+    permission-limits:
+      craftplayplotextras.entitylimit.rabbit.64: 64
+      craftplayplotextras.entitylimit.rabbit.unlimited: -1
+  ravager:
+    enabled: true
+    display: "Verwuester"
+    description: "Einzellimit fuer Verwuester."
+    material: RAVAGER_SPAWN_EGG
+    max: 32
+    types:
+      - RAVAGER
+    permission-limits:
+      craftplayplotextras.entitylimit.ravager.64: 64
+      craftplayplotextras.entitylimit.ravager.unlimited: -1
+  salmon:
+    enabled: true
+    display: "Lachs"
+    description: "Einzellimit fuer Lachs."
+    material: SALMON_SPAWN_EGG
+    max: 32
+    types:
+      - SALMON
+    permission-limits:
+      craftplayplotextras.entitylimit.salmon.64: 64
+      craftplayplotextras.entitylimit.salmon.unlimited: -1
+  sheep:
+    enabled: true
+    display: "Schaf"
+    description: "Einzellimit fuer Schaf."
+    material: SHEEP_SPAWN_EGG
+    max: 32
+    types:
+      - SHEEP
+    permission-limits:
+      craftplayplotextras.entitylimit.sheep.64: 64
+      craftplayplotextras.entitylimit.sheep.unlimited: -1
+  shulker:
+    enabled: true
+    display: "Shulker"
+    description: "Einzellimit fuer Shulker."
+    material: SHULKER_SPAWN_EGG
+    max: 32
+    types:
+      - SHULKER
+    permission-limits:
+      craftplayplotextras.entitylimit.shulker.64: 64
+      craftplayplotextras.entitylimit.shulker.unlimited: -1
+  shulker_bullet:
+    enabled: true
+    display: "Shulker-Geschoss"
+    description: "Einzellimit fuer Shulker-Geschoss."
+    material: SHULKER_SHELL
+    max: 128
+    types:
+      - SHULKER_BULLET
+    permission-limits:
+      craftplayplotextras.entitylimit.shulker_bullet.256: 256
+      craftplayplotextras.entitylimit.shulker_bullet.unlimited: -1
+  silverfish:
+    enabled: true
+    display: "Silberfisch"
+    description: "Einzellimit fuer Silberfisch."
+    material: SILVERFISH_SPAWN_EGG
+    max: 32
+    types:
+      - SILVERFISH
+    permission-limits:
+      craftplayplotextras.entitylimit.silverfish.64: 64
+      craftplayplotextras.entitylimit.silverfish.unlimited: -1
+  skeleton:
+    enabled: true
+    display: "Skelett"
+    description: "Einzellimit fuer Skelett."
+    material: SKELETON_SPAWN_EGG
+    max: 32
+    types:
+      - SKELETON
+    permission-limits:
+      craftplayplotextras.entitylimit.skeleton.64: 64
+      craftplayplotextras.entitylimit.skeleton.unlimited: -1
+  skeleton_horse:
+    enabled: true
+    display: "Skeleton Horse"
+    description: "Einzellimit fuer Skeleton Horse."
+    material: SKELETON_HORSE_SPAWN_EGG
+    max: 32
+    types:
+      - SKELETON_HORSE
+    permission-limits:
+      craftplayplotextras.entitylimit.skeleton_horse.64: 64
+      craftplayplotextras.entitylimit.skeleton_horse.unlimited: -1
+  slime:
+    enabled: true
+    display: "Schleim"
+    description: "Einzellimit fuer Schleim."
+    material: SLIME_SPAWN_EGG
+    max: 32
+    types:
+      - SLIME
+    permission-limits:
+      craftplayplotextras.entitylimit.slime.64: 64
+      craftplayplotextras.entitylimit.slime.unlimited: -1
+  small_fireball:
+    enabled: true
+    display: "Kleiner Feuerball"
+    description: "Einzellimit fuer Kleiner Feuerball."
+    material: FIRE_CHARGE
+    max: 128
+    types:
+      - SMALL_FIREBALL
+    permission-limits:
+      craftplayplotextras.entitylimit.small_fireball.256: 256
+      craftplayplotextras.entitylimit.small_fireball.unlimited: -1
+  sniffer:
+    enabled: true
+    display: "Schnueffler"
+    description: "Einzellimit fuer Schnueffler."
+    material: SNIFFER_SPAWN_EGG
+    max: 32
+    types:
+      - SNIFFER
+    permission-limits:
+      craftplayplotextras.entitylimit.sniffer.64: 64
+      craftplayplotextras.entitylimit.sniffer.unlimited: -1
+  snow_golem:
+    enabled: true
+    display: "Schneegolem"
+    description: "Einzellimit fuer Schneegolem."
+    material: SNOW_GOLEM_SPAWN_EGG
+    max: 32
+    types:
+      - SNOW_GOLEM
+    permission-limits:
+      craftplayplotextras.entitylimit.snow_golem.64: 64
+      craftplayplotextras.entitylimit.snow_golem.unlimited: -1
+  snowball:
+    enabled: true
+    display: "Schneeball"
+    description: "Einzellimit fuer Schneeball."
+    material: SNOWBALL
+    max: 128
+    types:
+      - SNOWBALL
+    permission-limits:
+      craftplayplotextras.entitylimit.snowball.256: 256
+      craftplayplotextras.entitylimit.snowball.unlimited: -1
+  spawner_minecart:
+    enabled: true
+    display: "Spawner-Minecart"
+    description: "Einzellimit fuer Spawner-Minecart."
+    material: ARMOR_STAND
+    max: 24
+    types:
+      - SPAWNER_MINECART
+    permission-limits:
+      craftplayplotextras.entitylimit.spawner_minecart.48: 48
+      craftplayplotextras.entitylimit.spawner_minecart.unlimited: -1
+  spectral_arrow:
+    enabled: true
+    display: "Spektralpfeil"
+    description: "Einzellimit fuer Spektralpfeil."
+    material: SPECTRAL_ARROW
+    max: 128
+    types:
+      - SPECTRAL_ARROW
+    permission-limits:
+      craftplayplotextras.entitylimit.spectral_arrow.256: 256
+      craftplayplotextras.entitylimit.spectral_arrow.unlimited: -1
+  spider:
+    enabled: true
+    display: "Spinne"
+    description: "Einzellimit fuer Spinne."
+    material: SPIDER_SPAWN_EGG
+    max: 32
+    types:
+      - SPIDER
+    permission-limits:
+      craftplayplotextras.entitylimit.spider.64: 64
+      craftplayplotextras.entitylimit.spider.unlimited: -1
+  splash_potion:
+    enabled: true
+    display: "Wurftrank"
+    description: "Einzellimit fuer Wurftrank."
+    material: SPLASH_POTION
+    max: 128
+    types:
+      - SPLASH_POTION
+    permission-limits:
+      craftplayplotextras.entitylimit.splash_potion.256: 256
+      craftplayplotextras.entitylimit.splash_potion.unlimited: -1
+  spruce_boat:
+    enabled: true
+    display: "Fichtenboot"
+    description: "Einzellimit fuer Fichtenboot."
+    material: SPRUCE_BOAT
+    max: 24
+    types:
+      - SPRUCE_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.spruce_boat.48: 48
+      craftplayplotextras.entitylimit.spruce_boat.unlimited: -1
+  spruce_chest_boat:
+    enabled: true
+    display: "Fichtentruhenboot"
+    description: "Einzellimit fuer Fichtentruhenboot."
+    material: SPRUCE_CHEST_BOAT
+    max: 24
+    types:
+      - SPRUCE_CHEST_BOAT
+    permission-limits:
+      craftplayplotextras.entitylimit.spruce_chest_boat.48: 48
+      craftplayplotextras.entitylimit.spruce_chest_boat.unlimited: -1
+  squid:
+    enabled: true
+    display: "Tintenfisch"
+    description: "Einzellimit fuer Tintenfisch."
+    material: SQUID_SPAWN_EGG
+    max: 32
+    types:
+      - SQUID
+    permission-limits:
+      craftplayplotextras.entitylimit.squid.64: 64
+      craftplayplotextras.entitylimit.squid.unlimited: -1
+  stray:
+    enabled: true
+    display: "Eiswanderer"
+    description: "Einzellimit fuer Eiswanderer."
+    material: STRAY_SPAWN_EGG
+    max: 32
+    types:
+      - STRAY
+    permission-limits:
+      craftplayplotextras.entitylimit.stray.64: 64
+      craftplayplotextras.entitylimit.stray.unlimited: -1
+  strider:
+    enabled: true
+    display: "Schreiter"
+    description: "Einzellimit fuer Schreiter."
+    material: STRIDER_SPAWN_EGG
+    max: 32
+    types:
+      - STRIDER
+    permission-limits:
+      craftplayplotextras.entitylimit.strider.64: 64
+      craftplayplotextras.entitylimit.strider.unlimited: -1
+  tadpole:
+    enabled: true
+    display: "Kaulquappe"
+    description: "Einzellimit fuer Kaulquappe."
+    material: TADPOLE_SPAWN_EGG
+    max: 32
+    types:
+      - TADPOLE
+    permission-limits:
+      craftplayplotextras.entitylimit.tadpole.64: 64
+      craftplayplotextras.entitylimit.tadpole.unlimited: -1
+  text_display:
+    enabled: true
+    display: "Text-Display"
+    description: "Einzellimit fuer Text-Display."
+    material: NAME_TAG
+    max: 80
+    types:
+      - TEXT_DISPLAY
+    permission-limits:
+      craftplayplotextras.entitylimit.text_display.160: 160
+      craftplayplotextras.entitylimit.text_display.unlimited: -1
+  tnt:
+    enabled: true
+    display: "Gezundetes TNT"
+    description: "Einzellimit fuer Gezundetes TNT."
+    material: TNT
+    max: 64
+    types:
+      - TNT
+    permission-limits:
+      craftplayplotextras.entitylimit.tnt.128: 128
+      craftplayplotextras.entitylimit.tnt.unlimited: -1
+  tnt_minecart:
+    enabled: true
+    display: "TNT-Minecart"
+    description: "Einzellimit fuer TNT-Minecart."
+    material: TNT_MINECART
+    max: 24
+    types:
+      - TNT_MINECART
+    permission-limits:
+      craftplayplotextras.entitylimit.tnt_minecart.48: 48
+      craftplayplotextras.entitylimit.tnt_minecart.unlimited: -1
+  trader_llama:
+    enabled: true
+    display: "Haendlerlama"
+    description: "Einzellimit fuer Haendlerlama."
+    material: TRADER_LLAMA_SPAWN_EGG
+    max: 32
+    types:
+      - TRADER_LLAMA
+    permission-limits:
+      craftplayplotextras.entitylimit.trader_llama.64: 64
+      craftplayplotextras.entitylimit.trader_llama.unlimited: -1
+  trident:
+    enabled: true
+    display: "Dreizack"
+    description: "Einzellimit fuer Dreizack."
+    material: TRIDENT
+    max: 128
+    types:
+      - TRIDENT
+    permission-limits:
+      craftplayplotextras.entitylimit.trident.256: 256
+      craftplayplotextras.entitylimit.trident.unlimited: -1
+  tropical_fish:
+    enabled: true
+    display: "Tropenfisch"
+    description: "Einzellimit fuer Tropenfisch."
+    material: TROPICAL_FISH_SPAWN_EGG
+    max: 32
+    types:
+      - TROPICAL_FISH
+    permission-limits:
+      craftplayplotextras.entitylimit.tropical_fish.64: 64
+      craftplayplotextras.entitylimit.tropical_fish.unlimited: -1
+  turtle:
+    enabled: true
+    display: "Schildkroete"
+    description: "Einzellimit fuer Schildkroete."
+    material: TURTLE_SPAWN_EGG
+    max: 32
+    types:
+      - TURTLE
+    permission-limits:
+      craftplayplotextras.entitylimit.turtle.64: 64
+      craftplayplotextras.entitylimit.turtle.unlimited: -1
+  vex:
+    enabled: true
+    display: "Plagegeist"
+    description: "Einzellimit fuer Plagegeist."
+    material: VEX_SPAWN_EGG
+    max: 32
+    types:
+      - VEX
+    permission-limits:
+      craftplayplotextras.entitylimit.vex.64: 64
+      craftplayplotextras.entitylimit.vex.unlimited: -1
+  villager:
+    enabled: true
+    display: "Dorfbewohner"
+    description: "Einzellimit fuer Dorfbewohner."
+    material: VILLAGER_SPAWN_EGG
+    max: 16
+    types:
+      - VILLAGER
+    permission-limits:
+      craftplayplotextras.entitylimit.villager.32: 32
+      craftplayplotextras.entitylimit.villager.unlimited: -1
+  vindicator:
+    enabled: true
+    display: "Diener"
+    description: "Einzellimit fuer Diener."
+    material: VINDICATOR_SPAWN_EGG
+    max: 32
+    types:
+      - VINDICATOR
+    permission-limits:
+      craftplayplotextras.entitylimit.vindicator.64: 64
+      craftplayplotextras.entitylimit.vindicator.unlimited: -1
+  wandering_trader:
+    enabled: true
+    display: "Fahrender Haendler"
+    description: "Einzellimit fuer Fahrender Haendler."
+    material: WANDERING_TRADER_SPAWN_EGG
+    max: 16
+    types:
+      - WANDERING_TRADER
+    permission-limits:
+      craftplayplotextras.entitylimit.wandering_trader.32: 32
+      craftplayplotextras.entitylimit.wandering_trader.unlimited: -1
+  warden:
+    enabled: true
+    display: "Waechter"
+    description: "Einzellimit fuer Waechter."
+    material: WARDEN_SPAWN_EGG
+    max: 32
+    types:
+      - WARDEN
+    permission-limits:
+      craftplayplotextras.entitylimit.warden.64: 64
+      craftplayplotextras.entitylimit.warden.unlimited: -1
+  wind_charge:
+    enabled: true
+    display: "Windladung"
+    description: "Einzellimit fuer Windladung."
+    material: WIND_CHARGE
+    max: 128
+    types:
+      - WIND_CHARGE
+    permission-limits:
+      craftplayplotextras.entitylimit.wind_charge.256: 256
+      craftplayplotextras.entitylimit.wind_charge.unlimited: -1
+  witch:
+    enabled: true
+    display: "Hexe"
+    description: "Einzellimit fuer Hexe."
+    material: WITCH_SPAWN_EGG
+    max: 32
+    types:
+      - WITCH
+    permission-limits:
+      craftplayplotextras.entitylimit.witch.64: 64
+      craftplayplotextras.entitylimit.witch.unlimited: -1
+  wither:
+    enabled: true
+    display: "Wither"
+    description: "Einzellimit fuer Wither."
+    material: WITHER_SPAWN_EGG
+    max: 2
+    types:
+      - WITHER
+    permission-limits:
+      craftplayplotextras.entitylimit.wither.4: 4
+      craftplayplotextras.entitylimit.wither.unlimited: -1
+  wither_skeleton:
+    enabled: true
+    display: "Witherskelett"
+    description: "Einzellimit fuer Witherskelett."
+    material: WITHER_SKELETON_SPAWN_EGG
+    max: 32
+    types:
+      - WITHER_SKELETON
+    permission-limits:
+      craftplayplotextras.entitylimit.wither_skeleton.64: 64
+      craftplayplotextras.entitylimit.wither_skeleton.unlimited: -1
+  wither_skull:
+    enabled: true
+    display: "Witherschaedel"
+    description: "Einzellimit fuer Witherschaedel."
+    material: WITHER_SKELETON_SKULL
+    max: 128
+    types:
+      - WITHER_SKULL
+    permission-limits:
+      craftplayplotextras.entitylimit.wither_skull.256: 256
+      craftplayplotextras.entitylimit.wither_skull.unlimited: -1
+  wolf:
+    enabled: true
+    display: "Wolf"
+    description: "Einzellimit fuer Wolf."
+    material: WOLF_SPAWN_EGG
+    max: 32
+    types:
+      - WOLF
+    permission-limits:
+      craftplayplotextras.entitylimit.wolf.64: 64
+      craftplayplotextras.entitylimit.wolf.unlimited: -1
+  zoglin:
+    enabled: true
+    display: "Zoglin"
+    description: "Einzellimit fuer Zoglin."
+    material: ZOGLIN_SPAWN_EGG
+    max: 32
+    types:
+      - ZOGLIN
+    permission-limits:
+      craftplayplotextras.entitylimit.zoglin.64: 64
+      craftplayplotextras.entitylimit.zoglin.unlimited: -1
+  zombie:
+    enabled: true
+    display: "Zombie"
+    description: "Einzellimit fuer Zombie."
+    material: ZOMBIE_SPAWN_EGG
+    max: 32
+    types:
+      - ZOMBIE
+    permission-limits:
+      craftplayplotextras.entitylimit.zombie.64: 64
+      craftplayplotextras.entitylimit.zombie.unlimited: -1
+  zombie_horse:
+    enabled: true
+    display: "Zombiepferd"
+    description: "Einzellimit fuer Zombiepferd."
+    material: ZOMBIE_HORSE_SPAWN_EGG
+    max: 32
+    types:
+      - ZOMBIE_HORSE
+    permission-limits:
+      craftplayplotextras.entitylimit.zombie_horse.64: 64
+      craftplayplotextras.entitylimit.zombie_horse.unlimited: -1
+  zombie_villager:
+    enabled: true
+    display: "Zombiedorfbewohner"
+    description: "Einzellimit fuer Zombiedorfbewohner."
+    material: ZOMBIE_VILLAGER_SPAWN_EGG
+    max: 32
+    types:
+      - ZOMBIE_VILLAGER
+    permission-limits:
+      craftplayplotextras.entitylimit.zombie_villager.64: 64
+      craftplayplotextras.entitylimit.zombie_villager.unlimited: -1
+  zombified_piglin:
+    enabled: true
+    display: "Zombifizierter Piglin"
+    description: "Einzellimit fuer Zombifizierter Piglin."
+    material: ZOMBIFIED_PIGLIN_SPAWN_EGG
+    max: 32
+    types:
+      - ZOMBIFIED_PIGLIN
+    permission-limits:
+      craftplayplotextras.entitylimit.zombified_piglin.64: 64
+      craftplayplotextras.entitylimit.zombified_piglin.unlimited: -1

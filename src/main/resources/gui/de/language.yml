@@ -1,0 +1,47 @@
+# Sprach-GUI für Deutsch.
+# Alle language/*.yml Dateien werden automatisch gelesen und hier angezeigt.
+title: "&8Sprache wählen"
+size: 54
+
+fill:
+  enabled: true
+  material: PURPLE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "BACK"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: languages
+  slots: "10-16,19-25,28-34"
+  selected-item:
+    name: "&a{language_native}"
+    lore:
+      - "&7Code: &f{language_code}"
+      - "&aAktiv"
+    glow: true
+  available-item:
+    name: "&e{language_native}"
+    lore:
+      - "&7Code: &f{language_code}"
+      - "&7Klicke zum Wechseln."
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&eVorherige Seite"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNächste Seite"

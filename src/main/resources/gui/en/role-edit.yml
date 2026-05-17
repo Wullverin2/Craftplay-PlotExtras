@@ -1,0 +1,82 @@
+# English role editor.
+title: "&8Role: {selected_role_name}"
+size: 54
+
+fill:
+  enabled: true
+  material: PURPLE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: BOOK
+    name: "&a{selected_role_name}"
+    lore:
+      - "&7ID: &f{selected_role_id}"
+      - "&7Permissions: &f{selected_role_permissions}"
+  rename:
+    slot: 6
+    material: NAME_TAG
+    name: "&eRename"
+    lore:
+      - "&7Click and type the"
+      - "&7new name into chat."
+    actions:
+      - "ROLE_RENAME_PROMPT"
+  delete:
+    slot: 7
+    material: TNT
+    name: "&cDelete"
+    lore:
+      - "&7Not possible for owner"
+      - "&7and Trusted."
+    actions:
+      - "ROLE_DELETE_SELECTED"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "OPEN:roles"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: role-permissions
+  slots: "10-16,19-25,28-34"
+  enabled-item:
+    material: LIME_DYE
+    name: "&a{permission_display}"
+    lore:
+      - "&7Permission: &f{permission_key}"
+      - "&7State: &a{permission_state}"
+      - "&eClick to disable."
+  disabled-item:
+    material: GRAY_DYE
+    name: "&7{permission_display}"
+    lore:
+      - "&7Permission: &f{permission_key}"
+      - "&7State: &c{permission_state}"
+      - "&eClick to enable."
+  protected-item:
+    material: NETHER_STAR
+    name: "&6{permission_display}"
+    lore:
+      - "&7Permission: &f{permission_key}"
+      - "&7State: &aalways enabled"
+      - "&cOwner always has every permission."
+    glow: true
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&ePrevious Page"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNext Page"

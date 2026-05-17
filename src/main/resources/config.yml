@@ -1,3 +1,301 @@
+# CraftplayPlotExtras Hauptkonfiguration
+# Jede Option ist kommentiert. Änderungen an dieser Datei werden mit /plotextras reload neu geladen.
+
+language:
+  # Standardsprache für neue Spieler. Die Datei muss unter language/<code>.yml existieren.
+  # Spieler können ihre Sprache im Sprach-GUI selbst wechseln.
+  default: de
+
+plot-limits:
+  # Hartes Fallback-Limit, falls beim Spieler keine Permission wie plots.plot.84 gefunden wird.
+  default: 4
+  # Regex für den Permission-Node, aus dem die aktuelle maximale Plotanzahl gelesen wird.
+  # Beispiel: plots.plot.84 -> Limit 84.
+  permission-pattern: "^plots\\.plot\\.(\\d+)$"
+  # Falls ein Permission-Plugin Wildcards nicht in getEffectivePermissions liefert, wird bis zu diesem Wert aktiv geprüft.
+  scan-max: 250
+  # Permission-Format für die aktive Prüfung. {limit} wird durch die jeweilige Zahl ersetzt.
+  permission-check-format: "plots.plot.{limit}"
+
+plot-roles:
+  # Anzeigename der nicht löschbaren Besitzer-Rolle, wenn ein Plot zum ersten Mal Rollendaten bekommt.
+  # Die Rolle hat immer alle Rechte und kann pro Plot später umbenannt werden.
+  default-owner-name: "Plotinhaber"
+  # Anzeigename der nicht löschbaren Trusted-Rolle, wenn ein Plot zum ersten Mal Rollendaten bekommt.
+  # PlotSquared-Trusted-Spieler fallen automatisch in diese Rolle, solange keine direkte Rolle zugewiesen wurde.
+  default-trusted-name: "Trusted"
+  # Startrechte der Trusted-Rolle. Besitzer können diese Rechte pro Plot später ändern.
+  # Mögliche Werte: flags, decor.wall, decor.border, settings.home, settings.weather, settings.time,
+  # settings.biome, members.invite, members.untrust, members.promote, members.demote
+  default-trusted-permissions: []
+
+plot-backups:
+  # Aktiviert das automatische Backup-System fuer Plots.
+  enabled: true
+  automatic:
+    # Wenn true, wird vor dem Loeschen oder Ablaufloeschen eines Plots ein Backup gestartet.
+    on-delete: true
+    # Wenn true, wird vor dem Unmergen eines Plots ein Backup gestartet.
+    on-unmerge: true
+    # Wenn true, wird auch vor einem Plot-Clear ein Backup gestartet.
+    on-clear: true
+
+redstone-lag-protection:
+  # Aktiviert die Erkennung schneller Redstone-Aktivitaet pro Plot oder Plotmerge.
+  enabled: true
+  # Zeitfenster in Sekunden, in dem Redstone-Aktivitaeten gezaehlt werden.
+  window-seconds: 10
+  # Wird dieser Wert im Zeitfenster auf einem Plot ueberschritten, wird die PlotSquared-Flag redstone deaktiviert.
+  max-events-per-window: 250
+  # Mindestabstand in Sekunden, bevor derselbe Plot erneut einen Alarm ausloesen kann.
+  cooldown-seconds: 60
+  # Spieler mit dieser Permission erhalten Team-Benachrichtigungen mit Teleport-Button.
+  notify-permission: "craftplayplotextras.redstone.notify"
+  # Spieler mit dieser Permission duerfen Redstone nach einem Alarm wieder aktivieren.
+  admin-permission: "craftplayplotextras.redstone.admin"
+  monitored-events:
+    # Zaehlt Redstone-Stromwechsel.
+    redstone: true
+    # Zaehlt Kolbenbewegungen.
+    pistons: true
+    # Zaehlt Werfer- und Spender-Aktivitaet.
+    dispensers: true
+    # Zaehlt Trichter-Itembewegungen, weil sie oft Teil von Lagmaschinen sind.
+    hoppers: true
+
+integrations:
+  # Diese Werte werden über PlaceholderAPI aufgelöst und stehen in GUI-Dateien als
+  # {jobs}, {cmi_money}, {quests_completed} und {quests_total} zur Verfügung.
+  # Die konkreten Placeholder hängen von deinen installierten Expansions ab.
+  placeholder-values:
+    jobs: "%jobsr_user_jobs%"
+    cmi-money: "%cmi_user_balance_formatted%"
+    quests-completed: "%quests_completed%"
+    quests-total: "%quests_total%"
+  # Fallback, wenn PlaceholderAPI oder die jeweilige Expansion fehlt.
+  placeholder-fallbacks:
+    jobs: "-"
+    cmi-money: "0"
+    quests-completed: "0"
+    quests-total: "0"
+
+flags:
+  # Erkennt alle Boolean-Flags von PlotSquared automatisch und zeigt sie im Flags-GUI an.
+  auto-detect-boolean-flags: true
+  # Zusätzliche Flags, die auch angezeigt werden sollen. Sinnvoll für eigene Boolean-Flags.
+  enabled:
+    - furniture-interact
+    - prevent-crop-trample
+  # Wenn true, sehen Spieler nur Flags, für die sie eine passende Permission besitzen.
+  require-permission: true
+  # Permission-Formate für einzelne Flags. {flag} nutzt Bindestriche, {flag_dot} nutzt Punkte.
+  permission-formats:
+    - "craftplayplotextras.flags.{flag}"
+    - "plots.set.flag.{flag}"
+    - "plots.set.flag.{flag_dot}"
+  # Flags, die trotz Auto-Erkennung nicht im GUI erscheinen sollen.
+  excluded:
+    - done
+    - analysis
+    - keep
+    - furniture-sit
+    - furniture-modify
+  # Fallback-Anzeigenamen. Sprachdateien können diese Werte pro Sprache überschreiben.
+  display-names:
+    pvp: "PvP"
+    pve: "PvE"
+    fly: "Fliegen"
+    use: "Benutzen"
+    break: "Abbauen"
+    place: "Platzieren"
+    redstone: "Redstone"
+    explosion: "Explosionen"
+    titles: "Plot-Titel"
+    notify-enter: "Betreten melden"
+    notify-leave: "Verlassen melden"
+    furniture-interact: "Möbel benutzen"
+    prevent-crop-trample: "Felder vor Zertrampeln schützen"
+  # Fallback-Beschreibungen. Deutsche Texte stehen zusätzlich in language/de.yml.
+  descriptions:
+    pvp: "Steuert, ob Spieler auf dem Plot gegeneinander kämpfen können."
+    pve: "Steuert, ob Spieler auf dem Plot gegen Kreaturen kämpfen können."
+    fly: "Steuert, ob Fliegen auf dem Plot erlaubt ist."
+    use: "Steuert, ob interaktive Blöcke wie Türen oder Knöpfe genutzt werden können."
+    break: "Steuert, ob Blöcke auf dem Plot abgebaut werden können."
+    place: "Steuert, ob Blöcke auf dem Plot platziert werden können."
+    redstone: "Steuert, ob Redstone auf dem Plot aktiv ist."
+    explosion: "Steuert, ob Explosionen auf dem Plot Schaden verursachen."
+    titles: "Steuert, ob Plot-Titel beim Betreten angezeigt werden."
+    notify-enter: "Benachrichtigt Besitzer, wenn Spieler den Plot betreten."
+    notify-leave: "Benachrichtigt Besitzer, wenn Spieler den Plot verlassen."
+    furniture-interact: "Legt fest, ob Gäste Möbel von FurniCraft oder Furniture auf diesem Plot benutzen dürfen."
+    prevent-crop-trample: "Verhindert, dass Spieler Ackerboden zertrampeln und dadurch Weizen oder andere Pflanzen abbrechen."
+
+furniture-flags:
+  # Aktiviert zusätzliche Debug-Ausgaben zur Möbel-Erkennung und Plot-Prüfung.
+  debug: false
+  # Mindestpunktzahl, ab der eine Entity als Möbel erkannt wird. Höher ist strenger.
+  threshold: 4
+  # Wenn true, wird die effektive Mindestpunktzahl um 1 gesenkt, damit unsichere Möbel zuverlässiger erkannt werden.
+  strict-mode: false
+  # Wenn ein Spieler Möbel benutzen darf, darf dieses Plugin vorher abgebrochene Möbel-Events wieder freigeben.
+  uncancel-allowed-furniture: true
+  # Wenn true, bekommen Spieler beim Blockieren einer Möbel-Interaktion eine eigene Nachricht.
+  block-message-enabled: true
+  # Nachricht, wenn ein Spieler fremde Möbel auf einem Plot nicht benutzen darf.
+  block-message: "&cDu darfst diese Möbel auf diesem Plot nicht benutzen."
+  # Mindestabstand zwischen Debug-Zeilen pro Spieler in Millisekunden.
+  debug-cooldown-millis: 1500
+  # Mindestabstand zwischen Blockier-Nachrichten pro Spieler in Millisekunden.
+  block-message-cooldown-millis: 1000
+  # Spieler mit einer dieser Permissions dürfen Möbel unabhängig von der Plot-Flag benutzen.
+  bypass-permissions:
+    - craftplayplotextras.furniture.bypass
+    - plotfurnitureflags.bypass
+    - plots.admin
+    - plots.admin.interact.other
+  detect:
+    # Entity-Typen, die bei der Möbel-Erkennung als Kandidaten zählen.
+    entity-types:
+      - INTERACTION
+      - ARMOR_STAND
+    # Wörter im Entity-Namen, die auf Möbel hindeuten.
+    name-contains:
+      - furniture
+      - furnicraft
+      - bench
+      - chair
+      - seat
+      - sofa
+      - stool
+      - moebel
+      - möbel
+    # Wörter in Scoreboard-Tags, die auf Möbel hindeuten.
+    scoreboard-tag-contains:
+      - furniture
+      - furnicraft
+      - bench
+      - chair
+      - seat
+      - moebel
+      - möbel
+    # Wörter in Persistent-Data-Keys, die auf Möbel hindeuten.
+    pdc-key-contains:
+      - furniture
+      - furnicraft
+      - bench
+      - chair
+      - seat
+      - moebel
+      - möbel
+
+plot-settings:
+  # Optionen für den Wetter-Tab. value wird direkt als PlotSquared weather-Flag gesetzt.
+  weather:
+    options:
+      clear:
+        display: "Klar"
+        value: clear
+        material: SUNFLOWER
+        actions:
+          - "SET_FLAG:weather:{value}:{option_display}"
+      rain:
+        display: "Regen"
+        value: rain
+        material: WATER_BUCKET
+        actions:
+          - "SET_FLAG:weather:{value}:{option_display}"
+      reset:
+        display: "Standard"
+        value: reset
+        material: BARRIER
+        actions:
+          - "SET_FLAG:weather:{value}:{option_display}"
+  # Optionen für den Zeit-Tab. value ist die Minecraft-Tageszeit.
+  time:
+    options:
+      sunrise:
+        display: "Sonnenaufgang"
+        value: "0"
+        material: ORANGE_DYE
+        actions:
+          - "SET_FLAG:time:{value}:{option_display}"
+      day:
+        display: "Tag"
+        value: "1000"
+        material: SUNFLOWER
+        actions:
+          - "SET_FLAG:time:{value}:{option_display}"
+      noon:
+        display: "Mittag"
+        value: "6000"
+        material: CLOCK
+        actions:
+          - "SET_FLAG:time:{value}:{option_display}"
+      night:
+        display: "Nacht"
+        value: "13000"
+        material: BLACK_DYE
+        actions:
+          - "SET_FLAG:time:{value}:{option_display}"
+      midnight:
+        display: "Mitternacht"
+        value: "18000"
+        material: ENDER_EYE
+        actions:
+          - "SET_FLAG:time:{value}:{option_display}"
+      reset:
+        display: "Standard"
+        value: reset
+        material: BARRIER
+        actions:
+          - "SET_FLAG:time:{value}:{option_display}"
+  # Optionen für den Biom-Tab. value wird direkt als WorldEdit/PlotSquared-Biom genutzt.
+  biome:
+    options:
+      plains:
+        display: "Ebene"
+        value: plains
+        material: GRASS_BLOCK
+        actions:
+          - "SET_BIOME:{value}:{option_display}"
+      forest:
+        display: "Wald"
+        value: forest
+        material: OAK_SAPLING
+        actions:
+          - "SET_BIOME:{value}:{option_display}"
+      desert:
+        display: "Wüste"
+        value: desert
+        material: SAND
+        actions:
+          - "SET_BIOME:{value}:{option_display}"
+      jungle:
+        display: "Dschungel"
+        value: jungle
+        material: JUNGLE_SAPLING
+        actions:
+          - "SET_BIOME:{value}:{option_display}"
+      snowy-plains:
+        display: "Schneeebene"
+        value: snowy_plains
+        material: SNOW_BLOCK
+        actions:
+          - "SET_BIOME:{value}:{option_display}"
+      cherry-grove:
+        display: "Kirschhain"
+        value: cherry_grove
+        material: CHERRY_SAPLING
+        actions:
+          - "SET_BIOME:{value}:{option_display}"
+      reset:
+        display: "Standard"
+        value: reset
+        material: BARRIER
+        actions:
+          - "SET_BIOME:{value}:{option_display}"
+
 # Alles bleibt automatisch: Plotwelten werden über PlotSquared erkannt.
 # Multiverse-Core muss nicht konfiguriert werden, weil normale Weltwechsel-Events genutzt werden.
 
@@ -7,8 +305,7 @@ restore-flight-inside-plot-worlds: true
 # Deaktiviert Fly automatisch, sobald Spieler in eine Nicht-Plotwelt wechseln.
 disable-flight-outside-plot-worlds: true
 
-# Nutzt CMI, falls installiert:
-#   cmi fly <spieler> true/false -s
+# Nutzt CMI, falls installiert: cmi fly <spieler> true/false -s
 use-cmi-command: true
 
 # Creative- und Spectator-Spieler behalten ihr normales GameMode-Fliegen.
@@ -27,6 +324,10 @@ disable-delay-ticks:
 
 # Verhindert Despawn für Monster, Tiere und Villager, wenn sie mit einem Nametag benannt wurden.
 prevent-named-entity-despawn: true
+
+# Verhindert in Plotwelten, dass Enderdracheneier beim Anklicken teleportieren.
+# Das hält den Rand stabil, wenn DRAGON_EGG als Randblock genutzt wird.
+prevent-dragon-egg-teleport-in-plot-worlds: true
 
 # Merkt sich in Plotwelten regelmäßig, ob ein Spieler Fly aktiv hatte.
 flight-state-scan-interval-ticks: 20
