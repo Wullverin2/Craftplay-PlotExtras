@@ -1,0 +1,237 @@
+# Zentrale Funktionsschalter für CraftplayPlotExtras.
+# Jeder Bereich hat ein eigenes enabled. Wenn ein übergeordneter Bereich deaktiviert ist,
+# sind automatisch alle Unterpunkte deaktiviert.
+# Beispiel: player.decor.enabled: false deaktiviert Wand und Rand.
+
+features:
+  # Hauptschalter für alle Zusatzfunktionen dieses Plugins.
+  enabled: true
+
+  player:
+    # Schaltet alle Spielerfunktionen ab, lässt Admin-/Teamwerkzeuge aber separat steuerbar.
+    enabled: true
+
+    gui:
+      # Haupt-GUI und frei erstellte GUI-Seiten.
+      enabled: true
+      custom:
+        # Eigene GUI-Dateien und eigene Buttons, die nicht direkt einem Standardbereich zugeordnet sind.
+        enabled: true
+
+    language:
+      # Sprach-GUI und /pe language.
+      enabled: true
+
+    dashboard:
+      # Plot-Dashboard mit Status, Notizen, Likes, Besucherzahlen, Warps und Limits.
+      enabled: true
+
+    flags:
+      # Flags-GUI und einzelne Flag-Umschaltungen.
+      enabled: true
+
+    flag-presets:
+      # Vordefinierte Flag-Presets aus config.yml.
+      enabled: true
+
+    decor:
+      # Deko-Menü für Wand und Rand.
+      enabled: true
+      wall:
+        # Plotwand ändern.
+        enabled: true
+      border:
+        # Plotrand ändern oder entfernen.
+        enabled: true
+
+    settings:
+      # Ploteinstellungen-Menü.
+      enabled: true
+      home:
+        # Plot-Home setzen und nutzen.
+        enabled: true
+        set:
+          enabled: true
+        teleport:
+          enabled: true
+      weather:
+        # Plot-Wetter ändern oder zurücksetzen.
+        enabled: true
+      time:
+        # Plot-Zeit ändern oder zurücksetzen.
+        enabled: true
+      biome:
+        # Plot-Biom ändern oder zurücksetzen.
+        enabled: true
+
+    members:
+      # Mitglieder-GUI.
+      enabled: true
+      invite:
+        # Spieler per GUI einladen.
+        enabled: true
+      remove:
+        # Spieler vom Plot entfernen/untrusten.
+        enabled: true
+      roles:
+        # Rollen an Mitglieder vergeben oder entfernen.
+        enabled: true
+      promote:
+        # Mitglieder per Rollenreihenfolge befördern.
+        enabled: true
+      demote:
+        # Mitglieder per Rollenreihenfolge degradieren.
+        enabled: true
+
+    roles:
+      # Rollen erstellen, bearbeiten, umbenennen und löschen.
+      enabled: true
+
+    entity-limits:
+      # Entity-Limit-Anzeige im GUI. Die eigentliche Limit-Erzwingung steht zusätzlich in limits.yml.
+      enabled: true
+
+    plot-notes:
+      # Besitzer-Notizen im Plot-Dashboard.
+      enabled: true
+
+    plot-status:
+      # Plotstatus wie privat, offen, Wartung oder Team-geprüft.
+      enabled: true
+
+    plot-likes:
+      # Plot-Likes/Favorisieren.
+      enabled: true
+
+    plot-visits:
+      # Besucherzähler und letzter Besucher.
+      enabled: true
+
+    plot-warps:
+      # Plot-Warp-System.
+      enabled: true
+      set:
+        enabled: true
+      teleport:
+        enabled: true
+      delete:
+        enabled: true
+
+    plot-limits:
+      # Hartes Plotlimit über Permission-Werte wie plots.plot.84.
+      enabled: true
+
+    config-options:
+      # Dynamische Optionen aus config.yml in GUIs, z. B. Wetter, Zeit, Biom und Presets.
+      enabled: true
+
+    custom-buttons:
+      # Eigene Button-Aktionen in GUI-Dateien.
+      enabled: true
+      commands:
+        # Eigene Spieler- und Konsolenbefehle über GUI-Buttons.
+        enabled: true
+      messages:
+        # Eigene Nachrichten über GUI-Buttons.
+        enabled: true
+
+  protection:
+    # Schutzfunktionen außerhalb der reinen GUI-Bedienung.
+    enabled: true
+    flight:
+      # Fly-Schutz in Plotwelten und Fly-Deaktivierung außerhalb von Plotwelten.
+      enabled: true
+      restore-inside-plot-worlds:
+        enabled: true
+      disable-outside-plot-worlds:
+        enabled: true
+    named-entity-despawn:
+      # Verhindert Despawn benannter Kreaturen.
+      enabled: true
+    dragon-egg-teleport:
+      # Verhindert, dass Enderdracheneier beim Anklicken wegteleportieren.
+      enabled: true
+    furniture:
+      # Integrierte Möbel-Flags und Möbelinteraktionsschutz.
+      enabled: true
+      interact-flag:
+        enabled: true
+      sit-flag:
+        enabled: true
+      modify-flag:
+        enabled: true
+      crop-trample-flag:
+        enabled: true
+
+  limits:
+    # Entity-Limit-System. Einzelne Entity-Limits werden zusätzlich in limits.yml geschaltet.
+    enabled: true
+    enforce:
+      enabled: true
+    gui:
+      enabled: true
+
+  backups:
+    # Backup-System. Einzelne Gründe werden zusätzlich in config.yml unter plot-backups.automatic geschaltet.
+    enabled: true
+    automatic:
+      enabled: true
+      on-delete:
+        enabled: true
+      on-unmerge:
+        enabled: true
+      on-clear:
+        enabled: true
+    restore:
+      enabled: true
+
+  redstone:
+    # Redstone-Lagmaschinen-Erkennung.
+    enabled: true
+    detection:
+      enabled: true
+    alerts:
+      enabled: true
+    disable-plot-redstone:
+      enabled: true
+    reactivate:
+      enabled: true
+
+  team:
+    # Teamfunktionen für Leitung, Admin, Mod, Supporter, Support JR und Builder.
+    enabled: true
+    inspector:
+      enabled: true
+    audit-log:
+      enabled: true
+    notes:
+      enabled: true
+    backups:
+      enabled: true
+      restore:
+        enabled: true
+    redstone-alerts:
+      enabled: true
+    permission-checker:
+      # Reservierter Schalter für Rechte-Debug/Anzeige in Team-GUIs.
+      enabled: true
+    config-validator:
+      # Reservierter Schalter für spätere Config-Prüfungen.
+      enabled: true
+    statistics:
+      # Reservierter Schalter für spätere Team-Statistiken.
+      enabled: true
+
+  integrations:
+    # Externe Integrationen.
+    enabled: true
+    placeholder-api:
+      enabled: true
+    head-database:
+      enabled: true
+    cmi:
+      enabled: true
+    jobs:
+      enabled: true
+    quests:
+      enabled: true

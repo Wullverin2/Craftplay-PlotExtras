@@ -1,5 +1,6 @@
 package de.craftplay.plotextras.integration;
 
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -10,16 +11,19 @@ import java.util.logging.Level;
 public final class HeadDatabaseService {
 
     private final JavaPlugin plugin;
+    private final FeatureToggleService featureToggleService;
     private boolean available;
     private Object api;
     private Method getItemHeadMethod;
 
-    public HeadDatabaseService(final JavaPlugin plugin) {
+    public HeadDatabaseService(final JavaPlugin plugin, final FeatureToggleService featureToggleService) {
         this.plugin = plugin;
+        this.featureToggleService = featureToggleService;
     }
 
     public void reload() {
-        available = plugin.getServer().getPluginManager().isPluginEnabled("HeadDatabase");
+        available = featureToggleService.isEnabled("integrations.head-database")
+                && plugin.getServer().getPluginManager().isPluginEnabled("HeadDatabase");
         api = null;
         getItemHeadMethod = null;
         if (!available) {

@@ -4,6 +4,7 @@ import com.plotsquared.bukkit.util.BukkitUtil;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.PlotId;
 import de.craftplay.plotextras.audit.AuditLogService;
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.plot.PlotService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -44,6 +45,7 @@ public final class RedstoneLagProtectionService implements Listener {
     private final JavaPlugin plugin;
     private final PlotService plotService;
     private final AuditLogService auditLogService;
+    private final FeatureToggleService featureToggleService;
     private final Map<String, Counter> counters = new ConcurrentHashMap<>();
     private final Map<String, RedstoneAlert> alerts = new ConcurrentHashMap<>();
     private final Set<String> disabledPlotKeys = ConcurrentHashMap.newKeySet();
@@ -52,10 +54,16 @@ public final class RedstoneLagProtectionService implements Listener {
 
     private Settings settings = Settings.defaults();
 
-    public RedstoneLagProtectionService(final JavaPlugin plugin, final PlotService plotService, final AuditLogService auditLogService) {
+    public RedstoneLagProtectionService(
+            final JavaPlugin plugin,
+            final PlotService plotService,
+            final AuditLogService auditLogService,
+            final FeatureToggleService featureToggleService
+    ) {
         this.plugin = plugin;
         this.plotService = plotService;
         this.auditLogService = auditLogService;
+        this.featureToggleService = featureToggleService;
     }
 
     public void reload() {
@@ -66,7 +74,7 @@ public final class RedstoneLagProtectionService implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockRedstone(final BlockRedstoneEvent event) {
-        if (!settings.enabled() || !settings.monitorRedstone() || event.getOldCurrent() == event.getNewCurrent()) {
+        if (!enabledForDetection() || !settings.monitorRedstone() || event.getOldCurrent() == event.getNewCurrent()) {
             return;
         }
         if (isRuntimeDisabled(event.getBlock().getLocation())) {
@@ -80,7 +88,7 @@ public final class RedstoneLagProtectionService implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonExtend(final BlockPistonExtendEvent event) {
-        if (!settings.enabled() || !settings.monitorPistons()) {
+        if (!enabledForDetection() || !settings.monitorPistons()) {
             return;
         }
         if (isRuntimeDisabled(event.getBlock().getLocation())) {
@@ -94,7 +102,7 @@ public final class RedstoneLagProtectionService implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPistonRetract(final BlockPistonRetractEvent event) {
-        if (!settings.enabled() || !settings.monitorPistons()) {
+        if (!enabledForDetection() || !settings.monitorPistons()) {
             return;
         }
         if (isRuntimeDisabled(event.getBlock().getLocation())) {
@@ -108,7 +116,7 @@ public final class RedstoneLagProtectionService implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockDispense(final BlockDispenseEvent event) {
-        if (!settings.enabled() || !settings.monitorDispensers()) {
+        if (!enabledForDetection() || !settings.monitorDispensers()) {
             return;
         }
         if (isRuntimeDisabled(event.getBlock().getLocation())) {
@@ -122,7 +130,7 @@ public final class RedstoneLagProtectionService implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInventoryMoveItem(final InventoryMoveItemEvent event) {
-        if (!settings.enabled() || !settings.monitorHoppers()) {
+        if (!enabledForDetection() || !settings.monitorHoppers()) {
             return;
         }
         final Location location = event.getSource().getLocation();
@@ -160,7 +168,9 @@ public final class RedstoneLagProtectionService implements Listener {
     }
 
     public boolean canReceiveAlerts(final Player player) {
-        return canAdmin(player) || player.hasPermission(settings.notifyPermission());
+        return featureToggleService.isEnabled("redstone.alerts")
+                && featureToggleService.isEnabled("team.redstone-alerts")
+                && (canAdmin(player) || player.hasPermission(settings.notifyPermission()));
     }
 
     public List<String> getAlertIds() {
@@ -208,7 +218,7 @@ public final class RedstoneLagProtectionService implements Listener {
     }
 
     public boolean enableRedstoneAtAlert(final Player player, final String alertId) {
-        if (!canAdmin(player)) {
+        if (!featureToggleService.isEnabled("redstone.reactivate") || !canAdmin(player)) {
             return false;
         }
 
@@ -234,7 +244,7 @@ public final class RedstoneLagProtectionService implements Listener {
     }
 
     public boolean enableRedstoneAtCurrentPlot(final Player player) {
-        if (!canAdmin(player)) {
+        if (!featureToggleService.isEnabled("redstone.reactivate") || !canAdmin(player)) {
             return false;
         }
 
@@ -257,6 +267,9 @@ public final class RedstoneLagProtectionService implements Listener {
     }
 
     private boolean handleActivity(final Block block, final String source) {
+        if (!featureToggleService.isEnabled("redstone.disable-plot-redstone")) {
+            return false;
+        }
         final Plot plot = getPlot(block.getLocation());
         if (plot == null || !plot.hasOwner()) {
             return false;
@@ -336,6 +349,12 @@ public final class RedstoneLagProtectionService implements Listener {
                 "Lagmaschine erkannt: " + eventCount + " Events, Quelle: " + source + ", Alarm: " + alert.id());
     }
 
+    private boolean enabledForDetection() {
+        return settings.enabled()
+                && featureToggleService.isEnabled("redstone")
+                && featureToggleService.isEnabled("redstone.detection");
+    }
+
     private void sendAlert(final Player player, final RedstoneAlert alert, final boolean delayed) {
         Component message = Component.text("[PlotExtras] ", NamedTextColor.DARK_RED)
                 .append(Component.text("Redstone-Lagmaschine erkannt", NamedTextColor.RED))
@@ -351,7 +370,7 @@ public final class RedstoneLagProtectionService implements Listener {
                 .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
                 .append(button("Teleport", "/pe redstone tp " + alert.id(), "Zum erkannten Redstone-Block teleportieren"));
 
-        if (canAdmin(player)) {
+        if (featureToggleService.isEnabled("redstone.reactivate") && canAdmin(player)) {
             message = message
                     .append(Component.text(" ", NamedTextColor.GRAY))
                     .append(button("Redstone aktivieren", "/pe redstone enable " + alert.id(), "Redstone auf diesem Plot wieder aktivieren"));

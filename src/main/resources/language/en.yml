@@ -14,6 +14,7 @@ messages:
   player-only: "&cThis command can only be used by players."
   reloaded: "&aCraftplayPlotExtras has been reloaded."
   unknown-gui: "&cThe GUI &e{gui} &cwas not found."
+  feature-disabled: "&cThis feature is currently disabled: &e{feature}&c."
   unknown-language: "&cThe language &e{language} &cwas not found."
   language-set: "&aYour language has been set to &e{language}&a."
   help: "&e/plotextras &7- opens the plot GUI. &e/plotextras language &7- choose your language."

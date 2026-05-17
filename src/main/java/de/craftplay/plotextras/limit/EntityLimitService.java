@@ -4,6 +4,7 @@ import com.plotsquared.bukkit.util.BukkitUtil;
 import com.plotsquared.core.plot.Plot;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.language.LanguageManager;
 import org.bukkit.Material;
 import org.bukkit.Location;
@@ -45,13 +46,15 @@ public final class EntityLimitService implements Listener {
 
     private final JavaPlugin plugin;
     private final LanguageManager languageManager;
+    private final FeatureToggleService featureToggleService;
     private final File limitsFile;
     private Settings settings = Settings.defaults();
     private final Map<String, LimitRule> limitRules = new LinkedHashMap<>();
 
-    public EntityLimitService(final JavaPlugin plugin, final LanguageManager languageManager) {
+    public EntityLimitService(final JavaPlugin plugin, final LanguageManager languageManager, final FeatureToggleService featureToggleService) {
         this.plugin = plugin;
         this.languageManager = languageManager;
+        this.featureToggleService = featureToggleService;
         this.limitsFile = new File(plugin.getDataFolder(), "limits.yml");
     }
 
@@ -78,6 +81,9 @@ public final class EntityLimitService implements Listener {
     public List<EntityLimitEntry> getEntries(final Player player) {
         final Plot plot = getCurrentPlot(player);
         final List<EntityLimitEntry> entries = new ArrayList<>();
+        if (!featureToggleService.isEnabled("player.entity-limits") || !featureToggleService.isEnabled("limits.gui")) {
+            return entries;
+        }
         for (final LimitRule rule : limitRules.values()) {
             if (isSuppressedBroadRule(rule)) {
                 continue;
@@ -193,7 +199,7 @@ public final class EntityLimitService implements Listener {
     }
 
     private LimitCheck check(final Player player, final EntityType entityType, final UUID ignoredEntityId, final Location location) {
-        if (!settings.enabled() || limitRules.isEmpty() || hasBypass(player)) {
+        if (!settings.enabled() || !featureToggleService.isEnabled("limits.enforce") || limitRules.isEmpty() || hasBypass(player)) {
             return LimitCheck.permitted();
         }
 

@@ -1,6 +1,7 @@
 package de.craftplay.plotextras.warp;
 
 import com.plotsquared.core.plot.Plot;
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -21,11 +22,13 @@ import java.util.logging.Level;
 public final class PlotWarpService {
 
     private final JavaPlugin plugin;
+    private final FeatureToggleService featureToggleService;
     private final File dataFile;
     private YamlConfiguration data;
 
-    public PlotWarpService(final JavaPlugin plugin) {
+    public PlotWarpService(final JavaPlugin plugin, final FeatureToggleService featureToggleService) {
         this.plugin = plugin;
+        this.featureToggleService = featureToggleService;
         this.dataFile = new File(plugin.getDataFolder(), "data/plot-warps.yml");
     }
 
@@ -38,6 +41,9 @@ public final class PlotWarpService {
     }
 
     public List<PlotWarpEntry> listWarps(final Plot plot) {
+        if (!featureToggleService.isEnabled("player.plot-warps")) {
+            return List.of();
+        }
         final Plot basePlot = base(plot);
         if (basePlot == null) {
             return List.of();
@@ -63,6 +69,9 @@ public final class PlotWarpService {
     }
 
     public boolean setWarp(final Plot plot, final String rawId, final Location location) {
+        if (!featureToggleService.isEnabled("player.plot-warps.set")) {
+            return false;
+        }
         final Plot basePlot = base(plot);
         if (basePlot == null || location == null || location.getWorld() == null) {
             return false;
@@ -84,6 +93,9 @@ public final class PlotWarpService {
     }
 
     public boolean deleteWarp(final Plot plot, final String rawId) {
+        if (!featureToggleService.isEnabled("player.plot-warps.delete")) {
+            return false;
+        }
         final Plot basePlot = base(plot);
         if (basePlot == null) {
             return false;
@@ -98,6 +110,9 @@ public final class PlotWarpService {
     }
 
     public boolean teleport(final Player player, final Plot plot, final String rawId) {
+        if (!featureToggleService.isEnabled("player.plot-warps.teleport")) {
+            return false;
+        }
         final Optional<PlotWarpEntry> warp = getWarp(plot, rawId);
         if (warp.isEmpty()) {
             return false;

@@ -1,6 +1,7 @@
 package de.craftplay.plotextras.audit;
 
 import com.plotsquared.core.plot.Plot;
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,13 +23,15 @@ import java.util.logging.Level;
 public final class AuditLogService {
 
     private final JavaPlugin plugin;
+    private final FeatureToggleService featureToggleService;
     private final File dataFile;
     private final Map<String, AuditLogEntry> entries = new LinkedHashMap<>();
     private YamlConfiguration data;
     private int maxEntries;
 
-    public AuditLogService(final JavaPlugin plugin) {
+    public AuditLogService(final JavaPlugin plugin, final FeatureToggleService featureToggleService) {
         this.plugin = plugin;
+        this.featureToggleService = featureToggleService;
         this.dataFile = new File(plugin.getDataFolder(), "data/audit-log.yml");
     }
 
@@ -43,7 +46,8 @@ public final class AuditLogService {
     }
 
     public boolean canView(final CommandSender sender) {
-        return sender.hasPermission("craftplayplotextras.audit.view") || sender.hasPermission("craftplayplotextras.admin");
+        return featureToggleService.isEnabled("team.audit-log")
+                && (sender.hasPermission("craftplayplotextras.audit.view") || sender.hasPermission("craftplayplotextras.admin"));
     }
 
     public void log(final CommandSender actor, final Plot plot, final String action, final String details) {
@@ -56,7 +60,7 @@ public final class AuditLogService {
     }
 
     public void log(final String actor, final Plot plot, final String action, final String details) {
-        if (!plugin.getConfig().getBoolean("audit-log.enabled", true)) {
+        if (!plugin.getConfig().getBoolean("audit-log.enabled", true) || !featureToggleService.isEnabled("team.audit-log")) {
             return;
         }
         final Instant now = Instant.now();

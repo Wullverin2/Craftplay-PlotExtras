@@ -5,6 +5,7 @@ import de.craftplay.plotextras.audit.AuditLogEntry;
 import de.craftplay.plotextras.audit.AuditLogService;
 import de.craftplay.plotextras.backup.PlotBackupEntry;
 import de.craftplay.plotextras.backup.PlotBackupService;
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.integration.HeadDatabaseService;
 import de.craftplay.plotextras.integration.PlaceholderService;
 import de.craftplay.plotextras.language.LanguageDefinition;
@@ -74,6 +75,7 @@ public final class GuiManager implements Listener {
     private final RedstoneLagProtectionService redstoneLagProtectionService;
     private final PlotMetaService plotMetaService;
     private final PlotWarpService plotWarpService;
+    private final FeatureToggleService featureToggleService;
     @SuppressWarnings("unused")
     private final PlayerDataManager playerDataManager;
     private final Map<String, Map<String, YamlConfiguration>> guiConfigs = new HashMap<>();
@@ -95,6 +97,7 @@ public final class GuiManager implements Listener {
             final RedstoneLagProtectionService redstoneLagProtectionService,
             final PlotMetaService plotMetaService,
             final PlotWarpService plotWarpService,
+            final FeatureToggleService featureToggleService,
             final PlayerDataManager playerDataManager
     ) {
         this.plugin = plugin;
@@ -108,6 +111,7 @@ public final class GuiManager implements Listener {
         this.redstoneLagProtectionService = redstoneLagProtectionService;
         this.plotMetaService = plotMetaService;
         this.plotWarpService = plotWarpService;
+        this.featureToggleService = featureToggleService;
         this.playerDataManager = playerDataManager;
     }
 
@@ -156,6 +160,10 @@ public final class GuiManager implements Listener {
 
     public void open(final Player player, final String guiId, final int page) {
         final String normalizedGuiId = guiId.toLowerCase(Locale.ROOT);
+        if (!featureToggleService.guiEnabled(normalizedGuiId)) {
+            sendMessage(player, "feature-disabled", Map.of("feature", normalizedGuiId));
+            return;
+        }
         final YamlConfiguration guiConfig = getGuiConfig(languageManager.getPlayerLanguage(player), normalizedGuiId);
         if (guiConfig == null) {
             sendMessage(player, "unknown-gui", Map.of("gui", normalizedGuiId));
@@ -273,7 +281,7 @@ public final class GuiManager implements Listener {
         }
         for (final String key : items.getKeys(false)) {
             final ConfigurationSection itemSection = items.getConfigurationSection(key);
-            if (itemSection == null || !itemSection.getBoolean("enabled", true)) {
+            if (itemSection == null || !itemSection.getBoolean("enabled", true) || !featureToggleService.sectionEnabled(itemSection)) {
                 continue;
             }
             final String permission = itemSection.getString("permission", "");
@@ -285,6 +293,9 @@ public final class GuiManager implements Listener {
                 continue;
             }
             final List<String> actions = readActions(itemSection);
+            if (!actionsEnabled(actions)) {
+                continue;
+            }
             for (final int slot : SlotParser.itemSlots(itemSection)) {
                 if (isValidSlot(inventory, slot)) {
                     inventory.setItem(slot, item.clone());
@@ -308,6 +319,10 @@ public final class GuiManager implements Listener {
         }
 
         final String type = dynamic.getString("type", "").toLowerCase(Locale.ROOT);
+        if (!featureToggleService.sectionEnabled(dynamic)
+                || !featureToggleService.isEnabled(featureToggleService.featureForDynamicType(type))) {
+            return;
+        }
         switch (type) {
             case "flags" -> renderFlags(player, inventory, holder, dynamic, placeholders, page);
             case "component-categories" -> renderComponentCategories(player, inventory, holder, dynamic, placeholders, page);
@@ -380,7 +395,10 @@ public final class GuiManager implements Listener {
                 ? List.of("wall", "border")
                 : dynamic.getStringList("components");
         for (final String component : components) {
-            options.addAll(plotService.getComponentOptions(component.toLowerCase(Locale.ROOT)));
+            final String normalizedComponent = component.toLowerCase(Locale.ROOT);
+            if (featureToggleService.isEnabled("player.decor." + normalizedComponent)) {
+                options.addAll(plotService.getComponentOptions(normalizedComponent));
+            }
         }
         final List<String> categoryFilter = dynamic.getStringList("categories")
                 .stream()
@@ -408,9 +426,13 @@ public final class GuiManager implements Listener {
             final ItemStack item = buildItem(player, option.section(), template, itemPlaceholders);
             final int slot = slots.get(index);
             if (item != null && isValidSlot(inventory, slot)) {
+                final List<String> actions = List.of("SET_COMPONENT:" + option.component() + ":" + option.pattern()
+                        + ":" + componentDisplay + ":" + option.display());
+                if (!actionsEnabled(actions)) {
+                    continue;
+                }
                 inventory.setItem(slot, item);
-                holder.setActions(slot, List.of("SET_COMPONENT:" + option.component() + ":" + option.pattern()
-                        + ":" + componentDisplay + ":" + option.display()));
+                holder.setActions(slot, actions);
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
@@ -430,6 +452,9 @@ public final class GuiManager implements Listener {
         }
 
         final String component = dynamic.getString("component", "wall").toLowerCase(Locale.ROOT);
+        if (!featureToggleService.isEnabled("player.decor." + component)) {
+            return;
+        }
         final List<PlotService.ComponentCategory> categories = plotService.getComponentCategories(component, player);
         final PageSlice<PlotService.ComponentCategory> slice = slice(categories, slots.size(), page);
         final ConfigurationSection template = dynamic.getConfigurationSection("category-item");
@@ -618,8 +643,12 @@ public final class GuiManager implements Listener {
             final ItemStack item = buildItem(player, template, null, itemPlaceholders);
             final int slot = slots.get(index);
             if (item != null && isValidSlot(inventory, slot)) {
+                final List<String> actions = resolveActions(player, readActions(template), itemPlaceholders);
+                if (!actionsEnabled(actions)) {
+                    continue;
+                }
                 inventory.setItem(slot, item);
-                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+                holder.setActions(slot, actions);
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
@@ -680,7 +709,7 @@ public final class GuiManager implements Listener {
         final List<ConfigurationSection> options = new ArrayList<>();
         for (final String key : sourceSection.getKeys(false)) {
             final ConfigurationSection option = sourceSection.getConfigurationSection(key);
-            if (option == null) {
+            if (option == null || !option.getBoolean("enabled", true) || !featureToggleService.sectionEnabled(option)) {
                 continue;
             }
             final String permission = option.getString("permission", "");
@@ -703,8 +732,12 @@ public final class GuiManager implements Listener {
             final ItemStack item = buildItem(player, option, template, itemPlaceholders);
             final int slot = slots.get(index);
             if (item != null && isValidSlot(inventory, slot)) {
+                final List<String> actions = resolveActions(player, readActions(option, template), itemPlaceholders);
+                if (!actionsEnabled(actions)) {
+                    continue;
+                }
                 inventory.setItem(slot, item);
-                holder.setActions(slot, resolveActions(player, readActions(option, template), itemPlaceholders));
+                holder.setActions(slot, actions);
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
@@ -956,6 +989,12 @@ public final class GuiManager implements Listener {
                 continue;
             }
 
+            final String feature = featureToggleService.featureForAction(action);
+            if (!feature.isBlank() && !featureToggleService.isEnabled(feature)) {
+                sendMessage(player, "feature-disabled", Map.of("feature", feature));
+                return;
+            }
+
             final String upperAction = action.toUpperCase(Locale.ROOT);
             if (upperAction.equals("CLOSE")) {
                 player.closeInventory();
@@ -1170,7 +1209,7 @@ public final class GuiManager implements Listener {
         final String presetId = rawPresetId.toLowerCase(Locale.ROOT).trim();
         final ConfigurationSection preset = plugin.getConfig().getConfigurationSection("plot-presets.flags.options." + presetId);
         final ConfigurationSection flags = preset == null ? null : preset.getConfigurationSection("flags");
-        if (preset == null || flags == null) {
+        if (preset == null || flags == null || !preset.getBoolean("enabled", true) || !featureToggleService.sectionEnabled(preset)) {
             sendMessage(player, "preset-unknown", Map.of("preset", presetId));
             return;
         }
@@ -2083,6 +2122,16 @@ public final class GuiManager implements Listener {
             resolved.add(placeholderService.apply(player, action, placeholders));
         }
         return resolved;
+    }
+
+    private boolean actionsEnabled(final List<String> actions) {
+        for (final String action : actions) {
+            final String feature = featureToggleService.featureForAction(action);
+            if (!feature.isBlank() && !featureToggleService.isEnabled(feature)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private String humanizeValue(final String group, final String value) {

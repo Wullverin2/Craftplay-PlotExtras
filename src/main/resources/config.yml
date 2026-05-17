@@ -1,5 +1,6 @@
 # CraftplayPlotExtras Hauptkonfiguration
 # Jede Option ist kommentiert. Änderungen an dieser Datei werden mit /plotextras reload neu geladen.
+# Globale Funktionsschalter liegen in features.yml. Dort kannst du komplette Bereiche und Unterfunktionen abschalten.
 
 language:
   # Standardsprache für neue Spieler. Die Datei muss unter language/<code>.yml existieren.
@@ -142,6 +143,8 @@ plot-presets:
     # Vordefinierte Flag-Kombinationen, die Spieler über das Preset-GUI anwenden können.
     options:
       private:
+        # Schaltet nur dieses Preset ab.
+        enabled: true
         display: "Privat"
         material: OAK_DOOR
         name: "&aPrivat"
@@ -157,6 +160,8 @@ plot-presets:
           redstone: false
           notify-enter: true
       shop:
+        # Schaltet nur dieses Preset ab.
+        enabled: true
         display: "Shop"
         material: EMERALD
         name: "&aShop"
@@ -172,6 +177,8 @@ plot-presets:
           redstone: true
           notify-enter: true
       friends:
+        # Schaltet nur dieses Preset ab.
+        enabled: true
         display: "Freunde bauen"
         material: CRAFTING_TABLE
         name: "&aFreunde bauen"
@@ -185,6 +192,8 @@ plot-presets:
           fly: true
           redstone: true
       redstone-off:
+        # Schaltet nur dieses Preset ab.
+        enabled: true
         display: "Redstone aus"
         material: REDSTONE_BLOCK
         name: "&cRedstone aus"
@@ -259,18 +268,24 @@ plot-settings:
   weather:
     options:
       clear:
+        # Schaltet nur diese Wetteroption ab.
+        enabled: true
         display: "Klar"
         value: clear
         material: SUNFLOWER
         actions:
           - "SET_FLAG:weather:{value}:{option_display}"
       rain:
+        # Schaltet nur diese Wetteroption ab.
+        enabled: true
         display: "Regen"
         value: rain
         material: WATER_BUCKET
         actions:
           - "SET_FLAG:weather:{value}:{option_display}"
       reset:
+        # Schaltet nur diese Wetteroption ab.
+        enabled: true
         display: "Standard"
         value: reset
         material: BARRIER
@@ -280,36 +295,48 @@ plot-settings:
   time:
     options:
       sunrise:
+        # Schaltet nur diese Zeitoption ab.
+        enabled: true
         display: "Sonnenaufgang"
         value: "0"
         material: ORANGE_DYE
         actions:
           - "SET_FLAG:time:{value}:{option_display}"
       day:
+        # Schaltet nur diese Zeitoption ab.
+        enabled: true
         display: "Tag"
         value: "1000"
         material: SUNFLOWER
         actions:
           - "SET_FLAG:time:{value}:{option_display}"
       noon:
+        # Schaltet nur diese Zeitoption ab.
+        enabled: true
         display: "Mittag"
         value: "6000"
         material: CLOCK
         actions:
           - "SET_FLAG:time:{value}:{option_display}"
       night:
+        # Schaltet nur diese Zeitoption ab.
+        enabled: true
         display: "Nacht"
         value: "13000"
         material: BLACK_DYE
         actions:
           - "SET_FLAG:time:{value}:{option_display}"
       midnight:
+        # Schaltet nur diese Zeitoption ab.
+        enabled: true
         display: "Mitternacht"
         value: "18000"
         material: ENDER_EYE
         actions:
           - "SET_FLAG:time:{value}:{option_display}"
       reset:
+        # Schaltet nur diese Zeitoption ab.
+        enabled: true
         display: "Standard"
         value: reset
         material: BARRIER
@@ -319,42 +346,56 @@ plot-settings:
   biome:
     options:
       plains:
+        # Schaltet nur diese Biomoption ab.
+        enabled: true
         display: "Ebene"
         value: plains
         material: GRASS_BLOCK
         actions:
           - "SET_BIOME:{value}:{option_display}"
       forest:
+        # Schaltet nur diese Biomoption ab.
+        enabled: true
         display: "Wald"
         value: forest
         material: OAK_SAPLING
         actions:
           - "SET_BIOME:{value}:{option_display}"
       desert:
+        # Schaltet nur diese Biomoption ab.
+        enabled: true
         display: "Wüste"
         value: desert
         material: SAND
         actions:
           - "SET_BIOME:{value}:{option_display}"
       jungle:
+        # Schaltet nur diese Biomoption ab.
+        enabled: true
         display: "Dschungel"
         value: jungle
         material: JUNGLE_SAPLING
         actions:
           - "SET_BIOME:{value}:{option_display}"
       snowy-plains:
+        # Schaltet nur diese Biomoption ab.
+        enabled: true
         display: "Schneeebene"
         value: snowy_plains
         material: SNOW_BLOCK
         actions:
           - "SET_BIOME:{value}:{option_display}"
       cherry-grove:
+        # Schaltet nur diese Biomoption ab.
+        enabled: true
         display: "Kirschhain"
         value: cherry_grove
         material: CHERRY_SAPLING
         actions:
           - "SET_BIOME:{value}:{option_display}"
       reset:
+        # Schaltet nur diese Biomoption ab.
+        enabled: true
         display: "Standard"
         value: reset
         material: BARRIER

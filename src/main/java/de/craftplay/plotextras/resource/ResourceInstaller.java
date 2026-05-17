@@ -17,6 +17,7 @@ public final class ResourceInstaller {
 
     private static final List<String> DEFAULT_RESOURCES = List.of(
             "config.yml",
+            "features.yml",
             "wall.yml",
             "border.yml",
             "limits.yml",

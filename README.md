@@ -22,6 +22,7 @@ Paper/Bukkit-Addon für Craftplay mit PlotSquared-Extras:
 - lädt Wand- und Randdefinitionen getrennt aus `wall.yml` und `border.yml`
 - jede Wand- und Randoption kann dort einzeln per `enabled` deaktiviert und per `permission` an eigene Ränge gehängt werden
 - begrenzt Entities pro Plot oder Plotmerge über `limits.yml` und zeigt die Werte im Entity-Limit-GUI
+- besitzt eine zentrale `features.yml`, über die komplette Bereiche und einzelne Unterfunktionen abschaltbar sind
 - sichert vorhandene Standard-Konfigurationen bei Versionswechseln unter `backups/<alte-version>/` und ergänzt neue Standard-Einträge
 - unterstützt optionale Items aus HeadDatabase
 - unterstützt PlaceholderAPI, inklusive konfigurierbarer Platzhalter für Jobs, CMI-Geld und Quests
@@ -64,6 +65,7 @@ Beim ersten Start installiert das Plugin:
 
 ```text
 config.yml
+features.yml
 wall.yml
 border.yml
 limits.yml
@@ -74,6 +76,19 @@ gui/en/*.yml
 ```
 
 Neue Sprachdateien werden nach Serverstart oder `/plotextras reload` automatisch erkannt und im Sprach-GUI angezeigt. Eigene GUI-Buttons können über `actions` oder `commands` hinzugefügt werden.
+
+Alle großen Funktionsbereiche werden zusätzlich über `features.yml` gesteuert. Dort können z. B. `player.flags`, `player.decor.wall`, `player.plot-warps.delete`, `team.audit-log`, `redstone.detection`, `limits.enforce` oder externe Integrationen einzeln deaktiviert werden. GUI-Items und dynamische Bereiche können zusätzlich ein `feature: <pfad>` bekommen; dann wird der Button automatisch ausgeblendet, wenn der passende Schalter deaktiviert ist.
+
+Einzelne Auswahloptionen bleiben in ihren jeweiligen Dateien abschaltbar:
+
+```text
+wall.yml: options.<id>.enabled
+border.yml: options.<id>.enabled
+limits.yml: limits.<id>.enabled
+config.yml: plot-settings.*.options.<id>.enabled
+config.yml: plot-presets.flags.options.<id>.enabled
+gui/<sprache>/*.yml: items.<id>.enabled oder dynamic.enabled
+```
 
 ## Build
 

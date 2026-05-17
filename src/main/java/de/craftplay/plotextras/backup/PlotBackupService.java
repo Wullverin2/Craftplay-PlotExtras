@@ -8,6 +8,7 @@ import com.plotsquared.core.plot.PlotId;
 import com.plotsquared.core.plot.schematic.Schematic;
 import com.plotsquared.core.util.SchematicHandler;
 import com.plotsquared.core.util.task.RunnableVal;
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.plot.PlotService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -39,6 +40,7 @@ public final class PlotBackupService {
 
     private final JavaPlugin plugin;
     private final PlotService plotService;
+    private final FeatureToggleService featureToggleService;
     private final File backupFolder;
     private final File dataFile;
     private final Map<String, PlotBackupEntry> backups = new LinkedHashMap<>();
@@ -46,15 +48,17 @@ public final class PlotBackupService {
     private YamlConfiguration data;
     private boolean enabled;
 
-    public PlotBackupService(final JavaPlugin plugin, final PlotService plotService) {
+    public PlotBackupService(final JavaPlugin plugin, final PlotService plotService, final FeatureToggleService featureToggleService) {
         this.plugin = plugin;
         this.plotService = plotService;
+        this.featureToggleService = featureToggleService;
         this.backupFolder = new File(plugin.getDataFolder(), "plot-backups");
         this.dataFile = new File(plugin.getDataFolder(), "data/plot-backups.yml");
     }
 
     public void load() {
-        enabled = plugin.getConfig().getBoolean("plot-backups.enabled", true);
+        enabled = plugin.getConfig().getBoolean("plot-backups.enabled", true)
+                && featureToggleService.isEnabled("backups");
         if (!backupFolder.exists() && !backupFolder.mkdirs()) {
             plugin.getLogger().warning("Could not create plot backup folder.");
         }
@@ -68,7 +72,9 @@ public final class PlotBackupService {
 
     @Subscribe
     public void onPlotUnlink(final PlotUnlinkEvent event) {
-        if (!enabled || !plugin.getConfig().getBoolean("plot-backups.automatic.enabled", true)) {
+        if (!enabled
+                || !featureToggleService.isEnabled("backups.automatic")
+                || !plugin.getConfig().getBoolean("plot-backups.automatic.enabled", true)) {
             return;
         }
         final PlotUnlinkEvent.REASON reason = event.getReason();
@@ -146,13 +152,16 @@ public final class PlotBackupService {
     }
 
     public boolean canManage(final org.bukkit.command.CommandSender sender) {
-        return sender.hasPermission("craftplayplotextras.backup.admin") || sender.hasPermission("craftplayplotextras.admin");
+        return featureToggleService.isEnabled("team.backups")
+                && (sender.hasPermission("craftplayplotextras.backup.admin") || sender.hasPermission("craftplayplotextras.admin"));
     }
 
     public boolean canRestore(final Player player) {
-        return player.hasPermission("craftplayplotextras.backup.restore")
+        return featureToggleService.isEnabled("team.backups.restore")
+                && featureToggleService.isEnabled("backups.restore")
+                && (player.hasPermission("craftplayplotextras.backup.restore")
                 || player.hasPermission("craftplayplotextras.backup.admin")
-                || player.hasPermission("craftplayplotextras.admin");
+                || player.hasPermission("craftplayplotextras.admin"));
     }
 
     private void createAutomaticBackup(final Plot plot, final String reason) {
@@ -282,9 +291,12 @@ public final class PlotBackupService {
 
     private boolean shouldBackup(final PlotUnlinkEvent.REASON reason) {
         return switch (reason) {
-            case DELETE, EXPIRE_DELETE -> plugin.getConfig().getBoolean("plot-backups.automatic.on-delete", true);
-            case PLAYER_COMMAND -> plugin.getConfig().getBoolean("plot-backups.automatic.on-unmerge", true);
-            case CLEAR -> plugin.getConfig().getBoolean("plot-backups.automatic.on-clear", true);
+            case DELETE, EXPIRE_DELETE -> featureToggleService.isEnabled("backups.automatic.on-delete")
+                    && plugin.getConfig().getBoolean("plot-backups.automatic.on-delete", true);
+            case PLAYER_COMMAND -> featureToggleService.isEnabled("backups.automatic.on-unmerge")
+                    && plugin.getConfig().getBoolean("plot-backups.automatic.on-unmerge", true);
+            case CLEAR -> featureToggleService.isEnabled("backups.automatic.on-clear")
+                    && plugin.getConfig().getBoolean("plot-backups.automatic.on-clear", true);
             case NEW_OWNER -> false;
         };
     }

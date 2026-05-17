@@ -4,6 +4,7 @@ import com.plotsquared.bukkit.util.BukkitUtil;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.flag.GlobalFlagContainer;
 import com.plotsquared.core.plot.flag.PlotFlag;
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.furniture.flag.FurnitureInteractFlag;
 import de.craftplay.plotextras.furniture.flag.FurnitureModifyFlag;
 import de.craftplay.plotextras.furniture.flag.FurnitureSitFlag;
@@ -42,20 +43,30 @@ import java.util.logging.Level;
 public final class FurnitureProtectionManager implements Listener {
 
     private final JavaPlugin plugin;
+    private final FeatureToggleService featureToggleService;
     private final Map<UUID, Long> lastBlockMessage = new HashMap<>();
     private final Map<UUID, Long> lastDebugMessage = new HashMap<>();
     private FurnitureSettings settings = FurnitureSettings.defaults();
 
-    public FurnitureProtectionManager(final JavaPlugin plugin) {
+    public FurnitureProtectionManager(final JavaPlugin plugin, final FeatureToggleService featureToggleService) {
         this.plugin = plugin;
+        this.featureToggleService = featureToggleService;
     }
 
     public void registerFlags() {
         final GlobalFlagContainer container = GlobalFlagContainer.getInstance();
-        addFlagIfMissing(container, FurnitureInteractFlag.FURNITURE_INTERACT_FALSE);
-        addFlagIfMissing(container, FurnitureSitFlag.FURNITURE_SIT_FALSE);
-        addFlagIfMissing(container, FurnitureModifyFlag.FURNITURE_MODIFY_FALSE);
-        addFlagIfMissing(container, PreventCropTrampleFlag.PREVENT_CROP_TRAMPLE_FALSE);
+        if (featureToggleService.isEnabled("protection.furniture.interact-flag")) {
+            addFlagIfMissing(container, FurnitureInteractFlag.FURNITURE_INTERACT_FALSE);
+        }
+        if (featureToggleService.isEnabled("protection.furniture.sit-flag")) {
+            addFlagIfMissing(container, FurnitureSitFlag.FURNITURE_SIT_FALSE);
+        }
+        if (featureToggleService.isEnabled("protection.furniture.modify-flag")) {
+            addFlagIfMissing(container, FurnitureModifyFlag.FURNITURE_MODIFY_FALSE);
+        }
+        if (featureToggleService.isEnabled("protection.furniture.crop-trample-flag")) {
+            addFlagIfMissing(container, PreventCropTrampleFlag.PREVENT_CROP_TRAMPLE_FALSE);
+        }
     }
 
     public void reload() {
@@ -75,6 +86,9 @@ public final class FurnitureProtectionManager implements Listener {
         if (event instanceof PlayerInteractAtEntityEvent || event.getHand() != EquipmentSlot.HAND) {
             return;
         }
+        if (!featureToggleService.isEnabled("protection.furniture")) {
+            return;
+        }
 
         handleFurnitureUse(event.getPlayer(), event.getRightClicked(), event::isCancelled, event::setCancelled, "interact");
     }
@@ -82,6 +96,9 @@ public final class FurnitureProtectionManager implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onFurnitureInteractAt(final PlayerInteractAtEntityEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) {
+            return;
+        }
+        if (!featureToggleService.isEnabled("protection.furniture")) {
             return;
         }
 
@@ -93,6 +110,9 @@ public final class FurnitureProtectionManager implements Listener {
         if (!(event.getEntity() instanceof Player player)) {
             return;
         }
+        if (!featureToggleService.isEnabled("protection.furniture")) {
+            return;
+        }
 
         handleFurnitureUse(player, event.getMount(), event::isCancelled, event::setCancelled, "mount");
     }
@@ -102,6 +122,9 @@ public final class FurnitureProtectionManager implements Listener {
         if (!(event.getEntity() instanceof Player)
                 || event.getBlock().getType() != Material.FARMLAND
                 || event.getTo() != Material.DIRT) {
+            return;
+        }
+        if (!featureToggleService.isEnabled("protection.furniture.crop-trample-flag")) {
             return;
         }
 

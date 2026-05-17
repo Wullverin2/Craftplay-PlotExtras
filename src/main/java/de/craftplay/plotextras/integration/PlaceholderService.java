@@ -1,5 +1,6 @@
 package de.craftplay.plotextras.integration;
 
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.language.LanguageManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -14,16 +15,19 @@ public final class PlaceholderService {
 
     private final JavaPlugin plugin;
     private final LanguageManager languageManager;
+    private final FeatureToggleService featureToggleService;
     private boolean placeholderApiAvailable;
     private Method setPlaceholdersMethod;
 
-    public PlaceholderService(final JavaPlugin plugin, final LanguageManager languageManager) {
+    public PlaceholderService(final JavaPlugin plugin, final LanguageManager languageManager, final FeatureToggleService featureToggleService) {
         this.plugin = plugin;
         this.languageManager = languageManager;
+        this.featureToggleService = featureToggleService;
     }
 
     public void reload() {
-        placeholderApiAvailable = plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI");
+        placeholderApiAvailable = featureToggleService.isEnabled("integrations.placeholder-api")
+                && plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI");
         setPlaceholdersMethod = null;
         if (!placeholderApiAvailable) {
             return;
@@ -46,10 +50,10 @@ public final class PlaceholderService {
 
     public Map<String, String> getIntegrationPlaceholders(final Player player) {
         final Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("jobs", resolveConfiguredPlaceholder(player, "jobs"));
-        placeholders.put("cmi_money", resolveConfiguredPlaceholder(player, "cmi-money"));
-        placeholders.put("quests_completed", resolveConfiguredPlaceholder(player, "quests-completed"));
-        placeholders.put("quests_total", resolveConfiguredPlaceholder(player, "quests-total"));
+        placeholders.put("jobs", featureToggleService.isEnabled("integrations.jobs") ? resolveConfiguredPlaceholder(player, "jobs") : fallback("jobs"));
+        placeholders.put("cmi_money", featureToggleService.isEnabled("integrations.cmi") ? resolveConfiguredPlaceholder(player, "cmi-money") : fallback("cmi-money"));
+        placeholders.put("quests_completed", featureToggleService.isEnabled("integrations.quests") ? resolveConfiguredPlaceholder(player, "quests-completed") : fallback("quests-completed"));
+        placeholders.put("quests_total", featureToggleService.isEnabled("integrations.quests") ? resolveConfiguredPlaceholder(player, "quests-total") : fallback("quests-total"));
         return placeholders;
     }
 
@@ -71,7 +75,7 @@ public final class PlaceholderService {
 
     private String resolveConfiguredPlaceholder(final Player player, final String key) {
         final String placeholder = plugin.getConfig().getString("integrations.placeholder-values." + key, "");
-        final String fallback = plugin.getConfig().getString("integrations.placeholder-fallbacks." + key, "-");
+        final String fallback = fallback(key);
         if (placeholder == null || placeholder.isBlank()) {
             return fallback;
         }
@@ -80,6 +84,10 @@ public final class PlaceholderService {
             return fallback;
         }
         return resolved;
+    }
+
+    private String fallback(final String key) {
+        return plugin.getConfig().getString("integrations.placeholder-fallbacks." + key, "-");
     }
 
     private String applyPlaceholderApi(final Player player, final String text) {

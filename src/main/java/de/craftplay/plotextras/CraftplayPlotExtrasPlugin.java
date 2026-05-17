@@ -13,6 +13,7 @@ import com.plotsquared.core.player.PlotPlayer;
 import de.craftplay.plotextras.audit.AuditLogService;
 import de.craftplay.plotextras.backup.PlotBackupService;
 import de.craftplay.plotextras.command.PlotExtrasCommand;
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.furniture.FurnitureProtectionManager;
 import de.craftplay.plotextras.gui.GuiManager;
 import de.craftplay.plotextras.integration.HeadDatabaseService;
@@ -76,6 +77,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     private PlotRoleService plotRoleService;
     private PlotMetaService plotMetaService;
     private PlotWarpService plotWarpService;
+    private FeatureToggleService featureToggleService;
     private PlotService plotService;
     private GuiManager guiManager;
 
@@ -94,6 +96,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     public void onEnable() {
         ResourceInstaller.installDefaults(this);
         reloadConfig();
+        featureToggleService = new FeatureToggleService(this);
+        featureToggleService.reload();
         loadSettings();
 
         final PluginManager pluginManager = getServer().getPluginManager();
@@ -101,18 +105,18 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
         playerDataManager = new PlayerDataManager(this);
         languageManager = new LanguageManager(this, playerDataManager);
-        placeholderService = new PlaceholderService(this, languageManager);
-        headDatabaseService = new HeadDatabaseService(this);
-        furnitureProtectionManager = new FurnitureProtectionManager(this);
-        entityLimitService = new EntityLimitService(this, languageManager);
-        auditLogService = new AuditLogService(this);
+        placeholderService = new PlaceholderService(this, languageManager, featureToggleService);
+        headDatabaseService = new HeadDatabaseService(this, featureToggleService);
+        furnitureProtectionManager = new FurnitureProtectionManager(this, featureToggleService);
+        entityLimitService = new EntityLimitService(this, languageManager, featureToggleService);
+        auditLogService = new AuditLogService(this, featureToggleService);
         plotRoleService = new PlotRoleService(this);
-        plotMetaService = new PlotMetaService(this);
-        plotWarpService = new PlotWarpService(this);
+        plotMetaService = new PlotMetaService(this, featureToggleService);
+        plotWarpService = new PlotWarpService(this, featureToggleService);
         plotService = new PlotService(this, plotRoleService);
-        plotBackupService = new PlotBackupService(this, plotService);
-        redstoneLagProtectionService = new RedstoneLagProtectionService(this, plotService, auditLogService);
-        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, playerDataManager);
+        plotBackupService = new PlotBackupService(this, plotService, featureToggleService);
+        redstoneLagProtectionService = new RedstoneLagProtectionService(this, plotService, auditLogService, featureToggleService);
+        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, featureToggleService, playerDataManager);
 
         furnitureProtectionManager.registerFlags();
         furnitureProtectionManager.reload();
@@ -149,6 +153,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     public void reloadPlugin() {
         reloadConfig();
+        featureToggleService.reload();
         loadSettings();
         cmiAvailable = getServer().getPluginManager().isPluginEnabled("CMI");
         furnitureProtectionManager.registerFlags();
@@ -202,6 +207,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     public RedstoneLagProtectionService getRedstoneLagProtectionService() {
         return redstoneLagProtectionService;
+    }
+
+    public FeatureToggleService getFeatureToggleService() {
+        return featureToggleService;
     }
 
     private void registerCommands() {
@@ -297,7 +306,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     @Subscribe
     public void onPlayerEnterPlot(final PlayerEnterPlotEvent event) {
         final Player player = getBukkitPlayer(event.getPlotPlayer());
-        if (player != null) {
+        if (player != null && feature("player.plot-visits")) {
             plotMetaService.recordVisit(event.getPlot(), player);
         }
         protectFlightInPlotWorld(event.getPlotPlayer());
@@ -310,6 +319,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @Subscribe
     public void onPlayerPlotLimit(final PlayerPlotLimitEvent event) {
+        if (!feature("player.plot-limits")) {
+            return;
+        }
         final Player player = getBukkitPlayer(event.player());
         if (player != null) {
             event.limit(plotService.getPlotLimit(player));
@@ -327,6 +339,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     }
 
     private void enforcePlotLimit(final PlotPlayer<?> plotPlayer, final int plotsToAdd, final Object event) {
+        if (!feature("player.plot-limits")) {
+            return;
+        }
         final Player player = getBukkitPlayer(plotPlayer);
         if (player == null || player.hasPermission("craftplayplotextras.admin")) {
             return;
@@ -467,15 +482,25 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     }
 
     private void loadSettings() {
-        restoreFlightInsidePlotWorlds = getConfig().getBoolean("restore-flight-inside-plot-worlds", true);
-        disableFlightOutsidePlotWorlds = getConfig().getBoolean("disable-flight-outside-plot-worlds", true);
-        useCmiCommand = getConfig().getBoolean("use-cmi-command", true);
+        restoreFlightInsidePlotWorlds = getConfig().getBoolean("restore-flight-inside-plot-worlds", true)
+                && feature("protection.flight")
+                && feature("protection.flight.restore-inside-plot-worlds");
+        disableFlightOutsidePlotWorlds = getConfig().getBoolean("disable-flight-outside-plot-worlds", true)
+                && feature("protection.flight")
+                && feature("protection.flight.disable-outside-plot-worlds");
+        useCmiCommand = getConfig().getBoolean("use-cmi-command", true) && feature("integrations.cmi");
         ignoreCreativeAndSpectator = getConfig().getBoolean("ignore-creative-and-spectator", true);
-        preventNamedEntityDespawn = getConfig().getBoolean("prevent-named-entity-despawn", true);
-        preventDragonEggTeleportInPlotWorlds = getConfig().getBoolean("prevent-dragon-egg-teleport-in-plot-worlds", true);
+        preventNamedEntityDespawn = getConfig().getBoolean("prevent-named-entity-despawn", true)
+                && feature("protection.named-entity-despawn");
+        preventDragonEggTeleportInPlotWorlds = getConfig().getBoolean("prevent-dragon-egg-teleport-in-plot-worlds", true)
+                && feature("protection.dragon-egg-teleport");
         debug = getConfig().getBoolean("debug", false);
         restoreDelayTicks = getTickList("restore-delay-ticks", List.of(1L, 5L));
         disableDelayTicks = getTickList("disable-delay-ticks", List.of(1L, 5L));
+    }
+
+    private boolean feature(final String feature) {
+        return featureToggleService == null || featureToggleService.isEnabled(feature);
     }
 
     private List<Long> getTickList(final String path, final List<Long> fallback) {

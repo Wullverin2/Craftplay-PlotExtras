@@ -50,6 +50,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length > 0 && isRedstoneCommand(args[0])) {
+            if (!feature(player, "redstone")) {
+                return true;
+            }
             return handleRedstone(player, args);
         }
 
@@ -65,6 +68,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
 
         final String subCommand = args[0].toLowerCase(Locale.ROOT);
         if (subCommand.equals("language") || subCommand.equals("sprache")) {
+            if (!feature(player, "player.language")) {
+                return true;
+            }
             if (args.length >= 2) {
                 final String language = args[1].toLowerCase(Locale.ROOT);
                 if (!plugin.getLanguageManager().setPlayerLanguage(player, language)) {
@@ -79,22 +85,37 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
 
         if (subCommand.equals("role") || subCommand.equals("roles") || subCommand.equals("rolle") || subCommand.equals("rollen")) {
+            if (!feature(player, "player.roles")) {
+                return true;
+            }
             return handleRoles(player, args);
         }
 
         if (subCommand.equals("backup") || subCommand.equals("backups") || subCommand.equals("sicherung") || subCommand.equals("sicherungen")) {
+            if (!feature(player, "team.backups")) {
+                return true;
+            }
             return handleBackups(player, args);
         }
 
         if (subCommand.equals("audit") || subCommand.equals("log") || subCommand.equals("logs")) {
+            if (!feature(player, "team.audit-log")) {
+                return true;
+            }
             return handleAudit(player, args);
         }
 
         if (subCommand.equals("warp") || subCommand.equals("warps")) {
+            if (!feature(player, "player.plot-warps")) {
+                return true;
+            }
             return handleWarps(player, args);
         }
 
         if (subCommand.equals("inspect") || subCommand.equals("inspector") || subCommand.equals("team")) {
+            if (!feature(player, "team.inspector")) {
+                return true;
+            }
             if (!plugin.getAuditLogService().canView(player)) {
                 plugin.getLanguageManager().send(player, "no-permission");
                 return true;
@@ -110,12 +131,23 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
 
         if (subCommand.equals("dashboard") || subCommand.equals("info")) {
+            if (!feature(player, "player.dashboard")) {
+                return true;
+            }
             plugin.getGuiManager().open(player, "plot-dashboard", 0);
             return true;
         }
 
         player.sendMessage(TextUtil.component(plugin.getLanguageManager().getRawMessage(player, "help")));
         return true;
+    }
+
+    private boolean feature(final Player player, final String feature) {
+        if (plugin.getFeatureToggleService().isEnabled(feature)) {
+            return true;
+        }
+        plugin.getLanguageManager().send(player, "feature-disabled", Map.of("feature", feature));
+        return false;
     }
 
     private boolean handleWarps(final Player player, final String[] args) {
@@ -130,6 +162,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         final String action = args[1].toLowerCase(Locale.ROOT);
         if ((action.equals("set") || action.equals("setzen")) && args.length >= 3) {
+            if (!feature(player, "player.plot-warps.set")) {
+                return true;
+            }
             if (!plugin.getPlotService().canModifySetting(player, plot, "home")) {
                 plugin.getLanguageManager().send(player, "not-owner");
                 return true;
@@ -144,6 +179,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if ((action.equals("delete") || action.equals("del") || action.equals("löschen") || action.equals("loeschen")) && args.length >= 3) {
+            if (!feature(player, "player.plot-warps.delete")) {
+                return true;
+            }
             if (!plugin.getPlotService().canModifySetting(player, plot, "home")) {
                 plugin.getLanguageManager().send(player, "not-owner");
                 return true;
@@ -158,6 +196,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if ((action.equals("tp") || action.equals("teleport")) && args.length >= 3) {
+            if (!feature(player, "player.plot-warps.teleport")) {
+                return true;
+            }
             final String warp = args[2];
             if (plugin.getPlotWarpService().teleport(player, plot, warp)) {
                 player.sendMessage(TextUtil.component("&aTeleportiere zu Warp &e" + warp + "&a."));
@@ -223,6 +264,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
 
         final String action = args[1].toLowerCase(Locale.ROOT);
         if (action.equals("gui") || action.equals("alarme") || action.equals("alerts")) {
+            if (!feature(player, "team.redstone-alerts")) {
+                return true;
+            }
             if (!plugin.getRedstoneLagProtectionService().canReceiveAlerts(player)) {
                 plugin.getLanguageManager().send(player, "no-permission");
                 return true;
@@ -231,6 +275,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         if (action.equals("tp") || action.equals("teleport")) {
+            if (!feature(player, "team.redstone-alerts")) {
+                return true;
+            }
             if (!plugin.getRedstoneLagProtectionService().canReceiveAlerts(player)) {
                 plugin.getLanguageManager().send(player, "no-permission");
                 return true;
@@ -244,6 +291,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
 
         if (action.equals("enable") || action.equals("aktivieren") || action.equals("reactivate")) {
+            if (!feature(player, "redstone.reactivate")) {
+                return true;
+            }
             if (!plugin.getRedstoneLagProtectionService().canAdmin(player)) {
                 plugin.getLanguageManager().send(player, "no-permission");
                 return true;
@@ -616,7 +666,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team", "dashboard", "info", "warp", "warps"), args[0]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("open")) {
-            return filter(plugin.getGuiManager().getGuiIds(), args[1]);
+            return filter(plugin.getFeatureToggleService().enabledGuiIds(plugin.getGuiManager().getGuiIds()), args[1]);
         }
         if (args.length >= 2 && isRoleCommand(args[0])) {
             return completeRoleCommand(sender, args);

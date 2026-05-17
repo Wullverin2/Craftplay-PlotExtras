@@ -1,6 +1,7 @@
 package de.craftplay.plotextras.plotmeta;
 
 import com.plotsquared.core.plot.Plot;
+import de.craftplay.plotextras.feature.FeatureToggleService;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -20,11 +21,13 @@ import java.util.logging.Level;
 public final class PlotMetaService {
 
     private final JavaPlugin plugin;
+    private final FeatureToggleService featureToggleService;
     private final File dataFile;
     private YamlConfiguration data;
 
-    public PlotMetaService(final JavaPlugin plugin) {
+    public PlotMetaService(final JavaPlugin plugin, final FeatureToggleService featureToggleService) {
         this.plugin = plugin;
+        this.featureToggleService = featureToggleService;
         this.dataFile = new File(plugin.getDataFolder(), "data/plot-meta.yml");
     }
 
@@ -51,6 +54,9 @@ public final class PlotMetaService {
     }
 
     public void recordVisit(final Plot plot, final Player player) {
+        if (!featureToggleService.isEnabled("player.plot-visits")) {
+            return;
+        }
         final Plot basePlot = base(plot);
         if (basePlot == null || player == null) {
             return;
@@ -65,6 +71,9 @@ public final class PlotMetaService {
     }
 
     public boolean toggleLike(final Plot plot, final Player player) {
+        if (!featureToggleService.isEnabled("player.plot-likes")) {
+            return false;
+        }
         final Plot basePlot = base(plot);
         if (basePlot == null || player == null) {
             return false;
@@ -86,6 +95,9 @@ public final class PlotMetaService {
     }
 
     public boolean setOwnerNote(final Plot plot, final String note) {
+        if (!featureToggleService.isEnabled("player.plot-notes")) {
+            return false;
+        }
         final Plot basePlot = base(plot);
         if (basePlot == null) {
             return false;
@@ -96,6 +108,9 @@ public final class PlotMetaService {
     }
 
     public boolean setTeamNote(final Plot plot, final String note) {
+        if (!featureToggleService.isEnabled("team.notes")) {
+            return false;
+        }
         final Plot basePlot = base(plot);
         if (basePlot == null) {
             return false;
@@ -106,6 +121,9 @@ public final class PlotMetaService {
     }
 
     public boolean setStatus(final Plot plot, final String status) {
+        if (!featureToggleService.isEnabled("player.plot-status")) {
+            return false;
+        }
         final Plot basePlot = base(plot);
         if (basePlot == null) {
             return false;
@@ -116,11 +134,13 @@ public final class PlotMetaService {
     }
 
     public boolean canManageTeamMeta(final Player player) {
-        return player.hasPermission("craftplayplotextras.plotmeta.team") || player.hasPermission("craftplayplotextras.admin");
+        return featureToggleService.isEnabled("team.notes")
+                && (player.hasPermission("craftplayplotextras.plotmeta.team") || player.hasPermission("craftplayplotextras.admin"));
     }
 
     public boolean canSetStatus(final Player player) {
-        return player.hasPermission("craftplayplotextras.plotmeta.status") || player.hasPermission("craftplayplotextras.admin");
+        return featureToggleService.isEnabled("player.plot-status")
+                && (player.hasPermission("craftplayplotextras.plotmeta.status") || player.hasPermission("craftplayplotextras.admin"));
     }
 
     private String status(final Plot plot) {
