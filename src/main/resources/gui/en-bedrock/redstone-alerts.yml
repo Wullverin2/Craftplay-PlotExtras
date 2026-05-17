@@ -1,4 +1,4 @@
-﻿# Open redstone alerts. Clicking an alert teleports to the detected block.
+# Open redstone alerts. Clicking an alert teleports to the detected block.
 title: "&8Redstone Alerts"
 permission: "craftplayplotextras.redstone.notify"
 size: 54

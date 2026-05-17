@@ -1,0 +1,105 @@
+# Team-Moderationsmenü für den aktuellen Plot.
+title: "&8Moderation"
+permission: "craftplayplotextras.moderation.manage"
+size: 54
+
+fill:
+  enabled: true
+  material: LIGHT_BLUE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 4
+    material: PACKED_ICE
+    name: "&bModeration"
+    lore:
+      - "&7Plot: &f{plot_world} {plot_id}"
+      - "&7Besitzer: &f{plot_owner}"
+  list:
+    slot: 10
+    material: PAPER
+    name: "&aGesperrte Plots"
+    actions:
+      - "PLAYER_COMMAND:pe mod list"
+  freeze:
+    slot: 12
+    material: PACKED_ICE
+    name: "&bPlot einfrieren"
+    actions:
+      - "PLAYER_COMMAND:pe mod freeze GUI-Freeze"
+  unfreeze:
+    slot: 14
+    material: HONEYCOMB
+    name: "&aPlot freigeben"
+    actions:
+      - "PLAYER_COMMAND:pe mod unfreeze"
+  redstone:
+    slot: 16
+    permission: "craftplayplotextras.redstone.admin"
+    material: REDSTONE_BLOCK
+    name: "&cRedstone aktivieren"
+    actions:
+      - "PLAYER_COMMAND:pe redstone enable"
+  cleanup-drops:
+    slot: 20
+    material: HOPPER
+    name: "&eDrops entfernen"
+    actions:
+      - "PLAYER_COMMAND:pe mod cleanup drops"
+  cleanup-projectiles:
+    slot: 21
+    material: ARROW
+    name: "&eProjektile entfernen"
+    actions:
+      - "PLAYER_COMMAND:pe mod cleanup projectiles"
+  cleanup-monsters:
+    slot: 22
+    material: ZOMBIE_HEAD
+    name: "&eMonster entfernen"
+    actions:
+      - "PLAYER_COMMAND:pe mod cleanup monsters"
+  cleanup-animals:
+    slot: 23
+    material: WHEAT
+    name: "&eTiere entfernen"
+    actions:
+      - "PLAYER_COMMAND:pe mod cleanup animals"
+  cleanup-vehicles:
+    slot: 24
+    material: MINECART
+    name: "&eFahrzeuge entfernen"
+    actions:
+      - "PLAYER_COMMAND:pe mod cleanup vehicles"
+  cleanup-all:
+    slot: 31
+    material: TNT
+    name: "&cAlles entfernen"
+    actions:
+      - "PLAYER_COMMAND:pe mod cleanup all"
+  performance:
+    slot: 33
+    permission: "craftplayplotextras.performance.view"
+    material: CLOCK
+    name: "&ePerformance"
+    actions:
+      - "OPEN:performance"
+  inspector:
+    slot: 35
+    permission: "craftplayplotextras.audit.view"
+    material: SPYGLASS
+    name: "&bInspektor"
+    actions:
+      - "OPEN:team-inspector"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:team-tools"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"

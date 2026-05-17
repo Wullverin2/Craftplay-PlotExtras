@@ -1,4 +1,4 @@
-﻿# Guestbook for the current plot.
+# Guestbook for the current plot.
 title: "&8Guestbook"
 size: 54
 
@@ -57,4 +57,3 @@ dynamic:
     slot: 50
     material: ARROW
     name: "&ePage {page}/{pages}"
-

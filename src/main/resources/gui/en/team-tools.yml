@@ -1,4 +1,4 @@
-# Team tools for support, moderation, management and builders.
+# Team tools for support, moderation, admins and builders.
 title: "&8Team Tools"
 permission: "craftplayplotextras.teamtools"
 size: 54
@@ -14,16 +14,13 @@ items:
     material: SPYGLASS
     name: "&bTeam Overview"
     lore:
-      - "&7Quick access for"
-      - "&7support and administration."
+      - "&7All team functions"
+      - "&7as dedicated menus."
   requests:
     slot: 10
     permission: "craftplayplotextras.requests.manage"
     material: PAPER
     name: "&bPlot Requests"
-    lore:
-      - "&7Trust, restore, backup,"
-      - "&7move and support."
     actions:
       - "OPEN:team-requests"
   reports:
@@ -31,9 +28,6 @@ items:
     permission: "craftplayplotextras.report.view"
     material: BELL
     name: "&cReports"
-    lore:
-      - "&7View and close"
-      - "&7open plot reports."
     actions:
       - "OPEN:reports"
   moderation:
@@ -41,110 +35,92 @@ items:
     permission: "craftplayplotextras.moderation.manage"
     material: PACKED_ICE
     name: "&bModeration"
-    lore:
-      - "&7Freeze, cleanup"
-      - "&7and frozen plots."
     actions:
-      - "PLAYER_COMMAND:pe mod list"
+      - "OPEN:team-moderation"
   performance:
     slot: 16
     permission: "craftplayplotextras.performance.view"
     material: CLOCK
-    name: "&bPerformance"
-    lore:
-      - "&7Snapshot for the"
-      - "&7current plot."
+    name: "&ePerformance"
     actions:
-      - "PLAYER_COMMAND:pe performance"
+      - "OPEN:performance"
   backups:
-    slot: 28
+    slot: 19
     permission: "craftplayplotextras.backup.admin"
     material: CHEST
     name: "&bBackups"
-    lore:
-      - "&7View and restore"
-      - "&7schematic backups."
     actions:
       - "OPEN:backups"
+  create-backup:
+    slot: 20
+    permission: "craftplayplotextras.backup.create"
+    material: CHEST_MINECART
+    name: "&bCreate Backup"
+    actions:
+      - "PLAYER_COMMAND:pe backup create GUI-Team"
   audit:
-    slot: 30
+    slot: 21
     permission: "craftplayplotextras.audit.view"
     material: WRITABLE_BOOK
     name: "&bAudit Log"
-    lore:
-      - "&7Recent team and"
-      - "&7plot actions."
     actions:
       - "OPEN:audit-log"
   redstone:
-    slot: 32
+    slot: 22
     permission: "craftplayplotextras.redstone.notify"
     material: REDSTONE_BLOCK
     name: "&cRedstone Alerts"
-    lore:
-      - "&7Review lag machine"
-      - "&7alerts."
     actions:
       - "OPEN:redstone-alerts"
   builder:
-    slot: 34
+    slot: 23
     permission: "craftplayplotextras.builder.tasks"
     material: BRICKS
-    name: "&bBuilder Tasks"
-    lore:
-      - "&7View builder tasks."
+    name: "&bBuild Tasks"
     actions:
       - "OPEN:build-tasks"
-  create-backup:
-    slot: 37
-    permission: "craftplayplotextras.backup.create"
-    material: CHEST_MINECART
-    name: "&bBackup Current Plot"
-    lore:
-      - "&7Creates a manual"
-      - "&7schematic backup."
+  permission-check:
+    slot: 24
+    permission: "craftplayplotextras.permissioncheck"
+    material: PLAYER_HEAD
+    name: "&dPermission Check"
     actions:
-      - "PLAYER_COMMAND:pe backup create GUI-Team"
+      - "OPEN:permission-check"
   stats:
-    slot: 39
+    slot: 28
     permission: "craftplayplotextras.statistics"
     material: LECTERN
     name: "&bStatistics"
-    lore:
-      - "&7Profiles, requests,"
-      - "&7backups and tasks."
     actions:
       - "OPEN:statistics"
   validate:
-    slot: 41
+    slot: 30
     permission: "craftplayplotextras.config.validate"
     material: KNOWLEDGE_BOOK
     name: "&bConfig Check"
-    lore:
-      - "&7Checks GUIs and"
-      - "&7configuration files."
     actions:
       - "OPEN:config-issues"
   features:
-    slot: 42
+    slot: 32
     permission: "craftplayplotextras.features.manage"
     material: COMPARATOR
     name: "&dFeatures"
-    lore:
-      - "&7Enable or disable"
-      - "&7individual options."
     actions:
       - "OPEN:feature-toggles"
   inspector:
-    slot: 43
+    slot: 34
     permission: "craftplayplotextras.audit.view"
     material: COMPASS
     name: "&bInspector"
-    lore:
-      - "&7Back to the current"
-      - "&7plot inspector."
     actions:
       - "OPEN:team-inspector"
+  competitions:
+    slot: 40
+    permission: "craftplayplotextras.competition.judge"
+    material: GOLD_BLOCK
+    name: "&6Competitions"
+    actions:
+      - "OPEN:competitions"
   back:
     slot: 45
     material: ARROW

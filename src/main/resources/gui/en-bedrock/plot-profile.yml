@@ -1,0 +1,79 @@
+# Plot profile menu.
+title: "&8Plot Profile"
+size: 54
+
+fill:
+  enabled: true
+  material: LIME_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 4
+    material: NAME_TAG
+    name: "&aPlot Profile"
+    lore:
+      - "&7Description: &f{plot_description}"
+      - "&7Category: &f{plot_category}"
+      - "&7Tags: &f{plot_tags}"
+      - "&7Visit mode: &f{plot_access_mode}"
+  show:
+    slot: 10
+    material: PAPER
+    name: "&aShow Profile"
+    actions:
+      - "PLAYER_COMMAND:pe profile show"
+  note:
+    slot: 12
+    material: WRITABLE_BOOK
+    name: "&aChange Plot Note"
+    actions:
+      - "PLOT_NOTE_PROMPT"
+  normal:
+    slot: 20
+    material: WHITE_DYE
+    name: "&fVisit Mode: Normal"
+    actions:
+      - "PLAYER_COMMAND:pe profile access normal"
+  public:
+    slot: 21
+    material: LIME_DYE
+    name: "&aVisit Mode: Public"
+    actions:
+      - "PLAYER_COMMAND:pe profile access public"
+  members:
+    slot: 22
+    material: CYAN_DYE
+    name: "&bVisit Mode: Members"
+    actions:
+      - "PLAYER_COMMAND:pe profile access members"
+  private:
+    slot: 23
+    material: ORANGE_DYE
+    name: "&6Visit Mode: Private"
+    actions:
+      - "PLAYER_COMMAND:pe profile access private"
+  locked:
+    slot: 24
+    material: RED_DYE
+    name: "&cVisit Mode: Locked"
+    actions:
+      - "PLAYER_COMMAND:pe profile access locked"
+  search:
+    slot: 32
+    material: SPYGLASS
+    name: "&aPlot Search"
+    actions:
+      - "OPEN:plot-search"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "OPEN:plot-tools"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"

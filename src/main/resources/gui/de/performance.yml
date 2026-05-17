@@ -1,0 +1,80 @@
+# Performance-Menü für das aktuelle Plot.
+title: "&8Performance"
+permission: "craftplayplotextras.performance.view"
+size: 54
+
+fill:
+  enabled: true
+  material: LIGHT_GRAY_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 4
+    material: CLOCK
+    name: "&ePerformance"
+    lore:
+      - "&7Plot: &f{plot_world} {plot_id}"
+      - "&7Snapshot unten im Menü."
+  refresh:
+    slot: 10
+    material: AMETHYST_SHARD
+    name: "&aAktualisieren"
+    actions:
+      - "OPEN:performance"
+  chat:
+    slot: 12
+    material: PAPER
+    name: "&aAusgabe im Chat"
+    actions:
+      - "PLAYER_COMMAND:pe performance"
+  limits:
+    slot: 14
+    material: ARMOR_STAND
+    name: "&aEntity-Limits"
+    actions:
+      - "OPEN:entity-limits"
+  cleanup:
+    slot: 16
+    permission: "craftplayplotextras.moderation.manage"
+    material: HOPPER
+    name: "&eTeam-Cleanup"
+    actions:
+      - "OPEN:team-moderation"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:team-tools"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: performance-snapshot
+  slots: "19-25,28-34,37-43"
+  warning-item:
+    material: BELL
+    name: "&6{performance_warning}"
+    lore:
+      - "&7Plot: &f{performance_plot}"
+      - "&7Entities gesamt: &f{performance_total}"
+  entity-item:
+    material: ARMOR_STAND
+    name: "&a{performance_entity_type}"
+    lore:
+      - "&7Anzahl: &f{performance_entity_count}"
+      - "&7Entities gesamt: &f{performance_total}"
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&eSeite {page}/{pages}"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eSeite {page}/{pages}"

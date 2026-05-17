@@ -5,6 +5,8 @@ import de.craftplay.plotextras.audit.AuditLogEntry;
 import de.craftplay.plotextras.audit.AuditLogService;
 import de.craftplay.plotextras.backup.PlotBackupEntry;
 import de.craftplay.plotextras.backup.PlotBackupService;
+import de.craftplay.plotextras.competition.CompetitionEntry;
+import de.craftplay.plotextras.competition.CompetitionService;
 import de.craftplay.plotextras.feature.FeatureToggleService;
 import de.craftplay.plotextras.integration.BedrockService;
 import de.craftplay.plotextras.integration.HeadDatabaseService;
@@ -12,6 +14,8 @@ import de.craftplay.plotextras.integration.PlaceholderService;
 import de.craftplay.plotextras.language.LanguageDefinition;
 import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.limit.EntityLimitService;
+import de.craftplay.plotextras.performance.PlotPerformanceService;
+import de.craftplay.plotextras.performance.PlotPerformanceSnapshot;
 import de.craftplay.plotextras.player.PlayerDataManager;
 import de.craftplay.plotextras.plot.FlagEntry;
 import de.craftplay.plotextras.plot.MemberEntry;
@@ -53,6 +57,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -83,6 +88,8 @@ public final class GuiManager implements Listener {
     private final PlotWarpService plotWarpService;
     private final PlotUtilityService plotUtilityService;
     private final PlotReportService plotReportService;
+    private final PlotPerformanceService plotPerformanceService;
+    private final CompetitionService competitionService;
     private final ConfigValidationService configValidationService;
     private final FeatureToggleService featureToggleService;
     @SuppressWarnings("unused")
@@ -111,6 +118,8 @@ public final class GuiManager implements Listener {
             final PlotWarpService plotWarpService,
             final PlotUtilityService plotUtilityService,
             final PlotReportService plotReportService,
+            final PlotPerformanceService plotPerformanceService,
+            final CompetitionService competitionService,
             final ConfigValidationService configValidationService,
             final FeatureToggleService featureToggleService,
             final PlayerDataManager playerDataManager
@@ -129,6 +138,8 @@ public final class GuiManager implements Listener {
         this.plotWarpService = plotWarpService;
         this.plotUtilityService = plotUtilityService;
         this.plotReportService = plotReportService;
+        this.plotPerformanceService = plotPerformanceService;
+        this.competitionService = competitionService;
         this.configValidationService = configValidationService;
         this.featureToggleService = featureToggleService;
         this.playerDataManager = playerDataManager;
@@ -381,6 +392,9 @@ public final class GuiManager implements Listener {
             case "plot-requests" -> renderPlotRequests(player, inventory, holder, dynamic, placeholders, page);
             case "plot-reports" -> renderPlotReports(player, inventory, holder, dynamic, placeholders, page);
             case "build-tasks" -> renderBuildTasks(player, inventory, holder, dynamic, placeholders, page);
+            case "permission-check" -> renderPermissionCheck(player, inventory, holder, dynamic, placeholders, page);
+            case "performance-snapshot" -> renderPerformanceSnapshot(player, inventory, holder, dynamic, placeholders, page);
+            case "competitions" -> renderCompetitions(player, inventory, holder, dynamic, placeholders, page);
             case "config-issues" -> renderConfigIssues(player, inventory, holder, dynamic, placeholders, page);
             case "statistics" -> renderStatistics(player, inventory, holder, dynamic, placeholders, page);
             case "feature-toggles" -> renderFeatureToggles(player, inventory, holder, dynamic, placeholders, page);
@@ -928,6 +942,131 @@ public final class GuiManager implements Listener {
             if (item != null && isValidSlot(inventory, slot)) {
                 inventory.setItem(slot, item);
                 holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderPermissionCheck(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty() || (!player.hasPermission("craftplayplotextras.permissioncheck") && !player.hasPermission("craftplayplotextras.admin"))) {
+            return;
+        }
+        final List<Player> entries = new ArrayList<>(Bukkit.getOnlinePlayers());
+        entries.sort(Comparator.comparing(Player::getName, String.CASE_INSENSITIVE_ORDER));
+        final PageSlice<Player> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("player-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final Player target = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            final Map<String, String> targetPlaceholders = plotService.getPlotPlaceholders(target);
+            itemPlaceholders.put("permission_player", target.getName());
+            itemPlaceholders.put("permission_uuid", target.getUniqueId().toString());
+            itemPlaceholders.put("permission_plot_count", targetPlaceholders.getOrDefault("plot_count", "0"));
+            itemPlaceholders.put("permission_plot_max", targetPlaceholders.getOrDefault("plot_max", "0"));
+            itemPlaceholders.put("permission_is_admin", target.hasPermission("craftplayplotextras.admin") ? "true" : "false");
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderPerformanceSnapshot(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty() || !plotPerformanceService.canView(player)) {
+            return;
+        }
+        final PlotPerformanceSnapshot snapshot = plotPerformanceService.snapshot(plotService.getCurrentPlot(player));
+        final List<PerformanceGuiEntry> entries = new ArrayList<>();
+        for (final String warning : snapshot.warnings()) {
+            entries.add(new PerformanceGuiEntry("warning", warning, ""));
+        }
+        snapshot.entityCounts().entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .forEach(entry -> entries.add(new PerformanceGuiEntry("entity", entry.getKey(), String.valueOf(entry.getValue()))));
+
+        final PageSlice<PerformanceGuiEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection fallback = dynamic.getConfigurationSection("entry-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final PerformanceGuiEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("performance_plot", snapshot.plotKey());
+            itemPlaceholders.put("performance_total", String.valueOf(snapshot.totalEntities()));
+            itemPlaceholders.put("performance_type", entry.type());
+            itemPlaceholders.put("performance_name", entry.name());
+            itemPlaceholders.put("performance_value", entry.value());
+            itemPlaceholders.put("performance_warning", entry.name());
+            itemPlaceholders.put("performance_entity_type", entry.name());
+            itemPlaceholders.put("performance_entity_count", entry.value());
+
+            final ConfigurationSection template = dynamic.getConfigurationSection(entry.type().equals("warning") ? "warning-item" : "entity-item");
+            final ItemStack item = buildItem(player, template, fallback, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template, fallback), itemPlaceholders));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderCompetitions(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty()) {
+            return;
+        }
+        final String competition = dynamic.getString("competition", "");
+        final List<CompetitionEntry> entries = competitionService.list(competition);
+        final PageSlice<CompetitionEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection fallback = dynamic.getConfigurationSection("entry-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final CompetitionEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("competition_id", entry.id());
+            itemPlaceholders.put("competition_name", entry.competition());
+            itemPlaceholders.put("competition_created", BACKUP_TIME_FORMAT.format(entry.createdAt()));
+            itemPlaceholders.put("competition_owner", entry.ownerName());
+            itemPlaceholders.put("competition_owner_uuid", entry.ownerUuid().toString());
+            itemPlaceholders.put("competition_world", entry.world());
+            itemPlaceholders.put("competition_plot", entry.plotId());
+            itemPlaceholders.put("competition_plot_key", entry.plotKey());
+            itemPlaceholders.put("competition_note", entry.note());
+            itemPlaceholders.put("competition_score", String.valueOf(entry.score()));
+            itemPlaceholders.put("competition_scored_by", entry.scoredBy());
+            itemPlaceholders.put("competition_score_note", entry.scoreNote());
+
+            final ConfigurationSection template = dynamic.getConfigurationSection(entry.score() > 0 ? "scored-item" : "entry-item");
+            final ItemStack item = buildItem(player, template, fallback, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, resolveActions(player, readActions(template, fallback), itemPlaceholders));
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
@@ -2798,6 +2937,9 @@ public final class GuiManager implements Listener {
     }
 
     private record PageSlice<T>(List<T> entries, int page, int pages) {
+    }
+
+    private record PerformanceGuiEntry(String type, String name, String value) {
     }
 
     private record ChatInput(ChatInputType type, String roleId) {

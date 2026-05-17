@@ -35,7 +35,7 @@ items:
       - "&7Description, category,"
       - "&7tags and visit mode."
     actions:
-      - "PLAYER_COMMAND:pe profile show"
+      - "OPEN:plot-profile"
   guestbook:
     slot: 14
     material: WRITABLE_BOOK
@@ -99,7 +99,7 @@ items:
       - "&7Removes drops on"
       - "&7your own plot."
     actions:
-      - "PLAYER_COMMAND:pe cleanup drops"
+      - "OPEN:cleanup"
   back:
     slot: 45
     material: ARROW

@@ -1,4 +1,4 @@
-﻿# Admin GUI for individual feature switches from features.yml.
+# Admin GUI for individual feature switches from features.yml.
 title: "&8Feature Toggles"
 permission: "craftplayplotextras.features.manage"
 size: 54

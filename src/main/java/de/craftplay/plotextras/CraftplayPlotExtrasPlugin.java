@@ -144,7 +144,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         plotPerformanceService = new PlotPerformanceService(this, featureToggleService);
         competitionService = new CompetitionService(this, featureToggleService);
         configValidationService = new ConfigValidationService(this, featureToggleService);
-        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, bedrockService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, plotUtilityService, plotReportService, configValidationService, featureToggleService, playerDataManager);
+        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, bedrockService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, plotWarpService, plotUtilityService, plotReportService, plotPerformanceService, competitionService, configValidationService, featureToggleService, playerDataManager);
 
         furnitureProtectionManager.registerFlags();
         furnitureProtectionManager.reload();

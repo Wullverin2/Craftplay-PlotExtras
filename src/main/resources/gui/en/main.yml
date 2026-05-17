@@ -102,7 +102,7 @@ items:
       - "&7Registers this plot for"
       - "&7the default competition."
     actions:
-      - "PLAYER_COMMAND:pe contest join default GUI entry"
+      - "OPEN:competitions"
   tools:
     slot: 31
     material: COMPASS

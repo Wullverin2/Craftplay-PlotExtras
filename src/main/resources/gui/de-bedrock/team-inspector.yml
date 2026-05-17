@@ -54,7 +54,7 @@ items:
       - "&7Listet offene Meldungen"
       - "&7im Chat auf."
     actions:
-      - "PLAYER_COMMAND:pe reports list"
+      - "OPEN:reports"
   performance:
     slot: 13
     permission: "craftplayplotextras.performance.view"
@@ -64,7 +64,7 @@ items:
       - "&7Zählt Entities und zeigt"
       - "&7Auffälligkeiten."
     actions:
-      - "PLAYER_COMMAND:pe performance"
+      - "OPEN:performance"
   members:
     slot: 14
     permission: "craftplayplotextras.audit.view"
@@ -163,7 +163,27 @@ items:
       - "&7Prüft Materialien, Slots"
       - "&7und fehlende Dateien."
     actions:
-      - "PLAYER_COMMAND:pe validate"
+      - "OPEN:config-issues"
+  moderation-menu:
+    slot: 27
+    permission: "craftplayplotextras.moderation.manage"
+    material: PACKED_ICE
+    name: "&bModeration-Menü"
+    lore:
+      - "&7Freeze, Cleanup und"
+      - "&7Redstone-Freigabe."
+    actions:
+      - "OPEN:team-moderation"
+  permission-check:
+    slot: 28
+    permission: "craftplayplotextras.permissioncheck"
+    material: PLAYER_HEAD
+    name: "&dRechtecheck"
+    lore:
+      - "&7Prüft Plot- und"
+      - "&7Pluginrechte."
+    actions:
+      - "OPEN:permission-check"
   status-normal:
     slot: 29
     permission: "craftplayplotextras.plotmeta.status"
@@ -210,7 +230,7 @@ items:
       - "&7Zeigt angemeldete Plots"
       - "&7für Wettbewerbe."
     actions:
-      - "PLAYER_COMMAND:pe contest list"
+      - "OPEN:competitions"
   back:
     slot: 45
     material: ARROW

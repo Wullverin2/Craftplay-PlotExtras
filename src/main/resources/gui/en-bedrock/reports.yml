@@ -1,4 +1,4 @@
-﻿# Team view for plot reports.
+# Team view for plot reports.
 title: "&8Plot Reports"
 permission: "craftplayplotextras.report.view"
 size: 54
@@ -62,4 +62,3 @@ dynamic:
     slot: 50
     material: ARROW
     name: "&ePage {page}/{pages}"
-

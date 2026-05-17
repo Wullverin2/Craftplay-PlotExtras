@@ -18,6 +18,9 @@ public final class FeatureToggleService {
     private static final Map<String, String> GUI_FEATURES = Map.ofEntries(
             Map.entry("main", "player.gui"),
             Map.entry("language", "player.language"),
+            Map.entry("plot-profile", "player.plot-profile"),
+            Map.entry("cleanup", "player.cleanup"),
+            Map.entry("competitions", "player.competitions"),
             Map.entry("flags", "player.flags"),
             Map.entry("flag-presets", "player.flag-presets"),
             Map.entry("decor", "player.decor"),
@@ -52,6 +55,9 @@ public final class FeatureToggleService {
             Map.entry("team-requests", "team.requests"),
             Map.entry("reports", "team.reports"),
             Map.entry("build-tasks", "team.builder.tasks"),
+            Map.entry("permission-check", "team.permission-checker"),
+            Map.entry("performance", "team.performance"),
+            Map.entry("team-moderation", "team.moderation"),
             Map.entry("config-issues", "team.config-validator"),
             Map.entry("statistics", "team.statistics"),
             Map.entry("feature-toggles", "team.feature-toggles"),
@@ -174,6 +180,9 @@ public final class FeatureToggleService {
             case "plot-requests" -> "player.requests";
             case "plot-reports" -> "team.reports";
             case "build-tasks" -> "team.builder.tasks";
+            case "permission-check" -> "team.permission-checker";
+            case "performance-snapshot" -> "team.performance";
+            case "competitions" -> "player.competitions";
             case "config-issues" -> "team.config-validator";
             case "statistics" -> "team.statistics";
             case "feature-toggles" -> "team.feature-toggles";

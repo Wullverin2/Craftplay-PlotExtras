@@ -16,56 +16,74 @@ items:
       - "&7Kategorie: &f{plot_category}"
       - "&7Anfragen: &f{plot_open_requests}"
   assistant:
-    slots: [10, 11]
+    slot: 10
     material: KNOWLEDGE_BOOK
     name: "&aAssistent"
     actions:
       - "PLAYER_COMMAND:pe assistant"
   profile:
-    slots: [13, 14]
+    slot: 11
     material: NAME_TAG
     name: "&aProfil"
     actions:
-      - "PLAYER_COMMAND:pe profile show"
+      - "OPEN:plot-profile"
   guestbook:
-    slots: [16, 17]
+    slot: 12
     material: WRITABLE_BOOK
-    name: "&aGaestebuch"
+    name: "&aGästebuch"
     actions:
       - "OPEN:guestbook"
+  search:
+    slot: 13
+    material: SPYGLASS
+    name: "&aSuche"
+    actions:
+      - "OPEN:plot-search"
   favorite:
-    slots: [28, 29]
+    slot: 14
     material: EMERALD
     name: "&aFavorit"
     actions:
       - "PLAYER_COMMAND:pe favorite"
-  request:
-    slots: [31, 32]
+  requests:
+    slot: 15
     material: PAPER
     name: "&aAnfragen"
     actions:
       - "OPEN:requests"
-  cleanup:
-    slots: [34, 35]
-    material: HOPPER
-    name: "&aCleanup"
+  trust-request:
+    slot: 16
+    material: PLAYER_HEAD
+    name: "&aTrust anfragen"
     actions:
-      - "PLAYER_COMMAND:pe cleanup drops"
+      - "PLAYER_COMMAND:pe request trust Bedrock-Anfrage"
   selfcheck:
-    slot: 40
+    slot: 21
     material: CLOCK
     name: "&aCheck"
     actions:
       - "PLAYER_COMMAND:pe selfcheck"
+  cleanup:
+    slot: 22
+    material: HOPPER
+    name: "&aCleanup"
+    actions:
+      - "OPEN:cleanup"
+  competitions:
+    slot: 23
+    material: GOLDEN_APPLE
+    name: "&6Wettbewerbe"
+    actions:
+      - "OPEN:competitions"
   back:
     slot: 45
     material: ARROW
-    name: "&eZurueck"
+    name: "&eZurück"
     actions:
       - "OPEN:plot-dashboard"
   close:
     slot: 49
     material: BARRIER
-    name: "&cSchliessen"
+    name: "&cSchließen"
     actions:
       - "CLOSE"

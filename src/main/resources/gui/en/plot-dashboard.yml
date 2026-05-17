@@ -118,7 +118,7 @@ items:
       - "&7Registers this plot for"
       - "&7the default competition."
     actions:
-      - "PLAYER_COMMAND:pe contest join default Dashboard entry"
+      - "OPEN:competitions"
   tools:
     slot: 29
     material: COMPASS

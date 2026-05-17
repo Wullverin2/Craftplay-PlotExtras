@@ -1,5 +1,5 @@
-# Bedrock-Hauptmenue. Reduzierte Lore und grosse, gut trennbare Buttons fuer Floodgate-Spieler.
-title: "&8Plot-Menue"
+# Bedrock-Hauptmenü mit direkten Wegen zu allen Spieler- und Teamfunktionen.
+title: "&8Plot-Menü"
 size: 54
 
 fill:
@@ -11,76 +11,112 @@ items:
   info:
     slot: 4
     material: COMPASS
-    name: "&ePlot-Uebersicht"
+    name: "&ePlot-Übersicht"
     lore:
       - "&7Plots: &f{plot_count}&7/&f{plot_max}"
       - "&7Plot: &f{plot_id}"
-    actions:
-      - "OPEN:plot-dashboard"
   dashboard:
-    slots: [10, 11]
+    slot: 10
     material: MAP
     name: "&aDashboard"
-    lore:
-      - "&7Status und Schnellaktionen."
     actions:
       - "OPEN:plot-dashboard"
   settings:
-    slots: [13, 14]
+    slot: 11
     material: COMPARATOR
     name: "&aEinstellungen"
-    lore:
-      - "&7Home, Wetter, Zeit, Biom."
     actions:
       - "OPEN:settings"
   flags:
-    slots: [16, 17]
+    slot: 12
     material: REDSTONE_TORCH
     name: "&aFlags"
-    lore:
-      - "&7Plotflags umschalten."
     actions:
       - "OPEN:flags"
   decor:
-    slots: [28, 29]
+    slot: 13
     material: GRASS_BLOCK
     name: "&aDeko"
-    lore:
-      - "&7Wand und Rand."
     actions:
       - "OPEN:decor"
   members:
-    slots: [31, 32]
+    slot: 14
     material: PLAYER_HEAD
     name: "&aMitglieder"
-    lore:
-      - "&7Rollen und Trusts."
     actions:
       - "OPEN:members"
-  tools:
-    slots: [34, 35]
-    material: COMPASS
-    name: "&aWerkzeuge"
-    lore:
-      - "&7Profil, Suche, Cleanup."
+  entity-limits:
+    slot: 15
+    material: ARMOR_STAND
+    name: "&aEntity-Limits"
     actions:
-      - "OPEN:plot-tools"
+      - "OPEN:entity-limits"
   language:
-    slot: 45
+    slot: 16
     material: WRITABLE_BOOK
     name: "&aSprache"
     actions:
       - "OPEN_LANGUAGE"
-  team-tools:
-    slot: 47
-    permission: "craftplayplotextras.teamtools"
+  tools:
+    slot: 19
+    material: COMPASS
+    name: "&aWerkzeuge"
+    actions:
+      - "OPEN:plot-tools"
+  warps:
+    slot: 20
+    material: ENDER_PEARL
+    name: "&aWarps"
+    actions:
+      - "OPEN:plot-warps"
+  report:
+    slot: 21
+    material: BELL
+    name: "&cPlot melden"
+    actions:
+      - "PLAYER_COMMAND:pe report Bedrock-Menü"
+  competitions:
+    slot: 22
+    material: GOLDEN_APPLE
+    name: "&6Wettbewerbe"
+    actions:
+      - "OPEN:competitions"
+  profile:
+    slot: 23
+    material: NAME_TAG
+    name: "&aProfil"
+    actions:
+      - "OPEN:plot-profile"
+  cleanup:
+    slot: 24
+    material: HOPPER
+    name: "&aCleanup"
+    actions:
+      - "OPEN:cleanup"
+  team-inspector:
+    slot: 37
+    permission: "craftplayplotextras.audit.view"
     material: SPYGLASS
+    name: "&bInspektor"
+    actions:
+      - "OPEN:team-inspector"
+  audit-log:
+    slot: 38
+    permission: "craftplayplotextras.audit.view"
+    material: WRITABLE_BOOK
+    name: "&bAuditlog"
+    actions:
+      - "OPEN:audit-log"
+  team-tools:
+    slot: 39
+    permission: "craftplayplotextras.teamtools"
+    material: COMPASS
     name: "&bTeam"
     actions:
       - "OPEN:team-tools"
   close:
     slot: 49
     material: BARRIER
-    name: "&cSchliessen"
+    name: "&cSchließen"
     actions:
       - "CLOSE"

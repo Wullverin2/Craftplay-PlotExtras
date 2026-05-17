@@ -118,7 +118,7 @@ items:
       - "&7Meldet dieses Plot für"
       - "&7den Standard-Wettbewerb an."
     actions:
-      - "PLAYER_COMMAND:pe contest join default Dashboard-Anmeldung"
+      - "OPEN:competitions"
   tools:
     slot: 29
     material: COMPASS

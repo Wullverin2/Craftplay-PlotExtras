@@ -1,4 +1,4 @@
-# Bedrock-Dashboard fuer das aktuelle Plot.
+# Bedrock-Dashboard für das aktuelle Plot.
 title: "&8Plot-Dashboard"
 size: 54
 
@@ -18,62 +18,93 @@ items:
       - "&7Status: &f{plot_status_display}"
       - "&7Warps: &f{plot_warps}"
   settings:
-    slots: [10, 11]
+    slot: 10
     material: COMPARATOR
     name: "&aEinstellungen"
     actions:
       - "OPEN:settings"
   flags:
-    slots: [13, 14]
+    slot: 11
     material: REDSTONE_TORCH
     name: "&aFlags"
     actions:
       - "OPEN:flags"
   decor:
-    slots: [16, 17]
+    slot: 12
     material: GRASS_BLOCK
     name: "&aDeko"
     actions:
       - "OPEN:decor"
   members:
-    slots: [28, 29]
+    slot: 13
     material: PLAYER_HEAD
     name: "&aMitglieder"
     actions:
       - "OPEN:members"
   warps:
-    slots: [31, 32]
+    slot: 14
     material: ENDER_PEARL
     name: "&aWarps"
     actions:
       - "OPEN:plot-warps"
-  tools:
-    slots: [34, 35]
-    material: COMPASS
-    name: "&aWerkzeuge"
+  entity-limits:
+    slot: 15
+    material: ARMOR_STAND
+    name: "&aEntity-Limits"
     actions:
-      - "OPEN:plot-tools"
+      - "OPEN:entity-limits"
+  presets:
+    slot: 16
+    material: MAP
+    name: "&aPresets"
+    actions:
+      - "OPEN:flag-presets"
+  note:
+    slot: 20
+    material: WRITABLE_BOOK
+    name: "&aPlotnotiz"
+    actions:
+      - "PLOT_NOTE_PROMPT"
   like:
-    slot: 39
+    slot: 21
     material: EMERALD
     name: "&aFavorit"
     actions:
       - "TOGGLE_PLOT_LIKE"
   report:
-    slot: 41
+    slot: 22
     material: BELL
     name: "&cMelden"
     actions:
-      - "PLAYER_COMMAND:pe report Bedrock-GUI"
+      - "PLAYER_COMMAND:pe report Bedrock-Dashboard"
+  competitions:
+    slot: 23
+    material: GOLDEN_APPLE
+    name: "&6Wettbewerbe"
+    actions:
+      - "OPEN:competitions"
+  tools:
+    slot: 24
+    material: COMPASS
+    name: "&aWerkzeuge"
+    actions:
+      - "OPEN:plot-tools"
+  team-note:
+    slot: 31
+    permission: "craftplayplotextras.plotmeta.team"
+    material: KNOWLEDGE_BOOK
+    name: "&bTeamnotiz"
+    actions:
+      - "TEAM_NOTE_PROMPT"
   back:
     slot: 45
     material: ARROW
-    name: "&eZurueck"
+    name: "&eZurück"
     actions:
       - "OPEN:main"
   close:
     slot: 49
     material: BARRIER
-    name: "&cSchliessen"
+    name: "&cSchließen"
     actions:
       - "CLOSE"

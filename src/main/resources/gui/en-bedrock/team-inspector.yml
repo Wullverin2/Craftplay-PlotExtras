@@ -1,4 +1,4 @@
-﻿# Team GUI for support, moderation and administration.
+# Team GUI for support, moderation and administration.
 title: "&8Team Inspector"
 permission: "craftplayplotextras.audit.view"
 size: 54
@@ -54,7 +54,7 @@ items:
       - "&7Lists open reports"
       - "&7in chat."
     actions:
-      - "PLAYER_COMMAND:pe reports list"
+      - "OPEN:reports"
   performance:
     slot: 13
     permission: "craftplayplotextras.performance.view"
@@ -64,7 +64,7 @@ items:
       - "&7Counts entities and"
       - "&7shows warnings."
     actions:
-      - "PLAYER_COMMAND:pe performance"
+      - "OPEN:performance"
   members:
     slot: 14
     permission: "craftplayplotextras.audit.view"
@@ -163,7 +163,27 @@ items:
       - "&7Checks materials, slots"
       - "&7and missing files."
     actions:
-      - "PLAYER_COMMAND:pe validate"
+      - "OPEN:config-issues"
+  moderation-menu:
+    slot: 27
+    permission: "craftplayplotextras.moderation.manage"
+    material: PACKED_ICE
+    name: "&bModeration Menu"
+    lore:
+      - "&7Freeze, cleanup and"
+      - "&7redstone release."
+    actions:
+      - "OPEN:team-moderation"
+  permission-check:
+    slot: 28
+    permission: "craftplayplotextras.permissioncheck"
+    material: PLAYER_HEAD
+    name: "&dPermission Check"
+    lore:
+      - "&7Checks plot and"
+      - "&7plugin permissions."
+    actions:
+      - "OPEN:permission-check"
   status-normal:
     slot: 29
     permission: "craftplayplotextras.plotmeta.status"
@@ -210,7 +230,7 @@ items:
       - "&7Lists plots registered"
       - "&7for competitions."
     actions:
-      - "PLAYER_COMMAND:pe contest list"
+      - "OPEN:competitions"
   back:
     slot: 45
     material: ARROW

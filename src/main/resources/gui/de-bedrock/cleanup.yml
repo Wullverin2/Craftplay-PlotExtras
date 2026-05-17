@@ -1,0 +1,79 @@
+# Cleanup-Menü für den aktuellen Plot.
+title: "&8Plot-Cleanup"
+size: 54
+
+fill:
+  enabled: true
+  material: GREEN_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 4
+    material: HOPPER
+    name: "&aCleanup"
+    lore:
+      - "&7Plot: &f{plot_world} {plot_id}"
+      - "&7Nur auf deinem eigenen Plot."
+  drops:
+    slot: 10
+    material: ROTTEN_FLESH
+    name: "&aDrops und XP"
+    actions:
+      - "PLAYER_COMMAND:pe cleanup drops"
+  projectiles:
+    slot: 12
+    material: ARROW
+    name: "&aProjektile"
+    actions:
+      - "PLAYER_COMMAND:pe cleanup projectiles"
+  monsters:
+    slot: 14
+    material: ZOMBIE_HEAD
+    name: "&aMonster"
+    actions:
+      - "PLAYER_COMMAND:pe cleanup monsters"
+  animals:
+    slot: 16
+    material: WHEAT
+    name: "&aTiere"
+    actions:
+      - "PLAYER_COMMAND:pe cleanup animals"
+  vehicles:
+    slot: 28
+    material: MINECART
+    name: "&aFahrzeuge"
+    actions:
+      - "PLAYER_COMMAND:pe cleanup vehicles"
+  all:
+    slot: 30
+    material: TNT
+    name: "&cAlle Entities"
+    lore:
+      - "&7Entfernt alles außer Spielern."
+    actions:
+      - "PLAYER_COMMAND:pe cleanup all"
+  selfcheck:
+    slot: 32
+    material: CLOCK
+    name: "&aSelbstcheck"
+    actions:
+      - "PLAYER_COMMAND:pe selfcheck"
+  limits:
+    slot: 34
+    material: ARMOR_STAND
+    name: "&aEntity-Limits"
+    actions:
+      - "OPEN:entity-limits"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:plot-tools"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
