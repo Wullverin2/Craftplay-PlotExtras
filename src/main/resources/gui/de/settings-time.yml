@@ -1,5 +1,5 @@
 # Einstellungen: Tab Zeit.
-# Optionen kommen aus config.yml unter plot-settings.time.options.
+# Optionen kommen aus plot-settings.yml unter time.options.
 title: "&8Einstellungen: Zeit"
 size: 54
 

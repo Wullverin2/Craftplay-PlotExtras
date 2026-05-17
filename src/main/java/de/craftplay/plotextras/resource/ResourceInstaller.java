@@ -1,5 +1,6 @@
 package de.craftplay.plotextras.resource;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,6 +21,7 @@ public final class ResourceInstaller {
             "features.yml",
             "wall.yml",
             "border.yml",
+            "plot-settings.yml",
             "limits.yml",
             "language/de.yml",
             "language/en.yml",
@@ -117,6 +119,9 @@ public final class ResourceInstaller {
             mergeMissingDefaults(plugin, resourcePath, target);
         }
 
+        migratePlotSettings(plugin);
+        migrateLegacyComponentConfig(plugin);
+
         versionConfig.set("version", currentVersion);
         try {
             versionConfig.save(versionFile);
@@ -164,6 +169,77 @@ public final class ResourceInstaller {
             }
         } catch (final IOException exception) {
             plugin.getLogger().log(Level.WARNING, "Could not merge defaults into " + target.getPath(), exception);
+        }
+    }
+
+    private static void migratePlotSettings(final JavaPlugin plugin) {
+        final File configFile = new File(plugin.getDataFolder(), "config.yml");
+        final YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        final ConfigurationSection legacySection = config.getConfigurationSection("plot-settings");
+        if (legacySection == null) {
+            return;
+        }
+
+        final File settingsFile = new File(plugin.getDataFolder(), "plot-settings.yml");
+        final YamlConfiguration settingsConfig = YamlConfiguration.loadConfiguration(settingsFile);
+        copySection(legacySection, settingsConfig, "");
+        config.set("plot-settings", null);
+
+        try {
+            settingsConfig.save(settingsFile);
+            config.save(configFile);
+            plugin.getLogger().info("Moved legacy plot-settings from config.yml to plot-settings.yml.");
+        } catch (final IOException exception) {
+            plugin.getLogger().log(Level.WARNING, "Could not migrate plot-settings.yml.", exception);
+        }
+    }
+
+    private static void migrateLegacyComponentConfig(final JavaPlugin plugin) {
+        final File configFile = new File(plugin.getDataFolder(), "config.yml");
+        final YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        final ConfigurationSection componentsSection = config.getConfigurationSection("plot-components");
+        if (componentsSection == null) {
+            return;
+        }
+
+        boolean migrated = false;
+        for (final String component : List.of("wall", "border")) {
+            final ConfigurationSection legacySection = componentsSection.getConfigurationSection(component);
+            if (legacySection == null) {
+                continue;
+            }
+            final File componentFile = new File(plugin.getDataFolder(), component + ".yml");
+            final YamlConfiguration componentConfig = YamlConfiguration.loadConfiguration(componentFile);
+            copySection(legacySection, componentConfig, "");
+            try {
+                componentConfig.save(componentFile);
+                migrated = true;
+            } catch (final IOException exception) {
+                plugin.getLogger().log(Level.WARNING, "Could not migrate " + component + ".yml.", exception);
+            }
+        }
+
+        if (!migrated) {
+            return;
+        }
+        config.set("plot-components", null);
+        try {
+            config.save(configFile);
+            plugin.getLogger().info("Moved legacy plot-components from config.yml to wall.yml and border.yml.");
+        } catch (final IOException exception) {
+            plugin.getLogger().log(Level.WARNING, "Could not remove legacy plot-components from config.yml.", exception);
+        }
+    }
+
+    private static void copySection(final ConfigurationSection source, final YamlConfiguration target, final String pathPrefix) {
+        for (final String key : source.getKeys(false)) {
+            final String path = pathPrefix.isBlank() ? key : pathPrefix + "." + key;
+            final ConfigurationSection child = source.getConfigurationSection(key);
+            if (child != null) {
+                copySection(child, target, path);
+            } else {
+                target.set(path, source.get(key));
+            }
         }
     }
 }

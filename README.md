@@ -68,6 +68,7 @@ config.yml
 features.yml
 wall.yml
 border.yml
+plot-settings.yml
 limits.yml
 language/de.yml
 language/en.yml
@@ -85,7 +86,7 @@ Einzelne Auswahloptionen bleiben in ihren jeweiligen Dateien abschaltbar:
 wall.yml: options.<id>.enabled
 border.yml: options.<id>.enabled
 limits.yml: limits.<id>.enabled
-config.yml: plot-settings.*.options.<id>.enabled
+plot-settings.yml: <bereich>.options.<id>.enabled
 config.yml: plot-presets.flags.options.<id>.enabled
 gui/<sprache>/*.yml: items.<id>.enabled oder dynamic.enabled
 ```

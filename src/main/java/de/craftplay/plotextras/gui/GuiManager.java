@@ -79,6 +79,7 @@ public final class GuiManager implements Listener {
     @SuppressWarnings("unused")
     private final PlayerDataManager playerDataManager;
     private final Map<String, Map<String, YamlConfiguration>> guiConfigs = new HashMap<>();
+    private YamlConfiguration plotSettingsConfig = new YamlConfiguration();
     private final Map<UUID, String> selectedRoles = new ConcurrentHashMap<>();
     private final Map<UUID, UUID> selectedMembers = new ConcurrentHashMap<>();
     private final Map<UUID, String> selectedBackups = new ConcurrentHashMap<>();
@@ -126,6 +127,7 @@ public final class GuiManager implements Listener {
 
     public void reload() {
         guiConfigs.clear();
+        plotSettingsConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "plot-settings.yml"));
         final File guiFolder = new File(plugin.getDataFolder(), "gui");
         if (!guiFolder.exists() && !guiFolder.mkdirs()) {
             plugin.getLogger().warning("Could not create GUI folder.");
@@ -701,7 +703,7 @@ public final class GuiManager implements Listener {
     ) {
         final List<Integer> slots = SlotParser.slots(dynamic, "slots");
         final String source = dynamic.getString("source", "");
-        final ConfigurationSection sourceSection = plugin.getConfig().getConfigurationSection(source);
+        final ConfigurationSection sourceSection = resolveConfigSource(source);
         if (slots.isEmpty() || sourceSection == null) {
             return;
         }
@@ -741,6 +743,20 @@ public final class GuiManager implements Listener {
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private ConfigurationSection resolveConfigSource(final String source) {
+        if (source.equalsIgnoreCase("plot-settings")) {
+            return plotSettingsConfig;
+        }
+        final String plotSettingsPrefix = "plot-settings.";
+        if (source.toLowerCase(Locale.ROOT).startsWith(plotSettingsPrefix)) {
+            final ConfigurationSection section = plotSettingsConfig.getConfigurationSection(source.substring(plotSettingsPrefix.length()));
+            if (section != null) {
+                return section;
+            }
+        }
+        return plugin.getConfig().getConfigurationSection(source);
     }
 
     private void renderMembers(

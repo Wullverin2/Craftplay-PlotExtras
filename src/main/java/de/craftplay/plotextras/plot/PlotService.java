@@ -750,11 +750,7 @@ public final class PlotService {
 
     private ConfigurationSection getComponentSection(final String component) {
         final String normalizedComponent = component.toLowerCase(Locale.ROOT);
-        final YamlConfiguration componentConfig = componentConfigs.get(normalizedComponent);
-        if (componentConfig != null) {
-            return componentConfig;
-        }
-        return plugin.getConfig().getConfigurationSection("plot-components." + normalizedComponent);
+        return componentConfigs.get(normalizedComponent);
     }
 
     private String normalizeFlagName(final String flagName) {
