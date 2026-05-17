@@ -22,6 +22,7 @@ import de.craftplay.plotextras.limit.EntityLimitService;
 import de.craftplay.plotextras.player.PlayerDataManager;
 import de.craftplay.plotextras.plot.PlotRoleService;
 import de.craftplay.plotextras.plot.PlotService;
+import de.craftplay.plotextras.plotmeta.PlotMetaService;
 import de.craftplay.plotextras.redstone.RedstoneLagProtectionService;
 import de.craftplay.plotextras.resource.ResourceInstaller;
 import org.bukkit.GameMode;
@@ -72,6 +73,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     private PlotBackupService plotBackupService;
     private RedstoneLagProtectionService redstoneLagProtectionService;
     private PlotRoleService plotRoleService;
+    private PlotMetaService plotMetaService;
     private PlotService plotService;
     private GuiManager guiManager;
 
@@ -103,15 +105,17 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         entityLimitService = new EntityLimitService(this, languageManager);
         auditLogService = new AuditLogService(this);
         plotRoleService = new PlotRoleService(this);
+        plotMetaService = new PlotMetaService(this);
         plotService = new PlotService(this, plotRoleService);
         plotBackupService = new PlotBackupService(this, plotService);
         redstoneLagProtectionService = new RedstoneLagProtectionService(this, plotService, auditLogService);
-        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, playerDataManager);
+        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, redstoneLagProtectionService, plotMetaService, playerDataManager);
 
         furnitureProtectionManager.registerFlags();
         furnitureProtectionManager.reload();
         entityLimitService.reload();
         auditLogService.load();
+        plotMetaService.load();
         playerDataManager.load();
         plotRoleService.load();
         plotBackupService.load();
@@ -147,6 +151,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         furnitureProtectionManager.reload();
         entityLimitService.reload();
         auditLogService.load();
+        plotMetaService.load();
         playerDataManager.load();
         plotRoleService.load();
         plotBackupService.load();
@@ -172,6 +177,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     public PlotRoleService getPlotRoleService() {
         return plotRoleService;
+    }
+
+    public PlotMetaService getPlotMetaService() {
+        return plotMetaService;
     }
 
     public PlotBackupService getPlotBackupService() {
@@ -278,6 +287,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     @Subscribe
     public void onPlayerEnterPlot(final PlayerEnterPlotEvent event) {
+        final Player player = getBukkitPlayer(event.getPlotPlayer());
+        if (player != null) {
+            plotMetaService.recordVisit(event.getPlot(), player);
+        }
         protectFlightInPlotWorld(event.getPlotPlayer());
     }
 

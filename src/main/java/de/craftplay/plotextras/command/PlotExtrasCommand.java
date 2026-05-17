@@ -104,6 +104,11 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (subCommand.equals("dashboard") || subCommand.equals("info")) {
+            plugin.getGuiManager().open(player, "plot-dashboard", 0);
+            return true;
+        }
+
         player.sendMessage(TextUtil.component(plugin.getLanguageManager().getRawMessage(player, "help")));
         return true;
     }
@@ -538,7 +543,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (args.length == 1) {
-            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team"), args[0]);
+            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team", "dashboard", "info"), args[0]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("open")) {
             return filter(plugin.getGuiManager().getGuiIds(), args[1]);

@@ -54,6 +54,12 @@ permissions:
   craftplayplotextras.audit.view:
     description: Allows viewing plot audit logs and the team inspector.
     default: op
+  craftplayplotextras.plotmeta.team:
+    description: Allows reading and editing staff notes for plots.
+    default: op
+  craftplayplotextras.plotmeta.status:
+    description: Allows changing the visible status of a plot.
+    default: op
   craftplayplotextras.decor:
     description: Allows changing plot wall and border blocks through the GUI.
     default: true

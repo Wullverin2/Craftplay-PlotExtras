@@ -1,0 +1,108 @@
+# Player dashboard for the current plot.
+title: "&8Plot Dashboard"
+size: 54
+
+fill:
+  enabled: true
+  material: BLUE_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 13
+    material: PLAYER_HEAD
+    head-database: "9382"
+    name: "&ePlot Dashboard"
+    lore:
+      - "&7Plot: &f{plot_world} {plot_id}"
+      - "&7Owner: &f{plot_owner}"
+      - "&7Your role: &f{plot_role}"
+      - "&7Status: &f{plot_status_display}"
+      - "&7Visits: &f{plot_visits}"
+      - "&7Favorites: &f{plot_likes}"
+      - "&7Plots: &f{plot_count}&7/&f{plot_max}"
+  note:
+    slot: 20
+    material: WRITABLE_BOOK
+    name: "&aPlot Note"
+    lore:
+      - "&7Current:"
+      - "&f{plot_owner_note}"
+      - "&8Owners can change it."
+    actions:
+      - "PLOT_NOTE_PROMPT"
+  like:
+    slot: 21
+    material: EMERALD
+    name: "&aFavorite"
+    lore:
+      - "&7Marks this plot"
+      - "&7as a favorite."
+      - "&7Current: &f{plot_likes}"
+    actions:
+      - "TOGGLE_PLOT_LIKE"
+  settings:
+    slot: 22
+    material: COMPARATOR
+    name: "&aSettings"
+    lore:
+      - "&7Home, weather, time"
+      - "&7and plot biome."
+    actions:
+      - "OPEN:settings"
+  flags:
+    slot: 23
+    material: REDSTONE_TORCH
+    name: "&aFlags"
+    lore:
+      - "&7View and edit plot flags."
+    actions:
+      - "OPEN:flags"
+  entity-limits:
+    slot: 24
+    material: ARMOR_STAND
+    name: "&aEntity Limits"
+    lore:
+      - "&7Current entity counts"
+      - "&7and maximum values."
+    actions:
+      - "OPEN:entity-limits"
+  members:
+    slot: 30
+    material: PLAYER_HEAD
+    name: "&aMembers"
+    lore:
+      - "&7Members and roles."
+    actions:
+      - "OPEN:members"
+  decor:
+    slot: 31
+    material: GRASS_BLOCK
+    name: "&aDecor"
+    lore:
+      - "&7Change wall and border."
+    actions:
+      - "OPEN:decor"
+  team-note:
+    slot: 32
+    permission: "craftplayplotextras.plotmeta.team"
+    material: KNOWLEDGE_BOOK
+    name: "&bTeam Note"
+    lore:
+      - "&7Current:"
+      - "&f{plot_team_note}"
+      - "&8Staff only."
+    actions:
+      - "TEAM_NOTE_PROMPT"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "BACK"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"

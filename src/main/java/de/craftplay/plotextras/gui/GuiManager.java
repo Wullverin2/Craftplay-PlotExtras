@@ -17,6 +17,7 @@ import de.craftplay.plotextras.plot.PlotRole;
 import de.craftplay.plotextras.plot.PlotRolePermission;
 import de.craftplay.plotextras.plot.PlotRoleService;
 import de.craftplay.plotextras.plot.PlotService;
+import de.craftplay.plotextras.plotmeta.PlotMetaService;
 import de.craftplay.plotextras.redstone.RedstoneLagProtectionService;
 import de.craftplay.plotextras.util.SlotParser;
 import de.craftplay.plotextras.util.TextUtil;
@@ -69,6 +70,7 @@ public final class GuiManager implements Listener {
     private final PlotBackupService plotBackupService;
     private final AuditLogService auditLogService;
     private final RedstoneLagProtectionService redstoneLagProtectionService;
+    private final PlotMetaService plotMetaService;
     @SuppressWarnings("unused")
     private final PlayerDataManager playerDataManager;
     private final Map<String, Map<String, YamlConfiguration>> guiConfigs = new HashMap<>();
@@ -88,6 +90,7 @@ public final class GuiManager implements Listener {
             final PlotBackupService plotBackupService,
             final AuditLogService auditLogService,
             final RedstoneLagProtectionService redstoneLagProtectionService,
+            final PlotMetaService plotMetaService,
             final PlayerDataManager playerDataManager
     ) {
         this.plugin = plugin;
@@ -99,6 +102,7 @@ public final class GuiManager implements Listener {
         this.plotBackupService = plotBackupService;
         this.auditLogService = auditLogService;
         this.redstoneLagProtectionService = redstoneLagProtectionService;
+        this.plotMetaService = plotMetaService;
         this.playerDataManager = playerDataManager;
     }
 
@@ -1022,6 +1026,22 @@ public final class GuiManager implements Listener {
                 restoreSelectedBackup(player);
                 return;
             }
+            if (upperAction.equals("PLOT_NOTE_PROMPT")) {
+                startPlotNotePrompt(player);
+                return;
+            }
+            if (upperAction.equals("TEAM_NOTE_PROMPT")) {
+                startTeamNotePrompt(player);
+                return;
+            }
+            if (upperAction.startsWith("SET_PLOT_STATUS:")) {
+                setPlotStatus(player, action.substring("SET_PLOT_STATUS:".length()));
+                return;
+            }
+            if (upperAction.equals("TOGGLE_PLOT_LIKE")) {
+                togglePlotLike(player);
+                return;
+            }
             if (upperAction.startsWith("COMMAND:")) {
                 runCommand(player, action.substring("COMMAND:".length()));
                 continue;
@@ -1229,11 +1249,46 @@ public final class GuiManager implements Listener {
         sendMessage(player, "member-invite-input", Map.of());
     }
 
+    private void startPlotNotePrompt(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canManageRoles(player, plot)) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.PLOT_NOTE, ""));
+        player.closeInventory();
+        sendMessage(player, "plot-note-input", Map.of());
+    }
+
+    private void startTeamNotePrompt(final Player player) {
+        if (!plotMetaService.canManageTeamMeta(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        if (plotService.getCurrentPlot(player) == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        pendingChatInputs.put(player.getUniqueId(), new ChatInput(ChatInputType.TEAM_NOTE, ""));
+        player.closeInventory();
+        sendMessage(player, "team-note-input", Map.of());
+    }
+
     private void handleChatInput(final Player player, final ChatInput input, final String message) {
         if (message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("abbrechen")) {
             if (input.type() == ChatInputType.INVITE_MEMBER) {
                 sendMessage(player, "member-input-cancelled", Map.of());
                 scheduleOpen(player, "members", 0);
+            } else if (input.type() == ChatInputType.PLOT_NOTE) {
+                sendMessage(player, "plot-note-cancelled", Map.of());
+                scheduleOpen(player, "plot-dashboard", 0);
+            } else if (input.type() == ChatInputType.TEAM_NOTE) {
+                sendMessage(player, "team-note-cancelled", Map.of());
+                scheduleOpen(player, "team-inspector", 0);
             } else {
                 sendMessage(player, "role-input-cancelled", Map.of());
                 scheduleOpen(player, "roles", 0);
@@ -1243,6 +1298,16 @@ public final class GuiManager implements Listener {
 
         if (input.type() == ChatInputType.INVITE_MEMBER) {
             handleMemberInviteInput(player, message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.PLOT_NOTE) {
+            handlePlotNoteInput(player, message);
+            return;
+        }
+
+        if (input.type() == ChatInputType.TEAM_NOTE) {
+            handleTeamNoteInput(player, message);
             return;
         }
 
@@ -1306,6 +1371,40 @@ public final class GuiManager implements Listener {
         }
         sendRoleResult(player, result, targetName);
         scheduleOpen(player, "members", 0);
+    }
+
+    private void handlePlotNoteInput(final Player player, final String message) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotService.canManageRoles(player, plot)) {
+            sendMessage(player, "not-owner", Map.of());
+            return;
+        }
+        final boolean clear = message.equalsIgnoreCase("leer") || message.equalsIgnoreCase("clear");
+        plotMetaService.setOwnerNote(plot, clear ? "" : message);
+        auditLogService.log(player, plot, "Plotnotiz geändert", clear ? "geleert" : message);
+        sendMessage(player, "plot-note-set", Map.of());
+        scheduleOpen(player, "plot-dashboard", 0);
+    }
+
+    private void handleTeamNoteInput(final Player player, final String message) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotMetaService.canManageTeamMeta(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        final boolean clear = message.equalsIgnoreCase("leer") || message.equalsIgnoreCase("clear");
+        plotMetaService.setTeamNote(plot, clear ? "" : message);
+        auditLogService.log(player, plot, "Teamnotiz geändert", clear ? "geleert" : message);
+        sendMessage(player, "team-note-set", Map.of());
+        scheduleOpen(player, "team-inspector", 0);
     }
 
     private void selectRole(final Player player, final String rawAction) {
@@ -1550,6 +1649,34 @@ public final class GuiManager implements Listener {
         }
     }
 
+    private void setPlotStatus(final Player player, final String status) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        if (!plotMetaService.canSetStatus(player)) {
+            sendMessage(player, "no-permission", Map.of());
+            return;
+        }
+        if (plotMetaService.setStatus(plot, status)) {
+            auditLogService.log(player, plot, "Plotstatus geändert", status);
+            sendMessage(player, "plot-status-set", Map.of("status", status));
+            scheduleOpen(player, "team-inspector", 0);
+        }
+    }
+
+    private void togglePlotLike(final Player player) {
+        final Plot plot = plotService.getCurrentPlot(player);
+        if (plot == null) {
+            sendMessage(player, "no-plot", Map.of());
+            return;
+        }
+        final boolean liked = plotMetaService.toggleLike(plot, player);
+        sendMessage(player, liked ? "plot-liked" : "plot-unliked", Map.of());
+        scheduleOpen(player, "plot-dashboard", 0);
+    }
+
     private boolean canManageRolesHere(final Player player) {
         final Plot plot = plotService.getCurrentPlot(player);
         if (plot == null) {
@@ -1634,6 +1761,7 @@ public final class GuiManager implements Listener {
 
     private Map<String, String> createPlaceholders(final Player player) {
         final Map<String, String> placeholders = new HashMap<>(plotService.getPlotPlaceholders(player));
+        placeholders.putAll(plotMetaService.placeholders(plotService.getCurrentPlot(player)));
         placeholders.put("language", languageManager.getPlayerLanguage(player));
         placeholders.putAll(placeholderService.getIntegrationPlaceholders(player));
         final String selectedRoleId = selectedRoles.getOrDefault(player.getUniqueId(), "-");
@@ -1894,6 +2022,8 @@ public final class GuiManager implements Listener {
     private enum ChatInputType {
         CREATE_ROLE,
         RENAME_ROLE,
-        INVITE_MEMBER
+        INVITE_MEMBER,
+        PLOT_NOTE,
+        TEAM_NOTE
     }
 }

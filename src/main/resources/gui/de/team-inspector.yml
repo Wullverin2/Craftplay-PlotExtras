@@ -20,6 +20,10 @@ items:
       - "&7Vertraute: &f{plot_trusted}"
       - "&7Gesperrte: &f{plot_denied}"
       - "&7Plotlimit: &f{plot_count}&7/&f{plot_max}"
+      - "&7Status: &f{plot_status_display}"
+      - "&7Besuche: &f{plot_visits}"
+      - "&7Favoriten: &f{plot_likes}"
+      - "&7Teamnotiz: &f{plot_team_note}"
   audit:
     slot: 20
     material: WRITABLE_BOOK
@@ -91,6 +95,43 @@ items:
       - "&7Führt /plot info aus."
     commands:
       - "player:plot info"
+  status-checked:
+    slot: 37
+    permission: "craftplayplotextras.plotmeta.status"
+    material: LIME_DYE
+    name: "&aStatus: Team-geprüft"
+    actions:
+      - "SET_PLOT_STATUS:team-checked"
+  status-watch:
+    slot: 38
+    permission: "craftplayplotextras.plotmeta.status"
+    material: ORANGE_DYE
+    name: "&6Status: Beobachtung"
+    actions:
+      - "SET_PLOT_STATUS:under-watch"
+  status-locked:
+    slot: 39
+    permission: "craftplayplotextras.plotmeta.status"
+    material: RED_DYE
+    name: "&cStatus: Gesperrt"
+    actions:
+      - "SET_PLOT_STATUS:locked"
+  team-note:
+    slot: 40
+    permission: "craftplayplotextras.plotmeta.team"
+    material: KNOWLEDGE_BOOK
+    name: "&bTeamnotiz ändern"
+    lore:
+      - "&7Aktuell: &f{plot_team_note}"
+    actions:
+      - "TEAM_NOTE_PROMPT"
+  status-normal:
+    slot: 41
+    permission: "craftplayplotextras.plotmeta.status"
+    material: WHITE_DYE
+    name: "&fStatus: Normal"
+    actions:
+      - "SET_PLOT_STATUS:normal"
   back:
     slot: 45
     material: ARROW

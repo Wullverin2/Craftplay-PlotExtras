@@ -44,7 +44,7 @@ items:
       - "&7Infos und Schnellaktionen."
       - "&8Owner: &f{plot_owner}"
     actions:
-      - "OPEN:settings"
+      - "OPEN:plot-dashboard"
   entity-limits:
     slot: 31
     material: ARMOR_STAND
