@@ -1,6 +1,8 @@
 package de.craftplay.plotextras.gui;
 
 import com.plotsquared.core.plot.Plot;
+import de.craftplay.plotextras.audit.AuditLogEntry;
+import de.craftplay.plotextras.audit.AuditLogService;
 import de.craftplay.plotextras.backup.PlotBackupEntry;
 import de.craftplay.plotextras.backup.PlotBackupService;
 import de.craftplay.plotextras.integration.HeadDatabaseService;
@@ -64,6 +66,7 @@ public final class GuiManager implements Listener {
     private final PlotService plotService;
     private final EntityLimitService entityLimitService;
     private final PlotBackupService plotBackupService;
+    private final AuditLogService auditLogService;
     @SuppressWarnings("unused")
     private final PlayerDataManager playerDataManager;
     private final Map<String, Map<String, YamlConfiguration>> guiConfigs = new HashMap<>();
@@ -81,6 +84,7 @@ public final class GuiManager implements Listener {
             final PlotService plotService,
             final EntityLimitService entityLimitService,
             final PlotBackupService plotBackupService,
+            final AuditLogService auditLogService,
             final PlayerDataManager playerDataManager
     ) {
         this.plugin = plugin;
@@ -90,6 +94,7 @@ public final class GuiManager implements Listener {
         this.plotService = plotService;
         this.entityLimitService = entityLimitService;
         this.plotBackupService = plotBackupService;
+        this.auditLogService = auditLogService;
         this.playerDataManager = playerDataManager;
     }
 
@@ -258,6 +263,10 @@ public final class GuiManager implements Listener {
             if (itemSection == null || !itemSection.getBoolean("enabled", true)) {
                 continue;
             }
+            final String permission = itemSection.getString("permission", "");
+            if (!permission.isBlank() && !player.hasPermission(permission) && !player.hasPermission("craftplayplotextras.admin")) {
+                continue;
+            }
             final ItemStack item = buildItem(player, itemSection, null, placeholders);
             if (item == null) {
                 continue;
@@ -297,6 +306,7 @@ public final class GuiManager implements Listener {
             case "member-role-options" -> renderMemberRoleOptions(player, inventory, holder, dynamic, placeholders, page);
             case "entity-limits" -> renderEntityLimits(player, inventory, holder, dynamic, placeholders, page);
             case "plot-backups" -> renderPlotBackups(player, inventory, holder, dynamic, placeholders, page);
+            case "audit-log" -> renderAuditLog(player, inventory, holder, dynamic, placeholders, page);
             case "languages" -> renderLanguages(player, inventory, holder, dynamic, placeholders, page);
             default -> plugin.getLogger().warning("Unknown dynamic GUI type: " + type);
         }
@@ -505,6 +515,52 @@ public final class GuiManager implements Listener {
             if (item != null && isValidSlot(inventory, slot)) {
                 inventory.setItem(slot, item);
                 holder.setActions(slot, List.of("SELECT_BACKUP:" + backup.id() + ":backup-restore-confirm"));
+            }
+        }
+        renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
+    }
+
+    private void renderAuditLog(
+            final Player player,
+            final Inventory inventory,
+            final GuiHolder holder,
+            final ConfigurationSection dynamic,
+            final Map<String, String> placeholders,
+            final int page
+    ) {
+        if (!auditLogService.canView(player)) {
+            return;
+        }
+        final List<Integer> slots = SlotParser.slots(dynamic, "slots");
+        if (slots.isEmpty()) {
+            return;
+        }
+
+        final Plot plot = plotService.getCurrentPlot(player);
+        final boolean currentPlotOnly = dynamic.getBoolean("current-plot-only", false);
+        final int limit = Math.max(slots.size(), dynamic.getInt("limit", 250));
+        final List<AuditLogEntry> entries = currentPlotOnly && plot != null
+                ? auditLogService.listForPlot(plot, limit)
+                : auditLogService.listRecent(limit);
+        final PageSlice<AuditLogEntry> slice = slice(entries, slots.size(), page);
+        final ConfigurationSection template = dynamic.getConfigurationSection("entry-item");
+        for (int index = 0; index < slice.entries().size(); index++) {
+            final AuditLogEntry entry = slice.entries().get(index);
+            final Map<String, String> itemPlaceholders = new HashMap<>(placeholders);
+            itemPlaceholders.put("audit_id", entry.id());
+            itemPlaceholders.put("audit_created", BACKUP_TIME_FORMAT.format(entry.createdAt()));
+            itemPlaceholders.put("audit_actor", entry.actor());
+            itemPlaceholders.put("audit_action", entry.action());
+            itemPlaceholders.put("audit_details", entry.details());
+            itemPlaceholders.put("audit_world", entry.world());
+            itemPlaceholders.put("audit_plot", entry.plotId());
+            itemPlaceholders.put("audit_plot_key", entry.plotKey());
+
+            final ItemStack item = buildItem(player, template, null, itemPlaceholders);
+            final int slot = slots.get(index);
+            if (item != null && isValidSlot(inventory, slot)) {
+                inventory.setItem(slot, item);
+                holder.setActions(slot, List.of());
             }
         }
         renderNavigation(player, inventory, holder, dynamic, placeholders, slice);
@@ -964,6 +1020,7 @@ public final class GuiManager implements Listener {
             sendMessage(player, "flag-failed", Map.of("flag", flag));
             return;
         }
+        auditLogService.log(player, plot, "Flag geändert", flag + " -> " + (enabled ? "aktiv" : "inaktiv"));
         sendMessage(player, enabled ? "flag-enabled" : "flag-disabled", Map.of("flag", flag));
         scheduleOpen(player, holder.guiId(), holder.page());
     }
@@ -991,6 +1048,7 @@ public final class GuiManager implements Listener {
         }
         final String flagDisplay = languageManager.getString(player, "settings." + flag, humanizeSettingName(flag));
         if (plotService.setFlagValue(player, flag, value)) {
+            auditLogService.log(player, plot, "Einstellung geändert", flagDisplay + " -> " + valueDisplay);
             sendMessage(player, "flag-value-set", Map.of("flag", flagDisplay, "value", valueDisplay));
         } else {
             sendMessage(player, "flag-failed", Map.of("flag", flagDisplay));
@@ -1015,6 +1073,7 @@ public final class GuiManager implements Listener {
             return;
         }
         if (plotService.setBiome(player, biome)) {
+            auditLogService.log(player, plot, "Biom geändert", biomeDisplay);
             sendMessage(player, "biome-started", Map.of("biome", biomeDisplay));
         } else {
             sendMessage(player, "biome-failed", Map.of("biome", biomeDisplay));
@@ -1049,6 +1108,7 @@ public final class GuiManager implements Listener {
             return;
         }
         if (plotService.setHome(player)) {
+            auditLogService.log(player, plot, "Home gesetzt", "Plot-Home wurde an der aktuellen Position gesetzt.");
             sendMessage(player, "plot-home-set", Map.of());
         } else {
             sendMessage(player, "plot-home-failed", Map.of());
@@ -1080,6 +1140,7 @@ public final class GuiManager implements Listener {
         }
         player.closeInventory();
         if (plotService.setComponent(player, component, pattern)) {
+            auditLogService.log(player, plot, humanizeComponent(component) + " geändert", optionDisplay + " (" + pattern + ")");
             sendMessage(player, "component-started", Map.of("component", componentDisplay, "pattern", optionDisplay));
         } else {
             sendMessage(player, "component-failed", Map.of("component", componentDisplay, "pattern", optionDisplay));
@@ -1150,6 +1211,7 @@ public final class GuiManager implements Listener {
             final PlotRoleService.RoleResult result = plotService.createRole(player, roleId, displayName);
             if (result == PlotRoleService.RoleResult.SUCCESS) {
                 selectedRoles.put(player.getUniqueId(), roleId);
+                auditLogService.log(player, plotService.getCurrentPlot(player), "Rolle erstellt", roleId + " (" + displayName + ")");
                 sendMessage(player, "role-updated", Map.of("role", roleId, "name", displayName));
                 scheduleOpen(player, "role-edit", 0);
                 return;
@@ -1165,6 +1227,7 @@ public final class GuiManager implements Listener {
         final String roleId = input.roleId();
         final PlotRoleService.RoleResult result = plotService.renameRole(player, roleId, message);
         if (result == PlotRoleService.RoleResult.SUCCESS) {
+            auditLogService.log(player, plotService.getCurrentPlot(player), "Rolle umbenannt", roleId + " -> " + message);
             sendMessage(player, "role-updated", Map.of("role", roleId, "name", message));
             scheduleOpen(player, "role-edit", 0);
             return;
@@ -1187,6 +1250,7 @@ public final class GuiManager implements Listener {
         final String targetName = target.getName() == null ? message : target.getName();
         final PlotRoleService.RoleResult result = plotService.inviteMember(player, target.getUniqueId());
         if (result == PlotRoleService.RoleResult.SUCCESS) {
+            auditLogService.log(player, plotService.getCurrentPlot(player), "Mitglied eingeladen", targetName);
             sendMessage(player, "member-invited", Map.of("player", targetName));
             scheduleOpen(player, "members", 0);
             return;
@@ -1221,6 +1285,7 @@ public final class GuiManager implements Listener {
         final PlotRoleService.RoleResult result = plotService.deleteRole(player, roleId);
         if (result == PlotRoleService.RoleResult.SUCCESS) {
             selectedRoles.remove(player.getUniqueId());
+            auditLogService.log(player, plotService.getCurrentPlot(player), "Rolle gelöscht", roleId);
             sendMessage(player, "role-deleted", Map.of("role", roleId));
             scheduleOpen(player, "roles", 0);
             return;
@@ -1253,6 +1318,8 @@ public final class GuiManager implements Listener {
         final boolean enabled = !role.get().hasPermission(permission.get());
         final PlotRoleService.RoleResult result = plotService.setRolePermission(player, roleId, permission.get(), enabled);
         if (result == PlotRoleService.RoleResult.SUCCESS) {
+            auditLogService.log(player, plotService.getCurrentPlot(player), "Rollenrecht geändert",
+                    roleId + ": " + permission.get().key() + " -> " + (enabled ? "aktiv" : "inaktiv"));
             sendMessage(player, "role-permission-set", Map.of(
                     "role", roleId,
                     "permission", permission.get().displayName(),
@@ -1288,6 +1355,8 @@ public final class GuiManager implements Listener {
         final String roleId = PlotRoleService.normalizeRoleId(rawRoleId);
         final PlotRoleService.RoleResult result = plotService.assignRole(player, memberId, roleId);
         if (result == PlotRoleService.RoleResult.SUCCESS) {
+            auditLogService.log(player, plotService.getCurrentPlot(player), "Mitgliedsrolle geändert",
+                    memberName(memberId) + " -> " + roleId);
             sendMessage(player, "role-assigned", Map.of("player", memberName(memberId), "role", roleId));
             scheduleOpen(player, "member-roles", 0);
             return;
@@ -1307,6 +1376,7 @@ public final class GuiManager implements Listener {
         }
         final PlotRoleService.RoleResult result = plotService.unassignRole(player, memberId);
         if (result == PlotRoleService.RoleResult.SUCCESS) {
+            auditLogService.log(player, plotService.getCurrentPlot(player), "Mitgliedsrolle entfernt", memberName(memberId));
             sendMessage(player, "role-unassigned", Map.of("player", memberName(memberId)));
             scheduleOpen(player, "member-roles", 0);
             return;
@@ -1323,6 +1393,8 @@ public final class GuiManager implements Listener {
         }
         final PlotRoleService.RoleResult result = plotService.promoteMember(player, memberId);
         if (result == PlotRoleService.RoleResult.SUCCESS) {
+            auditLogService.log(player, plotService.getCurrentPlot(player), "Mitglied befördert",
+                    memberName(memberId) + " -> " + plotService.getMemberRoleDisplay(player, memberId));
             sendMessage(player, "role-promoted", Map.of("player", memberName(memberId), "role", plotService.getMemberRoleDisplay(player, memberId)));
             scheduleOpen(player, "member-roles", 0);
             return;
@@ -1339,6 +1411,8 @@ public final class GuiManager implements Listener {
         }
         final PlotRoleService.RoleResult result = plotService.demoteMember(player, memberId);
         if (result == PlotRoleService.RoleResult.SUCCESS) {
+            auditLogService.log(player, plotService.getCurrentPlot(player), "Mitglied degradiert",
+                    memberName(memberId) + " -> " + plotService.getMemberRoleDisplay(player, memberId));
             sendMessage(player, "role-demoted", Map.of("player", memberName(memberId), "role", plotService.getMemberRoleDisplay(player, memberId)));
             scheduleOpen(player, "member-roles", 0);
             return;
@@ -1377,6 +1451,7 @@ public final class GuiManager implements Listener {
         final PlotRoleService.RoleResult result = plotService.untrustMember(player, memberId);
         if (result == PlotRoleService.RoleResult.SUCCESS) {
             selectedMembers.remove(player.getUniqueId());
+            auditLogService.log(player, plotService.getCurrentPlot(player), "Mitglied entfernt", memberName);
             sendMessage(player, "member-removed", Map.of("player", memberName));
             scheduleOpen(player, "members", 0);
             return;
@@ -1417,6 +1492,7 @@ public final class GuiManager implements Listener {
             return;
         }
         if (plotBackupService.restoreBackup(player, backupId)) {
+            auditLogService.log(player, plotService.getCurrentPlot(player), "Backup wiederhergestellt", backupId);
             player.sendMessage(TextUtil.component("&aWiederherstellung von &e" + backupId + " &awurde gestartet."));
             player.closeInventory();
         } else {

@@ -73,6 +73,27 @@ items:
       - "&7Money: &f{cmi_money}"
       - "&7Jobs: &f{jobs}"
       - "&7Quests: &f{quests_completed}&7/&f{quests_total}"
+    actions:
+      - "OPEN:settings"
+  team-inspector:
+    slot: 46
+    permission: "craftplayplotextras.audit.view"
+    material: SPYGLASS
+    name: "&bTeam Inspector"
+    lore:
+      - "&7Review plot, logs and"
+      - "&7support data."
+    actions:
+      - "OPEN:team-inspector"
+  audit-log:
+    slot: 47
+    permission: "craftplayplotextras.audit.view"
+    material: WRITABLE_BOOK
+    name: "&bAudit Log"
+    lore:
+      - "&7Shows recent plot actions."
+    actions:
+      - "OPEN:audit-log"
   close:
     slot: 49
     material: BARRIER

@@ -10,6 +10,7 @@ import com.plotsquared.core.events.PlayerLeavePlotEvent;
 import com.plotsquared.core.events.PlayerPlotLimitEvent;
 import com.plotsquared.core.events.Result;
 import com.plotsquared.core.player.PlotPlayer;
+import de.craftplay.plotextras.audit.AuditLogService;
 import de.craftplay.plotextras.backup.PlotBackupService;
 import de.craftplay.plotextras.command.PlotExtrasCommand;
 import de.craftplay.plotextras.furniture.FurnitureProtectionManager;
@@ -67,6 +68,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
     private HeadDatabaseService headDatabaseService;
     private FurnitureProtectionManager furnitureProtectionManager;
     private EntityLimitService entityLimitService;
+    private AuditLogService auditLogService;
     private PlotBackupService plotBackupService;
     private RedstoneLagProtectionService redstoneLagProtectionService;
     private PlotRoleService plotRoleService;
@@ -99,15 +101,17 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         headDatabaseService = new HeadDatabaseService(this);
         furnitureProtectionManager = new FurnitureProtectionManager(this);
         entityLimitService = new EntityLimitService(this, languageManager);
+        auditLogService = new AuditLogService(this);
         plotRoleService = new PlotRoleService(this);
         plotService = new PlotService(this, plotRoleService);
         plotBackupService = new PlotBackupService(this, plotService);
-        redstoneLagProtectionService = new RedstoneLagProtectionService(this, plotService);
-        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, playerDataManager);
+        redstoneLagProtectionService = new RedstoneLagProtectionService(this, plotService, auditLogService);
+        guiManager = new GuiManager(this, languageManager, placeholderService, headDatabaseService, plotService, entityLimitService, plotBackupService, auditLogService, playerDataManager);
 
         furnitureProtectionManager.registerFlags();
         furnitureProtectionManager.reload();
         entityLimitService.reload();
+        auditLogService.load();
         playerDataManager.load();
         plotRoleService.load();
         plotBackupService.load();
@@ -142,6 +146,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
         furnitureProtectionManager.registerFlags();
         furnitureProtectionManager.reload();
         entityLimitService.reload();
+        auditLogService.load();
         playerDataManager.load();
         plotRoleService.load();
         plotBackupService.load();
@@ -171,6 +176,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin implements Liste
 
     public PlotBackupService getPlotBackupService() {
         return plotBackupService;
+    }
+
+    public AuditLogService getAuditLogService() {
+        return auditLogService;
     }
 
     public RedstoneLagProtectionService getRedstoneLagProtectionService() {

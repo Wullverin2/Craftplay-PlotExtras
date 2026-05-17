@@ -1,6 +1,7 @@
 package de.craftplay.plotextras.command;
 
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
+import de.craftplay.plotextras.audit.AuditLogEntry;
 import de.craftplay.plotextras.backup.PlotBackupEntry;
 import de.craftplay.plotextras.language.LanguageDefinition;
 import de.craftplay.plotextras.plot.PlotRole;
@@ -84,6 +85,19 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return handleBackups(player, args);
         }
 
+        if (subCommand.equals("audit") || subCommand.equals("log") || subCommand.equals("logs")) {
+            return handleAudit(player, args);
+        }
+
+        if (subCommand.equals("inspect") || subCommand.equals("inspector") || subCommand.equals("team")) {
+            if (!plugin.getAuditLogService().canView(player)) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            plugin.getGuiManager().open(player, "team-inspector", 0);
+            return true;
+        }
+
         if (subCommand.equals("open") || subCommand.equals("gui")) {
             final String gui = args.length >= 2 ? args[1] : "main";
             plugin.getGuiManager().open(player, gui, 0);
@@ -91,6 +105,38 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
 
         player.sendMessage(TextUtil.component(plugin.getLanguageManager().getRawMessage(player, "help")));
+        return true;
+    }
+
+    private boolean handleAudit(final Player player, final String[] args) {
+        if (!plugin.getAuditLogService().canView(player)) {
+            plugin.getLanguageManager().send(player, "no-permission");
+            return true;
+        }
+        if (args.length >= 2 && args[1].equalsIgnoreCase("gui")) {
+            plugin.getGuiManager().open(player, "audit-log", 0);
+            return true;
+        }
+
+        final Plot plot = plugin.getPlotService().getCurrentPlot(player);
+        final boolean currentPlotOnly = args.length >= 2 && (args[1].equalsIgnoreCase("plot") || args[1].equalsIgnoreCase("hier"));
+        final List<AuditLogEntry> entries = currentPlotOnly && plot != null
+                ? plugin.getAuditLogService().listForPlot(plot, 10)
+                : plugin.getAuditLogService().listRecent(10);
+        player.sendMessage(TextUtil.component("&8&m----------------"));
+        player.sendMessage(TextUtil.component("&aAuditlog &8(" + entries.size() + ")"));
+        if (entries.isEmpty()) {
+            player.sendMessage(TextUtil.component("&7Keine Einträge gefunden."));
+        }
+        for (final AuditLogEntry entry : entries) {
+            player.sendMessage(TextUtil.component("&e" + BACKUP_TIME_FORMAT.format(entry.createdAt())
+                    + " &7| &f" + entry.actor()
+                    + " &7| &a" + entry.action()
+                    + " &7| &f" + entry.world() + " " + entry.plotId()
+                    + " &7| &8" + entry.details()));
+        }
+        player.sendMessage(TextUtil.component("&8/pe audit gui &7- Auditlog-GUI öffnen"));
+        player.sendMessage(TextUtil.component("&8&m----------------"));
         return true;
     }
 
@@ -483,7 +529,7 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (args.length == 1) {
-            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs"), args[0]);
+            return filter(List.of("reload", "open", "language", "role", "roles", "rollen", "backup", "backups", "redstone", "rs", "audit", "inspect", "team"), args[0]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("open")) {
             return filter(plugin.getGuiManager().getGuiIds(), args[1]);
@@ -496,6 +542,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (args.length >= 2 && isRedstoneCommand(args[0])) {
             return completeRedstoneCommand(args);
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("audit")) {
+            return filter(List.of("gui", "plot"), args[1]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("language")) {
             final List<String> languages = new ArrayList<>();

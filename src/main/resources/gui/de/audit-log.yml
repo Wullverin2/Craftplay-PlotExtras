@@ -1,0 +1,65 @@
+# Auditlog-GUI. Es zeigt aktuelle Einträge aus data/audit-log.yml.
+title: "&8Auditlog"
+size: 54
+
+fill:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  info:
+    slot: 4
+    material: WRITABLE_BOOK
+    name: "&bAuditlog"
+    lore:
+      - "&7Protokolliert wichtige"
+      - "&7Plot-, GUI- und Teamaktionen."
+  current-plot:
+    slot: 45
+    material: SPYGLASS
+    name: "&eAktuelles Plot"
+    lore:
+      - "&7Plot: &f{plot_world} {plot_id}"
+      - "&7Nutze &f/pe audit plot&7,"
+      - "&7um nur dieses Plot zu filtern."
+  back:
+    slot: 46
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "OPEN:team-inspector"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"
+
+dynamic:
+  enabled: true
+  type: audit-log
+  slots: "10-16,19-25,28-34"
+  limit: 250
+  current-plot-only: false
+  entry-item:
+    material: PAPER
+    name: "&e{audit_action}"
+    lore:
+      - "&7Zeit: &f{audit_created}"
+      - "&7Akteur: &f{audit_actor}"
+      - "&7Plot: &f{audit_world} {audit_plot}"
+      - "&7Details: &f{audit_details}"
+      - "&8ID: {audit_id}"
+  previous-item:
+    slot: 48
+    material: ARROW
+    name: "&eVorherige Seite"
+    lore:
+      - "&7Seite &f{page}&7/&f{pages}"
+  next-item:
+    slot: 50
+    material: ARROW
+    name: "&eNächste Seite"
+    lore:
+      - "&7Seite &f{page}&7/&f{pages}"

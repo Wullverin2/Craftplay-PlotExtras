@@ -1,0 +1,91 @@
+# Staff GUI for support, moderation and administration.
+title: "&8Team Inspector"
+size: 54
+
+fill:
+  enabled: true
+  material: GRAY_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 13
+    material: SPYGLASS
+    name: "&bPlot Overview"
+    lore:
+      - "&7Plot: &f{plot_world} {plot_id}"
+      - "&7Owner: &f{plot_owner}"
+      - "&7Role here: &f{plot_role}"
+      - "&7Members: &f{plot_members}"
+      - "&7Trusted: &f{plot_trusted}"
+      - "&7Denied: &f{plot_denied}"
+      - "&7Plot limit: &f{plot_count}&7/&f{plot_max}"
+  audit:
+    slot: 20
+    material: WRITABLE_BOOK
+    name: "&aAudit Log"
+    lore:
+      - "&7Recent plot and staff actions."
+    actions:
+      - "OPEN:audit-log"
+  backups:
+    slot: 21
+    material: CHEST
+    name: "&aBackups"
+    lore:
+      - "&7View backups and prepare restores."
+    actions:
+      - "OPEN:backups"
+  members:
+    slot: 22
+    material: PLAYER_HEAD
+    name: "&aMembers and Roles"
+    lore:
+      - "&7Opens member management."
+    actions:
+      - "OPEN:members"
+  flags:
+    slot: 23
+    material: REDSTONE_TORCH
+    name: "&aFlags"
+    lore:
+      - "&7Review and edit plot flags."
+    actions:
+      - "OPEN:flags"
+  limits:
+    slot: 24
+    material: ARMOR_STAND
+    name: "&aEntity Limits"
+    lore:
+      - "&7Shows entities and limits."
+    actions:
+      - "OPEN:entity-limits"
+  redstone-enable:
+    slot: 31
+    material: REDSTONE_BLOCK
+    name: "&cEnable Redstone"
+    lore:
+      - "&7Re-enables redstone on"
+      - "&7the current plot."
+    actions:
+      - "PLAYER_COMMAND:pe redstone enable"
+  plot-info:
+    slot: 33
+    material: PAPER
+    name: "&aPlotSquared Info"
+    lore:
+      - "&7Runs /plot info."
+    commands:
+      - "player:plot info"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eBack"
+    actions:
+      - "BACK"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cClose"
+    actions:
+      - "CLOSE"

@@ -1,0 +1,96 @@
+# Team-GUI für Support, Moderation und Administration.
+title: "&8Team-Inspektor"
+size: 54
+
+fill:
+  enabled: true
+  material: GRAY_STAINED_GLASS_PANE
+  name: " "
+
+items:
+  overview:
+    slot: 13
+    material: SPYGLASS
+    name: "&bPlotübersicht"
+    lore:
+      - "&7Plot: &f{plot_world} {plot_id}"
+      - "&7Besitzer: &f{plot_owner}"
+      - "&7Rolle hier: &f{plot_role}"
+      - "&7Mitglieder: &f{plot_members}"
+      - "&7Vertraute: &f{plot_trusted}"
+      - "&7Gesperrte: &f{plot_denied}"
+      - "&7Plotlimit: &f{plot_count}&7/&f{plot_max}"
+  audit:
+    slot: 20
+    material: WRITABLE_BOOK
+    name: "&aAuditlog"
+    lore:
+      - "&7Letzte Aktionen auf Plots"
+      - "&7und durch Teammitglieder."
+    actions:
+      - "OPEN:audit-log"
+  backups:
+    slot: 21
+    material: CHEST
+    name: "&aBackups"
+    lore:
+      - "&7Backups ansehen und"
+      - "&7Wiederherstellungen vorbereiten."
+    actions:
+      - "OPEN:backups"
+  members:
+    slot: 22
+    material: PLAYER_HEAD
+    name: "&aMitglieder und Rollen"
+    lore:
+      - "&7Öffnet die Mitgliederverwaltung."
+    actions:
+      - "OPEN:members"
+  flags:
+    slot: 23
+    material: REDSTONE_TORCH
+    name: "&aFlags prüfen"
+    lore:
+      - "&7Aktuelle Plotflags ansehen"
+      - "&7und bei Rechten ändern."
+    actions:
+      - "OPEN:flags"
+  limits:
+    slot: 24
+    material: ARMOR_STAND
+    name: "&aEntity-Limits"
+    lore:
+      - "&7Zeigt vorhandene Entities"
+      - "&7und gesetzte Limits."
+    actions:
+      - "OPEN:entity-limits"
+  redstone-enable:
+    slot: 31
+    material: REDSTONE_BLOCK
+    name: "&cRedstone aktivieren"
+    lore:
+      - "&7Aktiviert Redstone auf"
+      - "&7dem aktuellen Plot wieder."
+      - "&8Benötigt Redstone-Adminrecht."
+    actions:
+      - "PLAYER_COMMAND:pe redstone enable"
+  plot-info:
+    slot: 33
+    material: PAPER
+    name: "&aPlotSquared Info"
+    lore:
+      - "&7Führt /plot info aus."
+    commands:
+      - "player:plot info"
+  back:
+    slot: 45
+    material: ARROW
+    name: "&eZurück"
+    actions:
+      - "BACK"
+  close:
+    slot: 49
+    material: BARRIER
+    name: "&cSchließen"
+    actions:
+      - "CLOSE"

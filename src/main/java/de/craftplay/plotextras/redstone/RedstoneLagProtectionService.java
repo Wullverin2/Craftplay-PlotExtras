@@ -3,6 +3,7 @@ package de.craftplay.plotextras.redstone;
 import com.plotsquared.bukkit.util.BukkitUtil;
 import com.plotsquared.core.plot.Plot;
 import com.plotsquared.core.plot.PlotId;
+import de.craftplay.plotextras.audit.AuditLogService;
 import de.craftplay.plotextras.plot.PlotService;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -42,6 +43,7 @@ public final class RedstoneLagProtectionService implements Listener {
 
     private final JavaPlugin plugin;
     private final PlotService plotService;
+    private final AuditLogService auditLogService;
     private final Map<String, Counter> counters = new ConcurrentHashMap<>();
     private final Map<String, RedstoneAlert> alerts = new ConcurrentHashMap<>();
     private final Set<String> disabledPlotKeys = ConcurrentHashMap.newKeySet();
@@ -50,9 +52,10 @@ public final class RedstoneLagProtectionService implements Listener {
 
     private Settings settings = Settings.defaults();
 
-    public RedstoneLagProtectionService(final JavaPlugin plugin, final PlotService plotService) {
+    public RedstoneLagProtectionService(final JavaPlugin plugin, final PlotService plotService, final AuditLogService auditLogService) {
         this.plugin = plugin;
         this.plotService = plotService;
+        this.auditLogService = auditLogService;
     }
 
     public void reload() {
@@ -204,7 +207,11 @@ public final class RedstoneLagProtectionService implements Listener {
         if (plot == null) {
             return false;
         }
-        return enableRedstone(plot);
+        final boolean enabled = enableRedstone(plot);
+        if (enabled) {
+            auditLogService.log(player, plot, "Redstone aktiviert", "Alarm " + alert.id() + " wurde wieder freigegeben.");
+        }
+        return enabled;
     }
 
     public boolean enableRedstoneAtCurrentPlot(final Player player) {
@@ -213,7 +220,11 @@ public final class RedstoneLagProtectionService implements Listener {
         }
 
         final Plot plot = plotService.getCurrentPlot(player);
-        return plot != null && enableRedstone(plot);
+        final boolean enabled = plot != null && enableRedstone(plot);
+        if (enabled) {
+            auditLogService.log(player, plot, "Redstone aktiviert", "Redstone wurde über den aktuellen Plot wieder freigegeben.");
+        }
+        return enabled;
     }
 
     private boolean enableRedstone(final Plot plot) {
@@ -302,6 +313,8 @@ public final class RedstoneLagProtectionService implements Listener {
             pendingAlertIds.add(alert.id());
             plugin.getLogger().warning("Redstone lag alert queued for first online team member: " + alert.id());
         }
+        auditLogService.log("System", basePlot, "Redstone deaktiviert",
+                "Lagmaschine erkannt: " + eventCount + " Events, Quelle: " + source + ", Alarm: " + alert.id());
     }
 
     private void sendAlert(final Player player, final RedstoneAlert alert, final boolean delayed) {

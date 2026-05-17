@@ -63,6 +63,12 @@ redstone-lag-protection:
     # Zaehlt Trichter-Itembewegungen, weil sie oft Teil von Lagmaschinen sind.
     hoppers: true
 
+audit-log:
+  # Speichert wichtige Plot-, GUI- und Teamaktionen in data/audit-log.yml.
+  enabled: true
+  # Maximale Anzahl gespeicherter Einträge. Ältere Einträge werden automatisch entfernt.
+  max-entries: 5000
+
 integrations:
   # Diese Werte werden über PlaceholderAPI aufgelöst und stehen in GUI-Dateien als
   # {jobs}, {cmi_money}, {quests_completed} und {quests_total} zur Verfügung.
