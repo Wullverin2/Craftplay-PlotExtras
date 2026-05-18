@@ -63,6 +63,10 @@ public final class PlotSquaredFlagService {
                 || hasPlotSquaredPermission(player, "plots.set.flag." + flagName + "." + targetValue);
     }
 
+    public boolean hasPermission(final Player player, final String permission) {
+        return hasPlotSquaredPermission(player, permission);
+    }
+
     public void toggleBooleanFlag(final Player player, final String flagName) {
         final boolean current = isFlagEnabled(player, flagName);
         final boolean target = !current;

@@ -4,7 +4,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 2
+file-version: 3
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
@@ -102,13 +102,13 @@ buttons:
     name: "&aEinstellungen"
     # Beschreibung unter dem Buttonnamen.
     lore:
-      - "&7Öffnet die PlotSquared"
-      - "&7Einstellungen."
+      - "&7Öffnet Homes, Wetter,"
+      - "&7Biome und Zeit."
     # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
     commands:
-      - "plot settings"
+      - "open-menu:settings:homes"
     # Wenn true, wird das Menü nach dem Klick geschlossen.
-    close: true
+    close: false
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""
   help:

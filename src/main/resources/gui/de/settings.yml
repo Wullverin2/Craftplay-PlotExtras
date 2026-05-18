@@ -1,0 +1,358 @@
+# Deutsches Einstellungs-Untermenü.
+# Diese Datei steuert das Menü, in dem Spieler Plot-Homes, Wetter, Biome und Zeit ändern.
+# Alle Tabs und Buttons können bei Name, Slot, Material, Lore, Commands und Permission angepasst werden.
+
+# Dateiversion dieser GUI-Datei.
+# Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
+file-version: 1
+
+# Titel des Inventars. Platzhalter: {tab}
+title: "&8Plot-Einstellungen: {tab}"
+# Größe des Inventars. Erlaubt sind 9, 18, 27, 36, 45 oder 54 Slots.
+size: 54
+# Tab, der geöffnet wird, wenn kein Tab angegeben wurde.
+default-tab: homes
+# Füllitem für leere Slots.
+filler:
+  # Wenn true, werden leere Slots mit dem unten angegebenen Material gefüllt.
+  enabled: true
+  # Materialname aus Minecraft/Spigot.
+  material: BLACK_STAINED_GLASS_PANE
+  # Anzeigename des Füllitems. &r macht den Namen leer/unauffällig.
+  name: "&r"
+# Tabs im Einstellungsmenü.
+# Jeder Tab hat einen eigenen Button oben im Menü und darunter eigene Aktionsbuttons.
+tabs:
+  homes:
+    # Slot des Tab-Buttons.
+    slot: 10
+    # Item des Tab-Buttons.
+    material: COMPASS
+    # Anzeigename des Tab-Buttons.
+    name: "&aPlot-Homes"
+    # Beschreibung des Tab-Buttons.
+    lore:
+      - "&7Teleportiere dich zum Plot-Home"
+      - "&7oder setze es neu."
+    # Interne Aktion zum Öffnen dieses Tabs.
+    commands:
+      - "open-menu:settings:homes"
+    # Optional: Permission, damit der Tab sichtbar ist.
+    permission: ""
+    # Buttons innerhalb dieses Tabs.
+    buttons:
+      open-home:
+        # Slot im Inventar.
+        slot: 22
+        # Item dieses Buttons.
+        material: ENDER_PEARL
+        # Anzeigename des Buttons.
+        name: "&aPlot-Home nutzen"
+        # Beschreibung des Buttons.
+        lore:
+          - "&7Teleportiert dich zu deinem"
+          - "&7aktuellen Plot-Home."
+        # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
+        commands:
+          - "plot home"
+        # Wenn true, wird das Menü nach dem Klick geschlossen.
+        close: true
+        # Optional: Permission, damit der Button sichtbar ist.
+        permission: "plots.home"
+      set-home:
+        slot: 23
+        material: LODESTONE
+        name: "&aPlot-Home setzen"
+        lore:
+          - "&7Setzt das Home deines Plots"
+          - "&7auf deine aktuelle Position."
+        commands:
+          - "plot sethome"
+        close: false
+        permission: "plots.set.home"
+      reset-home:
+        slot: 24
+        material: BARRIER
+        name: "&cPlot-Home entfernen"
+        lore:
+          - "&7Entfernt das gesetzte Home"
+          - "&7und nutzt wieder den Standard."
+        commands:
+          - "plot sethome none"
+        close: false
+        permission: "plots.set.home"
+      back:
+        slot: 49
+        material: ARROW
+        name: "&cZurück"
+        lore:
+          - "&7Zurück zum Hauptmenü."
+        commands:
+          - "open-menu:main"
+        close: false
+        permission: ""
+      close:
+        slot: 53
+        material: BARRIER
+        name: "&cSchließen"
+        lore:
+          - "&7Schließt dieses Menü."
+        commands: []
+        close: true
+        permission: ""
+  weather:
+    slot: 12
+    material: SUNFLOWER
+    name: "&aWetter"
+    lore:
+      - "&7Ändere das Wetter"
+      - "&7auf deinem Plot."
+    commands:
+      - "open-menu:settings:weather"
+    permission: ""
+    buttons:
+      clear:
+        slot: 21
+        material: SUNFLOWER
+        name: "&aKlar"
+        lore:
+          - "&7Setzt das Plot-Wetter"
+          - "&7auf klaren Himmel."
+        commands:
+          - "plot flag set weather clear"
+        close: false
+        permission: "plots.set.flag.weather"
+      rain:
+        slot: 23
+        material: WATER_BUCKET
+        name: "&bRegen"
+        lore:
+          - "&7Setzt das Plot-Wetter"
+          - "&7auf Regen."
+        commands:
+          - "plot flag set weather rain"
+        close: false
+        permission: "plots.set.flag.weather"
+      reset:
+        slot: 25
+        material: CAULDRON
+        name: "&eWetter zurücksetzen"
+        lore:
+          - "&7Nutzt wieder das normale"
+          - "&7Wetter der Plotwelt."
+        commands:
+          - "plot flag set weather reset"
+        close: false
+        permission: "plots.set.flag.weather"
+      back:
+        slot: 49
+        material: ARROW
+        name: "&cZurück"
+        lore:
+          - "&7Zurück zum Hauptmenü."
+        commands:
+          - "open-menu:main"
+        close: false
+        permission: ""
+      close:
+        slot: 53
+        material: BARRIER
+        name: "&cSchließen"
+        lore:
+          - "&7Schließt dieses Menü."
+        commands: []
+        close: true
+        permission: ""
+  biome:
+    slot: 14
+    material: GRASS_BLOCK
+    name: "&aBiom"
+    lore:
+      - "&7Ändere das Biom"
+      - "&7deines Plots."
+    commands:
+      - "open-menu:settings:biome"
+    permission: ""
+    buttons:
+      plains:
+        slot: 19
+        material: GRASS_BLOCK
+        name: "&aEbene"
+        lore:
+          - "&7Setzt das Plot-Biom"
+          - "&7auf Ebene."
+        commands:
+          - "plot biome plains"
+        close: false
+        permission: "plots.set.biome"
+      forest:
+        slot: 20
+        material: OAK_LOG
+        name: "&aWald"
+        lore:
+          - "&7Setzt das Plot-Biom"
+          - "&7auf Wald."
+        commands:
+          - "plot biome forest"
+        close: false
+        permission: "plots.set.biome"
+      desert:
+        slot: 21
+        material: SAND
+        name: "&eWüste"
+        lore:
+          - "&7Setzt das Plot-Biom"
+          - "&7auf Wüste."
+        commands:
+          - "plot biome desert"
+        close: false
+        permission: "plots.set.biome"
+      jungle:
+        slot: 22
+        material: JUNGLE_LOG
+        name: "&aDschungel"
+        lore:
+          - "&7Setzt das Plot-Biom"
+          - "&7auf Dschungel."
+        commands:
+          - "plot biome jungle"
+        close: false
+        permission: "plots.set.biome"
+      swamp:
+        slot: 23
+        material: VINE
+        name: "&2Sumpf"
+        lore:
+          - "&7Setzt das Plot-Biom"
+          - "&7auf Sumpf."
+        commands:
+          - "plot biome swamp"
+        close: false
+        permission: "plots.set.biome"
+      taiga:
+        slot: 24
+        material: SPRUCE_LOG
+        name: "&aTaiga"
+        lore:
+          - "&7Setzt das Plot-Biom"
+          - "&7auf Taiga."
+        commands:
+          - "plot biome taiga"
+        close: false
+        permission: "plots.set.biome"
+      reset:
+        slot: 25
+        material: COMPASS
+        name: "&eBiom zurücksetzen"
+        lore:
+          - "&7Setzt das Biom auf den"
+          - "&7hier konfigurierten Standard."
+          - "&8Default: plains"
+        commands:
+          - "plot biome plains"
+        close: false
+        permission: "plots.set.biome"
+      back:
+        slot: 49
+        material: ARROW
+        name: "&cZurück"
+        lore:
+          - "&7Zurück zum Hauptmenü."
+        commands:
+          - "open-menu:main"
+        close: false
+        permission: ""
+      close:
+        slot: 53
+        material: BARRIER
+        name: "&cSchließen"
+        lore:
+          - "&7Schließt dieses Menü."
+        commands: []
+        close: true
+        permission: ""
+  time:
+    slot: 16
+    material: CLOCK
+    name: "&aZeit"
+    lore:
+      - "&7Ändere die Uhrzeit"
+      - "&7auf deinem Plot."
+    commands:
+      - "open-menu:settings:time"
+    permission: ""
+    buttons:
+      sunrise:
+        slot: 20
+        material: ORANGE_DYE
+        name: "&6Sonnenaufgang"
+        lore:
+          - "&7Setzt die Plot-Zeit"
+          - "&7auf den Morgen."
+        commands:
+          - "plot flag set time 1000"
+        close: false
+        permission: "plots.set.flag.time"
+      day:
+        slot: 21
+        material: SUNFLOWER
+        name: "&eTag"
+        lore:
+          - "&7Setzt die Plot-Zeit"
+          - "&7auf hellen Tag."
+        commands:
+          - "plot flag set time 6000"
+        close: false
+        permission: "plots.set.flag.time"
+      evening:
+        slot: 22
+        material: RED_BED
+        name: "&6Abend"
+        lore:
+          - "&7Setzt die Plot-Zeit"
+          - "&7auf den Abend."
+        commands:
+          - "plot flag set time 12000"
+        close: false
+        permission: "plots.set.flag.time"
+      night:
+        slot: 23
+        material: BLACK_CONCRETE
+        name: "&9Nacht"
+        lore:
+          - "&7Setzt die Plot-Zeit"
+          - "&7auf Nacht."
+        commands:
+          - "plot flag set time 18000"
+        close: false
+        permission: "plots.set.flag.time"
+      reset:
+        slot: 24
+        material: CLOCK
+        name: "&eZeit zurücksetzen"
+        lore:
+          - "&7Entfernt die Plot-Zeit"
+          - "&7und nutzt wieder den Standard."
+        commands:
+          - "plot flag remove time"
+        close: false
+        permission: "plots.flag.remove"
+      back:
+        slot: 49
+        material: ARROW
+        name: "&cZurück"
+        lore:
+          - "&7Zurück zum Hauptmenü."
+        commands:
+          - "open-menu:main"
+        close: false
+        permission: ""
+      close:
+        slot: 53
+        material: BARRIER
+        name: "&cSchließen"
+        lore:
+          - "&7Schließt dieses Menü."
+        commands: []
+        close: true
+        permission: ""

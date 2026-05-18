@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 2
+file-version: 3
 
 # Spracheinstellungen für Nachrichten und GUI-Auswahl.
 language:
@@ -22,3 +22,6 @@ gui:
   # Datei des Flag-Untermenüs. Geladen wird gui/<sprache>/<flags-menu>.
   # Dieses Menü zeigt Boolean-Flags von PlotSquared mit Status und Umschaltfunktion.
   flags-menu: flags.yml
+  # Datei des Einstellungs-Untermenüs. Geladen wird gui/<sprache>/<settings-menu>.
+  # Dieses Menü enthält Tabs für Plot-Homes, Wetter, Biome und Zeit.
+  settings-menu: settings.yml

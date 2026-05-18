@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -32,6 +33,7 @@ public final class PlotMenuManager implements Listener {
     private final Map<Integer, MenuButton> mainButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> flagButtonsBySlot = new HashMap<>();
     private final Map<Integer, Map<Integer, FlagMenuEntry>> flagsByPageAndSlot = new HashMap<>();
+    private final Map<String, SettingsTab> settingsTabs = new LinkedHashMap<>();
 
     private String mainTitle;
     private int mainSize;
@@ -44,6 +46,11 @@ public final class PlotMenuManager implements Listener {
     private String statusEnabled;
     private String statusDisabled;
     private long reopenDelayTicks;
+    private String settingsTitlePattern;
+    private int settingsSize;
+    private ItemStack settingsFiller;
+    private boolean settingsLoaded;
+    private String defaultSettingsTab;
 
     public PlotMenuManager(
             final CraftplayPlotExtrasPlugin plugin,
@@ -59,8 +66,10 @@ public final class PlotMenuManager implements Listener {
         mainButtonsBySlot.clear();
         flagButtonsBySlot.clear();
         flagsByPageAndSlot.clear();
+        settingsTabs.clear();
         mainLoaded = false;
         flagsLoaded = false;
+        settingsLoaded = false;
 
         final YamlConfiguration menuConfig = loadMenuConfig(plugin.getConfig().getString("gui.main-menu", "main.yml"));
         if (menuConfig == null) {
@@ -93,6 +102,21 @@ public final class PlotMenuManager implements Listener {
         loadButtons(flagsConfig, flagButtonsBySlot, flagsSize);
         loadFlags(flagsConfig);
         flagsLoaded = true;
+
+        final YamlConfiguration settingsConfig = loadMenuConfig(plugin.getConfig().getString("gui.settings-menu", "settings.yml"));
+        if (settingsConfig == null) {
+            settingsTitlePattern = "&8Plot-Einstellungen: {tab}";
+            settingsSize = 54;
+            settingsFiller = null;
+            return;
+        }
+
+        settingsTitlePattern = settingsConfig.getString("title", "&8Plot-Einstellungen: {tab}");
+        settingsSize = normalizeSize(settingsConfig.getInt("size", 54));
+        settingsFiller = createFiller(settingsConfig);
+        defaultSettingsTab = settingsConfig.getString("default-tab", "homes");
+        loadSettingsTabs(settingsConfig);
+        settingsLoaded = true;
     }
 
     public void openMainMenu(final Player player) {
@@ -158,6 +182,52 @@ public final class PlotMenuManager implements Listener {
         player.openInventory(inventory);
     }
 
+    public void openSettingsMenu(final Player player) {
+        openSettingsMenu(player, defaultSettingsTab);
+    }
+
+    public void openSettingsMenu(final Player player, final String requestedTabId) {
+        if (!settingsLoaded || settingsTabs.isEmpty()) {
+            languageManager.send(player, "menu-missing");
+            return;
+        }
+        if (!flagService.isOnPlot(player)) {
+            languageManager.send(player, "no-plot");
+            return;
+        }
+
+        final SettingsTab tab = settingsTab(requestedTabId);
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("tab", tab.getSelector().getName());
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("settings", tab.getId()),
+                settingsSize,
+                Text.color(applyPlaceholders(settingsTitlePattern, placeholders))
+        );
+        if (settingsFiller != null) {
+            for (int slot = 0; slot < settingsSize; slot++) {
+                inventory.setItem(slot, settingsFiller);
+            }
+        }
+
+        for (final SettingsTab settingsTab : settingsTabs.values()) {
+            final MenuButton selector = settingsTab.getSelector();
+            if (!canSee(player, selector)) {
+                continue;
+            }
+            inventory.setItem(selector.getSlot(), createButtonItem(selector));
+        }
+
+        for (final MenuButton button : tab.getButtonsBySlot().values()) {
+            if (!canSee(player, button)) {
+                continue;
+            }
+            inventory.setItem(button.getSlot(), createButtonItem(button));
+        }
+
+        player.openInventory(inventory);
+    }
+
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) {
@@ -176,6 +246,10 @@ public final class PlotMenuManager implements Listener {
         final PlotMenuHolder holder = (PlotMenuHolder) event.getInventory().getHolder();
         if ("flags".equalsIgnoreCase(holder.getMenuId())) {
             handleFlagsClick(player, holder.getPage(), event.getSlot());
+            return;
+        }
+        if ("settings".equalsIgnoreCase(holder.getMenuId())) {
+            handleSettingsClick(player, holder.getTabId(), event.getSlot());
             return;
         }
 
@@ -257,6 +331,71 @@ public final class PlotMenuManager implements Listener {
         }
     }
 
+    private void loadSettingsTabs(final YamlConfiguration menuConfig) {
+        final ConfigurationSection section = menuConfig.getConfigurationSection("tabs");
+        if (section == null) {
+            return;
+        }
+
+        for (final String id : section.getKeys(false)) {
+            final String path = "tabs." + id + ".";
+            final int slot = menuConfig.getInt(path + "slot", -1);
+            if (slot < 0 || slot >= settingsSize) {
+                plugin.getLogger().warning("Einstellungstab '" + id + "' hat einen ungültigen Slot: " + slot);
+                continue;
+            }
+
+            final Material material = material(menuConfig.getString(path + "material", "BOOK"), Material.BOOK);
+            final String name = menuConfig.getString(path + "name", "&a" + id);
+            final List<String> lore = menuConfig.getStringList(path + "lore");
+            final List<String> commands = menuConfig.getStringList(path + "commands");
+            final String permission = menuConfig.getString(path + "permission", "");
+            final MenuButton selector = new MenuButton(
+                    id,
+                    slot,
+                    material,
+                    name,
+                    lore,
+                    commands.isEmpty() ? Collections.singletonList("open-menu:settings:" + id) : commands,
+                    false,
+                    permission
+            );
+            final Map<Integer, MenuButton> tabButtons = new HashMap<>();
+            loadButtonsFromSection(menuConfig, path + "buttons", tabButtons, settingsSize);
+            settingsTabs.put(id.toLowerCase(Locale.ROOT), new SettingsTab(id.toLowerCase(Locale.ROOT), selector, tabButtons));
+        }
+    }
+
+    private void loadButtonsFromSection(
+            final YamlConfiguration menuConfig,
+            final String sectionPath,
+            final Map<Integer, MenuButton> target,
+            final int menuSize
+    ) {
+        final ConfigurationSection section = menuConfig.getConfigurationSection(sectionPath);
+        if (section == null) {
+            return;
+        }
+
+        for (final String id : section.getKeys(false)) {
+            final String path = sectionPath + "." + id + ".";
+            final int slot = menuConfig.getInt(path + "slot", -1);
+            if (slot < 0 || slot >= menuSize) {
+                plugin.getLogger().warning("Menübutton '" + id + "' hat einen ungültigen Slot: " + slot);
+                continue;
+            }
+
+            final Material material = material(menuConfig.getString(path + "material", "STONE_BUTTON"), Material.STONE_BUTTON);
+            final String name = menuConfig.getString(path + "name", "&a" + id);
+            final List<String> lore = menuConfig.getStringList(path + "lore");
+            final List<String> commands = menuConfig.getStringList(path + "commands");
+            final boolean close = menuConfig.getBoolean(path + "close", true);
+            final String permission = menuConfig.getString(path + "permission", "");
+
+            target.put(slot, new MenuButton(id, slot, material, name, lore, commands, close, permission));
+        }
+    }
+
     private ItemStack createFiller(final YamlConfiguration menuConfig) {
         if (!menuConfig.getBoolean("filler.enabled", true)) {
             return null;
@@ -314,9 +453,14 @@ public final class PlotMenuManager implements Listener {
     }
 
     private boolean canSee(final Player player, final MenuButton button) {
-        return button.getPermission() == null
-                || button.getPermission().trim().isEmpty()
-                || player.hasPermission(button.getPermission());
+        if (button.getPermission() == null || button.getPermission().trim().isEmpty()) {
+            return true;
+        }
+        final String permission = button.getPermission().trim();
+        if (permission.toLowerCase(Locale.ROOT).startsWith("plots.")) {
+            return flagService.hasPermission(player, permission);
+        }
+        return player.hasPermission(permission);
     }
 
     private boolean canSeeFlag(final Player player, final FlagMenuEntry flagEntry) {
@@ -365,6 +509,34 @@ public final class PlotMenuManager implements Listener {
         }, reopenDelayTicks);
     }
 
+    private void handleSettingsClick(final Player player, final String tabId, final int slot) {
+        for (final SettingsTab tab : settingsTabs.values()) {
+            final MenuButton selector = tab.getSelector();
+            if (selector.getSlot() != slot) {
+                continue;
+            }
+            if (!canSee(player, selector)) {
+                return;
+            }
+            for (final String command : selector.getCommands()) {
+                runCommand(player, command);
+            }
+            return;
+        }
+
+        final SettingsTab tab = settingsTab(tabId);
+        final MenuButton button = tab.getButtonsBySlot().get(slot);
+        if (button == null || !canSee(player, button)) {
+            return;
+        }
+        if (button.isCloseInventory()) {
+            player.closeInventory();
+        }
+        for (final String command : button.getCommands()) {
+            runCommand(player, command);
+        }
+    }
+
     private void runCommand(final Player player, final String configuredCommand) {
         if (configuredCommand == null || configuredCommand.trim().isEmpty()) {
             return;
@@ -388,6 +560,8 @@ public final class PlotMenuManager implements Listener {
             final String menuId = command.substring("open-menu:".length()).trim();
             if (menuId.toLowerCase(Locale.ROOT).startsWith("flags")) {
                 openFlagsMenu(player, menuPage(menuId));
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("settings")) {
+                openSettingsMenu(player, menuArgument(menuId, defaultSettingsTab));
             } else if ("main".equalsIgnoreCase(menuId)) {
                 openMainMenu(player);
             }
@@ -424,6 +598,19 @@ public final class PlotMenuManager implements Listener {
         return replaced;
     }
 
+    private SettingsTab settingsTab(final String requestedTabId) {
+        final String normalized = requestedTabId == null ? "" : requestedTabId.toLowerCase(Locale.ROOT);
+        final SettingsTab requested = settingsTabs.get(normalized);
+        if (requested != null) {
+            return requested;
+        }
+        final SettingsTab fallback = settingsTabs.get(defaultSettingsTab == null ? "" : defaultSettingsTab.toLowerCase(Locale.ROOT));
+        if (fallback != null) {
+            return fallback;
+        }
+        return settingsTabs.values().iterator().next();
+    }
+
     private int menuPage(final String menuId) {
         final int separator = menuId.indexOf(':');
         if (separator < 0 || separator >= menuId.length() - 1) {
@@ -434,6 +621,14 @@ public final class PlotMenuManager implements Listener {
         } catch (final NumberFormatException exception) {
             return 1;
         }
+    }
+
+    private String menuArgument(final String menuId, final String fallback) {
+        final int separator = menuId.indexOf(':');
+        if (separator < 0 || separator >= menuId.length() - 1) {
+            return fallback;
+        }
+        return menuId.substring(separator + 1).trim();
     }
 
     private int normalizeSize(final int configuredSize) {
