@@ -1,76 +1,127 @@
 # Deutsches Hauptmenü.
+# Diese Datei steuert das Hauptmenü für deutsche Spieler.
+# Hier stellst du Titel, Größe, Füllitems und alle Buttons ein.
+
+# Titel des Inventars.
 title: "&8Plot-Menü"
+# Größe des Inventars. Erlaubt sind 9, 18, 27, 36, 45 oder 54 Slots.
 size: 27
+# Füllitem für leere Slots.
 filler:
+  # Wenn true, werden leere Slots mit dem unten angegebenen Material gefüllt.
   enabled: true
+  # Materialname aus Minecraft/Spigot.
   material: BLACK_STAINED_GLASS_PANE
+  # Anzeigename des Füllitems. &r macht den Namen leer/unauffällig.
   name: "&r"
+# Alle Buttons des Menüs.
 buttons:
   info:
     # Slot im Inventar. 0 ist oben links.
     slot: 10
+    # Item, das für diesen Button angezeigt wird.
     material: BOOK
+    # Anzeigename des Buttons.
     name: "&aPlot-Info"
+    # Beschreibung unter dem Buttonnamen.
     lore:
       - "&7Zeigt Informationen über"
       - "&7das aktuelle Plot."
     # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
     commands:
       - "plot info"
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: true
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
+    # Leer bedeutet: jeder Spieler mit Menüzugriff sieht den Button.
     permission: ""
   home:
+    # Slot im Inventar. 0 ist oben links.
     slot: 11
+    # Item, das für diesen Button angezeigt wird.
     material: COMPASS
+    # Anzeigename des Buttons.
     name: "&aPlot-Home"
+    # Beschreibung unter dem Buttonnamen.
     lore:
       - "&7Teleportiert dich zu"
       - "&7deinem Plot-Home."
+    # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
     commands:
       - "plot home"
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: true
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""
   members:
+    # Slot im Inventar. 0 ist oben links.
     slot: 12
+    # Item, das für diesen Button angezeigt wird.
     material: PLAYER_HEAD
+    # Anzeigename des Buttons.
     name: "&aMitglieder"
+    # Beschreibung unter dem Buttonnamen.
     lore:
       - "&7Öffnet die PlotSquared"
       - "&7Mitgliederübersicht."
+    # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
     commands:
       - "plot members"
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: true
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""
   flags:
+    # Slot im Inventar. 0 ist oben links.
     slot: 14
+    # Item, das für diesen Button angezeigt wird.
     material: REDSTONE_TORCH
+    # Anzeigename des Buttons.
     name: "&aFlags"
+    # Beschreibung unter dem Buttonnamen.
     lore:
       - "&7Öffnet die PlotSquared"
       - "&7Flag-Verwaltung."
+    # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
     commands:
       - "plot flag list"
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: true
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""
   settings:
+    # Slot im Inventar. 0 ist oben links.
     slot: 15
+    # Item, das für diesen Button angezeigt wird.
     material: REPEATER
+    # Anzeigename des Buttons.
     name: "&aEinstellungen"
+    # Beschreibung unter dem Buttonnamen.
     lore:
       - "&7Öffnet die PlotSquared"
       - "&7Einstellungen."
+    # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
     commands:
       - "plot settings"
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: true
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""
   help:
+    # Slot im Inventar. 0 ist oben links.
     slot: 16
+    # Item, das für diesen Button angezeigt wird.
     material: OAK_SIGN
+    # Anzeigename des Buttons.
     name: "&aPlot-Hilfe"
+    # Beschreibung unter dem Buttonnamen.
     lore:
       - "&7Zeigt die PlotSquared"
       - "&7Befehlsübersicht."
+    # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
     commands:
       - "plot help"
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: true
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""

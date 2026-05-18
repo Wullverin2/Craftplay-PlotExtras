@@ -1,5 +1,12 @@
 # Deutsche Standardtexte.
+# In dieser Datei stehen alle deutschen Nachrichten, die das Plugin an Spieler
+# oder die Konsole sendet. Farbcodes werden mit & geschrieben, z. B. &a für Grün.
+
+# Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
+# Nachricht, wenn ein Befehl nur von Spielern genutzt werden kann.
 only-players: "&cDieser Befehl kann nur von Spielern genutzt werden."
+# Nachricht nach /plotextras reload.
 reloaded: "&aCraftplayPlotExtras wurde neu geladen."
+# Nachricht, wenn die GUI-Datei fehlt oder nicht geladen werden konnte.
 menu-missing: "&cDas Plot-Menü konnte nicht geladen werden. Bitte informiere ein Teammitglied."

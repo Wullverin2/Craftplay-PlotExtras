@@ -1,76 +1,126 @@
 # English main menu.
+# This file controls the main menu for English players.
+# Here you configure title, size, filler items, and all buttons.
+
+# Inventory title.
 title: "&8Plot Menu"
+# Inventory size. Allowed values are 9, 18, 27, 36, 45, or 54 slots.
 size: 27
+# Filler item for empty slots.
 filler:
+  # If true, empty slots are filled with the material below.
   enabled: true
+  # Minecraft/Spigot material name.
   material: BLACK_STAINED_GLASS_PANE
+  # Display name of the filler item. &r keeps it visually empty.
   name: "&r"
+# All buttons in this menu.
 buttons:
   info:
     # Inventory slot. 0 is the top-left slot.
     slot: 10
+    # Item shown for this button.
     material: BOOK
+    # Button display name.
     name: "&aPlot Info"
+    # Description below the button name.
     lore:
       - "&7Shows information about"
       - "&7your current plot."
     # Commands run as the player. Prefix with console: to run as console.
     commands:
       - "plot info"
+    # If true, the menu closes after clicking.
     close: true
+    # Optional permission required to see the button. Empty means everyone with menu access can see it.
     permission: ""
   home:
+    # Inventory slot. 0 is the top-left slot.
     slot: 11
+    # Item shown for this button.
     material: COMPASS
+    # Button display name.
     name: "&aPlot Home"
+    # Description below the button name.
     lore:
       - "&7Teleports you to"
       - "&7your plot home."
+    # Commands run as the player. Prefix with console: to run as console.
     commands:
       - "plot home"
+    # If true, the menu closes after clicking.
     close: true
+    # Optional permission required to see the button.
     permission: ""
   members:
+    # Inventory slot. 0 is the top-left slot.
     slot: 12
+    # Item shown for this button.
     material: PLAYER_HEAD
+    # Button display name.
     name: "&aMembers"
+    # Description below the button name.
     lore:
       - "&7Opens the PlotSquared"
       - "&7member overview."
+    # Commands run as the player. Prefix with console: to run as console.
     commands:
       - "plot members"
+    # If true, the menu closes after clicking.
     close: true
+    # Optional permission required to see the button.
     permission: ""
   flags:
+    # Inventory slot. 0 is the top-left slot.
     slot: 14
+    # Item shown for this button.
     material: REDSTONE_TORCH
+    # Button display name.
     name: "&aFlags"
+    # Description below the button name.
     lore:
       - "&7Opens the PlotSquared"
       - "&7flag overview."
+    # Commands run as the player. Prefix with console: to run as console.
     commands:
       - "plot flag list"
+    # If true, the menu closes after clicking.
     close: true
+    # Optional permission required to see the button.
     permission: ""
   settings:
+    # Inventory slot. 0 is the top-left slot.
     slot: 15
+    # Item shown for this button.
     material: REPEATER
+    # Button display name.
     name: "&aSettings"
+    # Description below the button name.
     lore:
       - "&7Opens the PlotSquared"
       - "&7settings overview."
+    # Commands run as the player. Prefix with console: to run as console.
     commands:
       - "plot settings"
+    # If true, the menu closes after clicking.
     close: true
+    # Optional permission required to see the button.
     permission: ""
   help:
+    # Inventory slot. 0 is the top-left slot.
     slot: 16
+    # Item shown for this button.
     material: OAK_SIGN
+    # Button display name.
     name: "&aPlot Help"
+    # Description below the button name.
     lore:
       - "&7Shows the PlotSquared"
       - "&7command overview."
+    # Commands run as the player. Prefix with console: to run as console.
     commands:
       - "plot help"
+    # If true, the menu closes after clicking.
     close: true
+    # Optional permission required to see the button.
     permission: ""

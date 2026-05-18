@@ -1,21 +1,41 @@
+# Bukkit-/Spigot-Pluginbeschreibung.
+# Diese Datei wird vom Server gelesen und legt Name, Hauptklasse, Befehle,
+# Abhängigkeiten und Permissions des Plugins fest.
+
+# Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
+# Version wird beim Maven-Build aus pom.xml eingesetzt.
 version: ${project.version}
+# Java-Hauptklasse, die Bukkit beim Laden des Plugins startet.
 main: de.craftplay.plotextras.CraftplayPlotExtrasPlugin
+# Bukkit-API-Version, gegen die das Plugin geladen wird.
 api-version: "1.16"
+# Angezeigter Autor.
 author: Craftplay
+# Kurzbeschreibung für Pluginlisten und Servertools.
 description: Konfigurierbares Menü für PlotSquared.
+# PlotSquared wird zwingend benötigt. Fehlt PlotSquared, lädt dieses Plugin nicht.
 depend:
   - PlotSquared
+# Befehle, die dieses Plugin registriert.
 commands:
   plotextras:
+    # Beschreibung des Befehls.
     description: Öffnet das PlotSquared-Hilfsmenü.
+    # Nutzungshinweis, falls der Befehl falsch verwendet wird.
     usage: /plotextras
+    # Zusätzliche Kurzbefehle.
     aliases:
       - cpe
+# Permissions, die dieses Plugin nutzt.
 permissions:
   craftplayplotextras.use:
+    # Erlaubt Spielern, das Menü zu öffnen.
     description: Erlaubt das Öffnen des Plot-Menüs.
+    # true bedeutet: normale Spieler haben die Permission standardmäßig.
     default: true
   craftplayplotextras.admin:
+    # Erlaubt administrative Befehle wie /plotextras reload.
     description: Erlaubt administrative Basisfunktionen wie Reload.
+    # op bedeutet: nur Operatoren haben sie standardmäßig.
     default: op

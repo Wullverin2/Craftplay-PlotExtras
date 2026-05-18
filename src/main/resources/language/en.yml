@@ -1,5 +1,12 @@
 # English default messages.
+# This file contains all English messages sent by the plugin to players
+# or the console. Color codes use &, for example &a for green.
+
+# Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
+# Message shown when a command can only be used by players.
 only-players: "&cOnly players can use this command."
+# Message shown after /plotextras reload.
 reloaded: "&aCraftplayPlotExtras has been reloaded."
+# Message shown when the GUI file is missing or could not be loaded.
 menu-missing: "&cThe plot menu could not be loaded. Please contact a staff member."

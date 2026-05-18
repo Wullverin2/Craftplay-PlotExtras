@@ -1,11 +1,17 @@
 # CraftplayPlotExtras
 # Ziel: Ein Menü, das Spielern die Bedienung von PlotSquared 5.4.0 erleichtert.
+# Diese Datei enthält nur globale Einstellungen.
+# Die Menüs liegen im Ordner gui/, die Texte im Ordner language/.
 
+# Spracheinstellungen für Nachrichten und GUI-Auswahl.
 language:
   # Standardsprache für Nachrichten und GUIs.
   # Mitgeliefert werden de und en. Die Datei muss unter language/<code>.yml liegen.
+  # Wenn hier z. B. en steht, wird gui/en/main.yml und language/en.yml genutzt.
   default: de
 
+# GUI-Grundeinstellungen.
 gui:
   # Datei des Hauptmenüs. Geladen wird gui/<sprache>/<main-menu>.
+  # So kannst du später andere Hauptmenü-Dateien nutzen, ohne Code zu ändern.
   main-menu: main.yml
