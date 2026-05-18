@@ -4,10 +4,11 @@
 # Jeder Button kann eigene Befehle ausführen. Prefixe: console:, player:, op:, open-menu:.
 # Optional kann statt des Materials ein HeadDatabase-Kopf mit head-database-id genutzt werden.
 # Deko-Items stehen unter decorations und sind reine Anzeigeelemente ohne Aktion.
+# PlaceholderAPI-Platzhalter funktionieren in Titel, Tab-Namen, Buttonnamen, Lore und Commands.
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 2
+file-version: 3
 
 # Titel des Inventars. Platzhalter: {tab}
 title: "&8Plot-Einstellungen: {tab}"

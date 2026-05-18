@@ -1,11 +1,11 @@
 # CraftplayPlotExtras
-# Ziel: Ein Menü, das Spielern die Bedienung von PlotSquared 5.4.0 erleichtert.
+# Ziel: Ein Menü, das Spielern die Bedienung von PlotSquared Premium 7.5.11 erleichtert.
 # Diese Datei enthält nur globale Einstellungen.
 # Die Menüs liegen im Ordner gui/, die Texte im Ordner language/.
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 3
+file-version: 4
 
 # Spracheinstellungen für Nachrichten und GUI-Auswahl.
 language:
@@ -25,3 +25,9 @@ gui:
   # Datei des Einstellungs-Untermenüs. Geladen wird gui/<sprache>/<settings-menu>.
   # Dieses Menü enthält Tabs für Plot-Homes, Wetter, Biome und Zeit.
   settings-menu: settings.yml
+  # Button-IDs aus dem Hauptmenü, die nicht angezeigt werden sollen.
+  # Damit können Standardbuttons entfernt werden, ohne bestehende GUI-Dateien zu überschreiben.
+  hidden-main-buttons:
+    - info
+    - home
+    - help

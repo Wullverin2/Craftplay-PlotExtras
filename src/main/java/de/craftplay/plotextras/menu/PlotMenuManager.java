@@ -2,6 +2,7 @@ package de.craftplay.plotextras.menu;
 
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
 import de.craftplay.plotextras.hook.HeadDatabaseHook;
+import de.craftplay.plotextras.hook.PlaceholderHook;
 import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.util.Text;
@@ -32,6 +33,7 @@ public final class PlotMenuManager implements Listener {
     private final LanguageManager languageManager;
     private final PlotSquaredFlagService flagService;
     private final HeadDatabaseHook headDatabaseHook;
+    private final PlaceholderHook placeholderHook;
     private final Map<Integer, MenuButton> mainButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> flagButtonsBySlot = new HashMap<>();
     private final Map<Integer, Map<Integer, FlagMenuEntry>> flagsByPageAndSlot = new HashMap<>();
@@ -42,6 +44,7 @@ public final class PlotMenuManager implements Listener {
     private int mainSize;
     private ItemStack mainFiller;
     private boolean mainLoaded;
+    private List<String> hiddenMainButtons;
     private String flagsTitle;
     private int flagsSize;
     private ItemStack flagsFiller;
@@ -64,6 +67,7 @@ public final class PlotMenuManager implements Listener {
         this.languageManager = languageManager;
         this.flagService = flagService;
         this.headDatabaseHook = new HeadDatabaseHook(plugin);
+        this.placeholderHook = new PlaceholderHook(plugin);
     }
 
     public void reload() {
@@ -84,8 +88,9 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
-        mainTitle = Text.color(menuConfig.getString("title", "&8Plot-Menü"));
+        mainTitle = menuConfig.getString("title", "&8Plot-Menü");
         mainSize = normalizeSize(menuConfig.getInt("size", 27));
+        hiddenMainButtons = plugin.getConfig().getStringList("gui.hidden-main-buttons");
         mainFiller = createFiller(menuConfig);
         loadButtons(menuConfig, mainButtonsBySlot, mainSize);
         loadDecorations(menuConfig, mainButtonsBySlot, mainSize);
@@ -99,7 +104,7 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
-        flagsTitle = Text.color(flagsConfig.getString("title", "&8Plot-Flags"));
+        flagsTitle = flagsConfig.getString("title", "&8Plot-Flags");
         flagsSize = normalizeSize(flagsConfig.getInt("size", 54));
         flagsFiller = createFiller(flagsConfig);
         statusEnabled = flagsConfig.getString("status.enabled", "&aAktiv");
@@ -133,7 +138,11 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
-        final Inventory inventory = Bukkit.createInventory(new PlotMenuHolder("main"), mainSize, mainTitle);
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("main"),
+                mainSize,
+                Text.color(placeholderHook.apply(player, mainTitle))
+        );
         if (mainFiller != null) {
             for (int slot = 0; slot < mainSize; slot++) {
                 inventory.setItem(slot, mainFiller);
@@ -144,7 +153,10 @@ public final class PlotMenuManager implements Listener {
             if (!canSee(player, button)) {
                 continue;
             }
-            inventory.setItem(button.getSlot(), createButtonItem(button));
+            if (isHiddenMainButton(button)) {
+                continue;
+            }
+            inventory.setItem(button.getSlot(), createButtonItem(player, button));
         }
 
         player.openInventory(inventory);
@@ -165,7 +177,11 @@ public final class PlotMenuManager implements Listener {
         }
 
         final int normalizedPage = Math.max(1, page);
-        final Inventory inventory = Bukkit.createInventory(new PlotMenuHolder("flags", normalizedPage), flagsSize, flagsTitle);
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("flags", normalizedPage),
+                flagsSize,
+                Text.color(placeholderHook.apply(player, flagsTitle))
+        );
         if (flagsFiller != null) {
             for (int slot = 0; slot < flagsSize; slot++) {
                 inventory.setItem(slot, flagsFiller);
@@ -176,7 +192,7 @@ public final class PlotMenuManager implements Listener {
             if (!canSee(player, button)) {
                 continue;
             }
-            inventory.setItem(button.getSlot(), createButtonItem(button));
+            inventory.setItem(button.getSlot(), createButtonItem(player, button));
         }
 
         final Map<Integer, FlagMenuEntry> flagsBySlot = flagsByPageAndSlot.getOrDefault(normalizedPage, Collections.emptyMap());
@@ -210,7 +226,7 @@ public final class PlotMenuManager implements Listener {
         final Inventory inventory = Bukkit.createInventory(
                 new PlotMenuHolder("settings", tab.getId()),
                 settingsSize,
-                Text.color(applyPlaceholders(settingsTitlePattern, placeholders))
+                Text.color(placeholderHook.apply(player, applyPlaceholders(settingsTitlePattern, placeholders)))
         );
         if (settingsFiller != null) {
             for (int slot = 0; slot < settingsSize; slot++) {
@@ -222,7 +238,7 @@ public final class PlotMenuManager implements Listener {
             if (!canSee(player, decoration)) {
                 continue;
             }
-            inventory.setItem(decoration.getSlot(), createButtonItem(decoration));
+            inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration));
         }
 
         for (final SettingsTab settingsTab : settingsTabs.values()) {
@@ -230,14 +246,14 @@ public final class PlotMenuManager implements Listener {
             if (!canSee(player, selector)) {
                 continue;
             }
-            inventory.setItem(selector.getSlot(), createButtonItem(selector));
+            inventory.setItem(selector.getSlot(), createButtonItem(player, selector));
         }
 
         for (final MenuButton button : tab.getButtonsBySlot().values()) {
             if (!canSee(player, button)) {
                 continue;
             }
-            inventory.setItem(button.getSlot(), createButtonItem(button));
+            inventory.setItem(button.getSlot(), createButtonItem(player, button));
         }
 
         player.openInventory(inventory);
@@ -269,7 +285,7 @@ public final class PlotMenuManager implements Listener {
         }
 
         final MenuButton button = mainButtonsBySlot.get(event.getSlot());
-        if (button == null || !canSee(player, button)) {
+        if (button == null || isHiddenMainButton(button) || !canSee(player, button)) {
             return;
         }
 
@@ -481,15 +497,15 @@ public final class PlotMenuManager implements Listener {
         return null;
     }
 
-    private ItemStack createButtonItem(final MenuButton button) {
+    private ItemStack createButtonItem(final Player player, final MenuButton button) {
         ItemStack item = headDatabaseHook.getHead(button.getHeadDatabaseId());
         if (item == null) {
             item = new ItemStack(button.getMaterial());
         }
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(Text.color(button.getName()));
-            meta.setLore(Text.color(button.getLore()));
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, button.getName())));
+            meta.setLore(Text.color(placeholderHook.apply(player, button.getLore())));
             item.setItemMeta(meta);
         }
         return item;
@@ -501,8 +517,8 @@ public final class PlotMenuManager implements Listener {
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             final Map<String, String> placeholders = flagPlaceholders(flagEntry, enabled);
-            meta.setDisplayName(Text.color(applyPlaceholders(flagEntry.getName(), placeholders)));
-            meta.setLore(Text.color(applyPlaceholders(flagEntry.getLore(), placeholders)));
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(flagEntry.getName(), placeholders))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(flagEntry.getLore(), placeholders))));
             item.setItemMeta(meta);
         }
         return item;
@@ -602,6 +618,7 @@ public final class PlotMenuManager implements Listener {
                 .replace("{player}", player.getName())
                 .replace("%player%", player.getName())
                 .trim();
+        command = placeholderHook.apply(player, command).trim();
 
         if (command.startsWith("/")) {
             command = command.substring(1);
@@ -648,6 +665,18 @@ public final class PlotMenuManager implements Listener {
             return command.substring(1);
         }
         return command;
+    }
+
+    private boolean isHiddenMainButton(final MenuButton button) {
+        if (hiddenMainButtons == null || hiddenMainButtons.isEmpty()) {
+            return false;
+        }
+        for (final String hiddenButton : hiddenMainButtons) {
+            if (button.getId().equalsIgnoreCase(hiddenButton)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Map<String, String> flagPlaceholders(final FlagMenuEntry flagEntry, final boolean enabled) {

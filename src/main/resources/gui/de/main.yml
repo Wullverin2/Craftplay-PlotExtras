@@ -3,10 +3,11 @@
 # Hier stellst du Titel, Größe, Füllitems, Deko-Items und alle Buttons ein.
 # Jeder Button kann eigene Befehle ausführen. Prefixe: console:, player:, op:, open-menu:.
 # Optional kann statt des Materials ein HeadDatabase-Kopf mit head-database-id genutzt werden.
+# PlaceholderAPI-Platzhalter funktionieren in Titel, Namen, Lore und Commands.
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 4
+file-version: 5
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
@@ -22,43 +23,6 @@ filler:
   name: "&r"
 # Alle Buttons des Menüs.
 buttons:
-  info:
-    # Slot im Inventar. 0 ist oben links.
-    slot: 10
-    # Item, das für diesen Button angezeigt wird.
-    material: BOOK
-    # Anzeigename des Buttons.
-    name: "&aPlot-Info"
-    # Beschreibung unter dem Buttonnamen.
-    lore:
-      - "&7Zeigt Informationen über"
-      - "&7das aktuelle Plot."
-    # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
-    commands:
-      - "plot info"
-    # Wenn true, wird das Menü nach dem Klick geschlossen.
-    close: true
-    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
-    # Leer bedeutet: jeder Spieler mit Menüzugriff sieht den Button.
-    permission: ""
-  home:
-    # Slot im Inventar. 0 ist oben links.
-    slot: 11
-    # Item, das für diesen Button angezeigt wird.
-    material: COMPASS
-    # Anzeigename des Buttons.
-    name: "&aPlot-Home"
-    # Beschreibung unter dem Buttonnamen.
-    lore:
-      - "&7Teleportiert dich zu"
-      - "&7deinem Plot-Home."
-    # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
-    commands:
-      - "plot home"
-    # Wenn true, wird das Menü nach dem Klick geschlossen.
-    close: true
-    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
-    permission: ""
   members:
     # Slot im Inventar. 0 ist oben links.
     slot: 12
@@ -111,24 +75,6 @@ buttons:
       - "open-menu:settings:homes"
     # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: false
-    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
-    permission: ""
-  help:
-    # Slot im Inventar. 0 ist oben links.
-    slot: 16
-    # Item, das für diesen Button angezeigt wird.
-    material: OAK_SIGN
-    # Anzeigename des Buttons.
-    name: "&aPlot-Hilfe"
-    # Beschreibung unter dem Buttonnamen.
-    lore:
-      - "&7Zeigt die PlotSquared"
-      - "&7Befehlsübersicht."
-    # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
-    commands:
-      - "plot help"
-    # Wenn true, wird das Menü nach dem Klick geschlossen.
-    close: true
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""
   close:

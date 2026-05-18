@@ -4,10 +4,11 @@
 # Each button can run custom commands. Prefixes: console:, player:, op:, open-menu:.
 # Optionally, a HeadDatabase head can be used with head-database-id instead of the material.
 # Decoration items live under decorations and are visual-only items without an action.
+# PlaceholderAPI placeholders work in titles, tab names, button names, lore, and commands.
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 2
+file-version: 3
 
 # Inventory title. Placeholder: {tab}
 title: "&8Plot Settings: {tab}"

@@ -3,10 +3,11 @@
 # Here you configure title, size, filler items, decorations, and all buttons.
 # Each button can run custom commands. Prefixes: console:, player:, op:, open-menu:.
 # Optionally, a HeadDatabase head can be used with head-database-id instead of the material.
+# PlaceholderAPI placeholders work in titles, names, lore, and commands.
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 4
+file-version: 5
 
 # Inventory title.
 title: "&8Plot Menu"
@@ -22,42 +23,6 @@ filler:
   name: "&r"
 # All buttons in this menu.
 buttons:
-  info:
-    # Inventory slot. 0 is the top-left slot.
-    slot: 10
-    # Item shown for this button.
-    material: BOOK
-    # Button display name.
-    name: "&aPlot Info"
-    # Description below the button name.
-    lore:
-      - "&7Shows information about"
-      - "&7your current plot."
-    # Commands run as the player. Prefix with console: to run as console.
-    commands:
-      - "plot info"
-    # If true, the menu closes after clicking.
-    close: true
-    # Optional permission required to see the button. Empty means everyone with menu access can see it.
-    permission: ""
-  home:
-    # Inventory slot. 0 is the top-left slot.
-    slot: 11
-    # Item shown for this button.
-    material: COMPASS
-    # Button display name.
-    name: "&aPlot Home"
-    # Description below the button name.
-    lore:
-      - "&7Teleports you to"
-      - "&7your plot home."
-    # Commands run as the player. Prefix with console: to run as console.
-    commands:
-      - "plot home"
-    # If true, the menu closes after clicking.
-    close: true
-    # Optional permission required to see the button.
-    permission: ""
   members:
     # Inventory slot. 0 is the top-left slot.
     slot: 12
@@ -110,24 +75,6 @@ buttons:
       - "open-menu:settings:homes"
     # If true, the menu closes after clicking.
     close: false
-    # Optional permission required to see the button.
-    permission: ""
-  help:
-    # Inventory slot. 0 is the top-left slot.
-    slot: 16
-    # Item shown for this button.
-    material: OAK_SIGN
-    # Button display name.
-    name: "&aPlot Help"
-    # Description below the button name.
-    lore:
-      - "&7Shows the PlotSquared"
-      - "&7command overview."
-    # Commands run as the player. Prefix with console: to run as console.
-    commands:
-      - "plot help"
-    # If true, the menu closes after clicking.
-    close: true
     # Optional permission required to see the button.
     permission: ""
   close:
