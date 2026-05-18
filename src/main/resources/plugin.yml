@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 1
+file-version: 2
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -21,6 +21,9 @@ description: Konfigurierbares Menü für PlotSquared.
 # PlotSquared wird zwingend benötigt. Fehlt PlotSquared, lädt dieses Plugin nicht.
 depend:
   - PlotSquared
+# HeadDatabase ist optional. Wenn es installiert ist, können GUI-Buttons Köpfe per head-database-id nutzen.
+softdepend:
+  - HeadDatabase
 # Befehle, die dieses Plugin registriert.
 commands:
   plotextras:

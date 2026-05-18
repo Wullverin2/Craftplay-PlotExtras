@@ -1,10 +1,13 @@
 # English settings submenu.
 # This file controls the menu where players change plot homes, weather, biomes, and time.
 # All tabs and buttons can configure name, slot, material, lore, commands, and permission.
+# Each button can run custom commands. Prefixes: console:, player:, op:, open-menu:.
+# Optionally, a HeadDatabase head can be used with head-database-id instead of the material.
+# Decoration items live under decorations and are visual-only items without an action.
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 1
+file-version: 2
 
 # Inventory title. Placeholder: {tab}
 title: "&8Plot Settings: {tab}"
@@ -20,6 +23,21 @@ filler:
   material: BLACK_STAINED_GLASS_PANE
   # Display name of the filler item. &r keeps it visually empty.
   name: "&r"
+# Decoration items shown in every tab.
+decorations:
+  bottom-spacer:
+    # Inventory slot.
+    slot: 52
+    # Material fallback.
+    material: GRAY_STAINED_GLASS_PANE
+    # Optional HeadDatabase ID. Example: "12345"
+    head-database-id: ""
+    # Decoration display name.
+    name: "&r"
+    # Decoration lore.
+    lore: []
+    # Optional permission required to see this decoration.
+    permission: ""
 # Tabs in the settings menu.
 # Each tab has its own button at the top and its own action buttons below.
 tabs:

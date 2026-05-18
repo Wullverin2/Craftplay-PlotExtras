@@ -1,10 +1,12 @@
 # Deutsches Hauptmenü.
 # Diese Datei steuert das Hauptmenü für deutsche Spieler.
-# Hier stellst du Titel, Größe, Füllitems und alle Buttons ein.
+# Hier stellst du Titel, Größe, Füllitems, Deko-Items und alle Buttons ein.
+# Jeder Button kann eigene Befehle ausführen. Prefixe: console:, player:, op:, open-menu:.
+# Optional kann statt des Materials ein HeadDatabase-Kopf mit head-database-id genutzt werden.
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 3
+file-version: 4
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
@@ -128,4 +130,45 @@ buttons:
     # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: true
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
+    permission: ""
+  close:
+    # Slot im Inventar. 0 ist oben links.
+    slot: 22
+    # Material-Fallback, wenn keine HeadDatabase-ID gesetzt ist.
+    material: BARRIER
+    # Optional: HeadDatabase-ID für dieses Item. Leer bedeutet: Material wird genutzt.
+    head-database-id: ""
+    # Anzeigename des Buttons.
+    name: "&cSchließen"
+    # Beschreibung unter dem Buttonnamen.
+    lore:
+      - "&7Schließt dieses Menü."
+    # Keine Befehle nötig, weil close unten auf true steht.
+    commands: []
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
+    close: true
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
+    permission: ""
+# Deko-Items sind reine Anzeigeelemente ohne Aktion.
+# Sie können ebenfalls Material, HeadDatabase-ID, Name, Lore, Slot und Permission nutzen.
+decorations:
+  top-left:
+    # Slot im Inventar.
+    slot: 0
+    # Material-Fallback.
+    material: GRAY_STAINED_GLASS_PANE
+    # Optional: HeadDatabase-ID. Beispiel: "12345"
+    head-database-id: ""
+    # Anzeigename des Deko-Items.
+    name: "&r"
+    # Lore des Deko-Items.
+    lore: []
+    # Optional: Permission, damit diese Deko sichtbar ist.
+    permission: ""
+  top-right:
+    slot: 8
+    material: GRAY_STAINED_GLASS_PANE
+    head-database-id: ""
+    name: "&r"
+    lore: []
     permission: ""

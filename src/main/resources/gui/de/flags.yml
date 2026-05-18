@@ -1,10 +1,11 @@
 # Deutsches Flag-Untermenü.
 # Diese Datei steuert das Menü, in dem Spieler Boolean-Flags ihres aktuellen Plots sehen und umschalten.
 # Alle Namen, Slots, Materialien und Beschreibungen können hier angepasst werden.
+# Feste Buttons und Deko-Items unterstützen optional head-database-id für HeadDatabase-Köpfe.
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 2
+file-version: 3
 
 # Titel des Inventars.
 title: "&8Plot-Flags"
@@ -30,9 +31,11 @@ filler:
 buttons:
   back:
     # Slot im Inventar. 0 ist oben links.
-    slot: 53
+    slot: 49
     # Item, das für diesen Button angezeigt wird.
     material: BARRIER
+    # Optional: HeadDatabase-ID für diesen Button. Leer bedeutet: Material wird genutzt.
+    head-database-id: ""
     # Anzeigename des Buttons.
     name: "&cZurück"
     # Beschreibung unter dem Buttonnamen.
@@ -47,9 +50,11 @@ buttons:
     permission: ""
   previous-page:
     # Slot im Inventar. Dieser Button ist auf jeder Seite sichtbar.
-    slot: 51
+    slot: 50
     # Item, das für diesen Button angezeigt wird.
     material: ARROW
+    # Optional: HeadDatabase-ID für diesen Button.
+    head-database-id: ""
     # Anzeigename des Buttons.
     name: "&eSeite 1"
     # Beschreibung unter dem Buttonnamen.
@@ -64,9 +69,11 @@ buttons:
     permission: ""
   next-page:
     # Slot im Inventar. Dieser Button ist auf jeder Seite sichtbar.
-    slot: 52
+    slot: 51
     # Item, das für diesen Button angezeigt wird.
     material: ARROW
+    # Optional: HeadDatabase-ID für diesen Button.
+    head-database-id: ""
     # Anzeigename des Buttons.
     name: "&eSeite 2"
     # Beschreibung unter dem Buttonnamen.
@@ -78,6 +85,40 @@ buttons:
     # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: false
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
+    permission: ""
+  close:
+    # Slot im Inventar.
+    slot: 53
+    # Material-Fallback, wenn keine HeadDatabase-ID gesetzt ist.
+    material: BARRIER
+    # Optional: HeadDatabase-ID für diesen Button.
+    head-database-id: ""
+    # Anzeigename des Buttons.
+    name: "&cSchließen"
+    # Beschreibung unter dem Buttonnamen.
+    lore:
+      - "&7Schließt dieses Menü."
+    # Keine Befehle nötig, weil close unten auf true steht.
+    commands: []
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
+    close: true
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
+    permission: ""
+# Deko-Items sind reine Anzeigeelemente ohne Aktion.
+# Sie können Material, HeadDatabase-ID, Name, Lore, Slot und Permission nutzen.
+decorations:
+  control-spacer:
+    # Slot im Inventar.
+    slot: 52
+    # Material-Fallback.
+    material: GRAY_STAINED_GLASS_PANE
+    # Optional: HeadDatabase-ID. Beispiel: "12345"
+    head-database-id: ""
+    # Anzeigename des Deko-Items.
+    name: "&r"
+    # Lore des Deko-Items.
+    lore: []
+    # Optional: Permission, damit diese Deko sichtbar ist.
     permission: ""
 # PlotSquared-Boolean-Flags, die im Menü angezeigt werden können.
 # Spieler sehen nur Flags, für die sie passende PlotSquared-Permissions besitzen.
@@ -637,7 +678,8 @@ flags:
       - "&eKlicken zum Umschalten."
     permission: ""
   hide-info:
-    slot: 49
+    page: 2
+    slot: 22
     enabled-material: BOOK
     disabled-material: PAPER
     name: "&aPlot-Info verstecken"
@@ -649,7 +691,8 @@ flags:
       - "&eKlicken zum Umschalten."
     permission: ""
   server-plot:
-    slot: 50
+    page: 2
+    slot: 23
     enabled-material: COMMAND_BLOCK
     disabled-material: GRAY_DYE
     name: "&aServer-Plot"

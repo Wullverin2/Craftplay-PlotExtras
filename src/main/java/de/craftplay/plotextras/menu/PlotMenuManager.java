@@ -1,6 +1,7 @@
 package de.craftplay.plotextras.menu;
 
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
+import de.craftplay.plotextras.hook.HeadDatabaseHook;
 import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.util.Text;
@@ -30,9 +31,11 @@ public final class PlotMenuManager implements Listener {
     private final CraftplayPlotExtrasPlugin plugin;
     private final LanguageManager languageManager;
     private final PlotSquaredFlagService flagService;
+    private final HeadDatabaseHook headDatabaseHook;
     private final Map<Integer, MenuButton> mainButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> flagButtonsBySlot = new HashMap<>();
     private final Map<Integer, Map<Integer, FlagMenuEntry>> flagsByPageAndSlot = new HashMap<>();
+    private final Map<Integer, MenuButton> settingsDecorationsBySlot = new HashMap<>();
     private final Map<String, SettingsTab> settingsTabs = new LinkedHashMap<>();
 
     private String mainTitle;
@@ -60,12 +63,14 @@ public final class PlotMenuManager implements Listener {
         this.plugin = plugin;
         this.languageManager = languageManager;
         this.flagService = flagService;
+        this.headDatabaseHook = new HeadDatabaseHook(plugin);
     }
 
     public void reload() {
         mainButtonsBySlot.clear();
         flagButtonsBySlot.clear();
         flagsByPageAndSlot.clear();
+        settingsDecorationsBySlot.clear();
         settingsTabs.clear();
         mainLoaded = false;
         flagsLoaded = false;
@@ -83,6 +88,7 @@ public final class PlotMenuManager implements Listener {
         mainSize = normalizeSize(menuConfig.getInt("size", 27));
         mainFiller = createFiller(menuConfig);
         loadButtons(menuConfig, mainButtonsBySlot, mainSize);
+        loadDecorations(menuConfig, mainButtonsBySlot, mainSize);
         mainLoaded = true;
 
         final YamlConfiguration flagsConfig = loadMenuConfig(plugin.getConfig().getString("gui.flags-menu", "flags.yml"));
@@ -100,6 +106,7 @@ public final class PlotMenuManager implements Listener {
         statusDisabled = flagsConfig.getString("status.disabled", "&cInaktiv");
         reopenDelayTicks = Math.max(1L, flagsConfig.getLong("reopen-delay-ticks", 2L));
         loadButtons(flagsConfig, flagButtonsBySlot, flagsSize);
+        loadDecorations(flagsConfig, flagButtonsBySlot, flagsSize);
         loadFlags(flagsConfig);
         flagsLoaded = true;
 
@@ -115,6 +122,7 @@ public final class PlotMenuManager implements Listener {
         settingsSize = normalizeSize(settingsConfig.getInt("size", 54));
         settingsFiller = createFiller(settingsConfig);
         defaultSettingsTab = settingsConfig.getString("default-tab", "homes");
+        loadDecorations(settingsConfig, settingsDecorationsBySlot, settingsSize);
         loadSettingsTabs(settingsConfig);
         settingsLoaded = true;
     }
@@ -210,6 +218,13 @@ public final class PlotMenuManager implements Listener {
             }
         }
 
+        for (final MenuButton decoration : settingsDecorationsBySlot.values()) {
+            if (!canSee(player, decoration)) {
+                continue;
+            }
+            inventory.setItem(decoration.getSlot(), createButtonItem(decoration));
+        }
+
         for (final SettingsTab settingsTab : settingsTabs.values()) {
             final MenuButton selector = settingsTab.getSelector();
             if (!canSee(player, selector)) {
@@ -289,14 +304,19 @@ public final class PlotMenuManager implements Listener {
             }
 
             final Material material = material(menuConfig.getString(path + "material", "STONE_BUTTON"), Material.STONE_BUTTON);
+            final String headDatabaseId = headDatabaseId(menuConfig, path);
             final String name = menuConfig.getString(path + "name", "&a" + id);
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final List<String> commands = menuConfig.getStringList(path + "commands");
             final boolean close = menuConfig.getBoolean(path + "close", true);
             final String permission = menuConfig.getString(path + "permission", "");
 
-            target.put(slot, new MenuButton(id, slot, material, name, lore, commands, close, permission));
+            target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, commands, close, permission));
         }
+    }
+
+    private void loadDecorations(final YamlConfiguration menuConfig, final Map<Integer, MenuButton> target, final int menuSize) {
+        loadDecorationsFromSection(menuConfig, "decorations", target, menuSize);
     }
 
     private void loadFlags(final YamlConfiguration menuConfig) {
@@ -346,6 +366,7 @@ public final class PlotMenuManager implements Listener {
             }
 
             final Material material = material(menuConfig.getString(path + "material", "BOOK"), Material.BOOK);
+            final String headDatabaseId = headDatabaseId(menuConfig, path);
             final String name = menuConfig.getString(path + "name", "&a" + id);
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final List<String> commands = menuConfig.getStringList(path + "commands");
@@ -354,6 +375,7 @@ public final class PlotMenuManager implements Listener {
                     id,
                     slot,
                     material,
+                    headDatabaseId,
                     name,
                     lore,
                     commands.isEmpty() ? Collections.singletonList("open-menu:settings:" + id) : commands,
@@ -362,6 +384,7 @@ public final class PlotMenuManager implements Listener {
             );
             final Map<Integer, MenuButton> tabButtons = new HashMap<>();
             loadButtonsFromSection(menuConfig, path + "buttons", tabButtons, settingsSize);
+            loadDecorationsFromSection(menuConfig, path + "decorations", tabButtons, settingsSize);
             settingsTabs.put(id.toLowerCase(Locale.ROOT), new SettingsTab(id.toLowerCase(Locale.ROOT), selector, tabButtons));
         }
     }
@@ -386,13 +409,43 @@ public final class PlotMenuManager implements Listener {
             }
 
             final Material material = material(menuConfig.getString(path + "material", "STONE_BUTTON"), Material.STONE_BUTTON);
+            final String headDatabaseId = headDatabaseId(menuConfig, path);
             final String name = menuConfig.getString(path + "name", "&a" + id);
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final List<String> commands = menuConfig.getStringList(path + "commands");
             final boolean close = menuConfig.getBoolean(path + "close", true);
             final String permission = menuConfig.getString(path + "permission", "");
 
-            target.put(slot, new MenuButton(id, slot, material, name, lore, commands, close, permission));
+            target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, commands, close, permission));
+        }
+    }
+
+    private void loadDecorationsFromSection(
+            final YamlConfiguration menuConfig,
+            final String sectionPath,
+            final Map<Integer, MenuButton> target,
+            final int menuSize
+    ) {
+        final ConfigurationSection section = menuConfig.getConfigurationSection(sectionPath);
+        if (section == null) {
+            return;
+        }
+
+        for (final String id : section.getKeys(false)) {
+            final String path = sectionPath + "." + id + ".";
+            final int slot = menuConfig.getInt(path + "slot", -1);
+            if (slot < 0 || slot >= menuSize) {
+                plugin.getLogger().warning("Deko-Item '" + id + "' hat einen ungültigen Slot: " + slot);
+                continue;
+            }
+
+            final Material material = material(menuConfig.getString(path + "material", "GRAY_STAINED_GLASS_PANE"), Material.GRAY_STAINED_GLASS_PANE);
+            final String headDatabaseId = headDatabaseId(menuConfig, path);
+            final String name = menuConfig.getString(path + "name", "&r");
+            final List<String> lore = menuConfig.getStringList(path + "lore");
+            final String permission = menuConfig.getString(path + "permission", "");
+
+            target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, Collections.emptyList(), false, permission));
         }
     }
 
@@ -429,7 +482,10 @@ public final class PlotMenuManager implements Listener {
     }
 
     private ItemStack createButtonItem(final MenuButton button) {
-        final ItemStack item = new ItemStack(button.getMaterial());
+        ItemStack item = headDatabaseHook.getHead(button.getHeadDatabaseId());
+        if (item == null) {
+            item = new ItemStack(button.getMaterial());
+        }
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(Text.color(button.getName()));
@@ -552,7 +608,23 @@ public final class PlotMenuManager implements Listener {
         }
 
         if (command.toLowerCase(Locale.ROOT).startsWith("console:")) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.substring("console:".length()).trim());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), stripCommandPrefix(command.substring("console:".length()).trim()));
+            return;
+        }
+
+        if (command.toLowerCase(Locale.ROOT).startsWith("player:")) {
+            player.performCommand(stripCommandPrefix(command.substring("player:".length()).trim()));
+            return;
+        }
+
+        if (command.toLowerCase(Locale.ROOT).startsWith("op:")) {
+            final boolean wasOp = player.isOp();
+            try {
+                player.setOp(true);
+                player.performCommand(stripCommandPrefix(command.substring("op:".length()).trim()));
+            } finally {
+                player.setOp(wasOp);
+            }
             return;
         }
 
@@ -569,6 +641,13 @@ public final class PlotMenuManager implements Listener {
         }
 
         player.performCommand(command);
+    }
+
+    private String stripCommandPrefix(final String command) {
+        if (command.startsWith("/")) {
+            return command.substring(1);
+        }
+        return command;
     }
 
     private Map<String, String> flagPlaceholders(final FlagMenuEntry flagEntry, final boolean enabled) {
@@ -645,5 +724,16 @@ public final class PlotMenuManager implements Listener {
         }
         final Material material = Material.matchMaterial(configuredMaterial);
         return material == null ? fallback : material;
+    }
+
+    private String headDatabaseId(final YamlConfiguration menuConfig, final String path) {
+        String id = menuConfig.getString(path + "head-database-id", "");
+        if (id == null || id.trim().isEmpty()) {
+            id = menuConfig.getString(path + "hdb-id", "");
+        }
+        if (id == null || id.trim().isEmpty()) {
+            id = menuConfig.getString(path + "head-id", "");
+        }
+        return id == null ? "" : id.trim();
     }
 }

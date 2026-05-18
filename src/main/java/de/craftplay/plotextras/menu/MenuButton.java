@@ -9,6 +9,7 @@ public final class MenuButton {
     private final String id;
     private final int slot;
     private final Material material;
+    private final String headDatabaseId;
     private final String name;
     private final List<String> lore;
     private final List<String> commands;
@@ -25,9 +26,24 @@ public final class MenuButton {
             final boolean closeInventory,
             final String permission
     ) {
+        this(id, slot, material, "", name, lore, commands, closeInventory, permission);
+    }
+
+    public MenuButton(
+            final String id,
+            final int slot,
+            final Material material,
+            final String headDatabaseId,
+            final String name,
+            final List<String> lore,
+            final List<String> commands,
+            final boolean closeInventory,
+            final String permission
+    ) {
         this.id = id;
         this.slot = slot;
         this.material = material;
+        this.headDatabaseId = headDatabaseId;
         this.name = name;
         this.lore = lore;
         this.commands = commands;
@@ -45,6 +61,10 @@ public final class MenuButton {
 
     public Material getMaterial() {
         return material;
+    }
+
+    public String getHeadDatabaseId() {
+        return headDatabaseId;
     }
 
     public String getName() {

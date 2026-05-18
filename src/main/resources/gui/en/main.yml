@@ -1,10 +1,12 @@
 # English main menu.
 # This file controls the main menu for English players.
-# Here you configure title, size, filler items, and all buttons.
+# Here you configure title, size, filler items, decorations, and all buttons.
+# Each button can run custom commands. Prefixes: console:, player:, op:, open-menu:.
+# Optionally, a HeadDatabase head can be used with head-database-id instead of the material.
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 3
+file-version: 4
 
 # Inventory title.
 title: "&8Plot Menu"
@@ -127,4 +129,45 @@ buttons:
     # If true, the menu closes after clicking.
     close: true
     # Optional permission required to see the button.
+    permission: ""
+  close:
+    # Inventory slot. 0 is the top-left slot.
+    slot: 22
+    # Material fallback when no HeadDatabase ID is set.
+    material: BARRIER
+    # Optional HeadDatabase ID for this item. Empty means the material is used.
+    head-database-id: ""
+    # Button display name.
+    name: "&cClose"
+    # Description below the button name.
+    lore:
+      - "&7Closes this menu."
+    # No commands needed because close below is true.
+    commands: []
+    # If true, the menu closes after clicking.
+    close: true
+    # Optional permission required to see the button.
+    permission: ""
+# Decoration items are visual-only items without an action.
+# They can also use material, HeadDatabase ID, name, lore, slot, and permission.
+decorations:
+  top-left:
+    # Inventory slot.
+    slot: 0
+    # Material fallback.
+    material: GRAY_STAINED_GLASS_PANE
+    # Optional HeadDatabase ID. Example: "12345"
+    head-database-id: ""
+    # Decoration display name.
+    name: "&r"
+    # Decoration lore.
+    lore: []
+    # Optional permission required to see this decoration.
+    permission: ""
+  top-right:
+    slot: 8
+    material: GRAY_STAINED_GLASS_PANE
+    head-database-id: ""
+    name: "&r"
+    lore: []
     permission: ""
