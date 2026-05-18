@@ -1,6 +1,8 @@
 package de.craftplay.plotextras.menu;
 
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
+import de.craftplay.plotextras.backup.PlotBackupMetadata;
+import de.craftplay.plotextras.backup.PlotBackupService;
 import de.craftplay.plotextras.hook.HeadDatabaseHook;
 import de.craftplay.plotextras.hook.PlaceholderHook;
 import de.craftplay.plotextras.language.LanguageManager;
@@ -20,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -32,6 +35,7 @@ public final class PlotMenuManager implements Listener {
     private final CraftplayPlotExtrasPlugin plugin;
     private final LanguageManager languageManager;
     private final PlotSquaredFlagService flagService;
+    private final PlotBackupService backupService;
     private final HeadDatabaseHook headDatabaseHook;
     private final PlaceholderHook placeholderHook;
     private final Map<Integer, MenuButton> mainButtonsBySlot = new HashMap<>();
@@ -39,6 +43,8 @@ public final class PlotMenuManager implements Listener {
     private final Map<Integer, Map<Integer, FlagMenuEntry>> flagsByPageAndSlot = new HashMap<>();
     private final Map<Integer, MenuButton> settingsDecorationsBySlot = new HashMap<>();
     private final Map<String, SettingsTab> settingsTabs = new LinkedHashMap<>();
+    private final Map<Integer, MenuButton> teamButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> backupListButtonsBySlot = new HashMap<>();
 
     private String mainTitle;
     private int mainSize;
@@ -57,15 +63,30 @@ public final class PlotMenuManager implements Listener {
     private ItemStack settingsFiller;
     private boolean settingsLoaded;
     private String defaultSettingsTab;
+    private String teamTitle;
+    private int teamSize;
+    private ItemStack teamFiller;
+    private boolean teamLoaded;
+    private String backupListTitle;
+    private int backupListSize;
+    private ItemStack backupListFiller;
+    private boolean backupListLoaded;
+    private List<Integer> backupListSlots;
+    private Material backupListItemMaterial;
+    private String backupListItemHeadDatabaseId;
+    private String backupListItemName;
+    private List<String> backupListItemLore;
 
     public PlotMenuManager(
             final CraftplayPlotExtrasPlugin plugin,
             final LanguageManager languageManager,
-            final PlotSquaredFlagService flagService
+            final PlotSquaredFlagService flagService,
+            final PlotBackupService backupService
     ) {
         this.plugin = plugin;
         this.languageManager = languageManager;
         this.flagService = flagService;
+        this.backupService = backupService;
         this.headDatabaseHook = new HeadDatabaseHook(plugin);
         this.placeholderHook = new PlaceholderHook(plugin);
     }
@@ -76,9 +97,13 @@ public final class PlotMenuManager implements Listener {
         flagsByPageAndSlot.clear();
         settingsDecorationsBySlot.clear();
         settingsTabs.clear();
+        teamButtonsBySlot.clear();
+        backupListButtonsBySlot.clear();
         mainLoaded = false;
         flagsLoaded = false;
         settingsLoaded = false;
+        teamLoaded = false;
+        backupListLoaded = false;
 
         final YamlConfiguration menuConfig = loadMenuConfig(plugin.getConfig().getString("gui.main-menu", "main.yml"));
         if (menuConfig == null) {
@@ -130,6 +155,36 @@ public final class PlotMenuManager implements Listener {
         loadDecorations(settingsConfig, settingsDecorationsBySlot, settingsSize);
         loadSettingsTabs(settingsConfig);
         settingsLoaded = true;
+
+        final YamlConfiguration teamConfig = loadMenuConfig(plugin.getConfig().getString("gui.team-menu", "team.yml"));
+        if (teamConfig == null) {
+            teamTitle = "&8Team-Menü";
+            teamSize = 27;
+            teamFiller = null;
+            return;
+        }
+
+        teamTitle = teamConfig.getString("title", "&8Team-Menü");
+        teamSize = normalizeSize(teamConfig.getInt("size", 27));
+        teamFiller = createFiller(teamConfig);
+        loadButtons(teamConfig, teamButtonsBySlot, teamSize);
+        loadDecorations(teamConfig, teamButtonsBySlot, teamSize);
+        teamLoaded = true;
+
+        backupListTitle = teamConfig.getString("backup-list.title", "&8Plotbackups");
+        backupListSize = normalizeSize(teamConfig.getInt("backup-list.size", 54));
+        backupListFiller = createFiller(teamConfig, "backup-list.filler");
+        backupListSlots = teamConfig.getIntegerList("backup-list.slots");
+        if (backupListSlots.isEmpty()) {
+            backupListSlots = defaultListSlots(backupListSize);
+        }
+        backupListItemMaterial = material(teamConfig.getString("backup-list.item.material", "FILLED_MAP"), Material.FILLED_MAP);
+        backupListItemHeadDatabaseId = headDatabaseId(teamConfig, "backup-list.item.");
+        backupListItemName = teamConfig.getString("backup-list.item.name", "&e{owner} &7- &f{plot}");
+        backupListItemLore = teamConfig.getStringList("backup-list.item.lore");
+        loadButtonsFromSection(teamConfig, "backup-list.buttons", backupListButtonsBySlot, backupListSize);
+        loadDecorationsFromSection(teamConfig, "backup-list.decorations", backupListButtonsBySlot, backupListSize);
+        backupListLoaded = true;
     }
 
     public void openMainMenu(final Player player) {
@@ -259,6 +314,77 @@ public final class PlotMenuManager implements Listener {
         player.openInventory(inventory);
     }
 
+    public void openTeamMenu(final Player player) {
+        if (!player.hasPermission("craftplayplotextras.team")) {
+            languageManager.send(player, "no-permission");
+            return;
+        }
+        if (!teamLoaded) {
+            languageManager.send(player, "menu-missing");
+            return;
+        }
+
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("team"),
+                teamSize,
+                Text.color(placeholderHook.apply(player, teamTitle))
+        );
+        if (teamFiller != null) {
+            for (int slot = 0; slot < teamSize; slot++) {
+                inventory.setItem(slot, teamFiller);
+            }
+        }
+        for (final MenuButton button : teamButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button));
+            }
+        }
+        player.openInventory(inventory);
+    }
+
+    public void openBackupListMenu(final Player player, final int page) {
+        if (!player.hasPermission("craftplayplotextras.backup.list")) {
+            languageManager.send(player, "no-permission");
+            return;
+        }
+        if (!backupListLoaded) {
+            languageManager.send(player, "menu-missing");
+            return;
+        }
+
+        final int normalizedPage = Math.max(1, page);
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("team-backups", normalizedPage),
+                backupListSize,
+                Text.color(placeholderHook.apply(player, backupListTitle.replace("{page}", String.valueOf(normalizedPage))))
+        );
+        if (backupListFiller != null) {
+            for (int slot = 0; slot < backupListSize; slot++) {
+                inventory.setItem(slot, backupListFiller);
+            }
+        }
+        final Map<String, String> pagePlaceholders = new HashMap<>();
+        pagePlaceholders.put("page", String.valueOf(normalizedPage));
+        pagePlaceholders.put("next_page", String.valueOf(normalizedPage + 1));
+        pagePlaceholders.put("previous_page", String.valueOf(Math.max(1, normalizedPage - 1)));
+        for (final MenuButton button : backupListButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, pagePlaceholders));
+            }
+        }
+
+        final List<PlotBackupMetadata> backups = backupService.listBackups();
+        final int pageSize = Math.max(1, backupListSlots.size());
+        final int start = (normalizedPage - 1) * pageSize;
+        final int end = Math.min(backups.size(), start + pageSize);
+        for (int index = start; index < end; index++) {
+            final int slot = backupListSlots.get(index - start);
+            final PlotBackupMetadata metadata = backups.get(index);
+            inventory.setItem(slot, createBackupListItem(player, metadata));
+        }
+        player.openInventory(inventory);
+    }
+
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) {
@@ -281,6 +407,14 @@ public final class PlotMenuManager implements Listener {
         }
         if ("settings".equalsIgnoreCase(holder.getMenuId())) {
             handleSettingsClick(player, holder.getTabId(), event.getSlot());
+            return;
+        }
+        if ("team".equalsIgnoreCase(holder.getMenuId())) {
+            handleTeamClick(player, event.getSlot());
+            return;
+        }
+        if ("team-backups".equalsIgnoreCase(holder.getMenuId())) {
+            handleBackupListClick(player, holder.getPage(), event.getSlot());
             return;
         }
 
@@ -466,15 +600,19 @@ public final class PlotMenuManager implements Listener {
     }
 
     private ItemStack createFiller(final YamlConfiguration menuConfig) {
-        if (!menuConfig.getBoolean("filler.enabled", true)) {
+        return createFiller(menuConfig, "filler");
+    }
+
+    private ItemStack createFiller(final YamlConfiguration menuConfig, final String path) {
+        if (!menuConfig.getBoolean(path + ".enabled", true)) {
             return null;
         }
 
-        final Material material = material(menuConfig.getString("filler.material", "BLACK_STAINED_GLASS_PANE"), Material.BLACK_STAINED_GLASS_PANE);
+        final Material material = material(menuConfig.getString(path + ".material", "BLACK_STAINED_GLASS_PANE"), Material.BLACK_STAINED_GLASS_PANE);
         final ItemStack item = new ItemStack(material);
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(Text.color(menuConfig.getString("filler.name", "&r")));
+            meta.setDisplayName(Text.color(menuConfig.getString(path + ".name", "&r")));
             item.setItemMeta(meta);
         }
         return item;
@@ -498,14 +636,22 @@ public final class PlotMenuManager implements Listener {
     }
 
     private ItemStack createButtonItem(final Player player, final MenuButton button) {
+        return createButtonItem(player, button, Collections.emptyMap());
+    }
+
+    private ItemStack createButtonItem(
+            final Player player,
+            final MenuButton button,
+            final Map<String, String> replacements
+    ) {
         ItemStack item = headDatabaseHook.getHead(button.getHeadDatabaseId());
         if (item == null) {
             item = new ItemStack(button.getMaterial());
         }
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(Text.color(placeholderHook.apply(player, button.getName())));
-            meta.setLore(Text.color(placeholderHook.apply(player, button.getLore())));
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(button.getName(), replacements))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(button.getLore(), replacements))));
             item.setItemMeta(meta);
         }
         return item;
@@ -519,6 +665,21 @@ public final class PlotMenuManager implements Listener {
             final Map<String, String> placeholders = flagPlaceholders(flagEntry, enabled);
             meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(flagEntry.getName(), placeholders))));
             meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(flagEntry.getLore(), placeholders))));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private ItemStack createBackupListItem(final Player player, final PlotBackupMetadata metadata) {
+        ItemStack item = headDatabaseHook.getHead(backupListItemHeadDatabaseId);
+        if (item == null) {
+            item = new ItemStack(backupListItemMaterial);
+        }
+        final ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            final Map<String, String> placeholders = backupPlaceholders(metadata);
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(backupListItemName, placeholders))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(backupListItemLore, placeholders))));
             item.setItemMeta(meta);
         }
         return item;
@@ -609,6 +770,45 @@ public final class PlotMenuManager implements Listener {
         }
     }
 
+    private void handleTeamClick(final Player player, final int slot) {
+        final MenuButton button = teamButtonsBySlot.get(slot);
+        if (button == null || !canSee(player, button)) {
+            return;
+        }
+        if (button.isCloseInventory()) {
+            player.closeInventory();
+        }
+        for (final String command : button.getCommands()) {
+            runCommand(player, command);
+        }
+    }
+
+    private void handleBackupListClick(final Player player, final int page, final int slot) {
+        final MenuButton button = backupListButtonsBySlot.get(slot);
+        if (button != null) {
+            if (!canSee(player, button)) {
+                return;
+            }
+            if (button.isCloseInventory()) {
+                player.closeInventory();
+            }
+            for (final String command : button.getCommands()) {
+                runCommand(player, command
+                        .replace("{page}", String.valueOf(page))
+                        .replace("{next_page}", String.valueOf(page + 1))
+                        .replace("{previous_page}", String.valueOf(Math.max(1, page - 1))));
+            }
+            return;
+        }
+
+        final String backupId = backupIdAt(page, slot);
+        if (backupId == null) {
+            return;
+        }
+        player.closeInventory();
+        backupService.requestRestore(player, backupId);
+    }
+
     private void runCommand(final Player player, final String configuredCommand) {
         if (configuredCommand == null || configuredCommand.trim().isEmpty()) {
             return;
@@ -651,8 +851,24 @@ public final class PlotMenuManager implements Listener {
                 openFlagsMenu(player, menuPage(menuId));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("settings")) {
                 openSettingsMenu(player, menuArgument(menuId, defaultSettingsTab));
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("team-backups")) {
+                openBackupListMenu(player, menuPage(menuId));
+            } else if ("team".equalsIgnoreCase(menuId)) {
+                openTeamMenu(player);
             } else if ("main".equalsIgnoreCase(menuId)) {
                 openMainMenu(player);
+            }
+            return;
+        }
+
+        if (command.toLowerCase(Locale.ROOT).startsWith("plot-backup:")) {
+            final String backupAction = command.substring("plot-backup:".length()).trim();
+            if ("create".equalsIgnoreCase(backupAction)) {
+                player.closeInventory();
+                backupService.requestManualBackup(player);
+            } else if (backupAction.toLowerCase(Locale.ROOT).startsWith("restore:")) {
+                player.closeInventory();
+                backupService.requestRestore(player, backupAction.substring("restore:".length()).trim());
             }
             return;
         }
@@ -685,6 +901,33 @@ public final class PlotMenuManager implements Listener {
         placeholders.put("status", enabled ? statusEnabled : statusDisabled);
         placeholders.put("next_status", enabled ? statusDisabled : statusEnabled);
         return placeholders;
+    }
+
+    private Map<String, String> backupPlaceholders(final PlotBackupMetadata metadata) {
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("id", value(metadata.getId()));
+        placeholders.put("file", value(metadata.getSchematicFileName()));
+        placeholders.put("owner", value(metadata.getOwnerName()));
+        placeholders.put("created_by", value(metadata.getCreatedByName()));
+        placeholders.put("created_at", value(metadata.getCreatedAt()));
+        placeholders.put("action", actionName(metadata.getAction()));
+        placeholders.put("world", value(metadata.getWorldName()));
+        placeholders.put("plot", value(metadata.getPlotId()));
+        placeholders.put("plots", metadata.getPlotIds().isEmpty() ? value(metadata.getPlotId()) : String.join(", ", metadata.getPlotIds()));
+        placeholders.put("merge", value(metadata.getMergeType()));
+        return placeholders;
+    }
+
+    private String value(final String value) {
+        return value == null || value.trim().isEmpty() ? "-" : value;
+    }
+
+    private String actionName(final String action) {
+        if (action == null || action.trim().isEmpty()) {
+            return "-";
+        }
+        final String configured = plugin.getConfig().getString("plot-backups.action-names." + action.toLowerCase(Locale.ROOT), "");
+        return configured == null || configured.trim().isEmpty() ? action : configured;
     }
 
     private String applyPlaceholders(final String text, final Map<String, String> placeholders) {
@@ -737,6 +980,35 @@ public final class PlotMenuManager implements Listener {
             return fallback;
         }
         return menuId.substring(separator + 1).trim();
+    }
+
+    private String backupIdAt(final int page, final int slot) {
+        if (backupListSlots == null || backupListSlots.isEmpty()) {
+            return null;
+        }
+        final int slotIndex = backupListSlots.indexOf(slot);
+        if (slotIndex < 0) {
+            return null;
+        }
+        final int backupIndex = (Math.max(1, page) - 1) * backupListSlots.size() + slotIndex;
+        final List<PlotBackupMetadata> backups = backupService.listBackups();
+        if (backupIndex < 0 || backupIndex >= backups.size()) {
+            return null;
+        }
+        return backups.get(backupIndex).getId();
+    }
+
+    private List<Integer> defaultListSlots(final int menuSize) {
+        final List<Integer> slots = new ArrayList<>();
+        for (int slot = 0; slot < menuSize; slot++) {
+            final int column = slot % 9;
+            final int row = slot / 9;
+            if (row == 0 || row >= (menuSize / 9) - 1 || column == 0 || column == 8) {
+                continue;
+            }
+            slots.add(slot);
+        }
+        return slots;
     }
 
     private int normalizeSize(final int configuredSize) {

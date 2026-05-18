@@ -7,7 +7,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 5
+file-version: 6
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
@@ -59,6 +59,24 @@ buttons:
     close: false
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""
+  team:
+    # Slot im Inventar. 0 ist oben links.
+    slot: 13
+    # Item, das für diesen Button angezeigt wird.
+    material: COMMAND_BLOCK
+    # Anzeigename des Buttons.
+    name: "&cTeam"
+    # Beschreibung unter dem Buttonnamen.
+    lore:
+      - "&7Öffnet Teamfunktionen"
+      - "&7für Plotbackups."
+    # Öffnet das Team-Untermenü.
+    commands:
+      - "open-menu:team"
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
+    close: false
+    # Nur Teammitglieder mit dieser Permission sehen den Button.
+    permission: "craftplayplotextras.team"
   settings:
     # Slot im Inventar. 0 ist oben links.
     slot: 15

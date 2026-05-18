@@ -5,7 +5,16 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 4
+file-version: 5
+
+# Befehle dieses Plugins.
+command:
+  # Hauptbefehl ohne Slash. Der feste Bukkit-Befehl /plotextras bleibt aus technischen Gründen erhalten,
+  # aber dieser Wert kann zusätzlich als frei änderbarer Befehlspräfix genutzt werden.
+  prefix: plotextras
+  # Zusätzliche frei änderbare Kurzbefehle ohne Slash.
+  aliases:
+    - cpe
 
 # Spracheinstellungen für Nachrichten und GUI-Auswahl.
 language:
@@ -25,9 +34,70 @@ gui:
   # Datei des Einstellungs-Untermenüs. Geladen wird gui/<sprache>/<settings-menu>.
   # Dieses Menü enthält Tabs für Plot-Homes, Wetter, Biome und Zeit.
   settings-menu: settings.yml
+  # Datei des Team-Untermenüs. Geladen wird gui/<sprache>/<team-menu>.
+  # Dieses Menü enthält administrative Plotbackup-Funktionen.
+  team-menu: team.yml
   # Button-IDs aus dem Hauptmenü, die nicht angezeigt werden sollen.
   # Damit können Standardbuttons entfernt werden, ohne bestehende GUI-Dateien zu überschreiben.
   hidden-main-buttons:
     - info
     - home
     - help
+
+# Plotbackup-System.
+plot-backups:
+  # Aktiviert oder deaktiviert das komplette Plotbackup-System.
+  enabled: true
+  # Unterordner im Pluginordner, in dem .schem-Dateien und Metadaten gespeichert werden.
+  folder: Plotbackups
+  # Wenn true, wird immer die komplette Bauhöhe der Welt gesichert.
+  # Wenn false, werden die Höhen genutzt, die PlotSquared für die Plotregion liefert.
+  full-world-height: true
+  # Untere Bauhöhe, falls die Serverversion keine eigene Welt-Mindesthöhe liefert.
+  fallback-min-y: 0
+  # Wenn true, werden Entities mit in die Schematic geschrieben.
+  include-entities: true
+  # Wenn true, werden Biome mit in die Schematic geschrieben.
+  include-biomes: true
+  # Wie lange der Plot nach einem Backup oder Restore noch gegen Änderungen geschützt bleibt.
+  unlock-delay-ticks: 20
+  # Anzeigenamen der Aktionen in Nachrichten und Backup-Dateinamen.
+  action-names:
+    manual: "Manuelles Backup"
+    delete: "Plot löschen"
+    unmerge: "Plot trennen"
+    reset: "Plot zurücksetzen"
+  restore:
+    # Wenn true, werden Entities beim Wiederherstellen mit eingefügt.
+    paste-entities: true
+    # Wenn true, werden Biome beim Wiederherstellen mit eingefügt.
+    paste-biomes: true
+    # Wenn true, wird Luft aus der Schematic nicht eingefügt.
+    # Für vollständige Plot-Wiederherstellung sollte dieser Wert false bleiben.
+    ignore-air: false
+  intercept:
+    # Befehlslabels von PlotSquared, die überwacht werden.
+    plot-command-labels:
+      - plot
+      - plots
+      - p
+    # Wenn true, wird /plot delete abgefangen und erst nach erfolgreichem Backup ausgeführt.
+    delete: true
+    # Wenn true, wird /plot unmerge abgefangen und erst nach erfolgreichem Backup ausgeführt.
+    unmerge: true
+    # Wenn true, wird /plot clear oder /plot reset abgefangen und erst nach erfolgreichem Backup ausgeführt.
+    reset: true
+    # Befehlsnamen, die als Löschen erkannt werden.
+    delete-aliases:
+      - delete
+      - remove
+    # Befehlsnamen, die als Unmerge erkannt werden.
+    unmerge-aliases:
+      - unmerge
+    # Befehlsnamen, die als Zurücksetzen erkannt werden.
+    reset-aliases:
+      - clear
+      - reset
+    # Wenn true, führt das Plugin nach dem gesicherten PlotSquared-Befehl automatisch /plot confirm aus.
+    # Dadurch muss der Spieler nicht zusätzlich noch die PlotSquared-eigene Bestätigung ausführen.
+    auto-run-plotsquared-confirm: true

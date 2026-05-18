@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 2
+file-version: 3
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -20,3 +20,39 @@ no-plot: "&cYou are not standing on a plot."
 flag-no-permission: "&cYou may not change this plot flag."
 # Message shown after toggling a flag. Placeholders: {flag}, {status}
 flag-toggled: "&a{flag} &7is now {status}&7."
+# Message shown when plot backups are disabled.
+backup-disabled: "&cPlot backups are currently disabled."
+# Message shown when WorldEdit or FAWE is missing.
+backup-worldedit-missing: "&cWorldEdit or FAWE was not found. Plot backups cannot be created."
+# Message shown when a player lacks backup permissions.
+backup-no-permission: "&cYou may not use plot backups."
+# Message shown when plot data could not be read.
+backup-plot-read-failed: "&cThe plot region could not be read."
+# Message shown when a backup starts.
+backup-started: "&eThe plot backup is being created. This can take a moment depending on plot size."
+# Message shown after a successful backup. Placeholders: {id}, {file}, {owner}, {created_by}, {created_at}, {action}, {world}, {plot}, {plots}, {merge}
+backup-created: "&aPlot backup created: &f{id}"
+# Message shown when a backup failed.
+backup-failed: "&cThe plot backup could not be created. Please check the console."
+# Message shown when an intercepted PlotSquared action needs a backup. Placeholders: {action}, {command}
+backup-protected-action-start: "&eThis action creates a backup of the plot or merge first. This can take a few moments depending on size."
+# Safety confirmation for intercepted actions.
+backup-confirm-question: "&7Confirm with &a/{prefix} confirm &7or cancel with &c/{prefix} cancel&7."
+# Safety confirmation for restore. Same placeholders as backup-created.
+backup-restore-confirm: "&eThis backup will be restored on the plot you are standing on: &f{id}&e. Confirm with &a/{prefix} confirm &eor cancel with &c/{prefix} cancel&e."
+# Message shown when nothing is waiting for confirmation.
+backup-no-pending-action: "&cNo backup action is waiting for confirmation."
+# Message shown when an action was cancelled.
+backup-action-cancelled: "&cThe backup action was cancelled."
+# Message shown when a backup was not found.
+backup-not-found: "&cThat plot backup was not found."
+# Message shown when the .schem file for a backup is missing.
+backup-schematic-missing: "&cThe schematic file for this backup is missing: &f{file}"
+# Message shown when a restore starts.
+backup-restore-started: "&eThe plot backup is being restored. Please wait a moment."
+# Message shown after a restore.
+backup-restored: "&aPlot backup restored: &f{id}"
+# Message shown when restore failed.
+backup-restore-failed: "&cThe plot backup could not be restored. Please check the console."
+# Usage message for backup commands.
+backup-command-usage: "&eUse: &f/{prefix} backup create&7, &f/{prefix} backup list &7or &f/{prefix} backup restore <id>&7."

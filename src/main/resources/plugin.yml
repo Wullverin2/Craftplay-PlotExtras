@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 3
+file-version: 4
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -24,6 +24,7 @@ depend:
 # Optionale Erweiterungen. PlaceholderAPI ersetzt Platzhalter in GUI-Texten und Commands.
 # CMI, Jobs, Quests und mcMMO liefern ihre Werte üblicherweise über PlaceholderAPI-Erweiterungen.
 # HeadDatabase liefert Köpfe für GUI-Buttons per head-database-id.
+# WorldEdit oder FAWE wird für Plotbackups als .schem genutzt.
 softdepend:
   - HeadDatabase
   - PlaceholderAPI
@@ -31,6 +32,8 @@ softdepend:
   - Jobs
   - Quests
   - mcMMO
+  - WorldEdit
+  - FastAsyncWorldEdit
 # Befehle, die dieses Plugin registriert.
 commands:
   plotextras:
@@ -52,4 +55,20 @@ permissions:
     # Erlaubt administrative Befehle wie /plotextras reload.
     description: Erlaubt administrative Basisfunktionen wie Reload.
     # op bedeutet: nur Operatoren haben sie standardmäßig.
+    default: op
+  craftplayplotextras.team:
+    # Erlaubt das Öffnen des Team-Menüs.
+    description: Erlaubt das Öffnen des Team-Menüs.
+    default: op
+  craftplayplotextras.backup.create:
+    # Erlaubt das Erstellen von Plotbackups.
+    description: Erlaubt das Erstellen von Plotbackups.
+    default: op
+  craftplayplotextras.backup.list:
+    # Erlaubt das Anzeigen der Plotbackup-Liste.
+    description: Erlaubt das Anzeigen der Plotbackup-Liste.
+    default: op
+  craftplayplotextras.backup.restore:
+    # Erlaubt das Wiederherstellen von Plotbackups.
+    description: Erlaubt das Wiederherstellen von Plotbackups.
     default: op

@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 2
+file-version: 3
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -20,3 +20,39 @@ no-plot: "&cDu stehst auf keinem Plot."
 flag-no-permission: "&cDu darfst diese Plot-Flag nicht ändern."
 # Nachricht nach dem Umschalten einer Flag. Platzhalter: {flag}, {status}
 flag-toggled: "&a{flag} &7ist jetzt {status}&7."
+# Nachricht, wenn Plotbackups deaktiviert sind.
+backup-disabled: "&cPlotbackups sind aktuell deaktiviert."
+# Nachricht, wenn WorldEdit oder FAWE fehlt.
+backup-worldedit-missing: "&cWorldEdit oder FAWE wurde nicht gefunden. Plotbackups können nicht erstellt werden."
+# Nachricht, wenn ein Spieler keine Backup-Rechte hat.
+backup-no-permission: "&cDu darfst keine Plotbackups nutzen."
+# Nachricht, wenn die Plotdaten nicht gelesen werden konnten.
+backup-plot-read-failed: "&cDie Plotregion konnte nicht gelesen werden."
+# Nachricht beim Start eines Backups.
+backup-started: "&eDas Plotbackup wird erstellt. Das kann je nach Plotgröße einen Moment dauern."
+# Nachricht nach einem erfolgreichen Backup. Platzhalter: {id}, {file}, {owner}, {created_by}, {created_at}, {action}, {world}, {plot}, {plots}, {merge}
+backup-created: "&aPlotbackup erstellt: &f{id}"
+# Nachricht bei einem fehlgeschlagenen Backup.
+backup-failed: "&cDas Plotbackup konnte nicht erstellt werden. Bitte prüfe die Konsole."
+# Nachricht, wenn eine abgefangene PlotSquared-Aktion ein Backup braucht. Platzhalter: {action}, {command}
+backup-protected-action-start: "&eDiese Aktion erstellt zuerst ein Backup des Plots oder Merges. Das kann je nach Größe einige Momente dauern."
+# Sicherheitsabfrage für abgefangene Aktionen.
+backup-confirm-question: "&7Bestätige mit &a/{prefix} confirm &7oder brich mit &c/{prefix} cancel &7ab."
+# Sicherheitsabfrage für Restore. Platzhalter wie backup-created.
+backup-restore-confirm: "&eDieses Backup wird auf dem Plot wiederhergestellt, auf dem du stehst: &f{id}&e. Bestätige mit &a/{prefix} confirm &eoder brich mit &c/{prefix} cancel &eab."
+# Nachricht, wenn keine Aktion bestätigt werden kann.
+backup-no-pending-action: "&cEs wartet keine Backup-Aktion auf deine Bestätigung."
+# Nachricht, wenn eine Aktion abgebrochen wurde.
+backup-action-cancelled: "&cDie Backup-Aktion wurde abgebrochen."
+# Nachricht, wenn ein Backup nicht gefunden wurde.
+backup-not-found: "&cDieses Plotbackup wurde nicht gefunden."
+# Nachricht, wenn die .schem-Datei zu einem Backup fehlt.
+backup-schematic-missing: "&cDie Schematic-Datei zu diesem Backup fehlt: &f{file}"
+# Nachricht beim Start einer Wiederherstellung.
+backup-restore-started: "&eDas Plotbackup wird wiederhergestellt. Bitte warte einen Moment."
+# Nachricht nach einer Wiederherstellung.
+backup-restored: "&aPlotbackup wurde wiederhergestellt: &f{id}"
+# Nachricht bei einer fehlgeschlagenen Wiederherstellung.
+backup-restore-failed: "&cDas Plotbackup konnte nicht wiederhergestellt werden. Bitte prüfe die Konsole."
+# Nutzungshinweis für Backup-Befehle.
+backup-command-usage: "&eNutze: &f/{prefix} backup create&7, &f/{prefix} backup list &7oder &f/{prefix} backup restore <id>&7."

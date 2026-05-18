@@ -27,6 +27,10 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             final String label,
             final String[] args
     ) {
+        return execute(sender, args);
+    }
+
+    public boolean execute(final CommandSender sender, final String[] args) {
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             return reload(sender);
         }
@@ -37,6 +41,24 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
 
         final Player player = (Player) sender;
+        if (args.length == 1 && args[0].equalsIgnoreCase("confirm")) {
+            return plugin.getPlotBackupService().confirm(player);
+        }
+        if (args.length == 1 && args[0].equalsIgnoreCase("cancel")) {
+            return plugin.getPlotBackupService().cancel(player);
+        }
+        if (args.length == 1 && args[0].equalsIgnoreCase("team")) {
+            if (!player.hasPermission("craftplayplotextras.team")) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            plugin.getPlotMenuManager().openTeamMenu(player);
+            return true;
+        }
+        if (args.length >= 2 && args[0].equalsIgnoreCase("backup")) {
+            return backup(player, args);
+        }
+
         if (!player.hasPermission("craftplayplotextras.use")) {
             plugin.getLanguageManager().send(player, "no-permission");
             return true;
@@ -57,6 +79,29 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean backup(final Player player, final String[] args) {
+        if (args[1].equalsIgnoreCase("create")) {
+            plugin.getPlotBackupService().requestManualBackup(player);
+            return true;
+        }
+        if (args[1].equalsIgnoreCase("restore") && args.length >= 3) {
+            plugin.getPlotBackupService().requestRestore(player, args[2]);
+            return true;
+        }
+        if (args[1].equalsIgnoreCase("list")) {
+            if (!player.hasPermission("craftplayplotextras.backup.list")) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            plugin.getPlotMenuManager().openBackupListMenu(player, 1);
+            return true;
+        }
+        final java.util.Map<String, String> placeholders = new java.util.HashMap<>();
+        placeholders.put("prefix", plugin.getConfig().getString("command.prefix", "plotextras"));
+        plugin.getLanguageManager().send(player, "backup-command-usage", placeholders);
+        return true;
+    }
+
     @Override
     public List<String> onTabComplete(
             final CommandSender sender,
@@ -72,6 +117,18 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         final List<String> completions = new ArrayList<>();
         if ("reload".startsWith(input)) {
             completions.add("reload");
+        }
+        if ("team".startsWith(input)) {
+            completions.add("team");
+        }
+        if ("confirm".startsWith(input)) {
+            completions.add("confirm");
+        }
+        if ("cancel".startsWith(input)) {
+            completions.add("cancel");
+        }
+        if ("backup".startsWith(input)) {
+            completions.add("backup");
         }
         return completions;
     }

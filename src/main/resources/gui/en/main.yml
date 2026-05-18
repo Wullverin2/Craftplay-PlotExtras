@@ -7,7 +7,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 5
+file-version: 6
 
 # Inventory title.
 title: "&8Plot Menu"
@@ -59,6 +59,24 @@ buttons:
     close: false
     # Optional permission required to see the button.
     permission: ""
+  team:
+    # Inventory slot. 0 is the top-left slot.
+    slot: 13
+    # Item shown for this button.
+    material: COMMAND_BLOCK
+    # Button display name.
+    name: "&cTeam"
+    # Description below the button name.
+    lore:
+      - "&7Opens staff tools"
+      - "&7for plot backups."
+    # Opens the staff submenu.
+    commands:
+      - "open-menu:team"
+    # If true, the menu closes after clicking.
+    close: false
+    # Only staff with this permission can see the button.
+    permission: "craftplayplotextras.team"
   settings:
     # Inventory slot. 0 is the top-left slot.
     slot: 15

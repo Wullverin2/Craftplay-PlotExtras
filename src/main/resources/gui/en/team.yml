@@ -1,0 +1,198 @@
+# English staff menu.
+# This file controls staff functions such as plot backups and the backup list.
+# Every button can be customized: slot, material, HeadDatabase ID, name, lore, commands, and permission.
+# PlaceholderAPI placeholders work in titles, names, lore, and commands.
+
+# File version of this GUI file.
+# The plugin uses this value to add new menu options automatically.
+file-version: 1
+
+# Staff menu inventory title.
+title: "&8Staff Menu"
+# Staff menu size. Allowed values are 9, 18, 27, 36, 45, or 54 slots.
+size: 27
+# Filler item for empty slots.
+filler:
+  # If true, empty slots are filled with the material below.
+  enabled: true
+  # Minecraft/Spigot material name.
+  material: BLACK_STAINED_GLASS_PANE
+  # Display name of the filler item. &r keeps it visually empty.
+  name: "&r"
+# Buttons in the staff menu.
+buttons:
+  create-backup:
+    # Inventory slot. 0 is the top-left slot.
+    slot: 11
+    # Item shown for this button.
+    material: WRITABLE_BOOK
+    # Button display name.
+    name: "&aSave Plot"
+    # Lore below the display name.
+    lore:
+      - "&7Creates a schematic backup"
+      - "&7of the plot or merge"
+      - "&7you are standing on."
+    # Special plugin command to create a backup.
+    commands:
+      - "plot-backup:create"
+    # If true, the menu closes after clicking.
+    close: true
+    # Permission required to see and use this button.
+    permission: "craftplayplotextras.backup.create"
+  list-backups:
+    slot: 15
+    material: CHEST
+    name: "&ePlot Backups"
+    lore:
+      - "&7Shows all saved"
+      - "&7plot backups with details."
+    commands:
+      - "open-menu:team-backups:1"
+    close: false
+    permission: "craftplayplotextras.backup.list"
+  back:
+    slot: 18
+    material: ARROW
+    name: "&eBack"
+    lore:
+      - "&7Back to the main menu."
+    commands:
+      - "open-menu:main"
+    close: false
+    permission: ""
+  close:
+    slot: 22
+    material: BARRIER
+    head-database-id: ""
+    name: "&cClose"
+    lore:
+      - "&7Closes this menu."
+    commands: []
+    close: true
+    permission: ""
+# Decoration items are visual-only.
+decorations:
+  left:
+    slot: 0
+    material: RED_STAINED_GLASS_PANE
+    head-database-id: ""
+    name: "&r"
+    lore: []
+    permission: ""
+  right:
+    slot: 8
+    material: RED_STAINED_GLASS_PANE
+    head-database-id: ""
+    name: "&r"
+    lore: []
+    permission: ""
+
+# List of all plot backups.
+backup-list:
+  # Backup list title. Placeholder: {page}
+  title: "&8Plot Backups &7- Page {page}"
+  # Backup list inventory size.
+  size: 54
+  # Filler item for empty backup list slots.
+  filler:
+    enabled: true
+    material: BLACK_STAINED_GLASS_PANE
+    name: "&r"
+  # Slots where backups are shown.
+  slots:
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 19
+    - 20
+    - 21
+    - 22
+    - 23
+    - 24
+    - 25
+    - 28
+    - 29
+    - 30
+    - 31
+    - 32
+    - 33
+    - 34
+  # Template for every backup item.
+  item:
+    material: FILLED_MAP
+    head-database-id: ""
+    # Placeholders: {id}, {file}, {owner}, {created_by}, {created_at}, {action}, {world}, {plot}, {plots}, {merge}
+    name: "&e{owner} &7- &f{plot}"
+    lore:
+      - "&7Action: &f{action}"
+      - "&7Created: &f{created_at}"
+      - "&7Created by: &f{created_by}"
+      - "&7World: &f{world}"
+      - "&7Plot/Merge: &f{merge}"
+      - "&7Plots: &f{plots}"
+      - "&7File: &f{file}"
+      - ""
+      - "&aClick to restore"
+      - "&7on the plot you are standing on."
+  # Buttons in the backup list.
+  buttons:
+    previous:
+      slot: 45
+      material: ARROW
+      name: "&ePrevious Page"
+      lore:
+        - "&7Opens page {previous_page}."
+      commands:
+        - "open-menu:team-backups:{previous_page}"
+      close: false
+      permission: "craftplayplotextras.backup.list"
+    next:
+      slot: 53
+      material: ARROW
+      name: "&eNext Page"
+      lore:
+        - "&7Opens page {next_page}."
+      commands:
+        - "open-menu:team-backups:{next_page}"
+      close: false
+      permission: "craftplayplotextras.backup.list"
+    back:
+      slot: 49
+      material: OAK_DOOR
+      name: "&eBack"
+      lore:
+        - "&7Back to the staff menu."
+      commands:
+        - "open-menu:team"
+      close: false
+      permission: "craftplayplotextras.team"
+    close:
+      slot: 50
+      material: BARRIER
+      name: "&cClose"
+      lore:
+        - "&7Closes this menu."
+      commands: []
+      close: true
+      permission: ""
+  # Decoration items in the backup list.
+  decorations:
+    top-left:
+      slot: 0
+      material: RED_STAINED_GLASS_PANE
+      head-database-id: ""
+      name: "&r"
+      lore: []
+      permission: ""
+    top-right:
+      slot: 8
+      material: RED_STAINED_GLASS_PANE
+      head-database-id: ""
+      name: "&r"
+      lore: []
+      permission: ""

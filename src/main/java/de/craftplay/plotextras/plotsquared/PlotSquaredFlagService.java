@@ -1,12 +1,22 @@
 package de.craftplay.plotextras.plotsquared;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public final class PlotSquaredFlagService {
@@ -73,6 +83,37 @@ public final class PlotSquaredFlagService {
         player.performCommand("plot flag set " + flagName + " " + target);
     }
 
+    public Optional<PlotContext> currentPlotContext(final Player player) {
+        final Object plot = currentPlot(player);
+        if (plot == null) {
+            return Optional.empty();
+        }
+
+        final World world = world(player, plot);
+        final String worldName = world == null ? player.getWorld().getName() : world.getName();
+        final List<PlotRegion> regions = plotRegions(plot, worldName);
+        final PlotRegion bounds = PlotRegion.encompassing(worldName, regions);
+        if (bounds == null) {
+            return Optional.empty();
+        }
+
+        final UUID ownerUuid = ownerUuid(plot);
+        final String ownerName = ownerName(ownerUuid);
+        final String plotId = stringify(invokeNoArgs(plot, "getId"), "unbekannt");
+        final List<String> plotIds = connectedPlotIds(plot);
+        final String mergeType = mergeType(plot, plotIds);
+        return Optional.of(new PlotContext(
+                world,
+                plotId,
+                plotIds,
+                ownerUuid,
+                ownerName,
+                mergeType,
+                regions,
+                bounds
+        ));
+    }
+
     private Object currentPlot(final Player player) {
         final Object plotPlayer = plotPlayer(player);
         if (plotPlayer == null) {
@@ -83,6 +124,223 @@ public final class PlotSquaredFlagService {
             return method.invoke(plotPlayer);
         } catch (final ReflectiveOperationException exception) {
             warn("PlotSquared-Spielerobjekt konnte nicht gelesen werden.", exception);
+            return null;
+        }
+    }
+
+    private World world(final Player player, final Object plot) {
+        final Object worldName = invokeNoArgs(plot, "getWorldName");
+        if (worldName != null) {
+            final World world = Bukkit.getWorld(worldName.toString());
+            if (world != null) {
+                return world;
+            }
+        }
+        return player.getWorld();
+    }
+
+    private List<PlotRegion> plotRegions(final Object plot, final String worldName) {
+        final List<PlotRegion> regions = new ArrayList<>();
+        final Object plotRegions = invokeNoArgs(plot, "getRegions");
+        if (plotRegions instanceof Iterable) {
+            for (final Object region : (Iterable<?>) plotRegions) {
+                final PlotRegion converted = convertRegion(worldName, region);
+                if (converted != null) {
+                    regions.add(converted);
+                }
+            }
+        }
+
+        if (!regions.isEmpty()) {
+            return regions;
+        }
+
+        final PlotRegion largest = convertRegion(worldName, invokeNoArgs(plot, "getLargestRegion"));
+        if (largest != null) {
+            regions.add(largest);
+            return regions;
+        }
+
+        final PlotRegion extended = convertLocations(
+                worldName,
+                invokeNoArgs(plot, "getExtendedBottomAbs"),
+                invokeNoArgs(plot, "getExtendedTopAbs")
+        );
+        if (extended != null) {
+            regions.add(extended);
+            return regions;
+        }
+
+        final Object corners = invokeNoArgs(plot, "getCorners");
+        if (corners != null && corners.getClass().isArray() && java.lang.reflect.Array.getLength(corners) >= 2) {
+            final Object first = java.lang.reflect.Array.get(corners, 0);
+            final Object second = java.lang.reflect.Array.get(corners, 1);
+            final PlotRegion fromCorners = convertLocations(worldName, first, second);
+            if (fromCorners != null) {
+                regions.add(fromCorners);
+            }
+        }
+        return regions;
+    }
+
+    private PlotRegion convertRegion(final String worldName, final Object region) {
+        if (region == null) {
+            return null;
+        }
+        final Object minimum = invokeNoArgs(region, "getMinimumPoint");
+        final Object maximum = invokeNoArgs(region, "getMaximumPoint");
+        return convertLocations(worldName, minimum, maximum);
+    }
+
+    private PlotRegion convertLocations(final String worldName, final Object first, final Object second) {
+        if (first == null || second == null) {
+            return null;
+        }
+        final Integer minX = coordinate(first, "X");
+        final Integer minY = coordinate(first, "Y");
+        final Integer minZ = coordinate(first, "Z");
+        final Integer maxX = coordinate(second, "X");
+        final Integer maxY = coordinate(second, "Y");
+        final Integer maxZ = coordinate(second, "Z");
+        if (minX == null || minY == null || minZ == null || maxX == null || maxY == null || maxZ == null) {
+            return null;
+        }
+        return new PlotRegion(worldName, minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    private Integer coordinate(final Object location, final String axis) {
+        final Object blockValue = invokeNoArgs(location, "getBlock" + axis);
+        if (blockValue instanceof Number) {
+            return ((Number) blockValue).intValue();
+        }
+        final Object value = invokeNoArgs(location, "get" + axis);
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        return null;
+    }
+
+    private UUID ownerUuid(final Object plot) {
+        final Object owner = invokeNoArgs(plot, "getOwner");
+        if (owner instanceof UUID) {
+            return (UUID) owner;
+        }
+        final Object ownerAbs = invokeNoArgs(plot, "getOwnerAbs");
+        if (ownerAbs instanceof UUID) {
+            return (UUID) ownerAbs;
+        }
+        final Object owners = invokeNoArgs(plot, "getOwners");
+        if (owners instanceof Iterable) {
+            for (final Object candidate : (Iterable<?>) owners) {
+                if (candidate instanceof UUID) {
+                    return (UUID) candidate;
+                }
+            }
+        }
+        return null;
+    }
+
+    private String ownerName(final UUID ownerUuid) {
+        if (ownerUuid == null) {
+            return "Unbekannt";
+        }
+        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(ownerUuid);
+        final String name = offlinePlayer.getName();
+        return name == null || name.trim().isEmpty() ? ownerUuid.toString() : name;
+    }
+
+    private List<String> connectedPlotIds(final Object plot) {
+        final List<String> ids = new ArrayList<>();
+        final Object connected = invokeNoArgs(plot, "getConnectedPlots");
+        if (connected instanceof Iterable) {
+            for (final Object connectedPlot : (Iterable<?>) connected) {
+                final Object id = invokeNoArgs(connectedPlot, "getId");
+                ids.add(stringify(id, "unbekannt"));
+            }
+        }
+        if (ids.isEmpty()) {
+            ids.add(stringify(invokeNoArgs(plot, "getId"), "unbekannt"));
+        }
+        ids.sort(Comparator.naturalOrder());
+        return ids;
+    }
+
+    private String mergeType(final Object plot, final List<String> plotIds) {
+        final Object connected = invokeNoArgs(plot, "getConnectedPlots");
+        final Set<String> seen = new HashSet<>();
+        final List<int[]> coordinates = new ArrayList<>();
+        if (connected instanceof Iterable) {
+            for (final Object connectedPlot : (Iterable<?>) connected) {
+                final Object id = invokeNoArgs(connectedPlot, "getId");
+                final int[] coordinate = plotIdCoordinates(id);
+                if (coordinate == null) {
+                    continue;
+                }
+                final String key = coordinate[0] + ";" + coordinate[1];
+                if (seen.add(key)) {
+                    coordinates.add(coordinate);
+                }
+            }
+        }
+        if (coordinates.isEmpty()) {
+            final int[] coordinate = plotIdCoordinates(invokeNoArgs(plot, "getId"));
+            if (coordinate != null) {
+                coordinates.add(coordinate);
+            }
+        }
+        if (coordinates.size() <= 1) {
+            return "1x1";
+        }
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        for (final int[] coordinate : coordinates) {
+            minX = Math.min(minX, coordinate[0]);
+            minY = Math.min(minY, coordinate[1]);
+            maxX = Math.max(maxX, coordinate[0]);
+            maxY = Math.max(maxY, coordinate[1]);
+        }
+        if (minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE) {
+            return (maxX - minX + 1) + "x" + (maxY - minY + 1);
+        }
+        final int size = plotIds == null || plotIds.isEmpty() ? coordinates.size() : plotIds.size();
+        return size + " Plots";
+    }
+
+    private int[] plotIdCoordinates(final Object id) {
+        if (id == null) {
+            return null;
+        }
+        final Integer x = coordinate(id, "X");
+        final Integer y = coordinate(id, "Y");
+        if (x != null && y != null) {
+            return new int[]{x, y};
+        }
+        final String normalized = id.toString().replace(';', ',').replace(':', ',');
+        final String[] parts = normalized.split(",");
+        if (parts.length < 2) {
+            return null;
+        }
+        try {
+            return new int[]{Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim())};
+        } catch (final NumberFormatException ignored) {
+            return null;
+        }
+    }
+
+    private String stringify(final Object value, final String fallback) {
+        return value == null ? fallback : value.toString();
+    }
+
+    private Object invokeNoArgs(final Object target, final String methodName) {
+        if (target == null) {
+            return null;
+        }
+        try {
+            final Method method = target.getClass().getMethod(methodName);
+            return method.invoke(target);
+        } catch (final ReflectiveOperationException ignored) {
             return null;
         }
     }

@@ -27,7 +27,9 @@ public final class ConfigurationManager {
             "gui/de/flags.yml",
             "gui/en/flags.yml",
             "gui/de/settings.yml",
-            "gui/en/settings.yml"
+            "gui/en/settings.yml",
+            "gui/de/team.yml",
+            "gui/en/team.yml"
     );
     private static final DateTimeFormatter BACKUP_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
