@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 1
+file-version: 2
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -14,3 +14,9 @@ only-players: "&cDieser Befehl kann nur von Spielern genutzt werden."
 reloaded: "&aCraftplayPlotExtras wurde neu geladen."
 # Nachricht, wenn die GUI-Datei fehlt oder nicht geladen werden konnte.
 menu-missing: "&cDas Plot-Menü konnte nicht geladen werden. Bitte informiere ein Teammitglied."
+# Nachricht, wenn ein Spieler für eine Plotfunktion auf einem Plot stehen muss.
+no-plot: "&cDu stehst auf keinem Plot."
+# Nachricht, wenn ein Spieler eine Flag nicht umschalten darf.
+flag-no-permission: "&cDu darfst diese Plot-Flag nicht ändern."
+# Nachricht nach dem Umschalten einer Flag. Platzhalter: {flag}, {status}
+flag-toggled: "&a{flag} &7ist jetzt {status}&7."

@@ -4,7 +4,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 1
+file-version: 2
 
 # Inventory title.
 title: "&8Plot Menu"
@@ -83,13 +83,13 @@ buttons:
     name: "&aFlags"
     # Description below the button name.
     lore:
-      - "&7Opens the PlotSquared"
-      - "&7flag overview."
+      - "&7Opens the flag menu"
+      - "&7with status and toggles."
     # Commands run as the player. Prefix with console: to run as console.
     commands:
-      - "plot flag list"
+      - "open-menu:flags"
     # If true, the menu closes after clicking.
-    close: true
+    close: false
     # Optional permission required to see the button.
     permission: ""
   settings:

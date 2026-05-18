@@ -44,8 +44,20 @@ public final class LanguageManager {
         return Text.color(raw(defaultLanguage, key));
     }
 
+    public String getMessage(final String key, final Map<String, String> placeholders) {
+        String message = raw(defaultLanguage, key);
+        for (final Map.Entry<String, String> entry : placeholders.entrySet()) {
+            message = message.replace("{" + entry.getKey() + "}", entry.getValue());
+        }
+        return Text.color(message);
+    }
+
     public void send(final CommandSender sender, final String key) {
         sender.sendMessage(getMessage(key));
+    }
+
+    public void send(final CommandSender sender, final String key, final Map<String, String> placeholders) {
+        sender.sendMessage(getMessage(key, placeholders));
     }
 
     private String raw(final String language, final String key) {

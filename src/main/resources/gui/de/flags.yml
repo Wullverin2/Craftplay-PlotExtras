@@ -1,0 +1,948 @@
+# Deutsches Flag-Untermenü.
+# Diese Datei steuert das Menü, in dem Spieler Boolean-Flags ihres aktuellen Plots sehen und umschalten.
+# Alle Namen, Slots, Materialien und Beschreibungen können hier angepasst werden.
+
+# Dateiversion dieser GUI-Datei.
+# Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
+file-version: 2
+
+# Titel des Inventars.
+title: "&8Plot-Flags"
+# Größe des Inventars. Erlaubt sind 9, 18, 27, 36, 45 oder 54 Slots.
+size: 54
+# Nach wie vielen Ticks das Menü nach dem Umschalten aktualisiert wird.
+reopen-delay-ticks: 2
+# Text, der in der Lore für aktive und inaktive Flags eingesetzt wird.
+status:
+  # Anzeige für eine eingeschaltete Flag.
+  enabled: "&aAktiv"
+  # Anzeige für eine ausgeschaltete Flag.
+  disabled: "&cInaktiv"
+# Füllitem für leere Slots.
+filler:
+  # Wenn true, werden leere Slots mit dem unten angegebenen Material gefüllt.
+  enabled: true
+  # Materialname aus Minecraft/Spigot.
+  material: BLACK_STAINED_GLASS_PANE
+  # Anzeigename des Füllitems. &r macht den Namen leer/unauffällig.
+  name: "&r"
+# Feste Buttons im Menü.
+buttons:
+  back:
+    # Slot im Inventar. 0 ist oben links.
+    slot: 53
+    # Item, das für diesen Button angezeigt wird.
+    material: BARRIER
+    # Anzeigename des Buttons.
+    name: "&cZurück"
+    # Beschreibung unter dem Buttonnamen.
+    lore:
+      - "&7Zurück zum Hauptmenü."
+    # Interne Aktion: öffnet wieder das Hauptmenü.
+    commands:
+      - "open-menu:main"
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
+    close: false
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
+    permission: ""
+  previous-page:
+    # Slot im Inventar. Dieser Button ist auf jeder Seite sichtbar.
+    slot: 51
+    # Item, das für diesen Button angezeigt wird.
+    material: ARROW
+    # Anzeigename des Buttons.
+    name: "&eSeite 1"
+    # Beschreibung unter dem Buttonnamen.
+    lore:
+      - "&7Öffnet die erste Flag-Seite."
+    # Interne Aktion: öffnet Seite 1 des Flag-Menüs.
+    commands:
+      - "open-menu:flags:1"
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
+    close: false
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
+    permission: ""
+  next-page:
+    # Slot im Inventar. Dieser Button ist auf jeder Seite sichtbar.
+    slot: 52
+    # Item, das für diesen Button angezeigt wird.
+    material: ARROW
+    # Anzeigename des Buttons.
+    name: "&eSeite 2"
+    # Beschreibung unter dem Buttonnamen.
+    lore:
+      - "&7Öffnet die zweite Flag-Seite."
+    # Interne Aktion: öffnet Seite 2 des Flag-Menüs.
+    commands:
+      - "open-menu:flags:2"
+    # Wenn true, wird das Menü nach dem Klick geschlossen.
+    close: false
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
+    permission: ""
+# PlotSquared-Boolean-Flags, die im Menü angezeigt werden können.
+# Spieler sehen nur Flags, für die sie passende PlotSquared-Permissions besitzen.
+# Pro Flag sind page, slot, enabled-material, disabled-material, name, lore und permission anpassbar.
+# Platzhalter in Name und Lore: {flag}, {status}, {next_status}
+flags:
+  pvp:
+    slot: 0
+    enabled-material: DIAMOND_SWORD
+    disabled-material: WOODEN_SWORD
+    name: "&aSpielerkampf"
+    lore:
+      - "&7Legt fest, ob Spieler auf"
+      - "&7diesem Plot gegeneinander kämpfen können."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  pve:
+    slot: 1
+    enabled-material: IRON_SWORD
+    disabled-material: STONE_SWORD
+    name: "&aKampf gegen Kreaturen"
+    lore:
+      - "&7Legt fest, ob Spieler auf"
+      - "&7diesem Plot Kreaturen angreifen können."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  fly:
+    slot: 2
+    enabled-material: FEATHER
+    disabled-material: GRAY_DYE
+    name: "&aFliegen"
+    lore:
+      - "&7Legt fest, ob Spieler auf"
+      - "&7diesem Plot fliegen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  redstone:
+    slot: 3
+    enabled-material: REDSTONE_TORCH
+    disabled-material: LEVER
+    name: "&aRedstone"
+    lore:
+      - "&7Legt fest, ob Redstone auf"
+      - "&7diesem Plot funktionieren darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  explosion:
+    slot: 4
+    enabled-material: TNT
+    disabled-material: GUNPOWDER
+    name: "&aExplosionen"
+    lore:
+      - "&7Legt fest, ob Explosionen"
+      - "&7auf diesem Plot wirken dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  titles:
+    slot: 5
+    enabled-material: NAME_TAG
+    disabled-material: PAPER
+    name: "&aPlot-Titel"
+    lore:
+      - "&7Legt fest, ob beim Betreten"
+      - "&7Plot-Titel angezeigt werden."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  notify-enter:
+    slot: 6
+    enabled-material: OAK_DOOR
+    disabled-material: DARK_OAK_DOOR
+    name: "&aBetreten melden"
+    lore:
+      - "&7Benachrichtigt den Besitzer,"
+      - "&7wenn Spieler den Plot betreten."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  notify-leave:
+    slot: 7
+    enabled-material: SPRUCE_DOOR
+    disabled-material: DARK_OAK_DOOR
+    name: "&aVerlassen melden"
+    lore:
+      - "&7Benachrichtigt den Besitzer,"
+      - "&7wenn Spieler den Plot verlassen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  invincible:
+    slot: 8
+    enabled-material: SHIELD
+    disabled-material: GRAY_DYE
+    name: "&aUnverwundbar"
+    lore:
+      - "&7Legt fest, ob Spieler auf"
+      - "&7diesem Plot geschützt sind."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  deny-exit:
+    slot: 10
+    enabled-material: IRON_DOOR
+    disabled-material: OAK_DOOR
+    name: "&aVerlassen verhindern"
+    lore:
+      - "&7Legt fest, ob Spieler den"
+      - "&7Plot nicht verlassen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  forcefield:
+    slot: 11
+    enabled-material: ENDER_PEARL
+    disabled-material: GRAY_DYE
+    name: "&aSchutzfeld"
+    lore:
+      - "&7Hält nicht erlaubte Spieler"
+      - "&7vom Plot fern."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  item-drop:
+    slot: 12
+    enabled-material: HOPPER
+    disabled-material: GRAY_DYE
+    name: "&aItems fallen lassen"
+    lore:
+      - "&7Legt fest, ob Spieler Items"
+      - "&7auf dem Plot fallen lassen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  instabreak:
+    slot: 13
+    enabled-material: GOLDEN_PICKAXE
+    disabled-material: STONE_PICKAXE
+    name: "&aSofort abbauen"
+    lore:
+      - "&7Legt fest, ob Blöcke sofort"
+      - "&7abgebaut werden können."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  drop-protection:
+    slot: 14
+    enabled-material: CHEST
+    disabled-material: GRAY_DYE
+    name: "&aDrop-Schutz"
+    lore:
+      - "&7Schützt fallen gelassene Items"
+      - "&7vor fremdem Aufheben."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  grass-grow:
+    slot: 15
+    enabled-material: GRASS_BLOCK
+    disabled-material: DIRT
+    name: "&aGraswachstum"
+    lore:
+      - "&7Legt fest, ob Gras auf"
+      - "&7diesem Plot wachsen darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  vine-grow:
+    slot: 16
+    enabled-material: VINE
+    disabled-material: DEAD_BUSH
+    name: "&aRankenwachstum"
+    lore:
+      - "&7Legt fest, ob Ranken auf"
+      - "&7diesem Plot wachsen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  mycel-grow:
+    slot: 17
+    enabled-material: MYCELIUM
+    disabled-material: DIRT
+    name: "&aMyzelwachstum"
+    lore:
+      - "&7Legt fest, ob Myzel auf"
+      - "&7diesem Plot wachsen darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  soil-dry:
+    slot: 18
+    enabled-material: FARMLAND
+    disabled-material: DIRT
+    name: "&aAckerboden trocknet"
+    lore:
+      - "&7Legt fest, ob Ackerboden"
+      - "&7auf dem Plot austrocknen darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  snow-form:
+    slot: 19
+    enabled-material: SNOW_BLOCK
+    disabled-material: SNOWBALL
+    name: "&aSchnee bildet sich"
+    lore:
+      - "&7Legt fest, ob neuer Schnee"
+      - "&7auf dem Plot entstehen darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  snow-melt:
+    slot: 20
+    enabled-material: SNOWBALL
+    disabled-material: SNOW_BLOCK
+    name: "&aSchnee schmilzt"
+    lore:
+      - "&7Legt fest, ob Schnee auf"
+      - "&7diesem Plot schmelzen darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  ice-form:
+    slot: 21
+    enabled-material: ICE
+    disabled-material: WATER_BUCKET
+    name: "&aEis bildet sich"
+    lore:
+      - "&7Legt fest, ob Wasser auf"
+      - "&7dem Plot zu Eis werden darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  ice-melt:
+    slot: 22
+    enabled-material: BLUE_ICE
+    disabled-material: ICE
+    name: "&aEis schmilzt"
+    lore:
+      - "&7Legt fest, ob Eis auf"
+      - "&7diesem Plot schmelzen darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  block-burn:
+    slot: 24
+    enabled-material: CAMPFIRE
+    disabled-material: CHARCOAL
+    name: "&aBlöcke verbrennen"
+    lore:
+      - "&7Legt fest, ob Blöcke durch"
+      - "&7Feuer verbrennen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  block-ignition:
+    slot: 25
+    enabled-material: FIRE_CHARGE
+    disabled-material: CHARCOAL
+    name: "&aBlöcke entzünden"
+    lore:
+      - "&7Legt fest, ob Blöcke auf"
+      - "&7dem Plot Feuer fangen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  liquid-flow:
+    slot: 26
+    enabled-material: WATER_BUCKET
+    disabled-material: BUCKET
+    name: "&aFlüssigkeiten fließen"
+    lore:
+      - "&7Legt fest, ob Wasser und Lava"
+      - "&7auf dem Plot fließen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  disable-physics:
+    slot: 27
+    enabled-material: ANVIL
+    disabled-material: GRAY_DYE
+    name: "&aPhysik deaktivieren"
+    lore:
+      - "&7Legt fest, ob Blockphysik auf"
+      - "&7diesem Plot deaktiviert wird."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  device-interact:
+    slot: 28
+    enabled-material: STONE_BUTTON
+    disabled-material: GRAY_DYE
+    name: "&aGeräte benutzen"
+    lore:
+      - "&7Legt fest, ob Spieler Geräte"
+      - "&7wie Knöpfe oder Hebel nutzen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  player-interact:
+    slot: 29
+    enabled-material: PLAYER_HEAD
+    disabled-material: GRAY_DYE
+    name: "&aSpielerinteraktion"
+    lore:
+      - "&7Legt fest, ob Spieler mit"
+      - "&7anderen Spielern interagieren dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  villager-interact:
+    slot: 30
+    enabled-material: EMERALD
+    disabled-material: GRAY_DYE
+    name: "&aDorfbewohner benutzen"
+    lore:
+      - "&7Legt fest, ob Spieler mit"
+      - "&7Dorfbewohnern interagieren dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  animal-interact:
+    slot: 31
+    enabled-material: WHEAT
+    disabled-material: GRAY_DYE
+    name: "&aTiere benutzen"
+    lore:
+      - "&7Legt fest, ob Spieler mit"
+      - "&7Tieren interagieren dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  animal-attack:
+    slot: 32
+    enabled-material: BONE
+    disabled-material: GRAY_DYE
+    name: "&aTiere angreifen"
+    lore:
+      - "&7Legt fest, ob Spieler Tiere"
+      - "&7auf dem Plot angreifen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  hostile-interact:
+    slot: 33
+    enabled-material: ROTTEN_FLESH
+    disabled-material: GRAY_DYE
+    name: "&aMonster benutzen"
+    lore:
+      - "&7Legt fest, ob Spieler mit"
+      - "&7Monstern interagieren dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  hostile-attack:
+    slot: 34
+    enabled-material: IRON_AXE
+    disabled-material: GRAY_DYE
+    name: "&aMonster angreifen"
+    lore:
+      - "&7Legt fest, ob Spieler Monster"
+      - "&7auf dem Plot angreifen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  tamed-interact:
+    slot: 35
+    enabled-material: LEAD
+    disabled-material: GRAY_DYE
+    name: "&aGezähmte Tiere benutzen"
+    lore:
+      - "&7Legt fest, ob Spieler mit"
+      - "&7gezähmten Tieren interagieren dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  tamed-attack:
+    slot: 36
+    enabled-material: BONE
+    disabled-material: GRAY_DYE
+    name: "&aGezähmte Tiere angreifen"
+    lore:
+      - "&7Legt fest, ob Spieler gezähmte"
+      - "&7Tiere angreifen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  mob-place:
+    slot: 37
+    enabled-material: SPAWNER
+    disabled-material: GRAY_DYE
+    name: "&aKreaturen platzieren"
+    lore:
+      - "&7Legt fest, ob Kreaturen auf"
+      - "&7dem Plot platziert werden dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  mob-break:
+    slot: 38
+    enabled-material: COBWEB
+    disabled-material: GRAY_DYE
+    name: "&aKreaturen zerstören"
+    lore:
+      - "&7Legt fest, ob Kreaturen Blöcke"
+      - "&7auf dem Plot zerstören dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  vehicle-use:
+    slot: 39
+    enabled-material: MINECART
+    disabled-material: GRAY_DYE
+    name: "&aFahrzeuge benutzen"
+    lore:
+      - "&7Legt fest, ob Spieler Fahrzeuge"
+      - "&7auf dem Plot benutzen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  vehicle-place:
+    slot: 40
+    enabled-material: OAK_BOAT
+    disabled-material: GRAY_DYE
+    name: "&aFahrzeuge platzieren"
+    lore:
+      - "&7Legt fest, ob Fahrzeuge auf"
+      - "&7dem Plot platziert werden dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  vehicle-break:
+    slot: 41
+    enabled-material: RAIL
+    disabled-material: GRAY_DYE
+    name: "&aFahrzeuge abbauen"
+    lore:
+      - "&7Legt fest, ob Fahrzeuge auf"
+      - "&7dem Plot abgebaut werden dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  hanging-place:
+    slot: 43
+    enabled-material: ITEM_FRAME
+    disabled-material: GRAY_DYE
+    name: "&aHängende Objekte platzieren"
+    lore:
+      - "&7Legt fest, ob Bilder oder Rahmen"
+      - "&7auf dem Plot platziert werden dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  hanging-break:
+    slot: 44
+    enabled-material: SHEARS
+    disabled-material: GRAY_DYE
+    name: "&aHängende Objekte abbauen"
+    lore:
+      - "&7Legt fest, ob Bilder oder Rahmen"
+      - "&7auf dem Plot abgebaut werden dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  misc-interact:
+    slot: 45
+    enabled-material: ARMOR_STAND
+    disabled-material: GRAY_DYE
+    name: "&aSonstige Objekte benutzen"
+    lore:
+      - "&7Legt fest, ob Spieler mit"
+      - "&7sonstigen Objekten interagieren dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  misc-place:
+    slot: 46
+    enabled-material: EGG
+    disabled-material: GRAY_DYE
+    name: "&aSonstige Objekte platzieren"
+    lore:
+      - "&7Legt fest, ob sonstige Objekte"
+      - "&7auf dem Plot platziert werden dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  misc-break:
+    slot: 47
+    enabled-material: STONE_AXE
+    disabled-material: GRAY_DYE
+    name: "&aSonstige Objekte abbauen"
+    lore:
+      - "&7Legt fest, ob sonstige Objekte"
+      - "&7auf dem Plot abgebaut werden dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  no-worldedit:
+    slot: 48
+    enabled-material: WOODEN_AXE
+    disabled-material: GRAY_DYE
+    name: "&aWorldEdit sperren"
+    lore:
+      - "&7Legt fest, ob WorldEdit auf"
+      - "&7diesem Plot blockiert wird."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  hide-info:
+    slot: 49
+    enabled-material: BOOK
+    disabled-material: PAPER
+    name: "&aPlot-Info verstecken"
+    lore:
+      - "&7Legt fest, ob öffentliche"
+      - "&7Plot-Informationen versteckt werden."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  server-plot:
+    slot: 50
+    enabled-material: COMMAND_BLOCK
+    disabled-material: GRAY_DYE
+    name: "&aServer-Plot"
+    lore:
+      - "&7Markiert den Plot als"
+      - "&7besonderen Server-Plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  chat:
+    page: 2
+    slot: 0
+    enabled-material: WRITABLE_BOOK
+    disabled-material: PAPER
+    name: "&aPlot-Chat"
+    lore:
+      - "&7Legt fest, ob der Plot-Chat"
+      - "&7auf diesem Plot genutzt werden darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  beacon-effects:
+    page: 2
+    slot: 1
+    enabled-material: BEACON
+    disabled-material: GLASS
+    name: "&aLeuchtfeuer-Effekte"
+    lore:
+      - "&7Legt fest, ob Leuchtfeuer"
+      - "&7auf dem Plot Effekte geben dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  concrete-harden:
+    page: 2
+    slot: 2
+    enabled-material: WHITE_CONCRETE
+    disabled-material: WHITE_CONCRETE_POWDER
+    name: "&aBeton härtet aus"
+    lore:
+      - "&7Legt fest, ob Betonpulver"
+      - "&7durch Wasser zu Beton wird."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  coral-dry:
+    page: 2
+    slot: 3
+    enabled-material: DEAD_BRAIN_CORAL
+    disabled-material: BRAIN_CORAL
+    name: "&aKorallen trocknen"
+    lore:
+      - "&7Legt fest, ob Korallen auf"
+      - "&7diesem Plot austrocknen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  crop-grow:
+    page: 2
+    slot: 4
+    enabled-material: WHEAT
+    disabled-material: WHEAT_SEEDS
+    name: "&aPflanzenwachstum"
+    lore:
+      - "&7Legt fest, ob Pflanzen auf"
+      - "&7diesem Plot wachsen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  copper-oxide:
+    page: 2
+    slot: 5
+    enabled-material: OXIDIZED_COPPER
+    disabled-material: COPPER_BLOCK
+    name: "&aKupfer oxidiert"
+    lore:
+      - "&7Legt fest, ob Kupfer auf"
+      - "&7diesem Plot oxidieren darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  deny-portal-travel:
+    page: 2
+    slot: 6
+    enabled-material: CRYING_OBSIDIAN
+    disabled-material: OBSIDIAN
+    name: "&aPortalreisen sperren"
+    lore:
+      - "&7Legt fest, ob Reisen durch"
+      - "&7Portale verhindert werden."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  deny-portals:
+    page: 2
+    slot: 7
+    enabled-material: OBSIDIAN
+    disabled-material: FLINT_AND_STEEL
+    name: "&aPortale verhindern"
+    lore:
+      - "&7Legt fest, ob Portale auf"
+      - "&7diesem Plot erstellt werden dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  edit-sign:
+    page: 2
+    slot: 8
+    enabled-material: OAK_SIGN
+    disabled-material: PAPER
+    name: "&aSchilder bearbeiten"
+    lore:
+      - "&7Legt fest, ob Spieler Schilder"
+      - "&7auf dem Plot bearbeiten dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  entity-change-block:
+    page: 2
+    slot: 9
+    enabled-material: ENDERMAN_SPAWN_EGG
+    disabled-material: GRAY_DYE
+    name: "&aEntitys verändern Blöcke"
+    lore:
+      - "&7Legt fest, ob Entitys Blöcke"
+      - "&7auf dem Plot verändern dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  fishing:
+    page: 2
+    slot: 10
+    enabled-material: FISHING_ROD
+    disabled-material: GRAY_DYE
+    name: "&aAngeln"
+    lore:
+      - "&7Legt fest, ob Gäste auf"
+      - "&7diesem Plot angeln dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  keep-inventory:
+    page: 2
+    slot: 11
+    enabled-material: ENDER_CHEST
+    disabled-material: CHEST
+    name: "&aInventar behalten"
+    lore:
+      - "&7Legt fest, ob Spieler ihre Items"
+      - "&7beim Tod auf dem Plot behalten."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  kelp-grow:
+    page: 2
+    slot: 12
+    enabled-material: KELP
+    disabled-material: DRIED_KELP
+    name: "&aSeetangwachstum"
+    lore:
+      - "&7Legt fest, ob Seetang auf"
+      - "&7diesem Plot wachsen darf."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  leaf-decay:
+    page: 2
+    slot: 13
+    enabled-material: OAK_LEAVES
+    disabled-material: STICK
+    name: "&aBlätter zerfallen"
+    lore:
+      - "&7Legt fest, ob Blätter auf"
+      - "&7diesem Plot zerfallen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  lectern-read-book:
+    page: 2
+    slot: 14
+    enabled-material: LECTERN
+    disabled-material: BOOK
+    name: "&aLesepulte nutzen"
+    lore:
+      - "&7Legt fest, ob Bücher aus"
+      - "&7Lesepulten genommen werden dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  prevent-creative-copy:
+    page: 2
+    slot: 15
+    enabled-material: WRITABLE_BOOK
+    disabled-material: PAPER
+    name: "&aKreativ-Kopieren sperren"
+    lore:
+      - "&7Verhindert, dass NBT-Daten von"
+      - "&7Items auf dem Plot kopiert werden."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  projectiles:
+    page: 2
+    slot: 16
+    enabled-material: ARROW
+    disabled-material: GRAY_DYE
+    name: "&aProjektile"
+    lore:
+      - "&7Legt fest, ob Gäste Projektile"
+      - "&7auf dem Plot schießen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  projectile-change-block:
+    page: 2
+    slot: 17
+    enabled-material: FIRE_CHARGE
+    disabled-material: GRAY_DYE
+    name: "&aProjektile verändern Blöcke"
+    lore:
+      - "&7Legt fest, ob Projektile Blöcke"
+      - "&7auf dem Plot verändern dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  sculk-sensor-interact:
+    page: 2
+    slot: 18
+    enabled-material: SCULK_SENSOR
+    disabled-material: GRAY_DYE
+    name: "&aSculk-Sensoren"
+    lore:
+      - "&7Legt fest, ob Sculk-Sensoren"
+      - "&7auf dem Plot reagieren dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  tile-drop:
+    page: 2
+    slot: 19
+    enabled-material: DROPPER
+    disabled-material: GRAY_DYE
+    name: "&aBlock-Drops"
+    lore:
+      - "&7Legt fest, ob Blöcke Items"
+      - "&7auf dem Plot fallen lassen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  untrusted-visit:
+    page: 2
+    slot: 20
+    enabled-material: OAK_DOOR
+    disabled-material: IRON_DOOR
+    name: "&aUntrusted dürfen besuchen"
+    lore:
+      - "&7Legt fest, ob nicht vertraute"
+      - "&7Spieler den Plot betreten dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  weaving-death-place:
+    page: 2
+    slot: 21
+    enabled-material: COBWEB
+    disabled-material: GRAY_DYE
+    name: "&aWeaving-Netze"
+    lore:
+      - "&7Legt fest, ob beim Tod durch"
+      - "&7den Weaving-Effekt Netze entstehen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""

@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 1
+file-version: 2
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -14,3 +14,9 @@ only-players: "&cOnly players can use this command."
 reloaded: "&aCraftplayPlotExtras has been reloaded."
 # Message shown when the GUI file is missing or could not be loaded.
 menu-missing: "&cThe plot menu could not be loaded. Please contact a staff member."
+# Message shown when a player needs to stand on a plot for a plot feature.
+no-plot: "&cYou are not standing on a plot."
+# Message shown when a player may not toggle a flag.
+flag-no-permission: "&cYou may not change this plot flag."
+# Message shown after toggling a flag. Placeholders: {flag}, {status}
+flag-toggled: "&a{flag} &7is now {status}&7."

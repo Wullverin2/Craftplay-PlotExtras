@@ -1,0 +1,948 @@
+# English flag submenu.
+# This file controls the menu where players see and toggle Boolean flags of their current plot.
+# All names, slots, materials, and descriptions can be changed here.
+
+# File version of this GUI file.
+# The plugin uses this value to add new menu options automatically.
+file-version: 2
+
+# Inventory title.
+title: "&8Plot Flags"
+# Inventory size. Allowed values are 9, 18, 27, 36, 45, or 54 slots.
+size: 54
+# Delay in ticks before the menu refreshes after toggling a flag.
+reopen-delay-ticks: 2
+# Text inserted into lore for enabled and disabled flags.
+status:
+  # Display for an enabled flag.
+  enabled: "&aEnabled"
+  # Display for a disabled flag.
+  disabled: "&cDisabled"
+# Filler item for empty slots.
+filler:
+  # If true, empty slots are filled with the material below.
+  enabled: true
+  # Minecraft/Spigot material name.
+  material: BLACK_STAINED_GLASS_PANE
+  # Display name of the filler item. &r keeps it visually empty.
+  name: "&r"
+# Static buttons in this menu.
+buttons:
+  back:
+    # Inventory slot. 0 is the top-left slot.
+    slot: 53
+    # Item shown for this button.
+    material: BARRIER
+    # Button display name.
+    name: "&cBack"
+    # Description below the button name.
+    lore:
+      - "&7Back to the main menu."
+    # Internal action: opens the main menu again.
+    commands:
+      - "open-menu:main"
+    # If true, the menu closes after clicking.
+    close: false
+    # Optional permission required to see the button.
+    permission: ""
+  previous-page:
+    # Inventory slot. This button is visible on every page.
+    slot: 51
+    # Item shown for this button.
+    material: ARROW
+    # Button display name.
+    name: "&ePage 1"
+    # Description below the button name.
+    lore:
+      - "&7Open the first flag page."
+    # Internal action: opens page 1 of the flag menu.
+    commands:
+      - "open-menu:flags:1"
+    # If true, the menu closes after clicking.
+    close: false
+    # Optional permission required to see the button.
+    permission: ""
+  next-page:
+    # Inventory slot. This button is visible on every page.
+    slot: 52
+    # Item shown for this button.
+    material: ARROW
+    # Button display name.
+    name: "&ePage 2"
+    # Description below the button name.
+    lore:
+      - "&7Open the second flag page."
+    # Internal action: opens page 2 of the flag menu.
+    commands:
+      - "open-menu:flags:2"
+    # If true, the menu closes after clicking.
+    close: false
+    # Optional permission required to see the button.
+    permission: ""
+# PlotSquared Boolean flags that can be displayed in this menu.
+# Players only see flags for which they have matching PlotSquared permissions.
+# Each flag can configure page, slot, enabled-material, disabled-material, name, lore, and permission.
+# Placeholders in name and lore: {flag}, {status}, {next_status}
+flags:
+  pvp:
+    slot: 0
+    enabled-material: DIAMOND_SWORD
+    disabled-material: WOODEN_SWORD
+    name: "&aPlayer Combat"
+    lore:
+      - "&7Controls whether players"
+      - "&7can fight each other on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  pve:
+    slot: 1
+    enabled-material: IRON_SWORD
+    disabled-material: STONE_SWORD
+    name: "&aCreature Combat"
+    lore:
+      - "&7Controls whether players"
+      - "&7can attack creatures on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  fly:
+    slot: 2
+    enabled-material: FEATHER
+    disabled-material: GRAY_DYE
+    name: "&aFlying"
+    lore:
+      - "&7Controls whether players"
+      - "&7may fly on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  redstone:
+    slot: 3
+    enabled-material: REDSTONE_TORCH
+    disabled-material: LEVER
+    name: "&aRedstone"
+    lore:
+      - "&7Controls whether redstone"
+      - "&7may work on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  explosion:
+    slot: 4
+    enabled-material: TNT
+    disabled-material: GUNPOWDER
+    name: "&aExplosions"
+    lore:
+      - "&7Controls whether explosions"
+      - "&7may affect this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  titles:
+    slot: 5
+    enabled-material: NAME_TAG
+    disabled-material: PAPER
+    name: "&aPlot Titles"
+    lore:
+      - "&7Controls whether plot titles"
+      - "&7are shown when entering."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  notify-enter:
+    slot: 6
+    enabled-material: OAK_DOOR
+    disabled-material: DARK_OAK_DOOR
+    name: "&aEnter Notifications"
+    lore:
+      - "&7Notifies the owner when"
+      - "&7players enter the plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  notify-leave:
+    slot: 7
+    enabled-material: SPRUCE_DOOR
+    disabled-material: DARK_OAK_DOOR
+    name: "&aLeave Notifications"
+    lore:
+      - "&7Notifies the owner when"
+      - "&7players leave the plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  invincible:
+    slot: 8
+    enabled-material: SHIELD
+    disabled-material: GRAY_DYE
+    name: "&aInvincible"
+    lore:
+      - "&7Controls whether players"
+      - "&7are protected on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  deny-exit:
+    slot: 10
+    enabled-material: IRON_DOOR
+    disabled-material: OAK_DOOR
+    name: "&aBlock Leaving"
+    lore:
+      - "&7Controls whether players"
+      - "&7are prevented from leaving the plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  forcefield:
+    slot: 11
+    enabled-material: ENDER_PEARL
+    disabled-material: GRAY_DYE
+    name: "&aForcefield"
+    lore:
+      - "&7Keeps players without access"
+      - "&7away from the plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  item-drop:
+    slot: 12
+    enabled-material: HOPPER
+    disabled-material: GRAY_DYE
+    name: "&aItem Dropping"
+    lore:
+      - "&7Controls whether players"
+      - "&7may drop items on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  instabreak:
+    slot: 13
+    enabled-material: GOLDEN_PICKAXE
+    disabled-material: STONE_PICKAXE
+    name: "&aInstant Break"
+    lore:
+      - "&7Controls whether blocks can"
+      - "&7be broken instantly."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  drop-protection:
+    slot: 14
+    enabled-material: CHEST
+    disabled-material: GRAY_DYE
+    name: "&aDrop Protection"
+    lore:
+      - "&7Protects dropped items"
+      - "&7from being picked up by others."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  grass-grow:
+    slot: 15
+    enabled-material: GRASS_BLOCK
+    disabled-material: DIRT
+    name: "&aGrass Growth"
+    lore:
+      - "&7Controls whether grass"
+      - "&7may grow on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  vine-grow:
+    slot: 16
+    enabled-material: VINE
+    disabled-material: DEAD_BUSH
+    name: "&aVine Growth"
+    lore:
+      - "&7Controls whether vines"
+      - "&7may grow on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  mycel-grow:
+    slot: 17
+    enabled-material: MYCELIUM
+    disabled-material: DIRT
+    name: "&aMycelium Growth"
+    lore:
+      - "&7Controls whether mycelium"
+      - "&7may spread on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  soil-dry:
+    slot: 18
+    enabled-material: FARMLAND
+    disabled-material: DIRT
+    name: "&aFarmland Drying"
+    lore:
+      - "&7Controls whether farmland"
+      - "&7may dry out on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  snow-form:
+    slot: 19
+    enabled-material: SNOW_BLOCK
+    disabled-material: SNOWBALL
+    name: "&aSnow Formation"
+    lore:
+      - "&7Controls whether snow"
+      - "&7may form on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  snow-melt:
+    slot: 20
+    enabled-material: SNOWBALL
+    disabled-material: SNOW_BLOCK
+    name: "&aSnow Melting"
+    lore:
+      - "&7Controls whether snow"
+      - "&7may melt on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  ice-form:
+    slot: 21
+    enabled-material: ICE
+    disabled-material: WATER_BUCKET
+    name: "&aIce Formation"
+    lore:
+      - "&7Controls whether water"
+      - "&7may turn into ice."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  ice-melt:
+    slot: 22
+    enabled-material: BLUE_ICE
+    disabled-material: ICE
+    name: "&aIce Melting"
+    lore:
+      - "&7Controls whether ice"
+      - "&7may melt on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  block-burn:
+    slot: 24
+    enabled-material: CAMPFIRE
+    disabled-material: CHARCOAL
+    name: "&aBlock Burning"
+    lore:
+      - "&7Controls whether blocks"
+      - "&7may burn on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  block-ignition:
+    slot: 25
+    enabled-material: FIRE_CHARGE
+    disabled-material: CHARCOAL
+    name: "&aBlock Ignition"
+    lore:
+      - "&7Controls whether blocks"
+      - "&7may catch fire on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  liquid-flow:
+    slot: 26
+    enabled-material: WATER_BUCKET
+    disabled-material: BUCKET
+    name: "&aLiquid Flow"
+    lore:
+      - "&7Controls whether water and lava"
+      - "&7may flow on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  disable-physics:
+    slot: 27
+    enabled-material: ANVIL
+    disabled-material: GRAY_DYE
+    name: "&aDisable Physics"
+    lore:
+      - "&7Controls whether block physics"
+      - "&7are disabled on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  device-interact:
+    slot: 28
+    enabled-material: STONE_BUTTON
+    disabled-material: GRAY_DYE
+    name: "&aDevice Interaction"
+    lore:
+      - "&7Controls whether players may use"
+      - "&7devices like buttons or levers."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  player-interact:
+    slot: 29
+    enabled-material: PLAYER_HEAD
+    disabled-material: GRAY_DYE
+    name: "&aPlayer Interaction"
+    lore:
+      - "&7Controls whether players"
+      - "&7may interact with other players."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  villager-interact:
+    slot: 30
+    enabled-material: EMERALD
+    disabled-material: GRAY_DYE
+    name: "&aVillager Interaction"
+    lore:
+      - "&7Controls whether players"
+      - "&7may interact with villagers."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  animal-interact:
+    slot: 31
+    enabled-material: WHEAT
+    disabled-material: GRAY_DYE
+    name: "&aAnimal Interaction"
+    lore:
+      - "&7Controls whether players"
+      - "&7may interact with animals."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  animal-attack:
+    slot: 32
+    enabled-material: BONE
+    disabled-material: GRAY_DYE
+    name: "&aAnimal Attacks"
+    lore:
+      - "&7Controls whether players"
+      - "&7may attack animals on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  hostile-interact:
+    slot: 33
+    enabled-material: ROTTEN_FLESH
+    disabled-material: GRAY_DYE
+    name: "&aMonster Interaction"
+    lore:
+      - "&7Controls whether players"
+      - "&7may interact with monsters."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  hostile-attack:
+    slot: 34
+    enabled-material: IRON_AXE
+    disabled-material: GRAY_DYE
+    name: "&aMonster Attacks"
+    lore:
+      - "&7Controls whether players"
+      - "&7may attack monsters on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  tamed-interact:
+    slot: 35
+    enabled-material: LEAD
+    disabled-material: GRAY_DYE
+    name: "&aTamed Animal Interaction"
+    lore:
+      - "&7Controls whether players may"
+      - "&7interact with tamed animals."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  tamed-attack:
+    slot: 36
+    enabled-material: BONE
+    disabled-material: GRAY_DYE
+    name: "&aTamed Animal Attacks"
+    lore:
+      - "&7Controls whether players may"
+      - "&7attack tamed animals."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  mob-place:
+    slot: 37
+    enabled-material: SPAWNER
+    disabled-material: GRAY_DYE
+    name: "&aMob Placement"
+    lore:
+      - "&7Controls whether mobs may"
+      - "&7be placed on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  mob-break:
+    slot: 38
+    enabled-material: COBWEB
+    disabled-material: GRAY_DYE
+    name: "&aMob Block Breaking"
+    lore:
+      - "&7Controls whether mobs may"
+      - "&7break blocks on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  vehicle-use:
+    slot: 39
+    enabled-material: MINECART
+    disabled-material: GRAY_DYE
+    name: "&aVehicle Use"
+    lore:
+      - "&7Controls whether players"
+      - "&7may use vehicles on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  vehicle-place:
+    slot: 40
+    enabled-material: OAK_BOAT
+    disabled-material: GRAY_DYE
+    name: "&aVehicle Placement"
+    lore:
+      - "&7Controls whether vehicles"
+      - "&7may be placed on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  vehicle-break:
+    slot: 41
+    enabled-material: RAIL
+    disabled-material: GRAY_DYE
+    name: "&aVehicle Breaking"
+    lore:
+      - "&7Controls whether vehicles"
+      - "&7may be broken on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  hanging-place:
+    slot: 43
+    enabled-material: ITEM_FRAME
+    disabled-material: GRAY_DYE
+    name: "&aHanging Object Placement"
+    lore:
+      - "&7Controls whether paintings or"
+      - "&7frames may be placed on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  hanging-break:
+    slot: 44
+    enabled-material: SHEARS
+    disabled-material: GRAY_DYE
+    name: "&aHanging Object Breaking"
+    lore:
+      - "&7Controls whether paintings or"
+      - "&7frames may be broken on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  misc-interact:
+    slot: 45
+    enabled-material: ARMOR_STAND
+    disabled-material: GRAY_DYE
+    name: "&aMisc Object Interaction"
+    lore:
+      - "&7Controls whether players may"
+      - "&7interact with miscellaneous objects."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  misc-place:
+    slot: 46
+    enabled-material: EGG
+    disabled-material: GRAY_DYE
+    name: "&aMisc Object Placement"
+    lore:
+      - "&7Controls whether miscellaneous"
+      - "&7objects may be placed on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  misc-break:
+    slot: 47
+    enabled-material: STONE_AXE
+    disabled-material: GRAY_DYE
+    name: "&aMisc Object Breaking"
+    lore:
+      - "&7Controls whether miscellaneous"
+      - "&7objects may be broken on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  no-worldedit:
+    slot: 48
+    enabled-material: WOODEN_AXE
+    disabled-material: GRAY_DYE
+    name: "&aBlock WorldEdit"
+    lore:
+      - "&7Controls whether WorldEdit"
+      - "&7is blocked on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  hide-info:
+    slot: 49
+    enabled-material: BOOK
+    disabled-material: PAPER
+    name: "&aHide Plot Info"
+    lore:
+      - "&7Controls whether public"
+      - "&7plot information is hidden."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  server-plot:
+    slot: 50
+    enabled-material: COMMAND_BLOCK
+    disabled-material: GRAY_DYE
+    name: "&aServer Plot"
+    lore:
+      - "&7Marks the plot as a"
+      - "&7special server plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  chat:
+    page: 2
+    slot: 0
+    enabled-material: WRITABLE_BOOK
+    disabled-material: PAPER
+    name: "&aPlot Chat"
+    lore:
+      - "&7Controls whether plot chat"
+      - "&7may be used on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  beacon-effects:
+    page: 2
+    slot: 1
+    enabled-material: BEACON
+    disabled-material: GLASS
+    name: "&aBeacon Effects"
+    lore:
+      - "&7Controls whether beacons"
+      - "&7may apply effects on the plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  concrete-harden:
+    page: 2
+    slot: 2
+    enabled-material: WHITE_CONCRETE
+    disabled-material: WHITE_CONCRETE_POWDER
+    name: "&aConcrete Hardening"
+    lore:
+      - "&7Controls whether concrete powder"
+      - "&7hardens when touching water."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  coral-dry:
+    page: 2
+    slot: 3
+    enabled-material: DEAD_BRAIN_CORAL
+    disabled-material: BRAIN_CORAL
+    name: "&aCoral Drying"
+    lore:
+      - "&7Controls whether coral"
+      - "&7may dry on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  crop-grow:
+    page: 2
+    slot: 4
+    enabled-material: WHEAT
+    disabled-material: WHEAT_SEEDS
+    name: "&aCrop Growth"
+    lore:
+      - "&7Controls whether crops"
+      - "&7may grow on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  copper-oxide:
+    page: 2
+    slot: 5
+    enabled-material: OXIDIZED_COPPER
+    disabled-material: COPPER_BLOCK
+    name: "&aCopper Oxidation"
+    lore:
+      - "&7Controls whether copper"
+      - "&7may oxidize on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  deny-portal-travel:
+    page: 2
+    slot: 6
+    enabled-material: CRYING_OBSIDIAN
+    disabled-material: OBSIDIAN
+    name: "&aBlock Portal Travel"
+    lore:
+      - "&7Controls whether portal travel"
+      - "&7is blocked on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  deny-portals:
+    page: 2
+    slot: 7
+    enabled-material: OBSIDIAN
+    disabled-material: FLINT_AND_STEEL
+    name: "&aBlock Portals"
+    lore:
+      - "&7Controls whether portals"
+      - "&7may be created on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  edit-sign:
+    page: 2
+    slot: 8
+    enabled-material: OAK_SIGN
+    disabled-material: PAPER
+    name: "&aEdit Signs"
+    lore:
+      - "&7Controls whether players"
+      - "&7may edit signs on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  entity-change-block:
+    page: 2
+    slot: 9
+    enabled-material: ENDERMAN_SPAWN_EGG
+    disabled-material: GRAY_DYE
+    name: "&aEntity Block Changes"
+    lore:
+      - "&7Controls whether entities"
+      - "&7may change blocks on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  fishing:
+    page: 2
+    slot: 10
+    enabled-material: FISHING_ROD
+    disabled-material: GRAY_DYE
+    name: "&aFishing"
+    lore:
+      - "&7Controls whether guests"
+      - "&7may fish on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  keep-inventory:
+    page: 2
+    slot: 11
+    enabled-material: ENDER_CHEST
+    disabled-material: CHEST
+    name: "&aKeep Inventory"
+    lore:
+      - "&7Controls whether players keep"
+      - "&7items after dying on the plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  kelp-grow:
+    page: 2
+    slot: 12
+    enabled-material: KELP
+    disabled-material: DRIED_KELP
+    name: "&aKelp Growth"
+    lore:
+      - "&7Controls whether kelp"
+      - "&7may grow on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  leaf-decay:
+    page: 2
+    slot: 13
+    enabled-material: OAK_LEAVES
+    disabled-material: STICK
+    name: "&aLeaf Decay"
+    lore:
+      - "&7Controls whether leaves"
+      - "&7may decay on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  lectern-read-book:
+    page: 2
+    slot: 14
+    enabled-material: LECTERN
+    disabled-material: BOOK
+    name: "&aLectern Books"
+    lore:
+      - "&7Controls whether books may"
+      - "&7be taken from lecterns."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  prevent-creative-copy:
+    page: 2
+    slot: 15
+    enabled-material: WRITABLE_BOOK
+    disabled-material: PAPER
+    name: "&aBlock Creative Copy"
+    lore:
+      - "&7Prevents copying item NBT"
+      - "&7data on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  projectiles:
+    page: 2
+    slot: 16
+    enabled-material: ARROW
+    disabled-material: GRAY_DYE
+    name: "&aProjectiles"
+    lore:
+      - "&7Controls whether guests"
+      - "&7may shoot projectiles on the plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  projectile-change-block:
+    page: 2
+    slot: 17
+    enabled-material: FIRE_CHARGE
+    disabled-material: GRAY_DYE
+    name: "&aProjectile Block Changes"
+    lore:
+      - "&7Controls whether projectiles"
+      - "&7may change blocks on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  sculk-sensor-interact:
+    page: 2
+    slot: 18
+    enabled-material: SCULK_SENSOR
+    disabled-material: GRAY_DYE
+    name: "&aSculk Sensors"
+    lore:
+      - "&7Controls whether sculk sensors"
+      - "&7may react on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  tile-drop:
+    page: 2
+    slot: 19
+    enabled-material: DROPPER
+    disabled-material: GRAY_DYE
+    name: "&aBlock Drops"
+    lore:
+      - "&7Controls whether blocks"
+      - "&7may drop items on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  untrusted-visit:
+    page: 2
+    slot: 20
+    enabled-material: OAK_DOOR
+    disabled-material: IRON_DOOR
+    name: "&aUntrusted Visits"
+    lore:
+      - "&7Controls whether untrusted"
+      - "&7players may enter the plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  weaving-death-place:
+    page: 2
+    slot: 21
+    enabled-material: COBWEB
+    disabled-material: GRAY_DYE
+    name: "&aWeaving Cobwebs"
+    lore:
+      - "&7Controls whether cobwebs spawn"
+      - "&7from the Weaving death effect."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
