@@ -1,7 +1,6 @@
 package de.craftplay.plotextras.command;
 
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
-import de.craftplay.plotextras.util.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,13 +32,13 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Dieser Befehl kann nur von Spielern genutzt werden.");
+            plugin.getLanguageManager().send(sender, "only-players");
             return true;
         }
 
         final Player player = (Player) sender;
         if (!player.hasPermission("craftplayplotextras.use")) {
-            player.sendMessage(Text.color(plugin.getConfig().getString("messages.no-permission", "&cDazu hast du keine Berechtigung.")));
+            plugin.getLanguageManager().send(player, "no-permission");
             return true;
         }
 
@@ -49,12 +48,12 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
 
     private boolean reload(final CommandSender sender) {
         if (!sender.hasPermission("craftplayplotextras.admin")) {
-            sender.sendMessage(Text.color(plugin.getConfig().getString("messages.no-permission", "&cDazu hast du keine Berechtigung.")));
+            plugin.getLanguageManager().send(sender, "no-permission");
             return true;
         }
 
         plugin.reloadPlugin();
-        sender.sendMessage(Text.color(plugin.getConfig().getString("messages.reloaded", "&aCraftplayPlotExtras wurde neu geladen.")));
+        plugin.getLanguageManager().send(sender, "reloaded");
         return true;
     }
 

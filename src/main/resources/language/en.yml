@@ -1,0 +1,5 @@
+# English default messages.
+no-permission: "&cYou do not have permission to do that."
+only-players: "&cOnly players can use this command."
+reloaded: "&aCraftplayPlotExtras has been reloaded."
+menu-missing: "&cThe plot menu could not be loaded. Please contact a staff member."

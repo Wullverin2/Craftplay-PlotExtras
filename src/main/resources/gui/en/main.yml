@@ -1,0 +1,76 @@
+# English main menu.
+title: "&8Plot Menu"
+size: 27
+filler:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: "&r"
+buttons:
+  info:
+    # Inventory slot. 0 is the top-left slot.
+    slot: 10
+    material: BOOK
+    name: "&aPlot Info"
+    lore:
+      - "&7Shows information about"
+      - "&7your current plot."
+    # Commands run as the player. Prefix with console: to run as console.
+    commands:
+      - "plot info"
+    close: true
+    permission: ""
+  home:
+    slot: 11
+    material: COMPASS
+    name: "&aPlot Home"
+    lore:
+      - "&7Teleports you to"
+      - "&7your plot home."
+    commands:
+      - "plot home"
+    close: true
+    permission: ""
+  members:
+    slot: 12
+    material: PLAYER_HEAD
+    name: "&aMembers"
+    lore:
+      - "&7Opens the PlotSquared"
+      - "&7member overview."
+    commands:
+      - "plot members"
+    close: true
+    permission: ""
+  flags:
+    slot: 14
+    material: REDSTONE_TORCH
+    name: "&aFlags"
+    lore:
+      - "&7Opens the PlotSquared"
+      - "&7flag overview."
+    commands:
+      - "plot flag list"
+    close: true
+    permission: ""
+  settings:
+    slot: 15
+    material: REPEATER
+    name: "&aSettings"
+    lore:
+      - "&7Opens the PlotSquared"
+      - "&7settings overview."
+    commands:
+      - "plot settings"
+    close: true
+    permission: ""
+  help:
+    slot: 16
+    material: OAK_SIGN
+    name: "&aPlot Help"
+    lore:
+      - "&7Shows the PlotSquared"
+      - "&7command overview."
+    commands:
+      - "plot help"
+    close: true
+    permission: ""

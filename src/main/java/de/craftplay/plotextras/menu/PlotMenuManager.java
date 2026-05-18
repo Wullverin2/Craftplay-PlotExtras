@@ -1,10 +1,12 @@
 package de.craftplay.plotextras.menu;
 
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
+import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,25 +27,44 @@ import java.util.Map;
 public final class PlotMenuManager implements Listener {
 
     private final CraftplayPlotExtrasPlugin plugin;
+    private final LanguageManager languageManager;
     private final Map<Integer, MenuButton> buttonsBySlot = new HashMap<>();
 
     private String title;
     private int size;
     private ItemStack filler;
+    private boolean loaded;
 
-    public PlotMenuManager(final CraftplayPlotExtrasPlugin plugin) {
+    public PlotMenuManager(final CraftplayPlotExtrasPlugin plugin, final LanguageManager languageManager) {
         this.plugin = plugin;
+        this.languageManager = languageManager;
     }
 
     public void reload() {
-        title = Text.color(plugin.getConfig().getString("menu.title", "&8Plot-Menü"));
-        size = normalizeSize(plugin.getConfig().getInt("menu.size", 27));
-        filler = createFiller();
         buttonsBySlot.clear();
-        loadButtons();
+        loaded = false;
+
+        final YamlConfiguration menuConfig = loadMenuConfig();
+        if (menuConfig == null) {
+            title = Text.color("&8Plot-Menü");
+            size = 27;
+            filler = null;
+            return;
+        }
+
+        title = Text.color(menuConfig.getString("title", "&8Plot-Menü"));
+        size = normalizeSize(menuConfig.getInt("size", 27));
+        filler = createFiller(menuConfig);
+        loadButtons(menuConfig);
+        loaded = true;
     }
 
     public void openMainMenu(final Player player) {
+        if (!loaded) {
+            languageManager.send(player, "menu-missing");
+            return;
+        }
+
         final Inventory inventory = Bukkit.createInventory(new PlotMenuHolder(), size, title);
         if (filler != null) {
             for (int slot = 0; slot < size; slot++) {
@@ -96,44 +118,62 @@ public final class PlotMenuManager implements Listener {
         }
     }
 
-    private void loadButtons() {
-        final ConfigurationSection section = plugin.getConfig().getConfigurationSection("menu.buttons");
+    private void loadButtons(final YamlConfiguration menuConfig) {
+        final ConfigurationSection section = menuConfig.getConfigurationSection("buttons");
         if (section == null) {
             return;
         }
 
         for (final String id : section.getKeys(false)) {
-            final String path = "menu.buttons." + id + ".";
-            final int slot = plugin.getConfig().getInt(path + "slot", -1);
+            final String path = "buttons." + id + ".";
+            final int slot = menuConfig.getInt(path + "slot", -1);
             if (slot < 0 || slot >= size) {
                 plugin.getLogger().warning("Menübutton '" + id + "' hat einen ungültigen Slot: " + slot);
                 continue;
             }
 
-            final Material material = material(plugin.getConfig().getString(path + "material", "STONE_BUTTON"), Material.STONE_BUTTON);
-            final String name = plugin.getConfig().getString(path + "name", "&a" + id);
-            final List<String> lore = plugin.getConfig().getStringList(path + "lore");
-            final List<String> commands = plugin.getConfig().getStringList(path + "commands");
-            final boolean close = plugin.getConfig().getBoolean(path + "close", true);
-            final String permission = plugin.getConfig().getString(path + "permission", "");
+            final Material material = material(menuConfig.getString(path + "material", "STONE_BUTTON"), Material.STONE_BUTTON);
+            final String name = menuConfig.getString(path + "name", "&a" + id);
+            final List<String> lore = menuConfig.getStringList(path + "lore");
+            final List<String> commands = menuConfig.getStringList(path + "commands");
+            final boolean close = menuConfig.getBoolean(path + "close", true);
+            final String permission = menuConfig.getString(path + "permission", "");
 
             buttonsBySlot.put(slot, new MenuButton(id, slot, material, name, lore, commands, close, permission));
         }
     }
 
-    private ItemStack createFiller() {
-        if (!plugin.getConfig().getBoolean("menu.filler.enabled", true)) {
+    private ItemStack createFiller(final YamlConfiguration menuConfig) {
+        if (!menuConfig.getBoolean("filler.enabled", true)) {
             return null;
         }
 
-        final Material material = material(plugin.getConfig().getString("menu.filler.material", "BLACK_STAINED_GLASS_PANE"), Material.BLACK_STAINED_GLASS_PANE);
+        final Material material = material(menuConfig.getString("filler.material", "BLACK_STAINED_GLASS_PANE"), Material.BLACK_STAINED_GLASS_PANE);
         final ItemStack item = new ItemStack(material);
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(Text.color(plugin.getConfig().getString("menu.filler.name", "&r")));
+            meta.setDisplayName(Text.color(menuConfig.getString("filler.name", "&r")));
             item.setItemMeta(meta);
         }
         return item;
+    }
+
+    private YamlConfiguration loadMenuConfig() {
+        final String menuFile = plugin.getConfig().getString("gui.main-menu", "main.yml");
+        final String language = languageManager.getDefaultLanguage();
+        final File localizedFile = new File(plugin.getDataFolder(), "gui/" + language + "/" + menuFile);
+        if (localizedFile.exists()) {
+            return YamlConfiguration.loadConfiguration(localizedFile);
+        }
+
+        final File fallbackFile = new File(plugin.getDataFolder(), "gui/de/" + menuFile);
+        if (fallbackFile.exists()) {
+            plugin.getLogger().warning("GUI-Datei für Sprache '" + language + "' fehlt. Nutze Deutsch als Fallback.");
+            return YamlConfiguration.loadConfiguration(fallbackFile);
+        }
+
+        plugin.getLogger().warning("GUI-Datei fehlt: " + localizedFile.getPath());
+        return null;
     }
 
     private ItemStack createButtonItem(final MenuButton button) {

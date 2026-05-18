@@ -2,89 +2,10 @@
 # Ziel: Ein Menü, das Spielern die Bedienung von PlotSquared 5.4.0 erleichtert.
 
 language:
-  # Standardsprache für spätere Nachrichten und GUIs.
+  # Standardsprache für Nachrichten und GUIs.
+  # Mitgeliefert werden de und en. Die Datei muss unter language/<code>.yml liegen.
   default: de
 
-messages:
-  no-permission: "&cDazu hast du keine Berechtigung."
-  reloaded: "&aCraftplayPlotExtras wurde neu geladen."
-
-menu:
-  # Titel des Hauptmenüs.
-  title: "&8Plot-Menü"
-  # Größe des Menüs. Muss ein Vielfaches von 9 sein. Erlaubt sind 9 bis 54.
-  size: 27
-  filler:
-    # Wenn true, werden leere Slots mit einem neutralen Glasfeld gefüllt.
-    enabled: true
-    material: BLACK_STAINED_GLASS_PANE
-    name: "&r"
-  buttons:
-    info:
-      # Slot im Inventar. 0 ist oben links.
-      slot: 10
-      material: BOOK
-      name: "&aPlot-Info"
-      lore:
-        - "&7Zeigt Informationen über"
-        - "&7das aktuelle Plot."
-      # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
-      commands:
-        - "plot info"
-      close: true
-      permission: ""
-    home:
-      slot: 11
-      material: COMPASS
-      name: "&aPlot-Home"
-      lore:
-        - "&7Teleportiert dich zu"
-        - "&7deinem Plot-Home."
-      commands:
-        - "plot home"
-      close: true
-      permission: ""
-    members:
-      slot: 12
-      material: PLAYER_HEAD
-      name: "&aMitglieder"
-      lore:
-        - "&7Öffnet die PlotSquared"
-        - "&7Mitgliederübersicht."
-      commands:
-        - "plot members"
-      close: true
-      permission: ""
-    flags:
-      slot: 14
-      material: REDSTONE_TORCH
-      name: "&aFlags"
-      lore:
-        - "&7Öffnet die PlotSquared"
-        - "&7Flag-Verwaltung."
-      commands:
-        - "plot flag list"
-      close: true
-      permission: ""
-    settings:
-      slot: 15
-      material: REPEATER
-      name: "&aEinstellungen"
-      lore:
-        - "&7Öffnet die PlotSquared"
-        - "&7Einstellungen."
-      commands:
-        - "plot settings"
-      close: true
-      permission: ""
-    help:
-      slot: 16
-      material: OAK_SIGN
-      name: "&aPlot-Hilfe"
-      lore:
-        - "&7Zeigt die PlotSquared"
-        - "&7Befehlsübersicht."
-      commands:
-        - "plot help"
-      close: true
-      permission: ""
+gui:
+  # Datei des Hauptmenüs. Geladen wird gui/<sprache>/<main-menu>.
+  main-menu: main.yml

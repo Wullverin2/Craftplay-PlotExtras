@@ -1,0 +1,76 @@
+# Deutsches Hauptmenü.
+title: "&8Plot-Menü"
+size: 27
+filler:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: "&r"
+buttons:
+  info:
+    # Slot im Inventar. 0 ist oben links.
+    slot: 10
+    material: BOOK
+    name: "&aPlot-Info"
+    lore:
+      - "&7Zeigt Informationen über"
+      - "&7das aktuelle Plot."
+    # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
+    commands:
+      - "plot info"
+    close: true
+    permission: ""
+  home:
+    slot: 11
+    material: COMPASS
+    name: "&aPlot-Home"
+    lore:
+      - "&7Teleportiert dich zu"
+      - "&7deinem Plot-Home."
+    commands:
+      - "plot home"
+    close: true
+    permission: ""
+  members:
+    slot: 12
+    material: PLAYER_HEAD
+    name: "&aMitglieder"
+    lore:
+      - "&7Öffnet die PlotSquared"
+      - "&7Mitgliederübersicht."
+    commands:
+      - "plot members"
+    close: true
+    permission: ""
+  flags:
+    slot: 14
+    material: REDSTONE_TORCH
+    name: "&aFlags"
+    lore:
+      - "&7Öffnet die PlotSquared"
+      - "&7Flag-Verwaltung."
+    commands:
+      - "plot flag list"
+    close: true
+    permission: ""
+  settings:
+    slot: 15
+    material: REPEATER
+    name: "&aEinstellungen"
+    lore:
+      - "&7Öffnet die PlotSquared"
+      - "&7Einstellungen."
+    commands:
+      - "plot settings"
+    close: true
+    permission: ""
+  help:
+    slot: 16
+    material: OAK_SIGN
+    name: "&aPlot-Hilfe"
+    lore:
+      - "&7Zeigt die PlotSquared"
+      - "&7Befehlsübersicht."
+    commands:
+      - "plot help"
+    close: true
+    permission: ""
