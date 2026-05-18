@@ -2,6 +2,10 @@
 # Diese Datei steuert das Hauptmenü für deutsche Spieler.
 # Hier stellst du Titel, Größe, Füllitems und alle Buttons ein.
 
+# Dateiversion dieser GUI-Datei.
+# Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
+file-version: 1
+
 # Titel des Inventars.
 title: "&8Plot-Menü"
 # Größe des Inventars. Erlaubt sind 9, 18, 27, 36, 45 oder 54 Slots.

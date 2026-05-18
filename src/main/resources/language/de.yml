@@ -2,6 +2,10 @@
 # In dieser Datei stehen alle deutschen Nachrichten, die das Plugin an Spieler
 # oder die Konsole sendet. Farbcodes werden mit & geschrieben, z. B. &a für Grün.
 
+# Dateiversion dieser Sprachdatei.
+# Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
+file-version: 1
+
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
 # Nachricht, wenn ein Befehl nur von Spielern genutzt werden kann.

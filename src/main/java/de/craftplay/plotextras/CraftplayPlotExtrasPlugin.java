@@ -1,6 +1,7 @@
 package de.craftplay.plotextras;
 
 import de.craftplay.plotextras.command.PlotExtrasCommand;
+import de.craftplay.plotextras.config.ConfigurationManager;
 import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.menu.PlotMenuManager;
 import org.bukkit.command.PluginCommand;
@@ -8,12 +9,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
 
+    private ConfigurationManager configurationManager;
     private LanguageManager languageManager;
     private PlotMenuManager plotMenuManager;
 
     @Override
     public void onEnable() {
-        installDefaults();
+        configurationManager = new ConfigurationManager(this);
+        configurationManager.installOrUpdateDefaults();
+        reloadConfig();
         languageManager = new LanguageManager(this);
         languageManager.reload();
         plotMenuManager = new PlotMenuManager(this, languageManager);
@@ -31,6 +35,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     }
 
     public void reloadPlugin() {
+        configurationManager.installOrUpdateDefaults();
         reloadConfig();
         languageManager.reload();
         plotMenuManager.reload();
@@ -42,24 +47,6 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
 
     public PlotMenuManager getPlotMenuManager() {
         return plotMenuManager;
-    }
-
-    private void installDefaults() {
-        saveDefaultConfig();
-        saveResourceIfMissing("language/de.yml");
-        saveResourceIfMissing("language/en.yml");
-        saveResourceIfMissing("gui/de/main.yml");
-        saveResourceIfMissing("gui/en/main.yml");
-    }
-
-    private void saveResourceIfMissing(final String resourcePath) {
-        if (getResource(resourcePath) == null) {
-            return;
-        }
-        if (new java.io.File(getDataFolder(), resourcePath).exists()) {
-            return;
-        }
-        saveResource(resourcePath, false);
     }
 
     private void registerCommands() {

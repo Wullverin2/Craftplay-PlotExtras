@@ -3,6 +3,10 @@
 # Diese Datei enthält nur globale Einstellungen.
 # Die Menüs liegen im Ordner gui/, die Texte im Ordner language/.
 
+# Dateiversion dieser Konfigurationsdatei.
+# Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
+file-version: 1
+
 # Spracheinstellungen für Nachrichten und GUI-Auswahl.
 language:
   # Standardsprache für Nachrichten und GUIs.

@@ -2,6 +2,10 @@
 # Diese Datei wird vom Server gelesen und legt Name, Hauptklasse, Befehle,
 # Abhängigkeiten und Permissions des Plugins fest.
 
+# Dateiversion dieser Pluginbeschreibung.
+# Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
+file-version: 1
+
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
 # Version wird beim Maven-Build aus pom.xml eingesetzt.

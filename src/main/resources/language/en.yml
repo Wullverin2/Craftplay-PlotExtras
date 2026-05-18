@@ -2,6 +2,10 @@
 # This file contains all English messages sent by the plugin to players
 # or the console. Color codes use &, for example &a for green.
 
+# File version of this language file.
+# The plugin uses this value to add new messages automatically.
+file-version: 1
+
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
 # Message shown when a command can only be used by players.

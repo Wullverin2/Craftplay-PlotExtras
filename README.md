@@ -11,5 +11,8 @@ Aktueller Stand:
 - Deutsch und Englisch werden direkt mitgeliefert
 - PlotSquared wird als Pflichtabhängigkeit geladen
 - Die Menübuttons führen aktuell konfigurierbare PlotSquared-Befehle aus
+- Jede verwaltete YAML-Datei hat eine `file-version`
+- Vor automatischen Ergänzungen wird die alte Datei unter `backup/` mit Datum im Dateinamen gesichert
+- Neue Standardwerte werden ergänzt, vorhandene Einstellungen werden nicht überschrieben
 
 Die neue Codebasis ist bewusst schlank gehalten, damit die nächsten Funktionen sauber darauf aufgebaut werden können.
