@@ -1,16 +1,21 @@
 name: CraftplayPlotExtras
 version: ${project.version}
 main: de.craftplay.plotextras.CraftplayPlotExtrasPlugin
-api-version: "1.21"
+api-version: "1.16"
 author: Craftplay
-description: Fresh Craftplay plot extras plugin baseline.
+description: Konfigurierbares Menü für PlotSquared.
+softdepend:
+  - PlotSquared
 commands:
   plotextras:
-    description: CraftplayPlotExtras Hauptbefehl.
+    description: Öffnet das PlotSquared-Hilfsmenü.
     usage: /plotextras
     aliases:
       - cpe
 permissions:
+  craftplayplotextras.use:
+    description: Erlaubt das Öffnen des Plot-Menüs.
+    default: true
   craftplayplotextras.admin:
     description: Erlaubt administrative Basisfunktionen wie Reload.
     default: op

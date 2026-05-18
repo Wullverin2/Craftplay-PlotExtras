@@ -1,11 +1,13 @@
 # CraftplayPlotExtras
 
-Frischer Neustart des Plugins.
+CraftplayPlotExtras ist ein leichtes Menü-Plugin, das Spielern die Bedienung von PlotSquared 5.4.0 erleichtert.
 
 Aktueller Stand:
 
-- minimales Paper-Plugin
-- `/plotextras`
-- `/plotextras reload`
+- `/plotextras` öffnet das Hauptmenü
+- `/plotextras reload` lädt die Konfiguration neu
+- Buttons, Slots, Materialien, Namen, Lore, Permissions und Befehle sind in `config.yml` konfigurierbar
+- PlotSquared wird als Softdepend geladen
+- Die Menübuttons führen aktuell konfigurierbare PlotSquared-Befehle aus
 
-Die alten Funktionen wurden bewusst aus dem aktuellen Code entfernt, damit die neue Version sauber geplant und umgesetzt werden kann.
+Die neue Codebasis ist bewusst schlank gehalten, damit die nächsten Funktionen sauber darauf aufgebaut werden können.

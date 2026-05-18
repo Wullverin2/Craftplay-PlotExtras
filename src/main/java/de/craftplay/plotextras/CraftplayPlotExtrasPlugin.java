@@ -1,40 +1,52 @@
 package de.craftplay.plotextras;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import de.craftplay.plotextras.command.PlotExtrasCommand;
+import de.craftplay.plotextras.menu.PlotMenuManager;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
 
+    private PlotMenuManager plotMenuManager;
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        getLogger().info("CraftplayPlotExtras wurde frisch gestartet.");
+        plotMenuManager = new PlotMenuManager(this);
+        plotMenuManager.reload();
+
+        getServer().getPluginManager().registerEvents(plotMenuManager, this);
+        registerCommands();
+
+        if (getServer().getPluginManager().getPlugin("PlotSquared") == null) {
+            getLogger().warning("PlotSquared wurde nicht gefunden. Das Menü öffnet trotzdem, aber Befehle können fehlschlagen.");
+        }
+        getLogger().info("CraftplayPlotExtras Menü wurde geladen.");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("CraftplayPlotExtras wurde beendet.");
+        getLogger().info("CraftplayPlotExtras Menü wurde beendet.");
     }
 
-    @Override
-    public boolean onCommand(
-            final CommandSender sender,
-            final Command command,
-            final String label,
-            final String[] args
-    ) {
-        if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-            if (!sender.hasPermission("craftplayplotextras.admin")) {
-                sender.sendMessage("Du hast keine Berechtigung dafür.");
-                return true;
-            }
-            reloadConfig();
-            sender.sendMessage("CraftplayPlotExtras wurde neu geladen.");
-            return true;
+    public void reloadPlugin() {
+        reloadConfig();
+        plotMenuManager.reload();
+    }
+
+    public PlotMenuManager getPlotMenuManager() {
+        return plotMenuManager;
+    }
+
+    private void registerCommands() {
+        final PluginCommand command = getCommand("plotextras");
+        if (command == null) {
+            getLogger().warning("Der Befehl 'plotextras' fehlt in der plugin.yml.");
+            return;
         }
 
-        sender.sendMessage("CraftplayPlotExtras ist frisch zurückgesetzt. Nächster Schritt: Funktionen neu planen.");
-        return true;
+        final PlotExtrasCommand executor = new PlotExtrasCommand(this);
+        command.setExecutor(executor);
+        command.setTabCompleter(executor);
     }
 }
