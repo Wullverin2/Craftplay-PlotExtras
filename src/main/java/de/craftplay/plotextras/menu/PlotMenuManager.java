@@ -9,6 +9,7 @@ import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.util.Text;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -698,12 +699,21 @@ public final class PlotMenuManager implements Listener {
         String owner = applyPlaceholders(configuredOwner, replacements)
                 .replace("{player}", player.getName())
                 .replace("%player%", player.getName())
+                .replace("%player_name%", player.getName())
                 .trim();
-        owner = placeholderHook.apply(player, owner).trim();
+        owner = ChatColor.stripColor(placeholderHook.apply(player, owner))
+                .replace("\"", "")
+                .replace("'", "")
+                .trim();
         if (owner.isEmpty()) {
             return;
         }
-        ((SkullMeta) meta).setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+        final SkullMeta skullMeta = (SkullMeta) meta;
+        if (owner.equalsIgnoreCase(player.getName())) {
+            skullMeta.setOwningPlayer(player);
+            return;
+        }
+        skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
     }
 
     private boolean canSee(final Player player, final MenuButton button) {
