@@ -1,11 +1,12 @@
 # English staff menu.
 # This file controls staff functions such as plot backups and the backup list.
 # Every button can be customized: slot, material, HeadDatabase ID, name, lore, commands, and permission.
+# Buttons and decorations can use either slot: 13 or slots: [13, 14, 15].
 # PlaceholderAPI placeholders work in titles, names, lore, and commands.
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 1
+file-version: 2
 
 # Staff menu inventory title.
 title: "&8Staff Menu"

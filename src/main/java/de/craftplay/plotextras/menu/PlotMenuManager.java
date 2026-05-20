@@ -277,7 +277,7 @@ public final class PlotMenuManager implements Listener {
 
         final SettingsTab tab = settingsTab(requestedTabId);
         final Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("tab", tab.getSelector().getName());
+        placeholders.put("tab", tabName(tab));
         final Inventory inventory = Bukkit.createInventory(
                 new PlotMenuHolder("settings", tab.getId()),
                 settingsSize,
@@ -297,11 +297,12 @@ public final class PlotMenuManager implements Listener {
         }
 
         for (final SettingsTab settingsTab : settingsTabs.values()) {
-            final MenuButton selector = settingsTab.getSelector();
-            if (!canSee(player, selector)) {
-                continue;
+            for (final MenuButton selector : settingsTab.getSelectors()) {
+                if (!canSee(player, selector)) {
+                    continue;
+                }
+                inventory.setItem(selector.getSlot(), createButtonItem(player, selector));
             }
-            inventory.setItem(selector.getSlot(), createButtonItem(player, selector));
         }
 
         for (final MenuButton button : tab.getButtonsBySlot().values()) {
@@ -447,12 +448,6 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = "buttons." + id + ".";
-            final int slot = menuConfig.getInt(path + "slot", -1);
-            if (slot < 0 || slot >= menuSize) {
-                plugin.getLogger().warning("Menübutton '" + id + "' hat einen ungültigen Slot: " + slot);
-                continue;
-            }
-
             final Material material = material(menuConfig.getString(path + "material", "STONE_BUTTON"), Material.STONE_BUTTON);
             final String headDatabaseId = headDatabaseId(menuConfig, path);
             final String name = menuConfig.getString(path + "name", "&a" + id);
@@ -461,7 +456,9 @@ public final class PlotMenuManager implements Listener {
             final boolean close = menuConfig.getBoolean(path + "close", true);
             final String permission = menuConfig.getString(path + "permission", "");
 
-            target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, commands, close, permission));
+            for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menübutton", id)) {
+                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, commands, close, permission));
+            }
         }
     }
 
@@ -478,11 +475,6 @@ public final class PlotMenuManager implements Listener {
         for (final String flag : section.getKeys(false)) {
             final String path = "flags." + flag + ".";
             final int page = Math.max(1, menuConfig.getInt(path + "page", 1));
-            final int slot = menuConfig.getInt(path + "slot", -1);
-            if (slot < 0 || slot >= flagsSize) {
-                plugin.getLogger().warning("Flag '" + flag + "' hat einen ungültigen Slot: " + slot);
-                continue;
-            }
             if (!flagService.isBooleanFlag(flag)) {
                 plugin.getLogger().warning("Flag '" + flag + "' ist keine bekannte Boolean-Flag und wird übersprungen.");
                 continue;
@@ -495,9 +487,11 @@ public final class PlotMenuManager implements Listener {
             final String name = menuConfig.getString(path + "name", "&a" + flag);
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final String permission = menuConfig.getString(path + "permission", "");
-            flagsByPageAndSlot
-                    .computeIfAbsent(page, ignored -> new HashMap<>())
-                    .put(slot, new FlagMenuEntry(flag, page, slot, enabledMaterial, disabledMaterial, name, lore, permission));
+            for (final int slot : configuredSlots(menuConfig, path, flagsSize, "Flag", flag)) {
+                flagsByPageAndSlot
+                        .computeIfAbsent(page, ignored -> new HashMap<>())
+                        .put(slot, new FlagMenuEntry(flag, page, slot, enabledMaterial, disabledMaterial, name, lore, permission));
+            }
         }
     }
 
@@ -509,33 +503,33 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = "tabs." + id + ".";
-            final int slot = menuConfig.getInt(path + "slot", -1);
-            if (slot < 0 || slot >= settingsSize) {
-                plugin.getLogger().warning("Einstellungstab '" + id + "' hat einen ungültigen Slot: " + slot);
-                continue;
-            }
-
             final Material material = material(menuConfig.getString(path + "material", "BOOK"), Material.BOOK);
             final String headDatabaseId = headDatabaseId(menuConfig, path);
             final String name = menuConfig.getString(path + "name", "&a" + id);
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final List<String> commands = menuConfig.getStringList(path + "commands");
             final String permission = menuConfig.getString(path + "permission", "");
-            final MenuButton selector = new MenuButton(
-                    id,
-                    slot,
-                    material,
-                    headDatabaseId,
-                    name,
-                    lore,
-                    commands.isEmpty() ? Collections.singletonList("open-menu:settings:" + id) : commands,
-                    false,
-                    permission
-            );
+            final List<MenuButton> selectors = new ArrayList<>();
+            for (final int slot : configuredSlots(menuConfig, path, settingsSize, "Einstellungstab", id)) {
+                selectors.add(new MenuButton(
+                        id,
+                        slot,
+                        material,
+                        headDatabaseId,
+                        name,
+                        lore,
+                        commands.isEmpty() ? Collections.singletonList("open-menu:settings:" + id) : commands,
+                        false,
+                        permission
+                ));
+            }
+            if (selectors.isEmpty()) {
+                continue;
+            }
             final Map<Integer, MenuButton> tabButtons = new HashMap<>();
             loadButtonsFromSection(menuConfig, path + "buttons", tabButtons, settingsSize);
             loadDecorationsFromSection(menuConfig, path + "decorations", tabButtons, settingsSize);
-            settingsTabs.put(id.toLowerCase(Locale.ROOT), new SettingsTab(id.toLowerCase(Locale.ROOT), selector, tabButtons));
+            settingsTabs.put(id.toLowerCase(Locale.ROOT), new SettingsTab(id.toLowerCase(Locale.ROOT), selectors, tabButtons));
         }
     }
 
@@ -552,12 +546,6 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = sectionPath + "." + id + ".";
-            final int slot = menuConfig.getInt(path + "slot", -1);
-            if (slot < 0 || slot >= menuSize) {
-                plugin.getLogger().warning("Menübutton '" + id + "' hat einen ungültigen Slot: " + slot);
-                continue;
-            }
-
             final Material material = material(menuConfig.getString(path + "material", "STONE_BUTTON"), Material.STONE_BUTTON);
             final String headDatabaseId = headDatabaseId(menuConfig, path);
             final String name = menuConfig.getString(path + "name", "&a" + id);
@@ -566,7 +554,9 @@ public final class PlotMenuManager implements Listener {
             final boolean close = menuConfig.getBoolean(path + "close", true);
             final String permission = menuConfig.getString(path + "permission", "");
 
-            target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, commands, close, permission));
+            for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menübutton", id)) {
+                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, commands, close, permission));
+            }
         }
     }
 
@@ -583,19 +573,15 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = sectionPath + "." + id + ".";
-            final int slot = menuConfig.getInt(path + "slot", -1);
-            if (slot < 0 || slot >= menuSize) {
-                plugin.getLogger().warning("Deko-Item '" + id + "' hat einen ungültigen Slot: " + slot);
-                continue;
-            }
-
             final Material material = material(menuConfig.getString(path + "material", "GRAY_STAINED_GLASS_PANE"), Material.GRAY_STAINED_GLASS_PANE);
             final String headDatabaseId = headDatabaseId(menuConfig, path);
             final String name = menuConfig.getString(path + "name", "&r");
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final String permission = menuConfig.getString(path + "permission", "");
 
-            target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, Collections.emptyList(), false, permission));
+            for (final int slot : configuredSlots(menuConfig, path, menuSize, "Deko-Item", id)) {
+                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, Collections.emptyList(), false, permission));
+            }
         }
     }
 
@@ -744,17 +730,18 @@ public final class PlotMenuManager implements Listener {
 
     private void handleSettingsClick(final Player player, final String tabId, final int slot) {
         for (final SettingsTab tab : settingsTabs.values()) {
-            final MenuButton selector = tab.getSelector();
-            if (selector.getSlot() != slot) {
-                continue;
-            }
-            if (!canSee(player, selector)) {
+            for (final MenuButton selector : tab.getSelectors()) {
+                if (selector.getSlot() != slot) {
+                    continue;
+                }
+                if (!canSee(player, selector)) {
+                    return;
+                }
+                for (final String command : selector.getCommands()) {
+                    runCommand(player, command);
+                }
                 return;
             }
-            for (final String command : selector.getCommands()) {
-                runCommand(player, command);
-            }
-            return;
         }
 
         final SettingsTab tab = settingsTab(tabId);
@@ -962,6 +949,11 @@ public final class PlotMenuManager implements Listener {
         return settingsTabs.values().iterator().next();
     }
 
+    private String tabName(final SettingsTab tab) {
+        final MenuButton selector = tab.getSelector();
+        return selector == null ? tab.getId() : selector.getName();
+    }
+
     private int menuPage(final String menuId) {
         final int separator = menuId.indexOf(':');
         if (separator < 0 || separator >= menuId.length() - 1) {
@@ -1009,6 +1001,36 @@ public final class PlotMenuManager implements Listener {
             slots.add(slot);
         }
         return slots;
+    }
+
+    private List<Integer> configuredSlots(
+            final YamlConfiguration menuConfig,
+            final String path,
+            final int menuSize,
+            final String type,
+            final String id
+    ) {
+        final List<Integer> configured = new ArrayList<>();
+        configured.addAll(menuConfig.getIntegerList(path + "slots"));
+        if (configured.isEmpty() && menuConfig.contains(path + "slot")) {
+            configured.add(menuConfig.getInt(path + "slot", -1));
+        }
+        if (configured.isEmpty()) {
+            plugin.getLogger().warning(type + " '" + id + "' hat keinen Slot gesetzt. Nutze slot: <zahl> oder slots: [<zahl>, ...].");
+            return Collections.emptyList();
+        }
+
+        final List<Integer> valid = new ArrayList<>();
+        for (final int slot : configured) {
+            if (slot < 0 || slot >= menuSize) {
+                plugin.getLogger().warning(type + " '" + id + "' hat einen ungültigen Slot: " + slot);
+                continue;
+            }
+            if (!valid.contains(slot)) {
+                valid.add(slot);
+            }
+        }
+        return valid;
     }
 
     private int normalizeSize(final int configuredSize) {

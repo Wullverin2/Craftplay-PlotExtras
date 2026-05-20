@@ -1,6 +1,7 @@
 # Deutsches Einstellungs-Untermenü.
 # Diese Datei steuert das Menü, in dem Spieler Plot-Homes, Wetter, Biome und Zeit ändern.
 # Alle Tabs und Buttons können bei Name, Slot, Material, Lore, Commands und Permission angepasst werden.
+# Tabs, Buttons und Deko-Items können entweder slot: 13 oder slots: [13, 14, 15] nutzen.
 # Jeder Button kann eigene Befehle ausführen. Prefixe: console:, player:, op:, open-menu:.
 # Optional kann statt des Materials ein HeadDatabase-Kopf mit head-database-id genutzt werden.
 # Deko-Items stehen unter decorations und sind reine Anzeigeelemente ohne Aktion.
@@ -8,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 3
+file-version: 4
 
 # Titel des Inventars. Platzhalter: {tab}
 title: "&8Plot-Einstellungen: {tab}"

@@ -2,12 +2,13 @@
 # Diese Datei steuert das Hauptmenü für deutsche Spieler.
 # Hier stellst du Titel, Größe, Füllitems, Deko-Items und alle Buttons ein.
 # Jeder Button kann eigene Befehle ausführen. Prefixe: console:, player:, op:, open-menu:.
+# Für Buttons und Deko-Items kannst du entweder slot: 13 oder slots: [13, 14, 15] nutzen.
 # Optional kann statt des Materials ein HeadDatabase-Kopf mit head-database-id genutzt werden.
 # PlaceholderAPI-Platzhalter funktionieren in Titel, Namen, Lore und Commands.
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 6
+file-version: 7
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
