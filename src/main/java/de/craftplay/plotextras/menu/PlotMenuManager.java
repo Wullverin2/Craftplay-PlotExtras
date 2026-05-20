@@ -429,13 +429,7 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
-        if (button.isCloseInventory()) {
-            player.closeInventory();
-        }
-
-        for (final String command : button.getCommands()) {
-            runCommand(player, command);
-        }
+        executeButtonCommands(player, button);
     }
 
     @EventHandler
@@ -459,7 +453,7 @@ public final class PlotMenuManager implements Listener {
             final String skullOwner = skullOwner(menuConfig, path, materialDefinition.getSkullOwner());
             final String name = menuConfig.getString(path + "name", "&a" + id);
             final List<String> lore = menuConfig.getStringList(path + "lore");
-            final List<String> commands = menuConfig.getStringList(path + "commands");
+            final List<String> commands = configuredCommands(menuConfig, path);
             final boolean close = menuConfig.getBoolean(path + "close", true);
             final String permission = menuConfig.getString(path + "permission", "");
 
@@ -516,7 +510,7 @@ public final class PlotMenuManager implements Listener {
             final String skullOwner = skullOwner(menuConfig, path, materialDefinition.getSkullOwner());
             final String name = menuConfig.getString(path + "name", "&a" + id);
             final List<String> lore = menuConfig.getStringList(path + "lore");
-            final List<String> commands = menuConfig.getStringList(path + "commands");
+            final List<String> commands = configuredCommands(menuConfig, path);
             final String permission = menuConfig.getString(path + "permission", "");
             final List<MenuButton> selectors = new ArrayList<>();
             for (final int slot : configuredSlots(menuConfig, path, settingsSize, "Einstellungstab", id)) {
@@ -562,7 +556,7 @@ public final class PlotMenuManager implements Listener {
             final String skullOwner = skullOwner(menuConfig, path, materialDefinition.getSkullOwner());
             final String name = menuConfig.getString(path + "name", "&a" + id);
             final List<String> lore = menuConfig.getStringList(path + "lore");
-            final List<String> commands = menuConfig.getStringList(path + "commands");
+            final List<String> commands = configuredCommands(menuConfig, path);
             final boolean close = menuConfig.getBoolean(path + "close", true);
             final String permission = menuConfig.getString(path + "permission", "");
 
@@ -740,12 +734,7 @@ public final class PlotMenuManager implements Listener {
             if (!canSee(player, button)) {
                 return;
             }
-            if (button.isCloseInventory()) {
-                player.closeInventory();
-            }
-            for (final String command : button.getCommands()) {
-                runCommand(player, command);
-            }
+            executeButtonCommands(player, button);
             return;
         }
 
@@ -782,9 +771,7 @@ public final class PlotMenuManager implements Listener {
                 if (!canSee(player, selector)) {
                     return;
                 }
-                for (final String command : selector.getCommands()) {
-                    runCommand(player, command);
-                }
+                executeButtonCommands(player, selector);
                 return;
             }
         }
@@ -794,12 +781,7 @@ public final class PlotMenuManager implements Listener {
         if (button == null || !canSee(player, button)) {
             return;
         }
-        if (button.isCloseInventory()) {
-            player.closeInventory();
-        }
-        for (final String command : button.getCommands()) {
-            runCommand(player, command);
-        }
+        executeButtonCommands(player, button);
     }
 
     private void handleTeamClick(final Player player, final int slot) {
@@ -807,12 +789,7 @@ public final class PlotMenuManager implements Listener {
         if (button == null || !canSee(player, button)) {
             return;
         }
-        if (button.isCloseInventory()) {
-            player.closeInventory();
-        }
-        for (final String command : button.getCommands()) {
-            runCommand(player, command);
-        }
+        executeButtonCommands(player, button);
     }
 
     private void handleBackupListClick(final Player player, final int page, final int slot) {
@@ -821,15 +798,14 @@ public final class PlotMenuManager implements Listener {
             if (!canSee(player, button)) {
                 return;
             }
-            if (button.isCloseInventory()) {
-                player.closeInventory();
-            }
+            final List<String> commands = new ArrayList<>();
             for (final String command : button.getCommands()) {
-                runCommand(player, command
+                commands.add(command
                         .replace("{page}", String.valueOf(page))
                         .replace("{next_page}", String.valueOf(page + 1))
                         .replace("{previous_page}", String.valueOf(Math.max(1, page - 1))));
             }
+            executeCommands(player, button.isCloseInventory(), commands);
             return;
         }
 
@@ -839,6 +815,33 @@ public final class PlotMenuManager implements Listener {
         }
         player.closeInventory();
         backupService.requestRestore(player, backupId);
+    }
+
+    private void executeButtonCommands(final Player player, final MenuButton button) {
+        executeCommands(player, button.isCloseInventory(), button.getCommands());
+    }
+
+    private void executeCommands(final Player player, final boolean closeInventory, final List<String> commands) {
+        if (closeInventory) {
+            player.closeInventory();
+        }
+        if (commands == null || commands.isEmpty()) {
+            return;
+        }
+
+        final Runnable action = () -> {
+            if (!player.isOnline()) {
+                return;
+            }
+            for (final String command : commands) {
+                runCommand(player, command);
+            }
+        };
+        if (closeInventory) {
+            Bukkit.getScheduler().runTask(plugin, action);
+        } else {
+            action.run();
+        }
     }
 
     private void runCommand(final Player player, final String configuredCommand) {
@@ -979,6 +982,28 @@ public final class PlotMenuManager implements Listener {
             replaced.add(applyPlaceholders(line, placeholders));
         }
         return replaced;
+    }
+
+    private List<String> configuredCommands(final YamlConfiguration menuConfig, final String path) {
+        final Object configured = menuConfig.get(path + "commands");
+        if (configured == null) {
+            return Collections.emptyList();
+        }
+        final List<String> commands = new ArrayList<>();
+        if (configured instanceof Iterable) {
+            for (final Object entry : (Iterable<?>) configured) {
+                if (entry != null && !entry.toString().trim().isEmpty()) {
+                    commands.add(entry.toString().trim());
+                }
+            }
+            return commands;
+        }
+
+        final String command = configured.toString().trim();
+        if (!command.isEmpty()) {
+            commands.add(command);
+        }
+        return commands;
     }
 
     private SettingsTab settingsTab(final String requestedTabId) {
