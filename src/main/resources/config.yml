@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 5
+file-version: 6
 
 # Befehle dieses Plugins.
 command:
@@ -42,7 +42,15 @@ gui:
   hidden-main-buttons:
     - info
     - home
-    - help
+
+# Bedrock-/Floodgate-Unterstützung.
+bedrock:
+  # Wenn true, erkennt das Plugin Spieler über Floodgate und öffnet das Hauptmenü als Bedrock-Form.
+  # Java-Spieler erhalten weiterhin das normale Inventar-GUI.
+  enabled: true
+  # Wenn true, wird bei Problemen mit Floodgate automatisch das Java-Inventar-Menü geöffnet.
+  # Bei false erhält der Spieler nur eine Fehlermeldung.
+  fallback-to-java-gui: true
 
 # Plotbackup-System.
 plot-backups:

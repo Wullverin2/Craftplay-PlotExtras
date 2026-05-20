@@ -16,6 +16,8 @@ public final class MenuButton {
     private final List<String> commands;
     private final boolean closeInventory;
     private final String permission;
+    private final MenuSound clickSound;
+    private final String bedrockLabel;
 
     public MenuButton(
             final String id,
@@ -27,7 +29,7 @@ public final class MenuButton {
             final boolean closeInventory,
             final String permission
     ) {
-        this(id, slot, material, "", "", name, lore, commands, closeInventory, permission);
+        this(id, slot, material, "", "", name, lore, commands, closeInventory, permission, null, "");
     }
 
     public MenuButton(
@@ -41,7 +43,7 @@ public final class MenuButton {
             final boolean closeInventory,
             final String permission
     ) {
-        this(id, slot, material, headDatabaseId, "", name, lore, commands, closeInventory, permission);
+        this(id, slot, material, headDatabaseId, "", name, lore, commands, closeInventory, permission, null, "");
     }
 
     public MenuButton(
@@ -56,6 +58,23 @@ public final class MenuButton {
             final boolean closeInventory,
             final String permission
     ) {
+        this(id, slot, material, headDatabaseId, skullOwner, name, lore, commands, closeInventory, permission, null, "");
+    }
+
+    public MenuButton(
+            final String id,
+            final int slot,
+            final Material material,
+            final String headDatabaseId,
+            final String skullOwner,
+            final String name,
+            final List<String> lore,
+            final List<String> commands,
+            final boolean closeInventory,
+            final String permission,
+            final MenuSound clickSound,
+            final String bedrockLabel
+    ) {
         this.id = id;
         this.slot = slot;
         this.material = material;
@@ -66,6 +85,8 @@ public final class MenuButton {
         this.commands = commands;
         this.closeInventory = closeInventory;
         this.permission = permission;
+        this.clickSound = clickSound;
+        this.bedrockLabel = bedrockLabel == null ? "" : bedrockLabel;
     }
 
     public String getId() {
@@ -106,5 +127,13 @@ public final class MenuButton {
 
     public String getPermission() {
         return permission;
+    }
+
+    public MenuSound getClickSound() {
+        return clickSound;
+    }
+
+    public String getBedrockLabel() {
+        return bedrockLabel;
     }
 }

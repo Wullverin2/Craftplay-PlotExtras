@@ -78,6 +78,13 @@ public final class ConfigurationManager {
 
         final int defaultVersion = defaults.getInt("file-version", 1);
         final int existingVersion = existing.getInt("file-version", 0);
+        if ("config.yml".equals(resourcePath) && existingVersion < 6) {
+            final List<String> hiddenButtons = existing.getStringList("gui.hidden-main-buttons");
+            if (hiddenButtons.removeIf(hiddenButton -> "help".equalsIgnoreCase(hiddenButton))) {
+                existing.set("gui.hidden-main-buttons", hiddenButtons);
+                changed = true;
+            }
+        }
         if (existingVersion != defaultVersion) {
             existing.set("file-version", defaultVersion);
             changed = true;

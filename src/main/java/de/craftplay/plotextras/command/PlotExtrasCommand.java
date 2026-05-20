@@ -64,7 +64,16 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        plugin.getPlotMenuManager().openMainMenu(player);
+        if (args.length == 1 && args[0].equalsIgnoreCase("gui")) {
+            plugin.getPlotMenuManager().openMainMenu(player);
+            return true;
+        }
+        if (args.length == 1 && args[0].equalsIgnoreCase("bgui")) {
+            plugin.getPlotMenuManager().openBedrockMainMenu(player);
+            return true;
+        }
+
+        plugin.getPlotMenuManager().openMenu(player);
         return true;
     }
 
@@ -109,16 +118,16 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             final String alias,
             final String[] args
     ) {
-        if (args.length != 1 || !sender.hasPermission("craftplayplotextras.admin")) {
+        if (args.length != 1) {
             return Collections.emptyList();
         }
 
         final String input = args[0].toLowerCase(Locale.ROOT);
         final List<String> completions = new ArrayList<>();
-        if ("reload".startsWith(input)) {
+        if (sender.hasPermission("craftplayplotextras.admin") && "reload".startsWith(input)) {
             completions.add("reload");
         }
-        if ("team".startsWith(input)) {
+        if (sender.hasPermission("craftplayplotextras.team") && "team".startsWith(input)) {
             completions.add("team");
         }
         if ("confirm".startsWith(input)) {
@@ -127,8 +136,17 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         if ("cancel".startsWith(input)) {
             completions.add("cancel");
         }
-        if ("backup".startsWith(input)) {
+        if ((sender.hasPermission("craftplayplotextras.backup.create")
+                || sender.hasPermission("craftplayplotextras.backup.list")
+                || sender.hasPermission("craftplayplotextras.backup.restore"))
+                && "backup".startsWith(input)) {
             completions.add("backup");
+        }
+        if (sender.hasPermission("craftplayplotextras.use") && "gui".startsWith(input)) {
+            completions.add("gui");
+        }
+        if (sender.hasPermission("craftplayplotextras.use") && "bgui".startsWith(input)) {
+            completions.add("bgui");
         }
         return completions;
     }

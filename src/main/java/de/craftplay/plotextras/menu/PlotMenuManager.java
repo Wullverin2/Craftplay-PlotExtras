@@ -3,6 +3,7 @@ package de.craftplay.plotextras.menu;
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
 import de.craftplay.plotextras.backup.PlotBackupMetadata;
 import de.craftplay.plotextras.backup.PlotBackupService;
+import de.craftplay.plotextras.hook.FloodgateHook;
 import de.craftplay.plotextras.hook.HeadDatabaseHook;
 import de.craftplay.plotextras.hook.PlaceholderHook;
 import de.craftplay.plotextras.language.LanguageManager;
@@ -28,9 +29,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public final class PlotMenuManager implements Listener {
 
@@ -40,6 +43,7 @@ public final class PlotMenuManager implements Listener {
     private final PlotBackupService backupService;
     private final HeadDatabaseHook headDatabaseHook;
     private final PlaceholderHook placeholderHook;
+    private final FloodgateHook floodgateHook;
     private final Map<Integer, MenuButton> mainButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> flagButtonsBySlot = new HashMap<>();
     private final Map<Integer, Map<Integer, FlagMenuEntry>> flagsByPageAndSlot = new HashMap<>();
@@ -53,6 +57,13 @@ public final class PlotMenuManager implements Listener {
     private ItemStack mainFiller;
     private boolean mainLoaded;
     private List<String> hiddenMainButtons;
+    private MenuSound mainOpenSound;
+    private MenuSound mainClickSound;
+    private boolean mainAnimationEnabled;
+    private long mainAnimationDelayTicks;
+    private boolean bedrockFormsEnabled;
+    private String bedrockMainTitle;
+    private String bedrockMainContent;
     private String flagsTitle;
     private int flagsSize;
     private ItemStack flagsFiller;
@@ -92,6 +103,7 @@ public final class PlotMenuManager implements Listener {
         this.backupService = backupService;
         this.headDatabaseHook = new HeadDatabaseHook(plugin);
         this.placeholderHook = new PlaceholderHook(plugin);
+        this.floodgateHook = new FloodgateHook(plugin);
     }
 
     public void reload() {
@@ -120,6 +132,14 @@ public final class PlotMenuManager implements Listener {
         mainSize = normalizeSize(menuConfig.getInt("size", 27));
         hiddenMainButtons = plugin.getConfig().getStringList("gui.hidden-main-buttons");
         mainFiller = createFiller(menuConfig);
+        mainOpenSound = loadSound(menuConfig, "open-sound");
+        mainClickSound = loadSound(menuConfig, "click-sound");
+        mainAnimationEnabled = menuConfig.getBoolean("animation.enabled", false);
+        mainAnimationDelayTicks = Math.max(1L, menuConfig.getLong("animation.delay-ticks", 1L));
+        bedrockFormsEnabled = plugin.getConfig().getBoolean("bedrock.enabled", true)
+                && menuConfig.getBoolean("bedrock-form.enabled", true);
+        bedrockMainTitle = menuConfig.getString("bedrock-form.title", mainTitle);
+        bedrockMainContent = menuConfig.getString("bedrock-form.content", "");
         loadButtons(menuConfig, mainButtonsBySlot, mainSize);
         loadDecorations(menuConfig, mainButtonsBySlot, mainSize);
         mainLoaded = true;
@@ -192,6 +212,51 @@ public final class PlotMenuManager implements Listener {
         backupListLoaded = true;
     }
 
+    public void openMenu(final Player player) {
+        if (bedrockFormsEnabled && floodgateHook.isBedrockPlayer(player)) {
+            if (openBedrockMainMenu(player)) {
+                return;
+            }
+            if (!plugin.getConfig().getBoolean("bedrock.fallback-to-java-gui", true)) {
+                return;
+            }
+        }
+        openMainMenu(player);
+    }
+
+    public boolean openBedrockMainMenu(final Player player) {
+        if (!mainLoaded) {
+            languageManager.send(player, "menu-missing");
+            return false;
+        }
+        if (!floodgateHook.isBedrockPlayer(player)) {
+            languageManager.send(player, "bedrock-only");
+            return false;
+        }
+
+        final List<MenuButton> buttons = visibleMainActionButtons(player);
+        final List<String> labels = new ArrayList<>();
+        for (final MenuButton button : buttons) {
+            labels.add(bedrockLabel(player, button));
+        }
+        final String title = Text.color(placeholderHook.apply(player, bedrockMainTitle));
+        final String content = Text.color(placeholderHook.apply(player, bedrockMainContent));
+        final boolean sent = floodgateHook.sendSimpleForm(player, title, content, labels, clickedButton -> {
+            if (clickedButton < 0 || clickedButton >= buttons.size()) {
+                return;
+            }
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    executeButtonCommands(player, buttons.get(clickedButton), mainClickSound);
+                }
+            });
+        });
+        if (!sent) {
+            languageManager.send(player, "bedrock-form-failed");
+        }
+        return sent;
+    }
+
     public void openMainMenu(final Player player) {
         if (!mainLoaded) {
             languageManager.send(player, "menu-missing");
@@ -209,17 +274,73 @@ public final class PlotMenuManager implements Listener {
             }
         }
 
-        for (final MenuButton button : mainButtonsBySlot.values()) {
+        final List<MenuButton> buttons = visibleMainButtons(player);
+        if (mainAnimationEnabled) {
+            player.openInventory(inventory);
+            playSound(player, mainOpenSound);
+            animateButtons(player, inventory, buttons);
+            return;
+        }
+
+        for (final MenuButton button : buttons) {
+            inventory.setItem(button.getSlot(), createButtonItem(player, button));
+        }
+
+        player.openInventory(inventory);
+        playSound(player, mainOpenSound);
+    }
+
+    private List<MenuButton> visibleMainButtons(final Player player) {
+        final List<MenuButton> buttons = new ArrayList<>(mainButtonsBySlot.values());
+        buttons.sort((first, second) -> Integer.compare(first.getSlot(), second.getSlot()));
+        final List<MenuButton> visible = new ArrayList<>();
+        for (final MenuButton button : buttons) {
             if (!canSee(player, button)) {
                 continue;
             }
             if (isHiddenMainButton(button)) {
                 continue;
             }
-            inventory.setItem(button.getSlot(), createButtonItem(player, button));
+            visible.add(button);
         }
+        return visible;
+    }
 
-        player.openInventory(inventory);
+    private List<MenuButton> visibleMainActionButtons(final Player player) {
+        final Set<String> seen = new LinkedHashSet<>();
+        final List<MenuButton> buttons = new ArrayList<>();
+        for (final MenuButton button : visibleMainButtons(player)) {
+            if (button.getCommands().isEmpty() && !button.isCloseInventory()) {
+                continue;
+            }
+            if (seen.add(button.getId().toLowerCase(Locale.ROOT))) {
+                buttons.add(button);
+            }
+        }
+        return buttons;
+    }
+
+    private String bedrockLabel(final Player player, final MenuButton button) {
+        final String configured = button.getBedrockLabel();
+        final String label = configured == null || configured.trim().isEmpty() ? button.getName() : configured;
+        return Text.color(placeholderHook.apply(player, label));
+    }
+
+    private void animateButtons(final Player player, final Inventory inventory, final List<MenuButton> buttons) {
+        long delay = 0L;
+        for (final MenuButton button : buttons) {
+            final long scheduledDelay = delay;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (!player.isOnline()) {
+                    return;
+                }
+                if (player.getOpenInventory().getTopInventory() != inventory) {
+                    return;
+                }
+                inventory.setItem(button.getSlot(), createButtonItem(player, button));
+            }, scheduledDelay);
+            delay += mainAnimationDelayTicks;
+        }
     }
 
     public void openFlagsMenu(final Player player) {
@@ -429,7 +550,7 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
-        executeButtonCommands(player, button);
+        executeButtonCommands(player, button, mainClickSound);
     }
 
     @EventHandler
@@ -456,9 +577,11 @@ public final class PlotMenuManager implements Listener {
             final List<String> commands = configuredCommands(menuConfig, path);
             final boolean close = menuConfig.getBoolean(path + "close", true);
             final String permission = menuConfig.getString(path + "permission", "");
+            final MenuSound clickSound = loadButtonSound(menuConfig, path);
+            final String bedrockLabel = menuConfig.getString(path + "bedrock-label", "");
 
             for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menübutton", id)) {
-                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, commands, close, permission));
+                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, commands, close, permission, clickSound, bedrockLabel));
             }
         }
     }
@@ -512,6 +635,8 @@ public final class PlotMenuManager implements Listener {
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final List<String> commands = configuredCommands(menuConfig, path);
             final String permission = menuConfig.getString(path + "permission", "");
+            final MenuSound clickSound = loadButtonSound(menuConfig, path);
+            final String bedrockLabel = menuConfig.getString(path + "bedrock-label", "");
             final List<MenuButton> selectors = new ArrayList<>();
             for (final int slot : configuredSlots(menuConfig, path, settingsSize, "Einstellungstab", id)) {
                 selectors.add(new MenuButton(
@@ -524,7 +649,9 @@ public final class PlotMenuManager implements Listener {
                         lore,
                         commands.isEmpty() ? Collections.singletonList("open-menu:settings:" + id) : commands,
                         false,
-                        permission
+                        permission,
+                        clickSound,
+                        bedrockLabel
                 ));
             }
             if (selectors.isEmpty()) {
@@ -559,9 +686,11 @@ public final class PlotMenuManager implements Listener {
             final List<String> commands = configuredCommands(menuConfig, path);
             final boolean close = menuConfig.getBoolean(path + "close", true);
             final String permission = menuConfig.getString(path + "permission", "");
+            final MenuSound clickSound = loadButtonSound(menuConfig, path);
+            final String bedrockLabel = menuConfig.getString(path + "bedrock-label", "");
 
             for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menübutton", id)) {
-                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, commands, close, permission));
+                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, commands, close, permission, clickSound, bedrockLabel));
             }
         }
     }
@@ -591,6 +720,30 @@ public final class PlotMenuManager implements Listener {
                 target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, Collections.emptyList(), false, permission));
             }
         }
+    }
+
+    private MenuSound loadButtonSound(final YamlConfiguration menuConfig, final String path) {
+        if (menuConfig.contains(path + "click-sound")) {
+            return loadSound(menuConfig, path + "click-sound");
+        }
+        if (menuConfig.contains(path + "sound")) {
+            return loadSound(menuConfig, path + "sound");
+        }
+        return null;
+    }
+
+    private MenuSound loadSound(final YamlConfiguration menuConfig, final String path) {
+        if (!menuConfig.contains(path)) {
+            return null;
+        }
+        if (menuConfig.isString(path)) {
+            return new MenuSound(true, menuConfig.getString(path, ""), 1.0F, 1.0F);
+        }
+        final boolean enabled = menuConfig.getBoolean(path + ".enabled", true);
+        final String soundName = menuConfig.getString(path + ".sound", menuConfig.getString(path + ".name", ""));
+        final float volume = (float) menuConfig.getDouble(path + ".volume", 1.0D);
+        final float pitch = (float) menuConfig.getDouble(path + ".pitch", 1.0D);
+        return new MenuSound(enabled, soundName, volume, pitch);
     }
 
     private ItemStack createFiller(final YamlConfiguration menuConfig) {
@@ -818,7 +971,18 @@ public final class PlotMenuManager implements Listener {
     }
 
     private void executeButtonCommands(final Player player, final MenuButton button) {
+        executeButtonCommands(player, button, null);
+    }
+
+    private void executeButtonCommands(final Player player, final MenuButton button, final MenuSound defaultSound) {
+        playSound(player, button.getClickSound() == null ? defaultSound : button.getClickSound());
         executeCommands(player, button.isCloseInventory(), button.getCommands());
+    }
+
+    private void playSound(final Player player, final MenuSound sound) {
+        if (sound != null) {
+            sound.play(plugin, player);
+        }
     }
 
     private void executeCommands(final Player player, final boolean closeInventory, final List<String> commands) {
@@ -891,7 +1055,7 @@ public final class PlotMenuManager implements Listener {
             } else if ("team".equalsIgnoreCase(menuId)) {
                 openTeamMenu(player);
             } else if ("main".equalsIgnoreCase(menuId)) {
-                openMainMenu(player);
+                openMenu(player);
             }
             return;
         }

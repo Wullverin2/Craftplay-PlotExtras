@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 4
+file-version: 5
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -24,6 +24,7 @@ depend:
 # Optionale Erweiterungen. PlaceholderAPI ersetzt Platzhalter in GUI-Texten und Commands.
 # CMI, Jobs, Quests und mcMMO liefern ihre Werte üblicherweise über PlaceholderAPI-Erweiterungen.
 # HeadDatabase liefert Köpfe für GUI-Buttons per head-database-id.
+# Floodgate erkennt Bedrock-Spieler und öffnet für sie Forms statt Inventar-Menüs.
 # WorldEdit oder FAWE wird für Plotbackups als .schem genutzt.
 softdepend:
   - HeadDatabase
@@ -32,6 +33,8 @@ softdepend:
   - Jobs
   - Quests
   - mcMMO
+  - floodgate
+  - Floodgate
   - WorldEdit
   - FastAsyncWorldEdit
 # Befehle, die dieses Plugin registriert.
