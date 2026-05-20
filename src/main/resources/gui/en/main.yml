@@ -2,7 +2,7 @@
 # This file controls the main menu for English players.
 # Here you configure title, size, filler items, decorations, and all buttons.
 # Each button can run custom commands. Prefixes: console:, player:, op:, open-menu:.
-# Buttons and decorations can use either slot: 13 or slots: [13, 14, 15].
+# Buttons and decorations can use slot: 13, slot: [13, 14, 15], or slots: [13, 14, 15].
 # Optionally, a HeadDatabase head can be used with head-database-id instead of the material.
 # PlaceholderAPI placeholders work in titles, names, lore, and commands.
 

@@ -1,7 +1,7 @@
 # Deutsches Flag-Untermenü.
 # Diese Datei steuert das Menü, in dem Spieler Boolean-Flags ihres aktuellen Plots sehen und umschalten.
 # Alle Namen, Slots, Materialien und Beschreibungen können hier angepasst werden.
-# Buttons, Deko-Items und Flag-Einträge können entweder slot: 13 oder slots: [13, 14, 15] nutzen.
+# Buttons, Deko-Items und Flag-Einträge können slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
 # Feste Buttons und Deko-Items unterstützen optional head-database-id für HeadDatabase-Köpfe.
 # PlaceholderAPI-Platzhalter funktionieren in Titel, festen Buttons, Deko, Namen, Lore und Commands.
 

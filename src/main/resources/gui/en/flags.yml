@@ -1,7 +1,7 @@
 # English flag submenu.
 # This file controls the menu where players see and toggle Boolean flags of their current plot.
 # All names, slots, materials, and descriptions can be changed here.
-# Buttons, decorations, and flag entries can use either slot: 13 or slots: [13, 14, 15].
+# Buttons, decorations, and flag entries can use slot: 13, slot: [13, 14, 15], or slots: [13, 14, 15].
 # Static buttons and decorations optionally support head-database-id for HeadDatabase heads.
 # PlaceholderAPI placeholders work in titles, static buttons, decorations, names, lore, and commands.
 

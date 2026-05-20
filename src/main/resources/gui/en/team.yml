@@ -1,7 +1,7 @@
 # English staff menu.
 # This file controls staff functions such as plot backups and the backup list.
 # Every button can be customized: slot, material, HeadDatabase ID, name, lore, commands, and permission.
-# Buttons and decorations can use either slot: 13 or slots: [13, 14, 15].
+# Buttons and decorations can use slot: 13, slot: [13, 14, 15], or slots: [13, 14, 15].
 # PlaceholderAPI placeholders work in titles, names, lore, and commands.
 
 # File version of this GUI file.

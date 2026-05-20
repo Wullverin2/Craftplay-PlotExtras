@@ -1,7 +1,7 @@
 # English settings submenu.
 # This file controls the menu where players change plot homes, weather, biomes, and time.
 # All tabs and buttons can configure name, slot, material, lore, commands, and permission.
-# Tabs, buttons, and decorations can use either slot: 13 or slots: [13, 14, 15].
+# Tabs, buttons, and decorations can use slot: 13, slot: [13, 14, 15], or slots: [13, 14, 15].
 # Each button can run custom commands. Prefixes: console:, player:, op:, open-menu:.
 # Optionally, a HeadDatabase head can be used with head-database-id instead of the material.
 # Decoration items live under decorations and are visual-only items without an action.

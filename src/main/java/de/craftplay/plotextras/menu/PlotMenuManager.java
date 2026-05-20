@@ -1013,10 +1013,13 @@ public final class PlotMenuManager implements Listener {
         final List<Integer> configured = new ArrayList<>();
         configured.addAll(menuConfig.getIntegerList(path + "slots"));
         if (configured.isEmpty() && menuConfig.contains(path + "slot")) {
-            configured.add(menuConfig.getInt(path + "slot", -1));
+            configured.addAll(menuConfig.getIntegerList(path + "slot"));
+            if (configured.isEmpty()) {
+                configured.add(menuConfig.getInt(path + "slot", -1));
+            }
         }
         if (configured.isEmpty()) {
-            plugin.getLogger().warning(type + " '" + id + "' hat keinen Slot gesetzt. Nutze slot: <zahl> oder slots: [<zahl>, ...].");
+            plugin.getLogger().warning(type + " '" + id + "' hat keinen Slot gesetzt. Nutze slot: <zahl>, slot: [<zahl>, ...] oder slots: [<zahl>, ...].");
             return Collections.emptyList();
         }
 

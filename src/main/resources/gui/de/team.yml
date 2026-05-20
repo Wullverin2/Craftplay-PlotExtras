@@ -1,7 +1,7 @@
 # Deutsches Team-Menü.
 # Diese Datei steuert Teamfunktionen wie Plotbackups und die Backupliste.
 # Alle Buttons sind frei anpassbar: Slot, Material, HeadDatabase-ID, Name, Lore, Commands und Permission.
-# Buttons und Deko-Items können entweder slot: 13 oder slots: [13, 14, 15] nutzen.
+# Buttons und Deko-Items können slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
 # PlaceholderAPI-Platzhalter funktionieren in Titeln, Namen, Lore und Commands.
 
 # Dateiversion dieser GUI-Datei.
