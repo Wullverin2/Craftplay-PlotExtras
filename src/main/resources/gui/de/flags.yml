@@ -3,11 +3,12 @@
 # Alle Namen, Slots, Materialien und Beschreibungen können hier angepasst werden.
 # Buttons, Deko-Items und Flag-Einträge können slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
 # Feste Buttons und Deko-Items unterstützen optional head-database-id für HeadDatabase-Köpfe.
+# Spieler-Köpfe sind bei festen Buttons und Deko per material: PLAYERHEAD %player_name% oder skull-owner: "%player_name%" möglich.
 # PlaceholderAPI-Platzhalter funktionieren in Titel, festen Buttons, Deko, Namen, Lore und Commands.
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 5
+file-version: 6
 
 # Titel des Inventars.
 title: "&8Plot-Flags"

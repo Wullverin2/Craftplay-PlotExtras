@@ -2,11 +2,12 @@
 # Diese Datei steuert Teamfunktionen wie Plotbackups und die Backupliste.
 # Alle Buttons sind frei anpassbar: Slot, Material, HeadDatabase-ID, Name, Lore, Commands und Permission.
 # Buttons und Deko-Items können slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
+# Spieler-Köpfe sind per material: PLAYERHEAD %player_name% oder skull-owner: "%player_name%" möglich.
 # PlaceholderAPI-Platzhalter funktionieren in Titeln, Namen, Lore und Commands.
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 2
+file-version: 3
 
 # Titel des Team-Hauptinventars.
 title: "&8Team-Menü"

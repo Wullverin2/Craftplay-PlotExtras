@@ -4,11 +4,12 @@
 # Jeder Button kann eigene Befehle ausführen. Prefixe: console:, player:, op:, open-menu:.
 # Für Buttons und Deko-Items kannst du slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
 # Optional kann statt des Materials ein HeadDatabase-Kopf mit head-database-id genutzt werden.
+# Spieler-Köpfe sind per material: PLAYERHEAD %player_name% oder skull-owner: "%player_name%" möglich.
 # PlaceholderAPI-Platzhalter funktionieren in Titel, Namen, Lore und Commands.
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 7
+file-version: 8
 
 # Titel des Inventars.
 title: "&8Plot-Menü"

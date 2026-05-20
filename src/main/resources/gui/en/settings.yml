@@ -4,12 +4,13 @@
 # Tabs, buttons, and decorations can use slot: 13, slot: [13, 14, 15], or slots: [13, 14, 15].
 # Each button can run custom commands. Prefixes: console:, player:, op:, open-menu:.
 # Optionally, a HeadDatabase head can be used with head-database-id instead of the material.
+# Player heads can use material: PLAYERHEAD %player_name% or skull-owner: "%player_name%".
 # Decoration items live under decorations and are visual-only items without an action.
 # PlaceholderAPI placeholders work in titles, tab names, button names, lore, and commands.
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 4
+file-version: 5
 
 # Inventory title. Placeholder: {tab}
 title: "&8Plot Settings: {tab}"

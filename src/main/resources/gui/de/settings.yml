@@ -4,12 +4,13 @@
 # Tabs, Buttons und Deko-Items können slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
 # Jeder Button kann eigene Befehle ausführen. Prefixe: console:, player:, op:, open-menu:.
 # Optional kann statt des Materials ein HeadDatabase-Kopf mit head-database-id genutzt werden.
+# Spieler-Köpfe sind per material: PLAYERHEAD %player_name% oder skull-owner: "%player_name%" möglich.
 # Deko-Items stehen unter decorations und sind reine Anzeigeelemente ohne Aktion.
 # PlaceholderAPI-Platzhalter funktionieren in Titel, Tab-Namen, Buttonnamen, Lore und Commands.
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 4
+file-version: 5
 
 # Titel des Inventars. Platzhalter: {tab}
 title: "&8Plot-Einstellungen: {tab}"

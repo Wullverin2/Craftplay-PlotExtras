@@ -20,6 +20,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -74,6 +75,7 @@ public final class PlotMenuManager implements Listener {
     private List<Integer> backupListSlots;
     private Material backupListItemMaterial;
     private String backupListItemHeadDatabaseId;
+    private String backupListItemSkullOwner;
     private String backupListItemName;
     private List<String> backupListItemLore;
 
@@ -178,8 +180,10 @@ public final class PlotMenuManager implements Listener {
         if (backupListSlots.isEmpty()) {
             backupListSlots = defaultListSlots(backupListSize);
         }
-        backupListItemMaterial = material(teamConfig.getString("backup-list.item.material", "FILLED_MAP"), Material.FILLED_MAP);
+        final MaterialDefinition backupListItemDefinition = materialDefinition(teamConfig, "backup-list.item.", Material.FILLED_MAP);
+        backupListItemMaterial = backupListItemDefinition.getMaterial();
         backupListItemHeadDatabaseId = headDatabaseId(teamConfig, "backup-list.item.");
+        backupListItemSkullOwner = skullOwner(teamConfig, "backup-list.item.", backupListItemDefinition.getSkullOwner());
         backupListItemName = teamConfig.getString("backup-list.item.name", "&e{owner} &7- &f{plot}");
         backupListItemLore = teamConfig.getStringList("backup-list.item.lore");
         loadButtonsFromSection(teamConfig, "backup-list.buttons", backupListButtonsBySlot, backupListSize);
@@ -448,8 +452,10 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = "buttons." + id + ".";
-            final Material material = material(menuConfig.getString(path + "material", "STONE_BUTTON"), Material.STONE_BUTTON);
+            final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.STONE_BUTTON);
+            final Material material = materialDefinition.getMaterial();
             final String headDatabaseId = headDatabaseId(menuConfig, path);
+            final String skullOwner = skullOwner(menuConfig, path, materialDefinition.getSkullOwner());
             final String name = menuConfig.getString(path + "name", "&a" + id);
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final List<String> commands = menuConfig.getStringList(path + "commands");
@@ -457,7 +463,7 @@ public final class PlotMenuManager implements Listener {
             final String permission = menuConfig.getString(path + "permission", "");
 
             for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menübutton", id)) {
-                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, commands, close, permission));
+                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, commands, close, permission));
             }
         }
     }
@@ -503,8 +509,10 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = "tabs." + id + ".";
-            final Material material = material(menuConfig.getString(path + "material", "BOOK"), Material.BOOK);
+            final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.BOOK);
+            final Material material = materialDefinition.getMaterial();
             final String headDatabaseId = headDatabaseId(menuConfig, path);
+            final String skullOwner = skullOwner(menuConfig, path, materialDefinition.getSkullOwner());
             final String name = menuConfig.getString(path + "name", "&a" + id);
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final List<String> commands = menuConfig.getStringList(path + "commands");
@@ -516,6 +524,7 @@ public final class PlotMenuManager implements Listener {
                         slot,
                         material,
                         headDatabaseId,
+                        skullOwner,
                         name,
                         lore,
                         commands.isEmpty() ? Collections.singletonList("open-menu:settings:" + id) : commands,
@@ -546,8 +555,10 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = sectionPath + "." + id + ".";
-            final Material material = material(menuConfig.getString(path + "material", "STONE_BUTTON"), Material.STONE_BUTTON);
+            final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.STONE_BUTTON);
+            final Material material = materialDefinition.getMaterial();
             final String headDatabaseId = headDatabaseId(menuConfig, path);
+            final String skullOwner = skullOwner(menuConfig, path, materialDefinition.getSkullOwner());
             final String name = menuConfig.getString(path + "name", "&a" + id);
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final List<String> commands = menuConfig.getStringList(path + "commands");
@@ -555,7 +566,7 @@ public final class PlotMenuManager implements Listener {
             final String permission = menuConfig.getString(path + "permission", "");
 
             for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menübutton", id)) {
-                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, commands, close, permission));
+                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, commands, close, permission));
             }
         }
     }
@@ -573,14 +584,16 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = sectionPath + "." + id + ".";
-            final Material material = material(menuConfig.getString(path + "material", "GRAY_STAINED_GLASS_PANE"), Material.GRAY_STAINED_GLASS_PANE);
+            final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.GRAY_STAINED_GLASS_PANE);
+            final Material material = materialDefinition.getMaterial();
             final String headDatabaseId = headDatabaseId(menuConfig, path);
+            final String skullOwner = skullOwner(menuConfig, path, materialDefinition.getSkullOwner());
             final String name = menuConfig.getString(path + "name", "&r");
             final List<String> lore = menuConfig.getStringList(path + "lore");
             final String permission = menuConfig.getString(path + "permission", "");
 
             for (final int slot : configuredSlots(menuConfig, path, menuSize, "Deko-Item", id)) {
-                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, name, lore, Collections.emptyList(), false, permission));
+                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, Collections.emptyList(), false, permission));
             }
         }
     }
@@ -636,6 +649,7 @@ public final class PlotMenuManager implements Listener {
         }
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
+            applySkullOwner(player, meta, button.getSkullOwner(), replacements);
             meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(button.getName(), replacements))));
             meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(button.getLore(), replacements))));
             item.setItemMeta(meta);
@@ -664,11 +678,32 @@ public final class PlotMenuManager implements Listener {
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             final Map<String, String> placeholders = backupPlaceholders(metadata);
+            applySkullOwner(player, meta, backupListItemSkullOwner, placeholders);
             meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(backupListItemName, placeholders))));
             meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(backupListItemLore, placeholders))));
             item.setItemMeta(meta);
         }
         return item;
+    }
+
+    private void applySkullOwner(
+            final Player player,
+            final ItemMeta meta,
+            final String configuredOwner,
+            final Map<String, String> replacements
+    ) {
+        if (!(meta instanceof SkullMeta) || configuredOwner == null || configuredOwner.trim().isEmpty()) {
+            return;
+        }
+        String owner = applyPlaceholders(configuredOwner, replacements)
+                .replace("{player}", player.getName())
+                .replace("%player%", player.getName())
+                .trim();
+        owner = placeholderHook.apply(player, owner).trim();
+        if (owner.isEmpty()) {
+            return;
+        }
+        ((SkullMeta) meta).setOwningPlayer(Bukkit.getOfflinePlayer(owner));
     }
 
     private boolean canSee(final Player player, final MenuButton button) {
@@ -1011,12 +1046,9 @@ public final class PlotMenuManager implements Listener {
             final String id
     ) {
         final List<Integer> configured = new ArrayList<>();
-        configured.addAll(menuConfig.getIntegerList(path + "slots"));
+        configured.addAll(configuredSlotValues(menuConfig, path + "slots", type, id));
         if (configured.isEmpty() && menuConfig.contains(path + "slot")) {
-            configured.addAll(menuConfig.getIntegerList(path + "slot"));
-            if (configured.isEmpty()) {
-                configured.add(menuConfig.getInt(path + "slot", -1));
-            }
+            configured.addAll(configuredSlotValues(menuConfig, path + "slot", type, id));
         }
         if (configured.isEmpty()) {
             plugin.getLogger().warning(type + " '" + id + "' hat keinen Slot gesetzt. Nutze slot: <zahl>, slot: [<zahl>, ...] oder slots: [<zahl>, ...].");
@@ -1036,6 +1068,56 @@ public final class PlotMenuManager implements Listener {
         return valid;
     }
 
+    private List<Integer> configuredSlotValues(
+            final YamlConfiguration menuConfig,
+            final String path,
+            final String type,
+            final String id
+    ) {
+        final List<Integer> slots = new ArrayList<>();
+        final Object value = menuConfig.get(path);
+        if (value instanceof Iterable) {
+            for (final Object entry : (Iterable<?>) value) {
+                addSlotValue(entry, slots, type, id);
+            }
+            return slots;
+        }
+        addSlotValue(value, slots, type, id);
+        return slots;
+    }
+
+    private void addSlotValue(
+            final Object value,
+            final List<Integer> slots,
+            final String type,
+            final String id
+    ) {
+        if (value == null) {
+            return;
+        }
+        if (value instanceof Number) {
+            slots.add(((Number) value).intValue());
+            return;
+        }
+        final String text = value.toString()
+                .replace("[", "")
+                .replace("]", "")
+                .trim();
+        if (text.isEmpty()) {
+            return;
+        }
+        for (final String part : text.split("[,;\\s]+")) {
+            if (part.trim().isEmpty()) {
+                continue;
+            }
+            try {
+                slots.add(Integer.parseInt(part.trim()));
+            } catch (final NumberFormatException exception) {
+                plugin.getLogger().warning(type + " '" + id + "' hat einen ungültigen Slotwert: " + part);
+            }
+        }
+    }
+
     private int normalizeSize(final int configuredSize) {
         int normalized = Math.max(9, Math.min(54, configuredSize));
         if (normalized % 9 != 0) {
@@ -1048,8 +1130,47 @@ public final class PlotMenuManager implements Listener {
         if (configuredMaterial == null) {
             return fallback;
         }
-        final Material material = Material.matchMaterial(configuredMaterial);
+        final String materialName = configuredMaterial.trim().split("\\s+", 2)[0];
+        final Material material = Material.matchMaterial(normalizeMaterialName(materialName));
         return material == null ? fallback : material;
+    }
+
+    private MaterialDefinition materialDefinition(
+            final YamlConfiguration menuConfig,
+            final String path,
+            final Material fallback
+    ) {
+        final String configuredMaterial = menuConfig.getString(path + "material", fallback.name());
+        if (configuredMaterial == null || configuredMaterial.trim().isEmpty()) {
+            return new MaterialDefinition(fallback, "");
+        }
+
+        final String[] parts = configuredMaterial.trim().split("\\s+", 2);
+        final Material material = material(parts[0], fallback);
+        final String skullOwner = material == Material.PLAYER_HEAD && parts.length > 1 ? parts[1].trim() : "";
+        return new MaterialDefinition(material, skullOwner);
+    }
+
+    private String normalizeMaterialName(final String materialName) {
+        if (materialName == null) {
+            return "";
+        }
+        final String normalized = materialName.trim().toUpperCase(Locale.ROOT);
+        if ("PLAYERHEAD".equals(normalized) || "PLAYER-HEAD".equals(normalized)) {
+            return "PLAYER_HEAD";
+        }
+        return normalized;
+    }
+
+    private String skullOwner(final YamlConfiguration menuConfig, final String path, final String fallback) {
+        String owner = menuConfig.getString(path + "skull-owner", "");
+        if (owner == null || owner.trim().isEmpty()) {
+            owner = menuConfig.getString(path + "head-owner", "");
+        }
+        if (owner == null || owner.trim().isEmpty()) {
+            owner = fallback;
+        }
+        return owner == null ? "" : owner.trim();
     }
 
     private String headDatabaseId(final YamlConfiguration menuConfig, final String path) {
@@ -1061,5 +1182,24 @@ public final class PlotMenuManager implements Listener {
             id = menuConfig.getString(path + "head-id", "");
         }
         return id == null ? "" : id.trim();
+    }
+
+    private static final class MaterialDefinition {
+
+        private final Material material;
+        private final String skullOwner;
+
+        private MaterialDefinition(final Material material, final String skullOwner) {
+            this.material = material;
+            this.skullOwner = skullOwner == null ? "" : skullOwner;
+        }
+
+        private Material getMaterial() {
+            return material;
+        }
+
+        private String getSkullOwner() {
+            return skullOwner;
+        }
     }
 }
