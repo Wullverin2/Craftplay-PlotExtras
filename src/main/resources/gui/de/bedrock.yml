@@ -6,7 +6,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 3
+file-version: 4
 
 # Wenn false, wird dieses Bedrock-Menü nicht geladen.
 enabled: true
@@ -131,3 +131,10 @@ buttons:
       - "open-menu:danger"
     close: false
     permission: ""
+  future:
+    order: 135
+    label: "Zukunft"
+    commands:
+      - "open-menu:future"
+    close: false
+    permission: "craftplayplotextras.future"

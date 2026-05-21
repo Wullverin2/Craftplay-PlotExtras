@@ -12,6 +12,10 @@ import de.craftplay.plotextras.myplots.PlotMetadata;
 import de.craftplay.plotextras.plotsquared.OwnedPlot;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
+import de.craftplay.plotextras.reports.PlotReport;
+import de.craftplay.plotextras.reports.ReportService;
+import de.craftplay.plotextras.roles.PlotRole;
+import de.craftplay.plotextras.roles.PlotRoleService;
 import de.craftplay.plotextras.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -54,6 +58,8 @@ public final class PlotMenuManager implements Listener {
     private final PlotSquaredPlotService plotService;
     private final PlotDataStore plotDataStore;
     private final PlotBackupService backupService;
+    private final ReportService reportService;
+    private final PlotRoleService roleService;
     private final HeadDatabaseHook headDatabaseHook;
     private final PlaceholderHook placeholderHook;
     private final FloodgateHook floodgateHook;
@@ -71,6 +77,8 @@ public final class PlotMenuManager implements Listener {
     private final Map<UUID, PendingChatInput> pendingChatInputs = new HashMap<>();
     private final Map<Integer, MenuButton> teamButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> backupListButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> reportListButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> roleListButtonsBySlot = new HashMap<>();
 
     private String mainTitle;
     private int mainSize;
@@ -125,6 +133,24 @@ public final class PlotMenuManager implements Listener {
     private String backupListItemSkullOwner;
     private String backupListItemName;
     private List<String> backupListItemLore;
+    private String reportListTitle;
+    private int reportListSize;
+    private ItemStack reportListFiller;
+    private List<Integer> reportListSlots;
+    private Material reportListItemMaterial;
+    private String reportListItemHeadDatabaseId;
+    private String reportListItemSkullOwner;
+    private String reportListItemName;
+    private List<String> reportListItemLore;
+    private String roleListTitle;
+    private int roleListSize;
+    private ItemStack roleListFiller;
+    private List<Integer> roleListSlots;
+    private Material roleListItemMaterial;
+    private String roleListItemHeadDatabaseId;
+    private String roleListItemSkullOwner;
+    private String roleListItemName;
+    private List<String> roleListItemLore;
 
     public PlotMenuManager(
             final CraftplayPlotExtrasPlugin plugin,
@@ -132,7 +158,9 @@ public final class PlotMenuManager implements Listener {
             final PlotSquaredFlagService flagService,
             final PlotSquaredPlotService plotService,
             final PlotDataStore plotDataStore,
-            final PlotBackupService backupService
+            final PlotBackupService backupService,
+            final ReportService reportService,
+            final PlotRoleService roleService
     ) {
         this.plugin = plugin;
         this.languageManager = languageManager;
@@ -140,6 +168,8 @@ public final class PlotMenuManager implements Listener {
         this.plotService = plotService;
         this.plotDataStore = plotDataStore;
         this.backupService = backupService;
+        this.reportService = reportService;
+        this.roleService = roleService;
         this.headDatabaseHook = new HeadDatabaseHook(plugin);
         this.placeholderHook = new PlaceholderHook(plugin);
         this.floodgateHook = new FloodgateHook(plugin);
@@ -159,6 +189,8 @@ public final class PlotMenuManager implements Listener {
         actionMenus.clear();
         teamButtonsBySlot.clear();
         backupListButtonsBySlot.clear();
+        reportListButtonsBySlot.clear();
+        roleListButtonsBySlot.clear();
         mainLoaded = false;
         bedrockMainLoaded = false;
         myPlotsLoaded = false;
@@ -981,6 +1013,81 @@ public final class PlotMenuManager implements Listener {
         player.openInventory(inventory);
     }
 
+    public void openReportListMenu(final Player player, final int page, final String status) {
+        if (!player.hasPermission("craftplayplotextras.reports.manage")) {
+            languageManager.send(player, "no-permission");
+            return;
+        }
+        final String normalizedStatus = status == null || status.trim().isEmpty() ? "open" : status.toLowerCase(Locale.ROOT);
+        final int normalizedPage = Math.max(1, page);
+        final Map<String, String> pagePlaceholders = new HashMap<>();
+        pagePlaceholders.put("page", String.valueOf(normalizedPage));
+        pagePlaceholders.put("next_page", String.valueOf(normalizedPage + 1));
+        pagePlaceholders.put("previous_page", String.valueOf(Math.max(1, normalizedPage - 1)));
+        pagePlaceholders.put("status", normalizedStatus);
+
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("reports-list", normalizedPage, normalizedStatus),
+                reportListSize,
+                Text.color(placeholderHook.apply(player, applyPlaceholders(reportListTitle, pagePlaceholders)))
+        );
+        if (reportListFiller != null) {
+            for (int slot = 0; slot < reportListSize; slot++) {
+                inventory.setItem(slot, reportListFiller);
+            }
+        }
+        for (final MenuButton button : reportListButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, pagePlaceholders));
+            }
+        }
+
+        final List<PlotReport> reports = reportService.list(normalizedStatus);
+        final int pageSize = Math.max(1, reportListSlots.size());
+        final int start = (normalizedPage - 1) * pageSize;
+        final int end = Math.min(reports.size(), start + pageSize);
+        for (int index = start; index < end; index++) {
+            inventory.setItem(reportListSlots.get(index - start), createReportListItem(player, reports.get(index)));
+        }
+        player.openInventory(inventory);
+    }
+
+    public void openRoleListMenu(final Player player, final int page) {
+        if (!roleService.canManage(player)) {
+            return;
+        }
+        final int normalizedPage = Math.max(1, page);
+        final Map<String, String> pagePlaceholders = new HashMap<>();
+        pagePlaceholders.put("page", String.valueOf(normalizedPage));
+        pagePlaceholders.put("next_page", String.valueOf(normalizedPage + 1));
+        pagePlaceholders.put("previous_page", String.valueOf(Math.max(1, normalizedPage - 1)));
+
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("roles-list", normalizedPage),
+                roleListSize,
+                Text.color(placeholderHook.apply(player, applyPlaceholders(roleListTitle, pagePlaceholders)))
+        );
+        if (roleListFiller != null) {
+            for (int slot = 0; slot < roleListSize; slot++) {
+                inventory.setItem(slot, roleListFiller);
+            }
+        }
+        for (final MenuButton button : roleListButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, pagePlaceholders));
+            }
+        }
+
+        final List<PlotRole> roles = roleService.roles(player);
+        final int pageSize = Math.max(1, roleListSlots.size());
+        final int start = (normalizedPage - 1) * pageSize;
+        final int end = Math.min(roles.size(), start + pageSize);
+        for (int index = start; index < end; index++) {
+            inventory.setItem(roleListSlots.get(index - start), createRoleListItem(player, roles.get(index)));
+        }
+        player.openInventory(inventory);
+    }
+
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) {
@@ -1025,6 +1132,14 @@ public final class PlotMenuManager implements Listener {
             handleBackupListClick(player, holder.getPage(), event.getSlot());
             return;
         }
+        if ("reports-list".equalsIgnoreCase(holder.getMenuId())) {
+            handleReportListClick(player, holder.getPage(), holder.getTabId(), event.getSlot(), event.getClick());
+            return;
+        }
+        if ("roles-list".equalsIgnoreCase(holder.getMenuId())) {
+            handleRoleListClick(player, holder.getPage(), event.getSlot(), event.getClick());
+            return;
+        }
 
         final MenuButton button = mainButtonsBySlot.get(event.getSlot());
         if (button == null || isHiddenMainButton(button) || !canSee(player, button)) {
@@ -1065,6 +1180,9 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = "buttons." + id + ".";
+            if (!menuConfig.getBoolean(path + "enabled", true)) {
+                continue;
+            }
             final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.STONE_BUTTON);
             final Material material = materialDefinition.getMaterial();
             final String headDatabaseId = headDatabaseId(menuConfig, path);
@@ -1092,6 +1210,9 @@ public final class PlotMenuManager implements Listener {
         int fallbackOrder = 0;
         for (final String id : section.getKeys(false)) {
             final String path = "buttons." + id + ".";
+            if (!menuConfig.getBoolean(path + "enabled", true)) {
+                continue;
+            }
             final int order = menuConfig.contains(path + "order")
                     ? menuConfig.getInt(path + "order")
                     : menuConfig.getInt(path + "slot", fallbackOrder);
@@ -1154,6 +1275,53 @@ public final class PlotMenuManager implements Listener {
         loadActionMenu("history", plugin.getConfig().getString("gui.history-menu", "history.yml"));
         loadActionMenu("danger", plugin.getConfig().getString("gui.danger-menu", "danger.yml"));
         loadActionMenu("help", plugin.getConfig().getString("gui.help-menu", "help.yml"));
+        loadActionMenu("future", plugin.getConfig().getString("gui.future-menu", "future.yml"));
+        loadReportListMenu();
+        loadRoleListMenu();
+    }
+
+    private void loadReportListMenu() {
+        final YamlConfiguration reportsConfig = loadMenuConfig(plugin.getConfig().getString("gui.reports-menu", "reports.yml"));
+        if (reportsConfig == null) {
+            return;
+        }
+        reportListTitle = reportsConfig.getString("admin-list.title", "&8Reports &7- {status} - Seite {page}");
+        reportListSize = normalizeSize(reportsConfig.getInt("admin-list.size", 54));
+        reportListFiller = createFiller(reportsConfig, "admin-list.filler");
+        reportListSlots = reportsConfig.getIntegerList("admin-list.slots");
+        if (reportListSlots.isEmpty()) {
+            reportListSlots = defaultListSlots(reportListSize);
+        }
+        final MaterialDefinition itemDefinition = materialDefinition(reportsConfig, "admin-list.item.", Material.WRITABLE_BOOK);
+        reportListItemMaterial = itemDefinition.getMaterial();
+        reportListItemHeadDatabaseId = headDatabaseId(reportsConfig, "admin-list.item.");
+        reportListItemSkullOwner = skullOwner(reportsConfig, "admin-list.item.", itemDefinition.getSkullOwner());
+        reportListItemName = reportsConfig.getString("admin-list.item.name", "&c{id} &7- &f{category}");
+        reportListItemLore = reportsConfig.getStringList("admin-list.item.lore");
+        loadButtonsFromSection(reportsConfig, "admin-list.buttons", reportListButtonsBySlot, reportListSize);
+        loadDecorationsFromSection(reportsConfig, "admin-list.decorations", reportListButtonsBySlot, reportListSize);
+    }
+
+    private void loadRoleListMenu() {
+        final YamlConfiguration membersConfig = loadMenuConfig(plugin.getConfig().getString("gui.members-menu", "members.yml"));
+        if (membersConfig == null) {
+            return;
+        }
+        roleListTitle = membersConfig.getString("role-list.title", "&8Plotrollen &7- Seite {page}");
+        roleListSize = normalizeSize(membersConfig.getInt("role-list.size", 54));
+        roleListFiller = createFiller(membersConfig, "role-list.filler");
+        roleListSlots = membersConfig.getIntegerList("role-list.slots");
+        if (roleListSlots.isEmpty()) {
+            roleListSlots = defaultListSlots(roleListSize);
+        }
+        final MaterialDefinition itemDefinition = materialDefinition(membersConfig, "role-list.item.", Material.WRITABLE_BOOK);
+        roleListItemMaterial = itemDefinition.getMaterial();
+        roleListItemHeadDatabaseId = headDatabaseId(membersConfig, "role-list.item.");
+        roleListItemSkullOwner = skullOwner(membersConfig, "role-list.item.", itemDefinition.getSkullOwner());
+        roleListItemName = membersConfig.getString("role-list.item.name", "&a{role}");
+        roleListItemLore = membersConfig.getStringList("role-list.item.lore");
+        loadButtonsFromSection(membersConfig, "role-list.buttons", roleListButtonsBySlot, roleListSize);
+        loadDecorationsFromSection(membersConfig, "role-list.decorations", roleListButtonsBySlot, roleListSize);
     }
 
     private void loadActionMenu(final String id, final String fileName) {
@@ -1199,6 +1367,9 @@ public final class PlotMenuManager implements Listener {
         }
         for (final String id : section.getKeys(false)) {
             final String path = "tabs." + id + ".";
+            if (!menuConfig.getBoolean(path + "enabled", true)) {
+                continue;
+            }
             final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.BOOK);
             final Material material = materialDefinition.getMaterial();
             final String headDatabaseId = headDatabaseId(menuConfig, path);
@@ -1277,6 +1448,9 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = "tabs." + id + ".";
+            if (!menuConfig.getBoolean(path + "enabled", true)) {
+                continue;
+            }
             final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.BOOK);
             final Material material = materialDefinition.getMaterial();
             final String headDatabaseId = headDatabaseId(menuConfig, path);
@@ -1327,6 +1501,9 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = sectionPath + "." + id + ".";
+            if (!menuConfig.getBoolean(path + "enabled", true)) {
+                continue;
+            }
             final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.STONE_BUTTON);
             final Material material = materialDefinition.getMaterial();
             final String headDatabaseId = headDatabaseId(menuConfig, path);
@@ -1358,6 +1535,9 @@ public final class PlotMenuManager implements Listener {
 
         for (final String id : section.getKeys(false)) {
             final String path = sectionPath + "." + id + ".";
+            if (!menuConfig.getBoolean(path + "enabled", true)) {
+                continue;
+            }
             final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.GRAY_STAINED_GLASS_PANE);
             final Material material = materialDefinition.getMaterial();
             final String headDatabaseId = headDatabaseId(menuConfig, path);
@@ -1484,6 +1664,38 @@ public final class PlotMenuManager implements Listener {
         return item;
     }
 
+    private ItemStack createReportListItem(final Player player, final PlotReport report) {
+        ItemStack item = headDatabaseHook.getHead(reportListItemHeadDatabaseId);
+        if (item == null) {
+            item = new ItemStack(reportListItemMaterial);
+        }
+        final ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            final Map<String, String> placeholders = reportService.placeholders(report);
+            applySkullOwner(player, meta, reportListItemSkullOwner, placeholders);
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(reportListItemName, placeholders))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(reportListItemLore, placeholders))));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private ItemStack createRoleListItem(final Player player, final PlotRole role) {
+        ItemStack item = headDatabaseHook.getHead(roleListItemHeadDatabaseId);
+        if (item == null) {
+            item = new ItemStack(roleListItemMaterial);
+        }
+        final ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            final Map<String, String> placeholders = roleService.placeholders(role);
+            applySkullOwner(player, meta, roleListItemSkullOwner, placeholders);
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(roleListItemName, placeholders))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(roleListItemLore, placeholders))));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
     private void applySkullOwner(
             final Player player,
             final ItemMeta meta,
@@ -1514,6 +1726,9 @@ public final class PlotMenuManager implements Listener {
     }
 
     private boolean canSee(final Player player, final MenuButton button) {
+        if (isFeatureDisabled(button.getId())) {
+            return false;
+        }
         if (button.getPermission() == null || button.getPermission().trim().isEmpty()) {
             return true;
         }
@@ -1521,7 +1736,18 @@ public final class PlotMenuManager implements Listener {
         return hasConfiguredPermission(player, permission);
     }
 
+    private boolean isFeatureDisabled(final String id) {
+        if (id == null || id.trim().isEmpty()) {
+            return false;
+        }
+        final String key = "features." + id.trim().toLowerCase(Locale.ROOT).replace('_', '-');
+        return plugin.getConfig().contains(key) && !plugin.getConfig().getBoolean(key, true);
+    }
+
     private boolean hasConfiguredPermission(final Player player, final String permission) {
+        if (permission.toLowerCase(Locale.ROOT).startsWith("role:")) {
+            return roleService.hasRolePermission(player, permission.substring("role:".length()));
+        }
         if (permission.toLowerCase(Locale.ROOT).startsWith("plots.")) {
             return flagService.hasPermission(player, permission);
         }
@@ -1739,6 +1965,116 @@ public final class PlotMenuManager implements Listener {
         }
         player.closeInventory();
         backupService.requestRestore(player, backupId);
+    }
+
+    private void handleReportListClick(final Player player, final int page, final String status, final int slot, final ClickType clickType) {
+        final MenuButton button = reportListButtonsBySlot.get(slot);
+        if (button != null) {
+            if (!canSee(player, button)) {
+                return;
+            }
+            final List<String> commands = new ArrayList<>();
+            for (final String command : button.getCommands()) {
+                commands.add(command
+                        .replace("{page}", String.valueOf(page))
+                        .replace("{next_page}", String.valueOf(page + 1))
+                        .replace("{previous_page}", String.valueOf(Math.max(1, page - 1)))
+                        .replace("{status}", status == null ? "open" : status));
+            }
+            executeCommands(player, button.isCloseInventory(), commands);
+            return;
+        }
+
+        final PlotReport report = reportAt(page, status, slot);
+        if (report == null) {
+            return;
+        }
+        if (clickType == ClickType.RIGHT) {
+            reportService.close(player, report.getId());
+            openReportListMenu(player, page, status);
+            return;
+        }
+        if (clickType == ClickType.SHIFT_LEFT) {
+            reportService.reopen(player, report.getId());
+            openReportListMenu(player, page, status);
+            return;
+        }
+        if (clickType == ClickType.SHIFT_RIGHT) {
+            reportService.setPriority(player, report.getId(), "high");
+            openReportListMenu(player, page, status);
+            return;
+        }
+        player.closeInventory();
+        player.performCommand("plot visit " + report.getWorld() + ";" + report.getPlot());
+    }
+
+    private void handleRoleListClick(final Player player, final int page, final int slot, final ClickType clickType) {
+        final MenuButton button = roleListButtonsBySlot.get(slot);
+        if (button != null) {
+            if (!canSee(player, button)) {
+                return;
+            }
+            final List<String> commands = new ArrayList<>();
+            for (final String command : button.getCommands()) {
+                commands.add(command
+                        .replace("{page}", String.valueOf(page))
+                        .replace("{next_page}", String.valueOf(page + 1))
+                        .replace("{previous_page}", String.valueOf(Math.max(1, page - 1))));
+            }
+            executeCommands(player, button.isCloseInventory(), commands);
+            return;
+        }
+
+        final PlotRole role = roleAt(player, page, slot);
+        if (role == null) {
+            return;
+        }
+        if (clickType == ClickType.RIGHT) {
+            runCommand(player, "chat-input:chat-role-permission:role:add-permission:" + role.getName() + ":{input}");
+            return;
+        }
+        if (clickType == ClickType.SHIFT_LEFT) {
+            runCommand(player, "chat-input:chat-role-permission:role:remove-permission:" + role.getName() + ":{input}");
+            return;
+        }
+        if (clickType == ClickType.SHIFT_RIGHT) {
+            roleService.deleteRole(player, role.getName());
+            openRoleListMenu(player, page);
+            return;
+        }
+        runCommand(player, "chat-input:chat-member-player:role:assign:" + role.getName() + ":{input}");
+    }
+
+    private PlotReport reportAt(final int page, final String status, final int slot) {
+        if (reportListSlots == null || reportListSlots.isEmpty()) {
+            return null;
+        }
+        final int slotIndex = reportListSlots.indexOf(slot);
+        if (slotIndex < 0) {
+            return null;
+        }
+        final List<PlotReport> reports = reportService.list(status);
+        final int index = (Math.max(1, page) - 1) * reportListSlots.size() + slotIndex;
+        if (index < 0 || index >= reports.size()) {
+            return null;
+        }
+        return reports.get(index);
+    }
+
+    private PlotRole roleAt(final Player player, final int page, final int slot) {
+        if (roleListSlots == null || roleListSlots.isEmpty()) {
+            return null;
+        }
+        final int slotIndex = roleListSlots.indexOf(slot);
+        if (slotIndex < 0) {
+            return null;
+        }
+        final List<PlotRole> roles = roleService.roles(player);
+        final int index = (Math.max(1, page) - 1) * roleListSlots.size() + slotIndex;
+        if (index < 0 || index >= roles.size()) {
+            return null;
+        }
+        return roles.get(index);
     }
 
     private OwnedPlot plotAt(final Player player, final int page, final String sort, final String filter, final int slot) {
@@ -2172,6 +2508,10 @@ public final class PlotMenuManager implements Listener {
                 openSettingsMenu(player, menuArgument(menuId, defaultSettingsTab));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("team-backups")) {
                 openBackupListMenu(player, menuPage(menuId));
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("reports-list")) {
+                openReportListMenu(player, menuPage(menuId), menuArgument(menuId, 2, "open"));
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("roles-list")) {
+                openRoleListMenu(player, menuPage(menuId));
             } else if ("team".equalsIgnoreCase(menuId)) {
                 openTeamMenu(player);
             } else if ("main".equalsIgnoreCase(menuId)) {
@@ -2207,6 +2547,16 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
+        if (command.toLowerCase(Locale.ROOT).startsWith("report:")) {
+            runReportCommand(player, command.substring("report:".length()).trim());
+            return;
+        }
+
+        if (command.toLowerCase(Locale.ROOT).startsWith("role:")) {
+            runRoleCommand(player, command.substring("role:".length()).trim());
+            return;
+        }
+
         if (command.toLowerCase(Locale.ROOT).startsWith("plot-backup:")) {
             final String backupAction = command.substring("plot-backup:".length()).trim();
             if ("create".equalsIgnoreCase(backupAction)) {
@@ -2226,6 +2576,78 @@ public final class PlotMenuManager implements Listener {
         }
 
         player.performCommand(command);
+    }
+
+    private void runReportCommand(final Player player, final String payload) {
+        final String[] parts = payload.split(":", 3);
+        if (parts.length == 0 || parts[0].trim().isEmpty()) {
+            languageManager.send(player, "chat-input-invalid");
+            return;
+        }
+        final String action = parts[0].toLowerCase(Locale.ROOT);
+        if ("create".equals(action) && parts.length >= 3) {
+            reportService.create(player, parts[1], parts[2], "normal");
+            return;
+        }
+        if ("create-high".equals(action) && parts.length >= 3) {
+            reportService.create(player, parts[1], parts[2], "high");
+            return;
+        }
+        if ("close".equals(action) && parts.length >= 2) {
+            reportService.close(player, parts[1]);
+            return;
+        }
+        if ("reopen".equals(action) && parts.length >= 2) {
+            reportService.reopen(player, parts[1]);
+            return;
+        }
+        if ("priority".equals(action) && parts.length >= 3) {
+            reportService.setPriority(player, parts[1], parts[2]);
+            return;
+        }
+        if ("note".equals(action) && parts.length >= 3) {
+            reportService.setNote(player, parts[1], parts[2]);
+            return;
+        }
+        languageManager.send(player, "chat-input-invalid");
+    }
+
+    private void runRoleCommand(final Player player, final String payload) {
+        final String[] parts = payload.split(":", 3);
+        if (parts.length == 0 || parts[0].trim().isEmpty()) {
+            languageManager.send(player, "chat-input-invalid");
+            return;
+        }
+        final String action = parts[0].toLowerCase(Locale.ROOT);
+        if ("create".equals(action) && parts.length >= 2) {
+            roleService.createRole(player, parts[1]);
+            return;
+        }
+        if ("delete".equals(action) && parts.length >= 2) {
+            roleService.deleteRole(player, parts[1]);
+            return;
+        }
+        if ("assign".equals(action) && parts.length >= 3) {
+            roleService.assign(player, parts[1], parts[2]);
+            return;
+        }
+        if ("unassign".equals(action) && parts.length >= 2) {
+            roleService.unassign(player, parts[1]);
+            return;
+        }
+        if ("add-permission".equals(action) && parts.length >= 3) {
+            roleService.addPermission(player, parts[1], parts[2]);
+            return;
+        }
+        if ("remove-permission".equals(action) && parts.length >= 3) {
+            roleService.removePermission(player, parts[1], parts[2]);
+            return;
+        }
+        if ("rename".equals(action) && parts.length >= 3) {
+            roleService.renameRole(player, parts[1], parts[2]);
+            return;
+        }
+        languageManager.send(player, "chat-input-invalid");
     }
 
     private void startChatInput(final Player player, final String payload) {

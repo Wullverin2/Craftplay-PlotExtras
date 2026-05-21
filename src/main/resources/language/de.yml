@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 7
+file-version: 8
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -60,6 +60,46 @@ backup-restored: "&aPlotbackup wurde wiederhergestellt: &f{id}"
 backup-restore-failed: "&cDas Plotbackup konnte nicht wiederhergestellt werden. Bitte prüfe die Konsole."
 # Nutzungshinweis für Backup-Befehle.
 backup-command-usage: "&eNutze: &f/{prefix} backup create&7, &f/{prefix} backup list &7oder &f/{prefix} backup restore <id>&7."
+
+# Nachricht, wenn Reports deaktiviert sind.
+reports-disabled: "&cDas Report-System ist aktuell deaktiviert."
+# Nachricht nach dem Erstellen eines Reports. Platzhalter: {id}, {category}, {plot}
+report-created: "&aReport erstellt: &f{id} &7({category})"
+# Nachricht an Teammitglieder bei einem neuen Report.
+report-team-notify: "&cNeuer Plotreports: &f{id} &7von &f{reporter} &7auf &f{world};{plot}&7."
+# Nachricht, wenn ein Report nicht gefunden wurde.
+report-not-found: "&cDieser Report wurde nicht gefunden."
+# Nachricht, wenn ein Report geschlossen wurde.
+report-closed: "&aReport &f{id} &awurde geschlossen."
+# Nachricht, wenn ein Report wieder geöffnet wurde.
+report-reopened: "&eReport &f{id} &ewurde wieder geöffnet."
+# Nachricht, wenn die Report-Priorität geändert wurde.
+report-priority-changed: "&aPriorität von Report &f{id} &aist jetzt &f{priority}&a."
+# Nachricht, wenn eine Report-Notiz gespeichert wurde.
+report-note-saved: "&aNotiz für Report &f{id} &agespeichert."
+
+# Nachricht, wenn ein Rollenname ungültig ist.
+role-invalid-name: "&cDieser Rollenname ist ungültig."
+# Nachricht, wenn eine Rolle bereits existiert.
+role-already-exists: "&cDie Rolle &f{role} &cexistiert bereits."
+# Nachricht, wenn eine Rolle nicht gefunden wurde.
+role-not-found: "&cDie Rolle &f{role} &cwurde nicht gefunden."
+# Nachricht, wenn eine geschützte Rolle nicht gelöscht werden darf.
+role-protected: "&cDie Rolle &f{role} &cist geschützt und kann nicht gelöscht werden."
+# Nachricht, wenn eine Rolle erstellt wurde.
+role-created: "&aRolle &f{role} &awurde erstellt."
+# Nachricht, wenn eine Rolle gelöscht wurde.
+role-deleted: "&eRolle &f{role} &ewurde gelöscht."
+# Nachricht, wenn eine Rolle umbenannt wurde.
+role-renamed: "&aRolle &f{old_role} &aheißt jetzt &f{role}&a."
+# Nachricht, wenn ein Spieler einer Rolle zugewiesen wurde.
+role-assigned: "&a{member} wurde der Rolle &f{role} &azugewiesen."
+# Nachricht, wenn ein Spieler aus einer Rolle entfernt wurde.
+role-unassigned: "&e{member} wurde aus der Plotrolle entfernt."
+# Nachricht, wenn ein Recht hinzugefügt wurde.
+role-permission-added: "&aRecht &f{permission} &awurde zu &f{role} &ahinzugefügt."
+# Nachricht, wenn ein Recht entfernt wurde.
+role-permission-removed: "&eRecht &f{permission} &ewurde von &f{role} &eentfernt."
 
 # Nachricht, wenn ein Plot aus dem Meine-Plots-Menü nicht mehr gefunden wurde.
 myplots-plot-not-found: "&cDieser Plot wurde nicht gefunden oder gehört dir nicht mehr."
@@ -129,6 +169,10 @@ chat-input-cancelled: "&cEingabe abgebrochen."
 chat-input-accepted: "&aEingabe übernommen."
 # Chatfrage für Spielernamen. Die Eingabe ist für andere nicht sichtbar.
 chat-member-player: "&eSchreibe den Spielernamen in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+# Chatfrage für Rollennamen.
+chat-role-name: "&eSchreibe den Rollennamen in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+# Chatfrage für Rollenrechte.
+chat-role-permission: "&eSchreibe das Recht für diese Rolle in den Chat. &7Tippe &ccancel &7zum Abbrechen."
 # Chatfrage für Plotnamen.
 chat-plot-name: "&eSchreibe den neuen Plotnamen in den Chat. &7Tippe &ccancel &7zum Abbrechen."
 # Chatfrage für Plotbeschreibung.

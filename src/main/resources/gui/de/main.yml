@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 12
+file-version: 13
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
@@ -213,6 +213,17 @@ buttons:
       - "open-menu:danger"
     close: false
     permission: ""
+  future:
+    slot: 21
+    material: BEACON
+    name: "&dZukunft"
+    lore:
+      - "&7Optionale Featureprofile"
+      - "&7für Team und Premiumsysteme."
+    commands:
+      - "open-menu:future"
+    close: false
+    permission: "craftplayplotextras.future"
   close:
     slot: 22
     material: BARRIER

@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 7
+file-version: 8
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -60,6 +60,46 @@ backup-restored: "&aPlot backup restored: &f{id}"
 backup-restore-failed: "&cThe plot backup could not be restored. Please check the console."
 # Usage message for backup commands.
 backup-command-usage: "&eUse: &f/{prefix} backup create&7, &f/{prefix} backup list &7or &f/{prefix} backup restore <id>&7."
+
+# Message shown when reports are disabled.
+reports-disabled: "&cThe report system is currently disabled."
+# Message shown after creating a report. Placeholders: {id}, {category}, {plot}
+report-created: "&aReport created: &f{id} &7({category})"
+# Message sent to staff when a new report was created.
+report-team-notify: "&cNew plot report: &f{id} &7by &f{reporter} &7on &f{world};{plot}&7."
+# Message shown when a report was not found.
+report-not-found: "&cThat report was not found."
+# Message shown when a report was closed.
+report-closed: "&aReport &f{id} &awas closed."
+# Message shown when a report was reopened.
+report-reopened: "&eReport &f{id} &ewas reopened."
+# Message shown when report priority changed.
+report-priority-changed: "&aPriority of report &f{id} &ais now &f{priority}&a."
+# Message shown when a report note was saved.
+report-note-saved: "&aNote for report &f{id} &asaved."
+
+# Message shown when a role name is invalid.
+role-invalid-name: "&cThat role name is invalid."
+# Message shown when a role already exists.
+role-already-exists: "&cRole &f{role} &calready exists."
+# Message shown when a role was not found.
+role-not-found: "&cRole &f{role} &cwas not found."
+# Message shown when a protected role cannot be deleted.
+role-protected: "&cRole &f{role} &cis protected and cannot be deleted."
+# Message shown when a role was created.
+role-created: "&aRole &f{role} &awas created."
+# Message shown when a role was deleted.
+role-deleted: "&eRole &f{role} &ewas deleted."
+# Message shown when a role was renamed.
+role-renamed: "&aRole &f{old_role} &ais now called &f{role}&a."
+# Message shown when a player was assigned to a role.
+role-assigned: "&a{member} was assigned to role &f{role}&a."
+# Message shown when a player was removed from a role.
+role-unassigned: "&e{member} was removed from the plot role."
+# Message shown when a right was added.
+role-permission-added: "&aRight &f{permission} &awas added to &f{role}&a."
+# Message shown when a right was removed.
+role-permission-removed: "&eRight &f{permission} &ewas removed from &f{role}&e."
 
 # Message shown when a plot from the My Plots menu can no longer be found.
 myplots-plot-not-found: "&cThat plot was not found or is no longer yours."
@@ -129,6 +169,10 @@ chat-input-cancelled: "&cInput cancelled."
 chat-input-accepted: "&aInput accepted."
 # Chat prompt for player names. The input is hidden from other players.
 chat-member-player: "&eType the player name in chat. &7Type &ccancel &7to cancel."
+# Chat prompt for role names.
+chat-role-name: "&eType the role name in chat. &7Type &ccancel &7to cancel."
+# Chat prompt for role rights.
+chat-role-permission: "&eType the right for this role in chat. &7Type &ccancel &7to cancel."
 # Chat prompt for plot names.
 chat-plot-name: "&eType the new plot name in chat. &7Type &ccancel &7to cancel."
 # Chat prompt for plot descriptions.

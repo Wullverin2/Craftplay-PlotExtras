@@ -1,7 +1,9 @@
 # English report menu.
-# This file controls report categories. Custom text is requested privately through chat.
-# Commands are default profiles and can be adjusted to your report/ticket system.
-file-version: 1
+# This file controls report categories, custom report text, and the staff report list.
+# Reports are stored by the plugin and can be managed by staff in the admin area.
+# Every button can be disabled individually with enabled: false.
+
+file-version: 2
 title: "&8Report Plot"
 bedrock: {enabled: true, title: "Report Plot", content: "Choose a category or write a custom report."}
 size: 27
@@ -9,12 +11,47 @@ require-plot: true
 permission: "craftplayplotextras.use"
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
 buttons:
-  grief: {slot: 10, material: TNT, name: "&cGriefing", lore: ["&7Reports griefing on this plot."], commands: ["plot report Griefing"], close: true, permission: "plots.report"}
-  inappropriate: {slot: 11, material: BARRIER, name: "&cInappropriate Content", lore: ["&7Reports inappropriate content."], commands: ["plot report Inappropriate content"], close: true, permission: "plots.report"}
-  lag: {slot: 12, material: REDSTONE, name: "&cLag Machine", lore: ["&7Reports possible lag machines."], commands: ["plot report Lag machine"], close: true, permission: "plots.report"}
-  rule: {slot: 13, material: BOOK, name: "&eRule Violation", lore: ["&7Reports a rule violation."], commands: ["plot report Rule violation"], close: true, permission: "plots.report"}
-  custom: {slot: 14, material: WRITABLE_BOOK, name: "&aCustom Report", lore: ["&7Asks for your description in chat."], commands: ["chat-input:chat-plot-report:plot report {input}"], close: true, permission: "plots.report"}
-  info: {slot: 16, material: COMPASS, name: "&aPlot Info", lore: ["&7Shows current plot information."], commands: ["plot info"], close: true, permission: "plots.info"}
+  grief: {slot: 10, material: TNT, name: "&cGriefing", lore: ["&7Reports griefing on this plot."], commands: ["report:create:Griefing:Griefing on the plot"], close: true, permission: "craftplayplotextras.reports.create"}
+  inappropriate: {slot: 11, material: BARRIER, name: "&cInappropriate Content", lore: ["&7Reports inappropriate content."], commands: ["report:create:Inappropriate Content:Inappropriate content on the plot"], close: true, permission: "craftplayplotextras.reports.create"}
+  lag: {slot: 12, material: REDSTONE, name: "&cLag Machine", lore: ["&7Reports possible lag machines."], commands: ["report:create-high:Lag Machine:Possible lag machine on the plot"], close: true, permission: "craftplayplotextras.reports.create"}
+  rule: {slot: 13, material: BOOK, name: "&eRule Violation", lore: ["&7Reports a rule violation."], commands: ["report:create:Rule Violation:Rule violation on the plot"], close: true, permission: "craftplayplotextras.reports.create"}
+  custom: {slot: 14, material: WRITABLE_BOOK, name: "&aCustom Report", lore: ["&7Asks for your description in chat."], commands: ["chat-input:chat-plot-report:report:create:Custom Report:{input}"], close: true, permission: "craftplayplotextras.reports.create"}
+  info: {slot: 16, material: COMPASS, name: "&aPlot Info", lore: ["&7Shows information about this plot."], commands: ["plot info"], close: true, permission: "plots.info"}
+  team-list: {slot: 17, material: CHEST, name: "&cStaff Report List", lore: ["&7Opens open reports."], commands: ["open-menu:reports-list:1:open"], close: false, permission: "craftplayplotextras.reports.manage"}
   back: {slot: 22, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
 decorations:
   border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+
+admin-list:
+  title: "&8Reports &7- {status} - Page {page}"
+  size: 54
+  filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+  slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+  item:
+    material: WRITABLE_BOOK
+    name: "&c{id} &7- &f{category}"
+    lore:
+      - "&7Status: &f{status}"
+      - "&7Priority: &f{priority}"
+      - "&7Reporter: &f{reporter}"
+      - "&7Owner: &f{owner}"
+      - "&7Plot: &f{world};{plot}"
+      - "&7Merge: &f{merge}"
+      - "&7Created: &f{created_at}"
+      - "&7Text: &f{message}"
+      - "&7Note: &f{note}"
+      - ""
+      - "&aLeft click: Teleport"
+      - "&eRight click: Close"
+      - "&bShift-left: Reopen"
+      - "&cShift-right: High priority"
+  buttons:
+    open: {slot: 45, material: LIME_DYE, name: "&aOpen Reports", lore: ["&7Shows open reports."], commands: ["open-menu:reports-list:1:open"], close: false, permission: "craftplayplotextras.reports.manage"}
+    closed: {slot: 46, material: GRAY_DYE, name: "&7Closed Reports", lore: ["&7Shows closed reports."], commands: ["open-menu:reports-list:1:closed"], close: false, permission: "craftplayplotextras.reports.manage"}
+    all: {slot: 47, material: BOOK, name: "&bAll Reports", lore: ["&7Shows all reports."], commands: ["open-menu:reports-list:1:all"], close: false, permission: "craftplayplotextras.reports.manage"}
+    previous: {slot: 48, material: ARROW, name: "&ePrevious Page", lore: ["&7Opens page {previous_page}."], commands: ["open-menu:reports-list:{previous_page}:{status}"], close: false, permission: "craftplayplotextras.reports.manage"}
+    next: {slot: 50, material: ARROW, name: "&eNext Page", lore: ["&7Opens page {next_page}."], commands: ["open-menu:reports-list:{next_page}:{status}"], close: false, permission: "craftplayplotextras.reports.manage"}
+    back: {slot: 49, material: OAK_DOOR, name: "&eBack", lore: ["&7Back to the team menu."], commands: ["open-menu:team"], close: false, permission: "craftplayplotextras.team"}
+    close: {slot: 53, material: BARRIER, name: "&cClose", lore: ["&7Closes this menu."], commands: [], close: true, permission: ""}
+  decorations:
+    frame: {slot: [0, 8, 9, 17, 18, 26, 27, 35, 36, 44, 51, 52], material: RED_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

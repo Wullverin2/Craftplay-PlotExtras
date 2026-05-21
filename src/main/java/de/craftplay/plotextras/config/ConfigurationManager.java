@@ -51,7 +51,9 @@ public final class ConfigurationManager {
             "gui/de/settings.yml",
             "gui/en/settings.yml",
             "gui/de/team.yml",
-            "gui/en/team.yml"
+            "gui/en/team.yml",
+            "gui/de/future.yml",
+            "gui/en/future.yml"
     );
     private static final DateTimeFormatter BACKUP_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
@@ -173,6 +175,16 @@ public final class ConfigurationManager {
             existing.set("buttons.history.close", false);
             existing.set("buttons.help.commands", Arrays.asList("open-menu:help"));
             existing.set("buttons.help.close", false);
+            changed = true;
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/main.yml") && existingVersion < 13) {
+            existing.set("buttons.future.commands", Arrays.asList("open-menu:future"));
+            existing.set("buttons.future.close", false);
+            changed = true;
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/bedrock.yml") && existingVersion < 4) {
+            existing.set("buttons.future.commands", Arrays.asList("open-menu:future"));
+            existing.set("buttons.future.close", false);
             changed = true;
         }
         if (existingVersion != defaultVersion) {

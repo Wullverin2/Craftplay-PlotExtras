@@ -108,10 +108,10 @@ buttons:
     slot: 22
     material: REDSTONE_TORCH
     name: "&cReports verwalten"
-    lore: ["&7Öffnet Report-Menü oder", "&7PlotSquared-Inbox."]
-    commands: ["open-menu:reports"]
+    lore: ["&7Öffnet die plugininterne", "&7Report-Verwaltung."]
+    commands: ["open-menu:reports-list:1:open"]
     close: false
-    permission: "craftplayplotextras.team.reports"
+    permission: "craftplayplotextras.reports.manage"
     bedrock-label: "Reports verwalten"
   audit-logs:
     slot: 23
@@ -194,6 +194,15 @@ buttons:
     close: false
     permission: "craftplayplotextras.team"
     bedrock-label: "Team-Hilfe"
+  future:
+    slot: 34
+    material: BEACON
+    name: "&dZukunftsfeatures"
+    lore: ["&7Öffnet optionale", "&7Featureprofile."]
+    commands: ["open-menu:future"]
+    close: false
+    permission: "craftplayplotextras.future"
+    bedrock-label: "Zukunftsfeatures"
   back:
     slot: 45
     material: ARROW

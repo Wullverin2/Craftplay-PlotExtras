@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 8
+file-version: 9
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -29,6 +29,7 @@ depend:
 softdepend:
   - HeadDatabase
   - PlaceholderAPI
+  - Vault
   - CMI
   - Jobs
   - Quests
@@ -78,6 +79,49 @@ permissions:
   craftplayplotextras.team.community:
     # Erlaubt teaminterne Community-Prüfbuttons.
     description: Erlaubt Community-Prüffunktionen im Team-Menü.
+    default: op
+  craftplayplotextras.reports.create:
+    # Erlaubt Spielern, plugininterne Plotreports zu erstellen.
+    description: Erlaubt das Erstellen von Plotreports.
+    default: true
+  craftplayplotextras.reports.manage:
+    # Erlaubt Teammitgliedern, Reports zu sehen und zu bearbeiten.
+    description: Erlaubt das Verwalten von Plotreports.
+    default: op
+  craftplayplotextras.roles.manage:
+    # Erlaubt das Verwalten eigener Plotrollen.
+    description: Erlaubt das Verwalten von Plotrollen.
+    default: op
+  craftplayplotextras.future:
+    # Erlaubt das Öffnen des Zukunftsfeature-Menüs.
+    description: Erlaubt Zugriff auf optionale Featureprofile.
+    default: op
+  craftplayplotextras.future.heatmaps:
+    description: Erlaubt Heatmap-Profile.
+    default: op
+  craftplayplotextras.future.visitors:
+    description: Erlaubt Besucherstatistik-Profile.
+    default: op
+  craftplayplotextras.future.ai:
+    description: Erlaubt AI-Tagging-Profile.
+    default: op
+  craftplayplotextras.future.market:
+    description: Erlaubt Plotmarkt-Profile.
+    default: op
+  craftplayplotextras.future.trading:
+    description: Erlaubt Plothandel-Profile.
+    default: op
+  craftplayplotextras.future.auctions:
+    description: Erlaubt Plotauktions-Profile.
+    default: op
+  craftplayplotextras.future.npcs:
+    description: Erlaubt Plot-NPC-Profile.
+    default: op
+  craftplayplotextras.future.discord:
+    description: Erlaubt Discord-Profile.
+    default: op
+  craftplayplotextras.future.web:
+    description: Erlaubt Webübersicht-Profile.
     default: op
   craftplayplotextras.backup.create:
     # Erlaubt das Erstellen von Plotbackups.

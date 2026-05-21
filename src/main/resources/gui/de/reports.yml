@@ -1,7 +1,9 @@
 # Deutsches Report-Menü.
-# Diese Datei steuert Report-Kategorien. Eigene Texte werden privat im Chat abgefragt.
-# Die Befehle sind Standardprofile und können an dein Report-/Ticket-System angepasst werden.
-file-version: 1
+# Diese Datei steuert Report-Kategorien, eigene Reporttexte und die Team-Reportliste.
+# Reports werden pluginintern gespeichert und können vom Team im Adminbereich verwaltet werden.
+# Jeder Button kann per enabled: false einzeln abgeschaltet werden.
+
+file-version: 2
 title: "&8Plot melden"
 bedrock: {enabled: true, title: "Plot melden", content: "Wähle eine Kategorie oder schreibe einen eigenen Report."}
 size: 27
@@ -9,12 +11,47 @@ require-plot: true
 permission: "craftplayplotextras.use"
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
 buttons:
-  grief: {slot: 10, material: TNT, name: "&cGriefing", lore: ["&7Meldet Griefing auf diesem Plot."], commands: ["plot report Griefing"], close: true, permission: "plots.report"}
-  inappropriate: {slot: 11, material: BARRIER, name: "&cUnpassender Inhalt", lore: ["&7Meldet unpassende Inhalte."], commands: ["plot report Unpassender Inhalt"], close: true, permission: "plots.report"}
-  lag: {slot: 12, material: REDSTONE, name: "&cLagmaschine", lore: ["&7Meldet mögliche Lagmaschinen."], commands: ["plot report Lagmaschine"], close: true, permission: "plots.report"}
-  rule: {slot: 13, material: BOOK, name: "&eRegelverstoß", lore: ["&7Meldet einen Regelverstoß."], commands: ["plot report Regelverstoß"], close: true, permission: "plots.report"}
-  custom: {slot: 14, material: WRITABLE_BOOK, name: "&aEigener Report", lore: ["&7Fragt deine Beschreibung im Chat ab."], commands: ["chat-input:chat-plot-report:plot report {input}"], close: true, permission: "plots.report"}
+  grief: {slot: 10, material: TNT, name: "&cGriefing", lore: ["&7Meldet Griefing auf diesem Plot."], commands: ["report:create:Griefing:Griefing auf dem Plot"], close: true, permission: "craftplayplotextras.reports.create"}
+  inappropriate: {slot: 11, material: BARRIER, name: "&cUnpassender Inhalt", lore: ["&7Meldet unpassende Inhalte."], commands: ["report:create:Unpassender Inhalt:Unpassender Inhalt auf dem Plot"], close: true, permission: "craftplayplotextras.reports.create"}
+  lag: {slot: 12, material: REDSTONE, name: "&cLagmaschine", lore: ["&7Meldet mögliche Lagmaschinen."], commands: ["report:create-high:Lagmaschine:Mögliche Lagmaschine auf dem Plot"], close: true, permission: "craftplayplotextras.reports.create"}
+  rule: {slot: 13, material: BOOK, name: "&eRegelverstoß", lore: ["&7Meldet einen Regelverstoß."], commands: ["report:create:Regelverstoß:Regelverstoß auf dem Plot"], close: true, permission: "craftplayplotextras.reports.create"}
+  custom: {slot: 14, material: WRITABLE_BOOK, name: "&aEigener Report", lore: ["&7Fragt deine Beschreibung im Chat ab."], commands: ["chat-input:chat-plot-report:report:create:Eigener Report:{input}"], close: true, permission: "craftplayplotextras.reports.create"}
   info: {slot: 16, material: COMPASS, name: "&aPlot-Info", lore: ["&7Zeigt Infos zum aktuellen Plot."], commands: ["plot info"], close: true, permission: "plots.info"}
+  team-list: {slot: 17, material: CHEST, name: "&cTeam-Reportliste", lore: ["&7Öffnet offene Reports."], commands: ["open-menu:reports-list:1:open"], close: false, permission: "craftplayplotextras.reports.manage"}
   back: {slot: 22, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
 decorations:
   border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+
+admin-list:
+  title: "&8Reports &7- {status} - Seite {page}"
+  size: 54
+  filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+  slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+  item:
+    material: WRITABLE_BOOK
+    name: "&c{id} &7- &f{category}"
+    lore:
+      - "&7Status: &f{status}"
+      - "&7Priorität: &f{priority}"
+      - "&7Spieler: &f{reporter}"
+      - "&7Besitzer: &f{owner}"
+      - "&7Plot: &f{world};{plot}"
+      - "&7Merge: &f{merge}"
+      - "&7Erstellt: &f{created_at}"
+      - "&7Text: &f{message}"
+      - "&7Notiz: &f{note}"
+      - ""
+      - "&aLinksklick: Teleportieren"
+      - "&eRechtsklick: Schließen"
+      - "&bShift-Linksklick: Wieder öffnen"
+      - "&cShift-Rechtsklick: Priorität hoch"
+  buttons:
+    open: {slot: 45, material: LIME_DYE, name: "&aOffene Reports", lore: ["&7Zeigt offene Reports."], commands: ["open-menu:reports-list:1:open"], close: false, permission: "craftplayplotextras.reports.manage"}
+    closed: {slot: 46, material: GRAY_DYE, name: "&7Geschlossene Reports", lore: ["&7Zeigt geschlossene Reports."], commands: ["open-menu:reports-list:1:closed"], close: false, permission: "craftplayplotextras.reports.manage"}
+    all: {slot: 47, material: BOOK, name: "&bAlle Reports", lore: ["&7Zeigt alle Reports."], commands: ["open-menu:reports-list:1:all"], close: false, permission: "craftplayplotextras.reports.manage"}
+    previous: {slot: 48, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:reports-list:{previous_page}:{status}"], close: false, permission: "craftplayplotextras.reports.manage"}
+    next: {slot: 50, material: ARROW, name: "&eNächste Seite", lore: ["&7Öffnet Seite {next_page}."], commands: ["open-menu:reports-list:{next_page}:{status}"], close: false, permission: "craftplayplotextras.reports.manage"}
+    back: {slot: 49, material: OAK_DOOR, name: "&eZurück", lore: ["&7Zurück zum Team-Menü."], commands: ["open-menu:team"], close: false, permission: "craftplayplotextras.team"}
+    close: {slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+  decorations:
+    frame: {slot: [0, 8, 9, 17, 18, 26, 27, 35, 36, 44, 51, 52], material: RED_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

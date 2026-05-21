@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 9
+file-version: 10
 
 # Befehle dieses Plugins.
 command:
@@ -70,6 +70,9 @@ gui:
   # Datei des Team-Untermenüs. Geladen wird gui/<sprache>/<team-menu>.
   # Dieses Menü enthält administrative Plotbackup-Funktionen.
   team-menu: team.yml
+  # Datei des Zukunfts-/Premiumfeature-Menüs. Geladen wird gui/<sprache>/<future-menu>.
+  # Dieses Menü enthält einzeln abschaltbare Featureprofile für spätere Systeme.
+  future-menu: future.yml
   # Button-IDs aus dem Hauptmenü, die nicht angezeigt werden sollen.
   # Damit können Standardbuttons entfernt werden, ohne bestehende GUI-Dateien zu überschreiben.
   hidden-main-buttons:
@@ -89,6 +92,57 @@ bedrock:
 my-plots:
   # Datendatei, in der Favoriten, Tags, Kategorien, Sichtbarkeit und Aktivität gespeichert werden.
   data-file: plotdata.yml
+
+# Report-System.
+reports:
+  # Aktiviert oder deaktiviert das plugininterne Report-System.
+  enabled: true
+  # Datendatei, in der alle Reports gespeichert werden.
+  data-file: reports.yml
+
+# Rollen- und Rechte-System.
+roles:
+  # Aktiviert oder deaktiviert das plugininterne Rollen-System.
+  enabled: true
+  # Datendatei, in der Rollen, Rechte und Mitgliederzuweisungen pro Plot gespeichert werden.
+  data-file: plotroles.yml
+  # Standardrechte der geschützten Owner-Rolle.
+  default-owner-permissions:
+    - "*"
+  # Standardrechte der geschützten Trusted-Rolle.
+  default-trusted-permissions:
+    - "build"
+    - "interact"
+    - "container"
+
+# Technische Einstellungen.
+technical:
+  # Wenn true, werden plugininterne YAML-Datendateien asynchron gespeichert.
+  async-yaml-saves: true
+  # Cache-Zeit in Sekunden für zukünftige Repository-/Datenbanklayer.
+  cache-ttl-seconds: 60
+  # Anzahl Einträge, die Listen standardmäßig puffern dürfen.
+  list-buffer-size: 54
+
+# Zukunftsfeatures.
+features:
+  # Globale Schalter für spätere Premium-/Zukunftssysteme. Die jeweiligen GUI-Buttons können zusätzlich
+  # direkt in gui/<sprache>/future.yml per enabled: false abgeschaltet werden.
+  heatmaps: true
+  visitor-statistics: true
+  ranking: true
+  ai-tagging: false
+  gallery: true
+  templates: true
+  auto-backups: true
+  undo: true
+  redstone-analysis: true
+  market: true
+  trading: true
+  auctions: true
+  npcs: false
+  discord: false
+  web-overview: false
 
 # Plotbackup-System.
 plot-backups:

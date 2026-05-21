@@ -10,6 +10,8 @@ import de.craftplay.plotextras.menu.PlotMenuManager;
 import de.craftplay.plotextras.myplots.PlotDataStore;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
+import de.craftplay.plotextras.reports.ReportService;
+import de.craftplay.plotextras.roles.PlotRoleService;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,6 +24,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     private PlotDataStore plotDataStore;
     private PlotMenuManager plotMenuManager;
     private PlotBackupService plotBackupService;
+    private ReportService reportService;
+    private PlotRoleService plotRoleService;
     private PlotExtrasCommand commandExecutor;
 
     @Override
@@ -35,9 +39,14 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         plotSquaredPlotService = new PlotSquaredPlotService(this);
         plotDataStore = new PlotDataStore(this);
         plotDataStore.reload();
+        reportService = new ReportService(this, plotSquaredFlagService);
+        reportService.reload();
+        plotRoleService = new PlotRoleService(this, plotSquaredFlagService);
+        plotRoleService.reload();
         plotBackupService = new PlotBackupService(this);
         plotBackupService.reload();
-        plotMenuManager = new PlotMenuManager(this, languageManager, plotSquaredFlagService, plotSquaredPlotService, plotDataStore, plotBackupService);
+        plotMenuManager = new PlotMenuManager(this, languageManager, plotSquaredFlagService, plotSquaredPlotService,
+                plotDataStore, plotBackupService, reportService, plotRoleService);
         plotMenuManager.reload();
 
         getServer().getPluginManager().registerEvents(plotMenuManager, this);
@@ -58,6 +67,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         reloadConfig();
         languageManager.reload();
         plotDataStore.reload();
+        reportService.reload();
+        plotRoleService.reload();
         plotBackupService.reload();
         plotMenuManager.reload();
     }
@@ -84,6 +95,14 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
 
     public PlotBackupService getPlotBackupService() {
         return plotBackupService;
+    }
+
+    public ReportService getReportService() {
+        return reportService;
+    }
+
+    public PlotRoleService getPlotRoleService() {
+        return plotRoleService;
     }
 
     public PlotExtrasCommand getCommandExecutor() {

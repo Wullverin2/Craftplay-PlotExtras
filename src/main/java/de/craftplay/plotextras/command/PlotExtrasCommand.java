@@ -58,6 +58,21 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         if (args.length >= 2 && args[0].equalsIgnoreCase("backup")) {
             return backup(player, args);
         }
+        if (args.length >= 1 && args[0].equalsIgnoreCase("reports")) {
+            if (!player.hasPermission("craftplayplotextras.reports.manage")) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            plugin.getPlotMenuManager().openReportListMenu(player, 1, args.length >= 2 ? args[1] : "open");
+            return true;
+        }
+        if (args.length >= 1 && args[0].equalsIgnoreCase("roles")) {
+            if (!plugin.getPlotRoleService().canManage(player)) {
+                return true;
+            }
+            plugin.getPlotMenuManager().openRoleListMenu(player, 1);
+            return true;
+        }
 
         if (!player.hasPermission("craftplayplotextras.use")) {
             plugin.getLanguageManager().send(player, "no-permission");
@@ -149,6 +164,12 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
                 || sender.hasPermission("craftplayplotextras.backup.restore"))
                 && "backup".startsWith(input)) {
             completions.add("backup");
+        }
+        if (sender.hasPermission("craftplayplotextras.reports.manage") && "reports".startsWith(input)) {
+            completions.add("reports");
+        }
+        if (sender.hasPermission("craftplayplotextras.roles.manage") && "roles".startsWith(input)) {
+            completions.add("roles");
         }
         if (sender.hasPermission("craftplayplotextras.use") && "gui".startsWith(input)) {
             completions.add("gui");

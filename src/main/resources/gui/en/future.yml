@@ -1,0 +1,61 @@
+# English future/premium features menu.
+# This file bundles optional feature profiles. Every button can be disabled individually with
+# enabled: false or changed with custom commands, permissions, and icons.
+
+file-version: 1
+title: "&8Future Features: {tab}"
+size: 54
+default-tab: analytics
+require-plot: false
+permission: "craftplayplotextras.future"
+bedrock: {enabled: true, title: "Future Features", content: "Optional systems and profiles."}
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  back: {slot: 49, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+  close: {slot: 53, material: BARRIER, name: "&cClose", lore: ["&7Closes this menu."], commands: [], close: true, permission: ""}
+decorations:
+  frame: {slot: [0, 8, 45, 46, 47, 48, 50, 51, 52], material: PURPLE_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+tabs:
+  analytics:
+    slot: 10
+    material: COMPASS
+    name: "&bAnalytics"
+    lore: ["&7Heatmaps, visitors,", "&7ranking, and redstone."]
+    commands: ["open-menu:future:analytics"]
+    buttons:
+      heatmaps: {slot: 19, material: MAGMA_BLOCK, name: "&6Plot Heatmaps", lore: ["&7Profile for heatmap analysis."], commands: ["plot list top"], close: true, permission: "craftplayplotextras.future.heatmaps"}
+      visitor-statistics: {slot: 20, material: CLOCK, name: "&aVisitor Statistics", lore: ["&7Profile for visit statistics."], commands: ["open-menu:history:stats"], close: false, permission: "craftplayplotextras.future.visitors"}
+      ranking: {slot: 21, material: GOLD_BLOCK, name: "&6Plot Ranking", lore: ["&7Profile for rankings."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      ai-tagging: {slot: 22, material: COMMAND_BLOCK, name: "&dAI Tagging", lore: ["&7Profile button by default."], commands: ["open-menu:myplots:1:category:all"], close: false, permission: "craftplayplotextras.future.ai"}
+      redstone-analysis: {slot: 23, material: REDSTONE, name: "&cRedstone Analysis", lore: ["&7Profile for redstone checks."], commands: ["plot debugpaste"], close: true, permission: "plots.admin"}
+  content:
+    slot: 12
+    material: PAINTING
+    name: "&aContent"
+    lore: ["&7Gallery, templates,", "&7auto backups, and undo."]
+    commands: ["open-menu:future:content"]
+    buttons:
+      gallery: {slot: 19, material: PAINTING, name: "&ePlot Gallery", lore: ["&7Profile for galleries."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      templates: {slot: 20, material: FILLED_MAP, name: "&aPlot Templates", lore: ["&7Opens templates in create menu."], commands: ["open-menu:create:templates"], close: false, permission: "plots.schematic.paste"}
+      auto-backups: {slot: 21, material: WRITABLE_BOOK, name: "&aAuto Backups", lore: ["&7Backups already run on delete,", "&7reset, and unmerge."], commands: ["open-menu:danger:restore"], close: false, permission: "craftplayplotextras.backup.list"}
+      undo: {slot: 22, material: ENDER_CHEST, name: "&eUndo System", lore: ["&7Restore through plot backups."], commands: ["open-menu:team-backups:1"], close: false, permission: "craftplayplotextras.backup.restore"}
+  economy:
+    slot: 14
+    material: EMERALD
+    name: "&aEconomy"
+    lore: ["&7Market, trading,", "&7auctions, and NPCs."]
+    commands: ["open-menu:future:economy"]
+    buttons:
+      market: {slot: 19, material: EMERALD, name: "&aPlot Market", lore: ["&7Profile for market systems."], commands: ["plot list all"], close: true, permission: "craftplayplotextras.future.market"}
+      trading: {slot: 20, material: CHEST, name: "&aPlot Trading", lore: ["&7Profile for trading systems."], commands: ["plot list all"], close: true, permission: "craftplayplotextras.future.trading"}
+      auctions: {slot: 21, material: GOLD_INGOT, name: "&6Plot Auctions", lore: ["&7Profile for auctions."], commands: ["plot list all"], close: true, permission: "craftplayplotextras.future.auctions"}
+      npcs: {slot: 22, material: PLAYER_HEAD, name: "&ePlot NPCs", lore: ["&7Profile for NPC systems."], commands: ["plot info"], close: true, permission: "craftplayplotextras.future.npcs"}
+  integrations:
+    slot: 16
+    material: BEACON
+    name: "&dIntegrations"
+    lore: ["&7Discord and web overview."]
+    commands: ["open-menu:future:integrations"]
+    buttons:
+      discord: {slot: 20, material: BELL, name: "&9Discord Integration", lore: ["&7Profile for Discord messages."], commands: ["plot info"], close: true, permission: "craftplayplotextras.future.discord"}
+      web-overview: {slot: 22, material: MAP, name: "&bWeb Overview", lore: ["&7Profile for web maps or overviews."], commands: ["plot list top"], close: true, permission: "craftplayplotextras.future.web"}
