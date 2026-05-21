@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 4
+file-version: 5
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -60,3 +60,57 @@ backup-restored: "&aPlot backup restored: &f{id}"
 backup-restore-failed: "&cThe plot backup could not be restored. Please check the console."
 # Usage message for backup commands.
 backup-command-usage: "&eUse: &f/{prefix} backup create&7, &f/{prefix} backup list &7or &f/{prefix} backup restore <id>&7."
+
+# Message shown when a plot from the My Plots menu can no longer be found.
+myplots-plot-not-found: "&cThat plot was not found or is no longer yours."
+# Message shown when teleporting through the My Plots menu. Placeholders: {name}, {plot}, {world}
+myplots-teleport: "&aTeleporting you to &f{name} &7({plot})&a."
+# Message shown when a plot was marked as favorite. Placeholders: {name}, {status}
+myplots-favorite-added: "&a{name} was added to your favorites."
+# Message shown when a plot was removed from favorites. Placeholders: {name}, {status}
+myplots-favorite-removed: "&e{name} was removed from your favorites."
+# Message shown when stored visibility was changed. Placeholders: {name}, {status}
+myplots-visibility-changed: "&aVisibility of &f{name} &ais now &f{status}&a."
+# Message shown when the category was changed. Placeholders: {name}, {category}
+myplots-category-changed: "&aCategory of &f{name} &ais now &f{category}&a."
+# Message shown when a tag was enabled. Placeholders: {name}, {tag}, {status}
+myplots-tag-added: "&aTag &f{tag} &awas enabled for &f{name}&a."
+# Message shown when a tag was disabled. Placeholders: {name}, {tag}, {status}
+myplots-tag-removed: "&eTag &f{tag} &ewas removed from &f{name}&e."
+# Text for active tags.
+myplots-tag-active: "Active"
+# Text for inactive tags.
+myplots-tag-inactive: "Inactive"
+# Text when a plot has no tags.
+myplots-no-tags: "None"
+# Text when a plot is detected as public.
+myplots-public: "Public"
+# Text when a plot is detected as private.
+myplots-private: "Private"
+# Automatic visibility mode. In this mode the PlotSquared state is shown.
+myplots-visibility-auto: "Automatic"
+# Public visibility mode.
+myplots-visibility-public: "Public"
+# Private visibility mode.
+myplots-visibility-private: "Private"
+# Symbol for favorites.
+myplots-favorite-yes: "★"
+# Symbol for non-favorites.
+myplots-favorite-no: "☆"
+# Text for active favorite state.
+myplots-favorite-active: "Favorite"
+# Text for inactive favorite state.
+myplots-favorite-inactive: "No Favorite"
+# Text when a plot has never been visited through the menu.
+myplots-never: "Never"
+# Display names of sorting modes.
+myplots-sort-name: "Name"
+myplots-sort-size: "Size"
+myplots-sort-activity: "Activity"
+myplots-sort-rating: "Rating"
+myplots-sort-category: "Category"
+# Display names of filters.
+myplots-filter-all: "All"
+myplots-filter-favorites: "Favorites"
+myplots-filter-public: "Public"
+myplots-filter-private: "Private"

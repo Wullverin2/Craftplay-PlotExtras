@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 10
+file-version: 11
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
@@ -61,12 +61,13 @@ buttons:
     # Beschreibung unter dem Buttonnamen.
     lore:
       - "&7Zeigt dir deine eigenen Plots."
-      - "&8Befehl: /plot list mine"
+      - "&7Mit Sortierung, Favoriten,"
+      - "&7Tags, Kategorien und Details."
     # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
     commands:
-      - "plot list mine"
+      - "open-menu:myplots"
     # Wenn true, wird das Menü nach dem Klick geschlossen.
-    close: true
+    close: false
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""
   search:
@@ -96,11 +97,11 @@ buttons:
     material: NETHER_STAR
     name: "&aFavoriten"
     lore:
-      - "&7Öffnet deine favorisierten Plots."
-      - "&7Der Befehl kann angepasst werden."
+      - "&7Öffnet deine favorisierten"
+      - "&7Plots im Meine-Plots-Menü."
     commands:
-      - "plot list favorites"
-    close: true
+      - "open-menu:myplots:1:name:favorites"
+    close: false
     permission: ""
   community:
     slot: 5

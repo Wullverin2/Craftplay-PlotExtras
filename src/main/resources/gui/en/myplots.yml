@@ -1,0 +1,355 @@
+# English My Plots menu.
+# This file controls the Java inventory for owned plots.
+# Configure title, size, filler items, plot slots, decorations, buttons, sorting, and the detail view here.
+# Buttons and decorations can use slot: 13, slot: [13, 14, 15], or slots: [13, 14, 15].
+# Use material: PLAYERHEAD %player_name% to show the player's head.
+# A HeadDatabase head can be used with head-database-id when HeadDatabase is installed.
+# Custom commands are configured under commands. Prefixes: console:, player:, op:, open-menu:.
+# PlaceholderAPI placeholders work in titles, names, lore, and commands.
+
+# File version of this GUI file.
+# The plugin uses this value to add new options automatically.
+file-version: 1
+
+# Inventory title. Placeholders: {page}, {max_page}, {sort_name}, {filter_name}, {amount}
+title: "&8My Plots &7- Page {page}/{max_page}"
+# Inventory size. Allowed values are 9, 18, 27, 36, 45, or 54 slots.
+size: 54
+# Slots used for plot entries.
+plot-slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+
+# Filler item for empty slots.
+filler:
+  # If true, empty slots are filled with this item.
+  enabled: true
+  # Minecraft/Spigot material name.
+  material: BLACK_STAINED_GLASS_PANE
+  # Display name of the filler item.
+  name: "&r"
+
+# Categories players can cycle through for their plots in the detail view.
+categories:
+  # Category used when a plot has no stored category yet.
+  default: "General"
+  # Available categories. The order is the click order.
+  available: ["General", "Build Project", "Shop", "Farm", "Redstone", "Pixel Art", "Roleplay", "Event"]
+
+# Tags players can toggle in the detail view.
+tags:
+  # Available tags. The order matches the detail tag slots.
+  available: ["Shop", "Farm", "Roleplay", "Redstone", "Pixel Art", "Event"]
+
+# Plot item shown in the list view.
+plot-item:
+  # Material of the plot entry.
+  material: FILLED_MAP
+  # Name of the plot entry. Placeholders are shown in the lore below.
+  name: "&a{favorite} {name}"
+  # Lore of the plot entry.
+  lore:
+    - "&7Plot: &f{plot}"
+    - "&7World: &f{world}"
+    - "&7Merge: &f{merge}"
+    - "&7Size: &f{size}"
+    - "&7Visibility: &f{visibility}"
+    - "&7Category: &f{category}"
+    - "&7Tags: &f{tags}"
+    - "&7Visits: &f{visits}"
+    - "&7Last visit: &f{last_visit}"
+    - ""
+    - "&aLeft click: Teleport"
+    - "&eRight click: Open details"
+    - "&6Shift left click: Toggle favorite"
+    - "&bShift right click: Change visibility"
+
+# Buttons in the list view.
+buttons:
+  previous-page:
+    # Opens the previous page.
+    slot: 45
+    material: ARROW
+    name: "&ePrevious Page"
+    lore:
+      - "&7Opens page &f{previous_page}&7."
+    commands:
+      - "open-menu:myplots:{previous_page}:{sort}:{filter}"
+    close: false
+    permission: ""
+  sort-name:
+    # Sorts by plot name or alias.
+    slot: 46
+    material: NAME_TAG
+    name: "&aSort: Name"
+    lore:
+      - "&7Current: &f{sort_name}"
+    commands:
+      - "open-menu:myplots:1:name:{filter}"
+    close: false
+    permission: ""
+  sort-size:
+    # Sorts by merge size.
+    slot: 47
+    material: CHEST
+    name: "&aSort: Size"
+    lore:
+      - "&7Current: &f{sort_name}"
+    commands:
+      - "open-menu:myplots:1:size:{filter}"
+    close: false
+    permission: ""
+  sort-activity:
+    # Sorts by last usage through this menu.
+    slot: 48
+    material: CLOCK
+    name: "&aSort: Activity"
+    lore:
+      - "&7Current: &f{sort_name}"
+    commands:
+      - "open-menu:myplots:1:activity:{filter}"
+    close: false
+    permission: ""
+  filter-all:
+    # Shows all owned plots.
+    slot: 49
+    material: COMPASS
+    name: "&bAll Plots"
+    lore:
+      - "&7Filter: &f{filter_name}"
+      - "&7Amount: &f{amount}"
+    commands:
+      - "open-menu:myplots:1:{sort}:all"
+    close: false
+    permission: ""
+  filter-favorites:
+    # Shows only favorite plots.
+    slot: 50
+    material: NETHER_STAR
+    name: "&eFavorites"
+    lore:
+      - "&7Shows only plots"
+      - "&7you have favorited."
+    commands:
+      - "open-menu:myplots:1:{sort}:favorites"
+    close: false
+    permission: ""
+  filter-public:
+    # Shows only public plots.
+    slot: 51
+    material: LIME_DYE
+    name: "&aPublic Plots"
+    lore:
+      - "&7Shows plots detected"
+      - "&7as publicly visitable."
+    commands:
+      - "open-menu:myplots:1:{sort}:public"
+    close: false
+    permission: ""
+  filter-private:
+    # Shows only private plots.
+    slot: 52
+    material: GRAY_DYE
+    name: "&7Private Plots"
+    lore:
+      - "&7Shows plots not detected"
+      - "&7as public."
+    commands:
+      - "open-menu:myplots:1:{sort}:private"
+    close: false
+    permission: ""
+  next-page:
+    # Opens the next page.
+    slot: 53
+    material: ARROW
+    name: "&eNext Page"
+    lore:
+      - "&7Opens page &f{next_page}&7."
+    commands:
+      - "open-menu:myplots:{next_page}:{sort}:{filter}"
+    close: false
+    permission: ""
+  sort-category:
+    # Sorts by stored plot category.
+    slot: 3
+    material: BOOK
+    name: "&dSort: Category"
+    lore:
+      - "&7Current: &f{sort_name}"
+    commands:
+      - "open-menu:myplots:1:category:{filter}"
+    close: false
+    permission: ""
+  sort-rating:
+    # Sorts by stored rating. This value can be used by later community features.
+    slot: 5
+    material: GOLD_INGOT
+    name: "&6Sort: Rating"
+    lore:
+      - "&7Current: &f{sort_name}"
+    commands:
+      - "open-menu:myplots:1:rating:{filter}"
+    close: false
+    permission: ""
+  back:
+    # Returns to the main menu.
+    slot: 7
+    material: OAK_DOOR
+    name: "&eBack"
+    lore:
+      - "&7Back to the main menu."
+    commands:
+      - "open-menu:main"
+    close: false
+    permission: ""
+  close:
+    # Closes the menu.
+    slot: 8
+    material: BARRIER
+    name: "&cClose"
+    lore:
+      - "&7Closes this menu."
+    commands: []
+    close: true
+    permission: ""
+
+# Decoration items are visual only.
+decorations:
+  top-border:
+    # Top frame.
+    slot: [0, 1, 2, 4, 6]
+    material: GRAY_STAINED_GLASS_PANE
+    head-database-id: ""
+    name: "&r"
+    lore: []
+    permission: ""
+  side-border:
+    # Side frame.
+    slot: [9, 17, 18, 26, 27, 35, 36, 44]
+    material: GRAY_STAINED_GLASS_PANE
+    head-database-id: ""
+    name: "&r"
+    lore: []
+    permission: ""
+
+# Detail view of a single plot.
+detail:
+  # Detail inventory title. Plot placeholders are available.
+  title: "&8Plot: {name}"
+  # Detail inventory size.
+  size: 54
+  # Filler item for the detail view.
+  filler:
+    enabled: true
+    material: BLACK_STAINED_GLASS_PANE
+    name: "&r"
+  # Preview item with the most important plot data.
+  preview:
+    slot: 13
+    material: FILLED_MAP
+    name: "&aPreview: {name}"
+    lore:
+      - "&7Plot: &f{plot}"
+      - "&7World: &f{world}"
+      - "&7Owner: &f{owner}"
+      - "&7Merge: &f{merge}"
+      - "&7Included plots: &f{plots}"
+      - "&7Visibility: &f{visibility}"
+      - "&7Mode: &f{visibility_mode}"
+      - "&7Category: &f{category}"
+      - "&7Tags: &f{tags}"
+      - "&7Created: &f{created}"
+  # Slots for tag buttons.
+  tag-slots: [28, 29, 30, 31, 32, 33]
+  # Active tag display.
+  tag-active:
+    material: LIME_DYE
+    name: "&aTag: {tag}"
+    lore:
+      - "&7Status: &a{tag_status}"
+      - "&eClick to remove."
+  # Inactive tag display.
+  tag-inactive:
+    material: GRAY_DYE
+    name: "&7Tag: {tag}"
+    lore:
+      - "&7Status: &c{tag_status}"
+      - "&eClick to add."
+  # Buttons in the detail view.
+  buttons:
+    teleport:
+      # Teleports directly to the plot.
+      slot: 20
+      material: ENDER_PEARL
+      name: "&aTeleport"
+      lore:
+        - "&7Teleports you to this plot."
+      commands: []
+      close: true
+      permission: ""
+    favorite:
+      # Toggles favorite on or off.
+      slot: 21
+      material: NETHER_STAR
+      name: "&eToggle Favorite"
+      lore:
+        - "&7Current: &f{favorite_status}"
+      commands: []
+      close: false
+      permission: ""
+    visibility:
+      # Cycles between automatic, public, and private.
+      slot: 22
+      material: OAK_DOOR
+      name: "&bChange Visibility"
+      lore:
+        - "&7Detected: &f{visibility}"
+        - "&7Stored mode: &f{visibility_mode}"
+      commands: []
+      close: false
+      permission: ""
+    category:
+      # Cycles the plot category in the order above.
+      slot: 23
+      material: BOOK
+      name: "&dChange Category"
+      lore:
+        - "&7Current: &f{category}"
+      commands: []
+      close: false
+      permission: ""
+    back:
+      # Returns to the list view.
+      slot: 49
+      material: ARROW
+      name: "&eBack"
+      lore:
+        - "&7Back to the plot list."
+      commands:
+        - "open-menu:myplots:{page}:{sort}:{filter}"
+      close: false
+      permission: ""
+    close:
+      # Closes the detail view.
+      slot: 53
+      material: BARRIER
+      name: "&cClose"
+      lore:
+        - "&7Closes this menu."
+      commands: []
+      close: true
+      permission: ""
+  # Decoration items in the detail view.
+  decorations:
+    top-border:
+      slot: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+      material: GRAY_STAINED_GLASS_PANE
+      head-database-id: ""
+      name: "&r"
+      lore: []
+      permission: ""
+    bottom-border:
+      slot: [45, 46, 47, 48, 50, 51, 52]
+      material: GRAY_STAINED_GLASS_PANE
+      head-database-id: ""
+      name: "&r"
+      lore: []
+      permission: ""

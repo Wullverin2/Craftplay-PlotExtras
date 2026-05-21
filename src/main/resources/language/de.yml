@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 4
+file-version: 5
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -60,3 +60,57 @@ backup-restored: "&aPlotbackup wurde wiederhergestellt: &f{id}"
 backup-restore-failed: "&cDas Plotbackup konnte nicht wiederhergestellt werden. Bitte prüfe die Konsole."
 # Nutzungshinweis für Backup-Befehle.
 backup-command-usage: "&eNutze: &f/{prefix} backup create&7, &f/{prefix} backup list &7oder &f/{prefix} backup restore <id>&7."
+
+# Nachricht, wenn ein Plot aus dem Meine-Plots-Menü nicht mehr gefunden wurde.
+myplots-plot-not-found: "&cDieser Plot wurde nicht gefunden oder gehört dir nicht mehr."
+# Nachricht beim Teleportieren über das Meine-Plots-Menü. Platzhalter: {name}, {plot}, {world}
+myplots-teleport: "&aDu wirst zu &f{name} &7({plot}) &ateleportiert."
+# Nachricht, wenn ein Plot als Favorit markiert wurde. Platzhalter: {name}, {status}
+myplots-favorite-added: "&a{name} wurde zu deinen Favoriten hinzugefügt."
+# Nachricht, wenn ein Plot aus den Favoriten entfernt wurde. Platzhalter: {name}, {status}
+myplots-favorite-removed: "&e{name} wurde aus deinen Favoriten entfernt."
+# Nachricht, wenn die gespeicherte Sichtbarkeit geändert wurde. Platzhalter: {name}, {status}
+myplots-visibility-changed: "&aSichtbarkeit von &f{name} &aist jetzt &f{status}&a."
+# Nachricht, wenn die Kategorie geändert wurde. Platzhalter: {name}, {category}
+myplots-category-changed: "&aKategorie von &f{name} &aist jetzt &f{category}&a."
+# Nachricht, wenn ein Tag aktiviert wurde. Platzhalter: {name}, {tag}, {status}
+myplots-tag-added: "&aTag &f{tag} &awurde für &f{name} &aaktiviert."
+# Nachricht, wenn ein Tag deaktiviert wurde. Platzhalter: {name}, {tag}, {status}
+myplots-tag-removed: "&eTag &f{tag} &ewurde für &f{name} &eentfernt."
+# Text für aktive Tags.
+myplots-tag-active: "Aktiv"
+# Text für inaktive Tags.
+myplots-tag-inactive: "Inaktiv"
+# Text, wenn ein Plot keine Tags hat.
+myplots-no-tags: "Keine"
+# Text, wenn ein Plot öffentlich erkannt wird.
+myplots-public: "Öffentlich"
+# Text, wenn ein Plot privat erkannt wird.
+myplots-private: "Privat"
+# Sichtbarkeitsmodus automatisch. In diesem Modus wird der PlotSquared-Status angezeigt.
+myplots-visibility-auto: "Automatisch"
+# Sichtbarkeitsmodus öffentlich.
+myplots-visibility-public: "Öffentlich"
+# Sichtbarkeitsmodus privat.
+myplots-visibility-private: "Privat"
+# Symbol für Favoriten.
+myplots-favorite-yes: "★"
+# Symbol für Nicht-Favoriten.
+myplots-favorite-no: "☆"
+# Text für aktiven Favoritenstatus.
+myplots-favorite-active: "Favorit"
+# Text für inaktiven Favoritenstatus.
+myplots-favorite-inactive: "Kein Favorit"
+# Text, wenn ein Plot noch nie über das Menü besucht wurde.
+myplots-never: "Nie"
+# Anzeigenamen der Sortierungen.
+myplots-sort-name: "Name"
+myplots-sort-size: "Größe"
+myplots-sort-activity: "Aktivität"
+myplots-sort-rating: "Bewertung"
+myplots-sort-category: "Kategorie"
+# Anzeigenamen der Filter.
+myplots-filter-all: "Alle"
+myplots-filter-favorites: "Favoriten"
+myplots-filter-public: "Öffentlich"
+myplots-filter-private: "Privat"

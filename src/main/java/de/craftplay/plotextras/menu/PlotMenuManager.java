@@ -7,7 +7,11 @@ import de.craftplay.plotextras.hook.FloodgateHook;
 import de.craftplay.plotextras.hook.HeadDatabaseHook;
 import de.craftplay.plotextras.hook.PlaceholderHook;
 import de.craftplay.plotextras.language.LanguageManager;
+import de.craftplay.plotextras.myplots.PlotDataStore;
+import de.craftplay.plotextras.myplots.PlotMetadata;
+import de.craftplay.plotextras.plotsquared.OwnedPlot;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
+import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
 import de.craftplay.plotextras.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,6 +21,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
@@ -25,8 +30,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -40,12 +48,18 @@ public final class PlotMenuManager implements Listener {
     private final CraftplayPlotExtrasPlugin plugin;
     private final LanguageManager languageManager;
     private final PlotSquaredFlagService flagService;
+    private final PlotSquaredPlotService plotService;
+    private final PlotDataStore plotDataStore;
     private final PlotBackupService backupService;
     private final HeadDatabaseHook headDatabaseHook;
     private final PlaceholderHook placeholderHook;
     private final FloodgateHook floodgateHook;
     private final Map<Integer, MenuButton> mainButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> bedrockMainButtonsByOrder = new HashMap<>();
+    private final Map<Integer, MenuButton> myPlotsButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> myPlotsDecorationsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> myPlotDetailButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> myPlotDetailDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> flagButtonsBySlot = new HashMap<>();
     private final Map<Integer, Map<Integer, FlagMenuEntry>> flagsByPageAndSlot = new HashMap<>();
     private final Map<Integer, MenuButton> settingsDecorationsBySlot = new HashMap<>();
@@ -68,6 +82,18 @@ public final class PlotMenuManager implements Listener {
     private String bedrockMainContent;
     private MenuSound bedrockClickSound;
     private List<String> hiddenBedrockMainButtons;
+    private YamlConfiguration myPlotsConfig;
+    private YamlConfiguration bedrockMyPlotsConfig;
+    private String myPlotsTitle;
+    private int myPlotsSize;
+    private ItemStack myPlotsFiller;
+    private List<Integer> myPlotsSlots;
+    private boolean myPlotsLoaded;
+    private String myPlotDetailTitle;
+    private int myPlotDetailSize;
+    private ItemStack myPlotDetailFiller;
+    private List<Integer> myPlotDetailTagSlots;
+    private boolean bedrockMyPlotsLoaded;
     private String flagsTitle;
     private int flagsSize;
     private ItemStack flagsFiller;
@@ -99,11 +125,15 @@ public final class PlotMenuManager implements Listener {
             final CraftplayPlotExtrasPlugin plugin,
             final LanguageManager languageManager,
             final PlotSquaredFlagService flagService,
+            final PlotSquaredPlotService plotService,
+            final PlotDataStore plotDataStore,
             final PlotBackupService backupService
     ) {
         this.plugin = plugin;
         this.languageManager = languageManager;
         this.flagService = flagService;
+        this.plotService = plotService;
+        this.plotDataStore = plotDataStore;
         this.backupService = backupService;
         this.headDatabaseHook = new HeadDatabaseHook(plugin);
         this.placeholderHook = new PlaceholderHook(plugin);
@@ -113,6 +143,10 @@ public final class PlotMenuManager implements Listener {
     public void reload() {
         mainButtonsBySlot.clear();
         bedrockMainButtonsByOrder.clear();
+        myPlotsButtonsBySlot.clear();
+        myPlotsDecorationsBySlot.clear();
+        myPlotDetailButtonsBySlot.clear();
+        myPlotDetailDecorationsBySlot.clear();
         flagButtonsBySlot.clear();
         flagsByPageAndSlot.clear();
         settingsDecorationsBySlot.clear();
@@ -121,6 +155,8 @@ public final class PlotMenuManager implements Listener {
         backupListButtonsBySlot.clear();
         mainLoaded = false;
         bedrockMainLoaded = false;
+        myPlotsLoaded = false;
+        bedrockMyPlotsLoaded = false;
         flagsLoaded = false;
         settingsLoaded = false;
         teamLoaded = false;
@@ -157,6 +193,8 @@ public final class PlotMenuManager implements Listener {
             loadBedrockButtons(bedrockConfig);
             bedrockMainLoaded = true;
         }
+
+        loadMyPlotsMenus();
 
         final YamlConfiguration flagsConfig = loadMenuConfig(plugin.getConfig().getString("gui.flags-menu", "flags.yml"));
         if (flagsConfig == null) {
@@ -379,6 +417,247 @@ public final class PlotMenuManager implements Listener {
         }
     }
 
+    public void openMyPlotsMenu(final Player player) {
+        openMyPlotsMenu(player, 1, "name", "all");
+    }
+
+    public void openMyPlotsMenu(final Player player, final int page, final String sort, final String filter) {
+        if (floodgateHook.isBedrockPlayer(player) && bedrockMyPlotsLoaded) {
+            if (openBedrockMyPlotsMenu(player, page, sort, filter)) {
+                return;
+            }
+        }
+        openJavaMyPlotsMenu(player, page, sort, filter);
+    }
+
+    public void openJavaMyPlotsMenu(final Player player, final int page, final String sort, final String filter) {
+        if (!player.hasPermission("craftplayplotextras.myplots")) {
+            languageManager.send(player, "no-permission");
+            return;
+        }
+        if (!myPlotsLoaded) {
+            languageManager.send(player, "menu-missing");
+            return;
+        }
+
+        final int normalizedPage = Math.max(1, page);
+        final String normalizedSort = normalizeSort(sort);
+        final String normalizedFilter = normalizeFilter(filter);
+        final List<OwnedPlot> plots = filteredAndSortedPlots(player, normalizedSort, normalizedFilter);
+        final int pageSize = Math.max(1, myPlotsSlots.size());
+        final int maxPage = Math.max(1, (int) Math.ceil(plots.size() / (double) pageSize));
+        final int actualPage = Math.min(normalizedPage, maxPage);
+        final Map<String, String> menuPlaceholders = myPlotsMenuPlaceholders(actualPage, maxPage, normalizedSort, normalizedFilter, plots.size());
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("myplots", actualPage, normalizedSort + "|" + normalizedFilter),
+                myPlotsSize,
+                Text.color(placeholderHook.apply(player, applyPlaceholders(myPlotsTitle, menuPlaceholders)))
+        );
+
+        if (myPlotsFiller != null) {
+            for (int slot = 0; slot < myPlotsSize; slot++) {
+                inventory.setItem(slot, myPlotsFiller);
+            }
+        }
+        for (final MenuButton decoration : myPlotsDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, menuPlaceholders));
+            }
+        }
+        for (final MenuButton button : myPlotsButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, menuPlaceholders));
+            }
+        }
+
+        final int start = (actualPage - 1) * pageSize;
+        final int end = Math.min(plots.size(), start + pageSize);
+        for (int index = start; index < end; index++) {
+            final int slot = myPlotsSlots.get(index - start);
+            inventory.setItem(slot, createMyPlotItem(player, plots.get(index)));
+        }
+        player.openInventory(inventory);
+    }
+
+    private boolean openBedrockMyPlotsMenu(final Player player, final int page, final String sort, final String filter) {
+        if (!bedrockMyPlotsLoaded) {
+            return false;
+        }
+        final int normalizedPage = Math.max(1, page);
+        final String normalizedSort = normalizeSort(sort);
+        final String normalizedFilter = normalizeFilter(filter);
+        final List<OwnedPlot> plots = filteredAndSortedPlots(player, normalizedSort, normalizedFilter);
+        final int pageSize = Math.max(1, bedrockMyPlotsConfig.getInt("page-size", 8));
+        final int maxPage = Math.max(1, (int) Math.ceil(plots.size() / (double) pageSize));
+        final int actualPage = Math.min(normalizedPage, maxPage);
+        final Map<String, String> placeholders = myPlotsMenuPlaceholders(actualPage, maxPage, normalizedSort, normalizedFilter, plots.size());
+        final List<String> labels = new ArrayList<>();
+        final List<Runnable> actions = new ArrayList<>();
+
+        addBedrockAction(player, labels, actions, "buttons.sort-name", placeholders, () -> openMyPlotsMenu(player, 1, "name", normalizedFilter));
+        addBedrockAction(player, labels, actions, "buttons.sort-size", placeholders, () -> openMyPlotsMenu(player, 1, "size", normalizedFilter));
+        addBedrockAction(player, labels, actions, "buttons.sort-activity", placeholders, () -> openMyPlotsMenu(player, 1, "activity", normalizedFilter));
+        addBedrockAction(player, labels, actions, "buttons.sort-rating", placeholders, () -> openMyPlotsMenu(player, 1, "rating", normalizedFilter));
+        addBedrockAction(player, labels, actions, "buttons.sort-category", placeholders, () -> openMyPlotsMenu(player, 1, "category", normalizedFilter));
+        addBedrockAction(player, labels, actions, "buttons.filter-all", placeholders, () -> openMyPlotsMenu(player, 1, normalizedSort, "all"));
+        addBedrockAction(player, labels, actions, "buttons.filter-favorites", placeholders, () -> openMyPlotsMenu(player, 1, normalizedSort, "favorites"));
+        addBedrockAction(player, labels, actions, "buttons.filter-public", placeholders, () -> openMyPlotsMenu(player, 1, normalizedSort, "public"));
+        addBedrockAction(player, labels, actions, "buttons.filter-private", placeholders, () -> openMyPlotsMenu(player, 1, normalizedSort, "private"));
+        if (actualPage > 1) {
+            addBedrockAction(player, labels, actions, "buttons.previous", placeholders, () -> openMyPlotsMenu(player, actualPage - 1, normalizedSort, normalizedFilter));
+        }
+        if (actualPage < maxPage) {
+            addBedrockAction(player, labels, actions, "buttons.next", placeholders, () -> openMyPlotsMenu(player, actualPage + 1, normalizedSort, normalizedFilter));
+        }
+
+        final int start = (actualPage - 1) * pageSize;
+        final int end = Math.min(plots.size(), start + pageSize);
+        final String plotLabel = bedrockMyPlotsConfig.getString("plot-label", "{favorite} {name} - {visibility}");
+        for (int index = start; index < end; index++) {
+            final OwnedPlot plot = plots.get(index);
+            labels.add(Text.color(placeholderHook.apply(player, applyPlaceholders(plotLabel, plotPlaceholders(player, plot)))));
+            actions.add(() -> openBedrockMyPlotDetail(player, plot.getKey(), actualPage, normalizedSort, normalizedFilter));
+        }
+        addBedrockAction(player, labels, actions, "buttons.back", placeholders, () -> openMenu(player));
+
+        final String title = Text.color(placeholderHook.apply(player, applyPlaceholders(bedrockMyPlotsConfig.getString("title", "Meine Plots"), placeholders)));
+        final String content = Text.color(placeholderHook.apply(player, applyPlaceholders(bedrockMyPlotsConfig.getString("content", ""), placeholders)));
+        return floodgateHook.sendSimpleForm(player, title, content, labels, clickedButton -> {
+            if (clickedButton < 0 || clickedButton >= actions.size()) {
+                return;
+            }
+            Bukkit.getScheduler().runTask(plugin, actions.get(clickedButton));
+        });
+    }
+
+    private void openBedrockMyPlotDetail(
+            final Player player,
+            final String plotKey,
+            final int page,
+            final String sort,
+            final String filter
+    ) {
+        final java.util.Optional<OwnedPlot> optionalPlot = plotService.ownedPlot(player, plotKey);
+        if (!optionalPlot.isPresent()) {
+            languageManager.send(player, "myplots-plot-not-found");
+            return;
+        }
+        final OwnedPlot plot = optionalPlot.get();
+        final Map<String, String> placeholders = plotPlaceholders(player, plot);
+        final List<String> labels = new ArrayList<>();
+        final List<Runnable> actions = new ArrayList<>();
+        addBedrockAction(player, labels, actions, "detail.buttons.teleport", placeholders, () -> teleportToPlot(player, plot));
+        addBedrockAction(player, labels, actions, "detail.buttons.favorite", placeholders, () -> {
+            toggleFavorite(player, plot);
+            openBedrockMyPlotDetail(player, plotKey, page, sort, filter);
+        });
+        addBedrockAction(player, labels, actions, "detail.buttons.visibility", placeholders, () -> {
+            toggleVisibility(player, plot);
+            openBedrockMyPlotDetail(player, plotKey, page, sort, filter);
+        });
+        addBedrockAction(player, labels, actions, "detail.buttons.category", placeholders, () -> {
+            cycleCategory(player, plot);
+            openBedrockMyPlotDetail(player, plotKey, page, sort, filter);
+        });
+        final List<String> availableTags = availableTags();
+        for (final String tag : availableTags) {
+            final Map<String, String> tagPlaceholders = new HashMap<>(plotPlaceholders(player, plot));
+            tagPlaceholders.put("tag", tag);
+            tagPlaceholders.put("tag_status", plotDataStore.metadata(plotKey).getTags().contains(tag)
+                    ? text("myplots-tag-active", "Aktiv")
+                    : text("myplots-tag-inactive", "Inaktiv"));
+            final String label = bedrockMyPlotsConfig.getString("detail.tag-label", "{tag}: {tag_status}");
+            labels.add(Text.color(placeholderHook.apply(player, applyPlaceholders(label, tagPlaceholders))));
+            actions.add(() -> {
+                toggleTag(player, plot, tag);
+                openBedrockMyPlotDetail(player, plotKey, page, sort, filter);
+            });
+        }
+        addBedrockAction(player, labels, actions, "detail.buttons.back", placeholders, () -> openMyPlotsMenu(player, page, sort, filter));
+
+        final String title = Text.color(placeholderHook.apply(player, applyPlaceholders(bedrockMyPlotsConfig.getString("detail.title", "{name}"), placeholders)));
+        final String content = Text.color(placeholderHook.apply(player, applyPlaceholders(bedrockMyPlotsConfig.getString("detail.content", ""), placeholders)));
+        floodgateHook.sendSimpleForm(player, title, content, labels, clickedButton -> {
+            if (clickedButton < 0 || clickedButton >= actions.size()) {
+                return;
+            }
+            Bukkit.getScheduler().runTask(plugin, actions.get(clickedButton));
+        });
+    }
+
+    private void addBedrockAction(
+            final Player player,
+            final List<String> labels,
+            final List<Runnable> actions,
+            final String path,
+            final Map<String, String> placeholders,
+            final Runnable action
+    ) {
+        if (!bedrockMyPlotsConfig.getBoolean(path + ".enabled", true)) {
+            return;
+        }
+        final String permission = bedrockMyPlotsConfig.getString(path + ".permission", "");
+        if (permission != null && !permission.trim().isEmpty() && !player.hasPermission(permission)) {
+            return;
+        }
+        labels.add(Text.color(placeholderHook.apply(player, applyPlaceholders(bedrockMyPlotsConfig.getString(path + ".label", path), placeholders))));
+        actions.add(action);
+    }
+
+    private void openMyPlotDetailMenu(
+            final Player player,
+            final String plotKey,
+            final int page,
+            final String sort,
+            final String filter
+    ) {
+        final java.util.Optional<OwnedPlot> optionalPlot = plotService.ownedPlot(player, plotKey);
+        if (!optionalPlot.isPresent()) {
+            languageManager.send(player, "myplots-plot-not-found");
+            return;
+        }
+        final OwnedPlot plot = optionalPlot.get();
+        final Map<String, String> placeholders = plotPlaceholders(player, plot);
+        placeholders.put("page", String.valueOf(page));
+        placeholders.put("sort", sort);
+        placeholders.put("filter", filter);
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("myplot-detail", page, plotKey + "|" + sort + "|" + filter),
+                myPlotDetailSize,
+                Text.color(placeholderHook.apply(player, applyPlaceholders(myPlotDetailTitle, placeholders)))
+        );
+        if (myPlotDetailFiller != null) {
+            for (int slot = 0; slot < myPlotDetailSize; slot++) {
+                inventory.setItem(slot, myPlotDetailFiller);
+            }
+        }
+        for (final MenuButton decoration : myPlotDetailDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
+            }
+        }
+        final int previewSlot = myPlotsConfig.getInt("detail.preview.slot", 13);
+        if (previewSlot >= 0 && previewSlot < myPlotDetailSize) {
+            inventory.setItem(previewSlot, createDynamicItem(player, myPlotsConfig, "detail.preview.", Material.FILLED_MAP, placeholders));
+        }
+        for (final MenuButton button : myPlotDetailButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, placeholders));
+            }
+        }
+        final List<String> tags = availableTags();
+        for (int index = 0; index < tags.size() && index < myPlotDetailTagSlots.size(); index++) {
+            final String tag = tags.get(index);
+            final int slot = myPlotDetailTagSlots.get(index);
+            final Map<String, String> tagPlaceholders = new HashMap<>(placeholders);
+            final boolean active = plotDataStore.metadata(plotKey).getTags().contains(tag);
+            tagPlaceholders.put("tag", tag);
+            tagPlaceholders.put("tag_status", active ? text("myplots-tag-active", "Aktiv") : text("myplots-tag-inactive", "Inaktiv"));
+            inventory.setItem(slot, createDynamicItem(player, myPlotsConfig, active ? "detail.tag-active." : "detail.tag-inactive.", active ? Material.NAME_TAG : Material.PAPER, tagPlaceholders));
+        }
+        player.openInventory(inventory);
+    }
+
     public void openFlagsMenu(final Player player) {
         openFlagsMenu(player, 1);
     }
@@ -564,6 +843,14 @@ public final class PlotMenuManager implements Listener {
 
         final Player player = (Player) event.getWhoClicked();
         final PlotMenuHolder holder = (PlotMenuHolder) event.getInventory().getHolder();
+        if ("myplots".equalsIgnoreCase(holder.getMenuId())) {
+            handleMyPlotsClick(player, holder.getPage(), holder.getTabId(), event.getSlot(), event.getClick());
+            return;
+        }
+        if ("myplot-detail".equalsIgnoreCase(holder.getMenuId())) {
+            handleMyPlotDetailClick(player, holder.getPage(), holder.getTabId(), event.getSlot());
+            return;
+        }
         if ("flags".equalsIgnoreCase(holder.getMenuId())) {
             handleFlagsClick(player, holder.getPage(), event.getSlot());
             return;
@@ -656,6 +943,32 @@ public final class PlotMenuManager implements Listener {
                     label
             ));
         }
+    }
+
+    private void loadMyPlotsMenus() {
+        myPlotsConfig = loadMenuConfig(plugin.getConfig().getString("gui.my-plots-menu", "myplots.yml"));
+        if (myPlotsConfig != null) {
+            myPlotsTitle = myPlotsConfig.getString("title", "&8Meine Plots &7- Seite {page}");
+            myPlotsSize = normalizeSize(myPlotsConfig.getInt("size", 54));
+            myPlotsFiller = createFiller(myPlotsConfig);
+            myPlotsSlots = myPlotsConfig.getIntegerList("plot-slots");
+            if (myPlotsSlots.isEmpty()) {
+                myPlotsSlots = defaultListSlots(myPlotsSize);
+            }
+            loadButtonsFromSection(myPlotsConfig, "buttons", myPlotsButtonsBySlot, myPlotsSize);
+            loadDecorationsFromSection(myPlotsConfig, "decorations", myPlotsDecorationsBySlot, myPlotsSize);
+
+            myPlotDetailTitle = myPlotsConfig.getString("detail.title", "&8Plot: {name}");
+            myPlotDetailSize = normalizeSize(myPlotsConfig.getInt("detail.size", 54));
+            myPlotDetailFiller = createFiller(myPlotsConfig, "detail.filler");
+            myPlotDetailTagSlots = myPlotsConfig.getIntegerList("detail.tag-slots");
+            loadButtonsFromSection(myPlotsConfig, "detail.buttons", myPlotDetailButtonsBySlot, myPlotDetailSize);
+            loadDecorationsFromSection(myPlotsConfig, "detail.decorations", myPlotDetailDecorationsBySlot, myPlotDetailSize);
+            myPlotsLoaded = true;
+        }
+
+        bedrockMyPlotsConfig = loadMenuConfig(plugin.getConfig().getString("gui.bedrock-my-plots-menu", "bedrock-myplots.yml"));
+        bedrockMyPlotsLoaded = bedrockMyPlotsConfig != null && bedrockMyPlotsConfig.getBoolean("enabled", true);
     }
 
     private void loadDecorations(final YamlConfiguration menuConfig, final Map<Integer, MenuButton> target, final int menuSize) {
@@ -953,6 +1266,93 @@ public final class PlotMenuManager implements Listener {
         return flagService.hasAnyFlagPermission(player, flagEntry.getFlag());
     }
 
+    private void handleMyPlotsClick(
+            final Player player,
+            final int page,
+            final String state,
+            final int slot,
+            final ClickType clickType
+    ) {
+        final String sort = statePart(state, 0, "name");
+        final String filter = statePart(state, 1, "all");
+        final MenuButton button = myPlotsButtonsBySlot.get(slot);
+        if (button != null) {
+            if (!canSee(player, button)) {
+                return;
+            }
+            final List<OwnedPlot> plots = filteredAndSortedPlots(player, sort, filter);
+            final int pageSize = myPlotsSlots == null || myPlotsSlots.isEmpty() ? 1 : myPlotsSlots.size();
+            final int maxPage = Math.max(1, (int) Math.ceil(plots.size() / (double) pageSize));
+            executeCommands(player, button.isCloseInventory(), myPlotsButtonCommands(button, page, maxPage, sort, filter, plots.size()));
+            return;
+        }
+
+        final OwnedPlot plot = plotAt(player, page, sort, filter, slot);
+        if (plot == null) {
+            return;
+        }
+        if (clickType == ClickType.SHIFT_LEFT) {
+            toggleFavorite(player, plot);
+            openJavaMyPlotsMenu(player, page, sort, filter);
+            return;
+        }
+        if (clickType == ClickType.SHIFT_RIGHT) {
+            toggleVisibility(player, plot);
+            openJavaMyPlotsMenu(player, page, sort, filter);
+            return;
+        }
+        if (clickType.isRightClick()) {
+            openMyPlotDetailMenu(player, plot.getKey(), page, sort, filter);
+            return;
+        }
+        teleportToPlot(player, plot);
+    }
+
+    private void handleMyPlotDetailClick(final Player player, final int page, final String state, final int slot) {
+        final String plotKey = statePart(state, 0, "");
+        final String sort = statePart(state, 1, "name");
+        final String filter = statePart(state, 2, "all");
+        final java.util.Optional<OwnedPlot> optionalPlot = plotService.ownedPlot(player, plotKey);
+        if (!optionalPlot.isPresent()) {
+            languageManager.send(player, "myplots-plot-not-found");
+            return;
+        }
+        final OwnedPlot plot = optionalPlot.get();
+
+        final int tagIndex = myPlotDetailTagSlots == null ? -1 : myPlotDetailTagSlots.indexOf(slot);
+        if (tagIndex >= 0 && tagIndex < availableTags().size()) {
+            toggleTag(player, plot, availableTags().get(tagIndex));
+            openMyPlotDetailMenu(player, plotKey, page, sort, filter);
+            return;
+        }
+
+        final MenuButton button = myPlotDetailButtonsBySlot.get(slot);
+        if (button == null || !canSee(player, button)) {
+            return;
+        }
+        final String id = button.getId().toLowerCase(Locale.ROOT);
+        if ("teleport".equals(id)) {
+            teleportToPlot(player, plot);
+            return;
+        }
+        if ("favorite".equals(id)) {
+            toggleFavorite(player, plot);
+            openMyPlotDetailMenu(player, plotKey, page, sort, filter);
+            return;
+        }
+        if ("visibility".equals(id)) {
+            toggleVisibility(player, plot);
+            openMyPlotDetailMenu(player, plotKey, page, sort, filter);
+            return;
+        }
+        if ("category".equals(id)) {
+            cycleCategory(player, plot);
+            openMyPlotDetailMenu(player, plotKey, page, sort, filter);
+            return;
+        }
+        executeCommands(player, button.isCloseInventory(), detailButtonCommands(player, button, plot, page, sort, filter));
+    }
+
     private void handleFlagsClick(final Player player, final int page, final int slot) {
         final MenuButton button = flagButtonsBySlot.get(slot);
         if (button != null) {
@@ -1042,6 +1442,307 @@ public final class PlotMenuManager implements Listener {
         backupService.requestRestore(player, backupId);
     }
 
+    private OwnedPlot plotAt(final Player player, final int page, final String sort, final String filter, final int slot) {
+        if (myPlotsSlots == null || myPlotsSlots.isEmpty()) {
+            return null;
+        }
+        final int slotIndex = myPlotsSlots.indexOf(slot);
+        if (slotIndex < 0) {
+            return null;
+        }
+        final List<OwnedPlot> plots = filteredAndSortedPlots(player, sort, filter);
+        final int plotIndex = (Math.max(1, page) - 1) * myPlotsSlots.size() + slotIndex;
+        if (plotIndex < 0 || plotIndex >= plots.size()) {
+            return null;
+        }
+        return plots.get(plotIndex);
+    }
+
+    private List<OwnedPlot> filteredAndSortedPlots(final Player player, final String sort, final String filter) {
+        final String normalizedSort = normalizeSort(sort);
+        final String normalizedFilter = normalizeFilter(filter);
+        final List<OwnedPlot> plots = new ArrayList<>();
+        for (final OwnedPlot plot : plotService.ownedPlots(player)) {
+            final PlotMetadata metadata = plotDataStore.metadata(plot.getKey());
+            if ("favorites".equals(normalizedFilter) && !plotDataStore.isFavorite(player.getUniqueId(), plot.getKey())) {
+                continue;
+            }
+            if ("public".equals(normalizedFilter) && !isPublic(plot, metadata)) {
+                continue;
+            }
+            if ("private".equals(normalizedFilter) && isPublic(plot, metadata)) {
+                continue;
+            }
+            if (normalizedFilter.startsWith("category:") && !metadata.getCategory().equalsIgnoreCase(normalizedFilter.substring("category:".length()))) {
+                continue;
+            }
+            plots.add(plot);
+        }
+        plots.sort(plotComparator(player, normalizedSort));
+        return plots;
+    }
+
+    private Comparator<OwnedPlot> plotComparator(final Player player, final String sort) {
+        if ("size".equals(sort)) {
+            return Comparator.comparingInt(OwnedPlot::getSize).reversed().thenComparing(OwnedPlot::getDisplayName, String.CASE_INSENSITIVE_ORDER);
+        }
+        if ("activity".equals(sort)) {
+            return Comparator.comparingLong((OwnedPlot plot) -> plotDataStore.metadata(plot.getKey()).getLastVisit())
+                    .reversed()
+                    .thenComparing(OwnedPlot::getDisplayName, String.CASE_INSENSITIVE_ORDER);
+        }
+        if ("rating".equals(sort)) {
+            return Comparator.comparingDouble((OwnedPlot plot) -> plotDataStore.metadata(plot.getKey()).getRating())
+                    .reversed()
+                    .thenComparing(OwnedPlot::getDisplayName, String.CASE_INSENSITIVE_ORDER);
+        }
+        if ("category".equals(sort)) {
+            return Comparator.comparing((OwnedPlot plot) -> displayCategory(plotDataStore.metadata(plot.getKey()).getCategory()), String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(OwnedPlot::getDisplayName, String.CASE_INSENSITIVE_ORDER);
+        }
+        return Comparator.comparing(OwnedPlot::getDisplayName, String.CASE_INSENSITIVE_ORDER)
+                .thenComparing(OwnedPlot::getWorldName, String.CASE_INSENSITIVE_ORDER)
+                .thenComparing(OwnedPlot::getPlotId, String.CASE_INSENSITIVE_ORDER);
+    }
+
+    private ItemStack createMyPlotItem(final Player player, final OwnedPlot plot) {
+        return createDynamicItem(player, myPlotsConfig, "plot-item.", Material.FILLED_MAP, plotPlaceholders(player, plot));
+    }
+
+    private ItemStack createDynamicItem(
+            final Player player,
+            final YamlConfiguration configuration,
+            final String path,
+            final Material fallback,
+            final Map<String, String> placeholders
+    ) {
+        final MaterialDefinition materialDefinition = materialDefinition(configuration, path, fallback);
+        ItemStack item = headDatabaseHook.getHead(headDatabaseId(configuration, path));
+        if (item == null) {
+            item = new ItemStack(materialDefinition.getMaterial());
+        }
+        final ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            applySkullOwner(player, meta, skullOwner(configuration, path, materialDefinition.getSkullOwner()), placeholders);
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(configuration.getString(path + "name", "&a{name}"), placeholders))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(configuration.getStringList(path + "lore"), placeholders))));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private Map<String, String> plotPlaceholders(final Player player, final OwnedPlot plot) {
+        final PlotMetadata metadata = plotDataStore.metadata(plot.getKey());
+        final boolean favorite = plotDataStore.isFavorite(player.getUniqueId(), plot.getKey());
+        final boolean visiblePublic = isPublic(plot, metadata);
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("plot_key", plot.getKey());
+        placeholders.put("plot", plot.getPlotId());
+        placeholders.put("plot_id", plot.getPlotId());
+        placeholders.put("command_id", plot.getCommandId());
+        placeholders.put("world", plot.getWorldName());
+        placeholders.put("name", plot.getDisplayName());
+        placeholders.put("alias", plot.getAlias().isEmpty() ? "-" : plot.getAlias());
+        placeholders.put("owner", plot.getOwnerName());
+        placeholders.put("merge", plot.getMergeType());
+        placeholders.put("size", String.valueOf(plot.getSize()));
+        placeholders.put("plots", plot.getPlotIds().isEmpty() ? plot.getPlotId() : String.join(", ", plot.getPlotIds()));
+        placeholders.put("category", displayCategory(metadata.getCategory()));
+        placeholders.put("tags", metadata.getTags().isEmpty() ? text("myplots-no-tags", "Keine") : String.join(", ", metadata.getTags()));
+        placeholders.put("visibility", visiblePublic ? text("myplots-public", "Öffentlich") : text("myplots-private", "Privat"));
+        placeholders.put("visibility_mode", visibilityModeName(metadata.getVisibility()));
+        placeholders.put("favorite", favorite ? text("myplots-favorite-yes", "★") : text("myplots-favorite-no", "☆"));
+        placeholders.put("favorite_status", favorite ? text("myplots-favorite-active", "Favorit") : text("myplots-favorite-inactive", "Kein Favorit"));
+        placeholders.put("visits", String.valueOf(metadata.getVisits()));
+        placeholders.put("last_visit", metadata.getLastVisit() <= 0L ? text("myplots-never", "Nie") : formatDate(metadata.getLastVisit()));
+        placeholders.put("created", plot.getCreatedAt() <= 0L ? "-" : formatDate(plot.getCreatedAt()));
+        placeholders.put("rating", String.format(Locale.US, "%.1f", metadata.getRating()));
+        return placeholders;
+    }
+
+    private Map<String, String> myPlotsMenuPlaceholders(
+            final int page,
+            final int maxPage,
+            final String sort,
+            final String filter,
+            final int amount
+    ) {
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("page", String.valueOf(page));
+        placeholders.put("max_page", String.valueOf(maxPage));
+        placeholders.put("next_page", String.valueOf(Math.min(maxPage, page + 1)));
+        placeholders.put("previous_page", String.valueOf(Math.max(1, page - 1)));
+        placeholders.put("sort", sort);
+        placeholders.put("sort_name", sortName(sort));
+        placeholders.put("filter", filter);
+        placeholders.put("filter_name", filterName(filter));
+        placeholders.put("amount", String.valueOf(amount));
+        return placeholders;
+    }
+
+    private List<String> myPlotsButtonCommands(
+            final MenuButton button,
+            final int page,
+            final int maxPage,
+            final String sort,
+            final String filter,
+            final int amount
+    ) {
+        return applyCommandState(button.getCommands(), myPlotsMenuPlaceholders(page, maxPage, sort, filter, amount));
+    }
+
+    private List<String> detailButtonCommands(
+            final Player player,
+            final MenuButton button,
+            final OwnedPlot plot,
+            final int page,
+            final String sort,
+            final String filter
+    ) {
+        final Map<String, String> placeholders = plotPlaceholders(player, plot);
+        placeholders.put("page", String.valueOf(page));
+        placeholders.put("sort", sort);
+        placeholders.put("filter", filter);
+        return applyCommandState(button.getCommands(), placeholders);
+    }
+
+    private List<String> applyCommandState(final List<String> commands, final Map<String, String> placeholders) {
+        final List<String> replaced = new ArrayList<>();
+        for (final String command : commands) {
+            replaced.add(applyPlaceholders(command, placeholders));
+        }
+        return replaced;
+    }
+
+    private void teleportToPlot(final Player player, final OwnedPlot plot) {
+        plotDataStore.recordVisit(plot.getKey());
+        languageManager.send(player, "myplots-teleport", plotPlaceholders(player, plot));
+        player.closeInventory();
+        plotService.teleportTo(player, plot);
+    }
+
+    private void toggleFavorite(final Player player, final OwnedPlot plot) {
+        final boolean favorite = plotDataStore.toggleFavorite(player.getUniqueId(), plot.getKey());
+        final Map<String, String> placeholders = plotPlaceholders(player, plot);
+        placeholders.put("status", favorite ? text("myplots-favorite-active", "Favorit") : text("myplots-favorite-inactive", "Kein Favorit"));
+        languageManager.send(player, favorite ? "myplots-favorite-added" : "myplots-favorite-removed", placeholders);
+    }
+
+    private void toggleVisibility(final Player player, final OwnedPlot plot) {
+        final String visibility = plotDataStore.cycleVisibility(plot.getKey());
+        final Map<String, String> placeholders = plotPlaceholders(player, plot);
+        placeholders.put("status", visibilityModeName(visibility));
+        languageManager.send(player, "myplots-visibility-changed", placeholders);
+    }
+
+    private void cycleCategory(final Player player, final OwnedPlot plot) {
+        final String category = plotDataStore.setNextCategory(plot.getKey(), availableCategories(), defaultCategory());
+        final Map<String, String> placeholders = plotPlaceholders(player, plot);
+        placeholders.put("category", displayCategory(category));
+        languageManager.send(player, "myplots-category-changed", placeholders);
+    }
+
+    private void toggleTag(final Player player, final OwnedPlot plot, final String tag) {
+        final boolean active = plotDataStore.toggleTag(plot.getKey(), tag);
+        final Map<String, String> placeholders = plotPlaceholders(player, plot);
+        placeholders.put("tag", tag);
+        placeholders.put("status", active ? text("myplots-tag-active", "Aktiv") : text("myplots-tag-inactive", "Inaktiv"));
+        languageManager.send(player, active ? "myplots-tag-added" : "myplots-tag-removed", placeholders);
+    }
+
+    private boolean isPublic(final OwnedPlot plot, final PlotMetadata metadata) {
+        if ("public".equals(metadata.getVisibility())) {
+            return true;
+        }
+        if ("private".equals(metadata.getVisibility())) {
+            return false;
+        }
+        return plot.isPublicByFlag();
+    }
+
+    private List<String> availableCategories() {
+        final List<String> categories = myPlotsConfig == null ? Collections.emptyList() : myPlotsConfig.getStringList("categories.available");
+        if (categories.isEmpty()) {
+            return Collections.singletonList(defaultCategory());
+        }
+        return categories;
+    }
+
+    private List<String> availableTags() {
+        if (myPlotsConfig == null) {
+            return Collections.emptyList();
+        }
+        return myPlotsConfig.getStringList("tags.available");
+    }
+
+    private String defaultCategory() {
+        return myPlotsConfig == null ? "Allgemein" : myPlotsConfig.getString("categories.default", "Allgemein");
+    }
+
+    private String displayCategory(final String category) {
+        return category == null || category.trim().isEmpty() ? defaultCategory() : category;
+    }
+
+    private String normalizeSort(final String sort) {
+        final String normalized = sort == null ? "name" : sort.toLowerCase(Locale.ROOT);
+        return ("size".equals(normalized) || "activity".equals(normalized) || "rating".equals(normalized) || "category".equals(normalized))
+                ? normalized
+                : "name";
+    }
+
+    private String normalizeFilter(final String filter) {
+        if (filter == null || filter.trim().isEmpty()) {
+            return "all";
+        }
+        final String normalized = filter.toLowerCase(Locale.ROOT);
+        if ("favorites".equals(normalized) || "public".equals(normalized) || "private".equals(normalized) || normalized.startsWith("category:")) {
+            return normalized;
+        }
+        return "all";
+    }
+
+    private String sortName(final String sort) {
+        return text("myplots-sort-" + normalizeSort(sort), normalizeSort(sort));
+    }
+
+    private String filterName(final String filter) {
+        final String normalized = normalizeFilter(filter);
+        if (normalized.startsWith("category:")) {
+            return normalized.substring("category:".length());
+        }
+        return text("myplots-filter-" + normalized, normalized);
+    }
+
+    private String visibilityModeName(final String visibilityMode) {
+        final String normalized = visibilityMode == null || visibilityMode.trim().isEmpty()
+                ? "auto"
+                : visibilityMode.trim().toLowerCase(Locale.ROOT);
+        if ("public".equals(normalized) || "private".equals(normalized)) {
+            return text("myplots-visibility-" + normalized, normalized);
+        }
+        return text("myplots-visibility-auto", "Automatisch");
+    }
+
+    private String statePart(final String state, final int index, final String fallback) {
+        if (state == null) {
+            return fallback;
+        }
+        final String[] parts = state.split("\\|", -1);
+        if (index < 0 || index >= parts.length || parts[index].trim().isEmpty()) {
+            return fallback;
+        }
+        return parts[index].trim();
+    }
+
+    private String formatDate(final long timestamp) {
+        return new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(timestamp));
+    }
+
+    private String text(final String key, final String fallback) {
+        final String message = languageManager.getMessage(key);
+        return key.equals(message) ? fallback : message;
+    }
+
     private void executeButtonCommands(final Player player, final MenuButton button) {
         executeButtonCommands(player, button, null);
     }
@@ -1120,6 +1821,8 @@ public final class PlotMenuManager implements Listener {
             final String menuId = command.substring("open-menu:".length()).trim();
             if (menuId.toLowerCase(Locale.ROOT).startsWith("flags")) {
                 openFlagsMenu(player, menuPage(menuId));
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("myplots")) {
+                openMyPlotsMenu(player, menuPage(menuId), menuArgument(menuId, 2, "name"), menuArgument(menuId, 3, "all"));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("settings")) {
                 openSettingsMenu(player, menuArgument(menuId, defaultSettingsTab));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("team-backups")) {
@@ -1290,6 +1993,14 @@ public final class PlotMenuManager implements Listener {
             return fallback;
         }
         return menuId.substring(separator + 1).trim();
+    }
+
+    private String menuArgument(final String menuId, final int index, final String fallback) {
+        final String[] parts = menuId.split(":", -1);
+        if (index < 0 || index >= parts.length || parts[index].trim().isEmpty()) {
+            return fallback;
+        }
+        return parts[index].trim();
     }
 
     private String backupIdAt(final int page, final int slot) {

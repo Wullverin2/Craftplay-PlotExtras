@@ -6,7 +6,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 1
+file-version: 2
 
 # If false, this Bedrock menu is not loaded.
 enabled: true
@@ -35,9 +35,9 @@ buttons:
     label: "My Plots"
     # Commands run as the player. Prefix with console: to run as console.
     commands:
-      - "plot list mine"
+      - "open-menu:myplots"
     # If true, the form closes after clicking.
-    close: true
+    close: false
     # Optional permission required to see the button.
     permission: ""
   search:
@@ -58,8 +58,8 @@ buttons:
     order: 40
     label: "Favorites"
     commands:
-      - "plot list favorites"
-    close: true
+      - "open-menu:myplots:1:name:favorites"
+    close: false
     permission: ""
   community:
     order: 50

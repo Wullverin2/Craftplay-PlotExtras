@@ -72,6 +72,14 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             plugin.getPlotMenuManager().openBedrockMainMenu(player);
             return true;
         }
+        if (args.length == 1 && args[0].equalsIgnoreCase("myplots")) {
+            if (!player.hasPermission("craftplayplotextras.myplots")) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            plugin.getPlotMenuManager().openMyPlotsMenu(player);
+            return true;
+        }
 
         plugin.getPlotMenuManager().openMenu(player);
         return true;
@@ -147,6 +155,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (sender.hasPermission("craftplayplotextras.use") && "bgui".startsWith(input)) {
             completions.add("bgui");
+        }
+        if (sender.hasPermission("craftplayplotextras.myplots") && "myplots".startsWith(input)) {
+            completions.add("myplots");
         }
         return completions;
     }

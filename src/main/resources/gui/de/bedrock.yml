@@ -6,7 +6,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 1
+file-version: 2
 
 # Wenn false, wird dieses Bedrock-Menü nicht geladen.
 enabled: true
@@ -35,9 +35,9 @@ buttons:
     label: "Eigene Plots"
     # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
     commands:
-      - "plot list mine"
+      - "open-menu:myplots"
     # Wenn true, wird die Form nach dem Klick geschlossen.
-    close: true
+    close: false
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""
   search:
@@ -58,8 +58,8 @@ buttons:
     order: 40
     label: "Favoriten"
     commands:
-      - "plot list favorites"
-    close: true
+      - "open-menu:myplots:1:name:favorites"
+    close: false
     permission: ""
   community:
     order: 50

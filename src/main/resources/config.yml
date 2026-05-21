@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 7
+file-version: 8
 
 # Befehle dieses Plugins.
 command:
@@ -31,6 +31,12 @@ gui:
   # Datei des Bedrock-Hauptmenüs. Geladen wird gui/<sprache>/<bedrock-main-menu>.
   # Diese Datei ist eine Floodgate-Form und getrennt vom Java-Inventar.
   bedrock-main-menu: bedrock.yml
+  # Datei des Meine-Plots-Untermenüs. Geladen wird gui/<sprache>/<my-plots-menu>.
+  # Dieses Menü listet eigene Plots mit Pagination, Sortierung, Favoriten, Tags und Kategorien.
+  my-plots-menu: myplots.yml
+  # Datei des Bedrock-Meine-Plots-Menüs. Geladen wird gui/<sprache>/<bedrock-my-plots-menu>.
+  # Diese Datei ist eine Floodgate-Form und getrennt vom Java-Inventar.
+  bedrock-my-plots-menu: bedrock-myplots.yml
   # Datei des Flag-Untermenüs. Geladen wird gui/<sprache>/<flags-menu>.
   # Dieses Menü zeigt Boolean-Flags von PlotSquared mit Status und Umschaltfunktion.
   flags-menu: flags.yml
@@ -54,6 +60,11 @@ bedrock:
   # Wenn true, wird bei Problemen mit Floodgate automatisch das Java-Inventar-Menü geöffnet.
   # Bei false erhält der Spieler nur eine Fehlermeldung.
   fallback-to-java-gui: true
+
+# Meine-Plots-System.
+my-plots:
+  # Datendatei, in der Favoriten, Tags, Kategorien, Sichtbarkeit und Aktivität gespeichert werden.
+  data-file: plotdata.yml
 
 # Plotbackup-System.
 plot-backups:

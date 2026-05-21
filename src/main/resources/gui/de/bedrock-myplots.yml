@@ -1,0 +1,132 @@
+# Deutsches Bedrock-Meine-Plots-Menü.
+# Diese Datei steuert die Floodgate-Form für eigene Plots.
+# Sie ist getrennt vom Java-Inventar in myplots.yml, damit Bedrock-Spieler touchfreundliche Menüs nutzen können.
+# Labels und Texte können PlaceholderAPI-Platzhalter sowie die unten genutzten Plot-Platzhalter verwenden.
+
+# Dateiversion dieser GUI-Datei.
+# Das Plugin nutzt diesen Wert, um neue Optionen automatisch zu ergänzen.
+file-version: 1
+
+# Wenn false, wird diese Bedrock-Form nicht geladen.
+enabled: true
+# Titel der Plotliste. Platzhalter: {page}, {max_page}, {sort_name}, {filter_name}, {amount}
+title: "Meine Plots {page}/{max_page}"
+# Text über den Buttons.
+content: |-
+  Sortierung: {sort_name}
+  Filter: {filter_name}
+  Plots: {amount}
+# Anzahl der Plots pro Formularseite.
+page-size: 8
+# Beschriftung eines Plot-Buttons.
+plot-label: "{favorite} {name} | {visibility} | {category}"
+
+# Buttons der Listenform.
+buttons:
+  sort-name:
+    # Sortiert nach Name.
+    enabled: true
+    label: "Sortierung: Name"
+    permission: ""
+  sort-size:
+    # Sortiert nach Merge-Größe.
+    enabled: true
+    label: "Sortierung: Größe"
+    permission: ""
+  sort-activity:
+    # Sortiert nach letzter Nutzung über dieses Menü.
+    enabled: true
+    label: "Sortierung: Aktivität"
+    permission: ""
+  sort-rating:
+    # Sortiert nach gespeicherter Bewertung.
+    enabled: true
+    label: "Sortierung: Bewertung"
+    permission: ""
+  sort-category:
+    # Sortiert nach gespeicherter Kategorie.
+    enabled: true
+    label: "Sortierung: Kategorie"
+    permission: ""
+  filter-all:
+    # Zeigt alle eigenen Plots.
+    enabled: true
+    label: "Alle Plots"
+    permission: ""
+  filter-favorites:
+    # Zeigt nur Favoriten.
+    enabled: true
+    label: "Favoriten"
+    permission: ""
+  filter-public:
+    # Zeigt nur öffentliche Plots.
+    enabled: true
+    label: "Öffentliche Plots"
+    permission: ""
+  filter-private:
+    # Zeigt nur private Plots.
+    enabled: true
+    label: "Private Plots"
+    permission: ""
+  previous:
+    # Öffnet die vorherige Seite, wenn es eine gibt.
+    enabled: true
+    label: "Vorherige Seite"
+    permission: ""
+  next:
+    # Öffnet die nächste Seite, wenn es eine gibt.
+    enabled: true
+    label: "Nächste Seite"
+    permission: ""
+  back:
+    # Zurück ins Hauptmenü.
+    enabled: true
+    label: "Zurück zum Hauptmenü"
+    permission: ""
+
+# Detailform für einen einzelnen Plot.
+detail:
+  # Titel der Detailform.
+  title: "{name}"
+  # Inhalt der Detailform.
+  content: |-
+    Plot: {plot}
+    Welt: {world}
+    Besitzer: {owner}
+    Merge: {merge}
+    Enthaltene Plots: {plots}
+    Sichtbarkeit: {visibility}
+    Modus: {visibility_mode}
+    Kategorie: {category}
+    Tags: {tags}
+    Besuche: {visits}
+    Letzter Besuch: {last_visit}
+  # Beschriftung eines Tag-Buttons.
+  tag-label: "Tag {tag}: {tag_status}"
+  # Buttons der Detailform.
+  buttons:
+    teleport:
+      # Teleportiert direkt zum Plot.
+      enabled: true
+      label: "Teleportieren"
+      permission: ""
+    favorite:
+      # Schaltet den Favoritenstatus um.
+      enabled: true
+      label: "Favorit umschalten ({favorite_status})"
+      permission: ""
+    visibility:
+      # Wechselt den gespeicherten Sichtbarkeitsmodus.
+      enabled: true
+      label: "Sichtbarkeit wechseln ({visibility_mode})"
+      permission: ""
+    category:
+      # Wechselt die Kategorie.
+      enabled: true
+      label: "Kategorie wechseln ({category})"
+      permission: ""
+    back:
+      # Zurück zur Plotliste.
+      enabled: true
+      label: "Zurück zur Liste"
+      permission: ""

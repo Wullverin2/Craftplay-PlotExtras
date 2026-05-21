@@ -26,6 +26,10 @@ public final class ConfigurationManager {
             "gui/en/main.yml",
             "gui/de/bedrock.yml",
             "gui/en/bedrock.yml",
+            "gui/de/myplots.yml",
+            "gui/en/myplots.yml",
+            "gui/de/bedrock-myplots.yml",
+            "gui/en/bedrock-myplots.yml",
             "gui/de/flags.yml",
             "gui/en/flags.yml",
             "gui/de/settings.yml",
@@ -102,6 +106,20 @@ public final class ConfigurationManager {
                     }
                 }
             }
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/main.yml") && existingVersion < 11) {
+            existing.set("buttons.my-plots.commands", Arrays.asList("open-menu:myplots"));
+            existing.set("buttons.my-plots.close", false);
+            existing.set("buttons.favorites.commands", Arrays.asList("open-menu:myplots:1:name:favorites"));
+            existing.set("buttons.favorites.close", false);
+            changed = true;
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/bedrock.yml") && existingVersion < 2) {
+            existing.set("buttons.my-plots.commands", Arrays.asList("open-menu:myplots"));
+            existing.set("buttons.my-plots.close", false);
+            existing.set("buttons.favorites.commands", Arrays.asList("open-menu:myplots:1:name:favorites"));
+            existing.set("buttons.favorites.close", false);
+            changed = true;
         }
         if (existingVersion != defaultVersion) {
             existing.set("file-version", defaultVersion);

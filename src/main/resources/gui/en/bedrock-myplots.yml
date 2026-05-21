@@ -1,0 +1,132 @@
+# English Bedrock My Plots menu.
+# This file controls the Floodgate form for owned plots.
+# It is separate from the Java inventory in myplots.yml so Bedrock players can use touch-friendly menus.
+# Labels and texts can use PlaceholderAPI placeholders and the plot placeholders used below.
+
+# File version of this GUI file.
+# The plugin uses this value to add new options automatically.
+file-version: 1
+
+# If false, this Bedrock form is not loaded.
+enabled: true
+# Plot list title. Placeholders: {page}, {max_page}, {sort_name}, {filter_name}, {amount}
+title: "My Plots {page}/{max_page}"
+# Text above the buttons.
+content: |-
+  Sort: {sort_name}
+  Filter: {filter_name}
+  Plots: {amount}
+# Amount of plots per form page.
+page-size: 8
+# Label of a plot button.
+plot-label: "{favorite} {name} | {visibility} | {category}"
+
+# Buttons in the list form.
+buttons:
+  sort-name:
+    # Sorts by name.
+    enabled: true
+    label: "Sort: Name"
+    permission: ""
+  sort-size:
+    # Sorts by merge size.
+    enabled: true
+    label: "Sort: Size"
+    permission: ""
+  sort-activity:
+    # Sorts by last usage through this menu.
+    enabled: true
+    label: "Sort: Activity"
+    permission: ""
+  sort-rating:
+    # Sorts by stored rating.
+    enabled: true
+    label: "Sort: Rating"
+    permission: ""
+  sort-category:
+    # Sorts by stored category.
+    enabled: true
+    label: "Sort: Category"
+    permission: ""
+  filter-all:
+    # Shows all owned plots.
+    enabled: true
+    label: "All Plots"
+    permission: ""
+  filter-favorites:
+    # Shows favorites only.
+    enabled: true
+    label: "Favorites"
+    permission: ""
+  filter-public:
+    # Shows public plots only.
+    enabled: true
+    label: "Public Plots"
+    permission: ""
+  filter-private:
+    # Shows private plots only.
+    enabled: true
+    label: "Private Plots"
+    permission: ""
+  previous:
+    # Opens the previous page when available.
+    enabled: true
+    label: "Previous Page"
+    permission: ""
+  next:
+    # Opens the next page when available.
+    enabled: true
+    label: "Next Page"
+    permission: ""
+  back:
+    # Returns to the main menu.
+    enabled: true
+    label: "Back to Main Menu"
+    permission: ""
+
+# Detail form for one plot.
+detail:
+  # Detail form title.
+  title: "{name}"
+  # Detail form content.
+  content: |-
+    Plot: {plot}
+    World: {world}
+    Owner: {owner}
+    Merge: {merge}
+    Included plots: {plots}
+    Visibility: {visibility}
+    Mode: {visibility_mode}
+    Category: {category}
+    Tags: {tags}
+    Visits: {visits}
+    Last visit: {last_visit}
+  # Label of a tag button.
+  tag-label: "Tag {tag}: {tag_status}"
+  # Buttons in the detail form.
+  buttons:
+    teleport:
+      # Teleports directly to the plot.
+      enabled: true
+      label: "Teleport"
+      permission: ""
+    favorite:
+      # Toggles the favorite state.
+      enabled: true
+      label: "Toggle Favorite ({favorite_status})"
+      permission: ""
+    visibility:
+      # Changes the stored visibility mode.
+      enabled: true
+      label: "Change Visibility ({visibility_mode})"
+      permission: ""
+    category:
+      # Changes the category.
+      enabled: true
+      label: "Change Category ({category})"
+      permission: ""
+    back:
+      # Returns to the plot list.
+      enabled: true
+      label: "Back to List"
+      permission: ""
