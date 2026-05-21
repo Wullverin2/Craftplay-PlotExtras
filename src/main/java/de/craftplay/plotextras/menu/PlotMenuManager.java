@@ -3,6 +3,7 @@ package de.craftplay.plotextras.menu;
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
 import de.craftplay.plotextras.backup.PlotBackupMetadata;
 import de.craftplay.plotextras.backup.PlotBackupService;
+import de.craftplay.plotextras.future.PlotFutureService;
 import de.craftplay.plotextras.hook.FloodgateHook;
 import de.craftplay.plotextras.hook.HeadDatabaseHook;
 import de.craftplay.plotextras.hook.PlaceholderHook;
@@ -60,6 +61,7 @@ public final class PlotMenuManager implements Listener {
     private final PlotBackupService backupService;
     private final ReportService reportService;
     private final PlotRoleService roleService;
+    private final PlotFutureService futureService;
     private final HeadDatabaseHook headDatabaseHook;
     private final PlaceholderHook placeholderHook;
     private final FloodgateHook floodgateHook;
@@ -160,7 +162,8 @@ public final class PlotMenuManager implements Listener {
             final PlotDataStore plotDataStore,
             final PlotBackupService backupService,
             final ReportService reportService,
-            final PlotRoleService roleService
+            final PlotRoleService roleService,
+            final PlotFutureService futureService
     ) {
         this.plugin = plugin;
         this.languageManager = languageManager;
@@ -170,6 +173,7 @@ public final class PlotMenuManager implements Listener {
         this.backupService = backupService;
         this.reportService = reportService;
         this.roleService = roleService;
+        this.futureService = futureService;
         this.headDatabaseHook = new HeadDatabaseHook(plugin);
         this.placeholderHook = new PlaceholderHook(plugin);
         this.floodgateHook = new FloodgateHook(plugin);
@@ -2554,6 +2558,11 @@ public final class PlotMenuManager implements Listener {
 
         if (command.toLowerCase(Locale.ROOT).startsWith("role:")) {
             runRoleCommand(player, command.substring("role:".length()).trim());
+            return;
+        }
+
+        if (command.toLowerCase(Locale.ROOT).startsWith("future:")) {
+            futureService.runCommand(player, command.substring("future:".length()).trim());
             return;
         }
 

@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 8
+file-version: 9
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -185,3 +185,54 @@ chat-plot-search: "&eSchreibe den Suchbegriff oder Spielernamen in den Chat. &7T
 chat-plot-report: "&eBeschreibe kurz das Problem auf diesem Plot. &7Tippe &ccancel &7zum Abbrechen."
 # Chatfrage für Plotnotizen.
 chat-plot-note: "&eSchreibe die neue private Notiz für diesen Plot in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+# Chatfrage für Plotmarkt, Handel und Auktionen.
+chat-future-market-value: "&eSchreibe den Preis oder Hinweis für diesen Plot in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+
+# Nachricht, wenn ein Future-Feature deaktiviert ist.
+future-disabled: "&cDieses Zukunftsfeature ist aktuell deaktiviert."
+# Allgemeine leere Liste.
+future-list-empty: "&7Keine Einträge vorhanden."
+# Überschrift der Heatmap-Ausgabe.
+future-heatmap-header: "&6Heatmap für &f{world};{plot}&6:"
+# Zeile der Heatmap-Ausgabe.
+future-heatmap-line: "&7#{rank} Zelle &f{cell}&7: &e{changes} Änderungen"
+# Besucherstatistik für einen Plot.
+future-visitors: "&aBesucherstatistik für &f{world};{plot}&a: &f{visits} &7Besuche, &f{duration} &7Aufenthalt, letzter Besuch: &f{last_visit}&7."
+# Überschrift der Ranking-Ausgabe.
+future-ranking-header: "&6Internes Plotranking:"
+# Zeile der Ranking-Ausgabe.
+future-ranking-line: "&7#{rank} &f{world};{plot} &7von &f{owner} &7- Score: &e{score} &7Besuche: &f{visits}"
+# Nachricht nach automatischem Tagging.
+future-tags-applied: "&aAutomatische Tags für &f{world};{plot} &agesetzt: &f{tags}&a."
+# Nachricht, wenn ein Plot in die Galerie aufgenommen wurde.
+future-gallery-enabled: "&aDer Plot &f{world};{plot} &aist jetzt in der Galerie."
+# Nachricht, wenn ein Plot aus der Galerie entfernt wurde.
+future-gallery-disabled: "&eDer Plot &f{world};{plot} &ewurde aus der Galerie entfernt."
+# Überschrift der Galerie-Liste.
+future-gallery-list-header: "&6Plot-Galerie:"
+# Zeile der Galerie-Liste.
+future-gallery-list-line: "&7#{rank} &f{world};{plot} &7von &f{owner} &7Merge: &f{merge}"
+# Template-Übersicht.
+future-template-list: "&aVerfügbare Templates: &f{templates}"
+# Nachricht, wenn kein Backup für Undo gefunden wurde.
+future-undo-none: "&cFür diesen Plot wurde kein passendes Backup gefunden."
+# Redstone-Analyse.
+future-redstone-scan: "&cRedstone-Analyse für &f{world};{plot}&c: Score &f{score}&7, Komponenten &f{components}&7, geprüft &f{scanned}&7, Stufe &f{level}&7."
+# Nachricht nach Markt-/Handels-/Auktionseintrag.
+future-market-listed: "&aDer Plot &f{world};{plot} &aist jetzt als &f{type} &aeingetragen. Wert: &f{value}&a."
+# Nachricht nach Entfernen eines Markteintrags.
+future-market-removed: "&eDer Markteintrag für &f{world};{plot} &ewurde entfernt."
+# Überschrift der Marktliste.
+future-market-list-header: "&6Plotliste für &f{type}&6:"
+# Zeile der Marktliste.
+future-market-list-line: "&7#{rank} &f{world};{plot} &7von &f{owner} &7Wert: &e{value}"
+# Nachricht nach Aktivieren eines NPC-Profils.
+future-npc-enabled: "&aNPC-Profil für &f{world};{plot} &aaktiviert."
+# Nachricht nach Deaktivieren eines NPC-Profils.
+future-npc-disabled: "&eNPC-Profil für &f{world};{plot} &edeaktiviert."
+# Nachricht, wenn Discord deaktiviert ist.
+future-discord-disabled: "&cDiscord ist in der Config deaktiviert oder kein Webhook ist gesetzt."
+# Nachricht nach einem Discord-Test.
+future-discord-sent: "&aDiscord-Test wurde gesendet."
+# Nachricht nach Webexport.
+future-web-exported: "&aWebübersicht exportiert: &f{file}"

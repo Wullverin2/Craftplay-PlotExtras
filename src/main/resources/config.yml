@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 10
+file-version: 11
 
 # Befehle dieses Plugins.
 command:
@@ -131,7 +131,7 @@ features:
   heatmaps: true
   visitor-statistics: true
   ranking: true
-  ai-tagging: false
+  ai-tagging: true
   gallery: true
   templates: true
   auto-backups: true
@@ -142,7 +142,119 @@ features:
   auctions: true
   npcs: false
   discord: false
-  web-overview: false
+  web-overview: true
+
+# Zukunftsfeature-System.
+future:
+  # Aktiviert oder deaktiviert die interne Datendatei für Zukunftsfeatures.
+  enabled: true
+  # Datendatei für Heatmaps, Besucherstatistiken, Galerie, Markt, NPCs und Analysen.
+  data-file: futurefeatures.yml
+  heatmaps:
+    # Wenn false, werden Heatmap-Aktionen komplett deaktiviert.
+    enabled: true
+    # Größe einer Heatmap-Zelle in Blöcken. Kleinere Werte ergeben genauere, aber größere Daten.
+    cell-size: 16
+    # Wie viele aktive Zellen im Chat ausgegeben werden.
+    top-cells: 8
+  visitor-statistics:
+    # Wenn true, werden Plotbesuche und Aufenthaltsdauer beim Betreten/Verlassen eines Plots gezählt.
+    enabled: true
+  ranking:
+    # Wenn false, wird das interne Ranking deaktiviert.
+    enabled: true
+    # Anzahl der Ranking-Einträge, die im Chat angezeigt werden.
+    limit: 10
+    weights:
+      # Punkte pro Besuch.
+      visit: 5
+      # Punkte pro Besuchsminute.
+      visit-minute: 1
+      # Bonus, wenn ein Plot in der Galerie gelistet ist.
+      gallery: 20
+      # Bonus, wenn ein Plot im Markt/Handel/Auktionssystem gelistet ist.
+      market: 10
+  ai-tagging:
+    # Wenn false, wird das automatische Tagging deaktiviert.
+    enabled: true
+    # Maximale Anzahl Blöcke, die pro Tagging-Scan geprüft werden.
+    max-scanned-blocks: 200000
+    # Ab wie vielen Redstone-Komponenten der Tag Redstone gesetzt wird.
+    redstone-threshold: 12
+    # Ab wie vielen Farmblöcken der Tag Farm gesetzt wird.
+    farm-threshold: 20
+    # Ab wie vielen shopähnlichen Blöcken der Tag Shop gesetzt wird.
+    shop-threshold: 8
+    # Ab wie vielen farbigen Blöcken der Tag Pixelart gesetzt wird.
+    pixelart-threshold: 80
+    # Ab wie vielen soliden Baublöcken der Tag Bauprojekt gesetzt wird.
+    build-threshold: 120
+  gallery:
+    # Wenn false, wird die interne Plot-Galerie deaktiviert.
+    enabled: true
+    # Anzahl der Galerie-Einträge, die im Chat angezeigt werden.
+    list-limit: 10
+  templates:
+    # Wenn false, werden Template-Profile deaktiviert.
+    enabled: true
+    # Namen der Templates, die im Chat als Übersicht angezeigt werden.
+    names:
+      - basic
+      - shop
+      - farm
+      - redstone
+  auto-backups:
+    # Wenn false, wird der Future-Button für manuelle/automatische Backups deaktiviert.
+    enabled: true
+  undo:
+    # Wenn false, wird der Future-Button zum Wiederherstellen des letzten Backups deaktiviert.
+    enabled: true
+  redstone-analysis:
+    # Wenn false, wird die Redstone-Analyse deaktiviert.
+    enabled: true
+    # Maximale Anzahl Blöcke, die pro Scan geprüft werden.
+    max-scanned-blocks: 250000
+    # Ab diesem Score gilt ein Plot als auffällig.
+    high-score: 350
+    # Ab dieser Menge Redstone-Komponenten gilt ein Plot als auffällig.
+    high-components: 96
+  market:
+    # Wenn false, wird der interne Plotmarkt deaktiviert.
+    enabled: true
+    # Standardwert, wenn kein Preis oder Hinweis eingegeben wird.
+    default-value: VB
+    # Anzahl der Markteinträge, die im Chat angezeigt werden.
+    list-limit: 10
+  trading:
+    # Wenn false, wird der interne Plothandel deaktiviert.
+    enabled: true
+  auctions:
+    # Wenn false, wird das interne Auktionsprofil deaktiviert.
+    enabled: true
+  npcs:
+    # Wenn false, wird das NPC-Profil deaktiviert.
+    enabled: false
+    # Optionaler Spielerbefehl zum Erstellen eines NPCs, falls ein externes NPC-Plugin genutzt wird.
+    # Platzhalter: {player}, {uuid}
+    spawn-command: ""
+    # Optionaler Spielerbefehl zum Entfernen eines NPCs.
+    remove-command: ""
+  discord:
+    # Wenn true, kann das Plugin Discord-Webhooks senden.
+    enabled: false
+    # Discord-Webhook-URL. Leer lassen, wenn Discord nicht genutzt wird.
+    webhook-url: ""
+    # Anzeigename des Webhooks.
+    username: "CraftplayPlotExtras"
+    # Wenn true, werden auffällige Redstone-Scans an Discord gesendet.
+    notify-redstone-scans: false
+    # Wenn true, werden neue Markt-/Handels-/Auktionseinträge an Discord gesendet.
+    notify-market: false
+  web-overview:
+    # Wenn true, kann das Plugin eine plots.json für Webübersichten exportieren.
+    enabled: true
+    # Unterordner im Pluginordner für den Webexport.
+    folder: web
 
 # Plotbackup-System.
 plot-backups:

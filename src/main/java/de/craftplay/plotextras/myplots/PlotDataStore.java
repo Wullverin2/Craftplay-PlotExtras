@@ -8,8 +8,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -114,6 +117,21 @@ public final class PlotDataStore {
         configuration.set(path, tags);
         save();
         return enabled;
+    }
+
+    public void addTags(final String plotKey, final Collection<String> newTags) {
+        if (newTags == null || newTags.isEmpty()) {
+            return;
+        }
+        final String path = plotPath(plotKey) + ".tags";
+        final Set<String> tags = new LinkedHashSet<>(configuration.getStringList(path));
+        for (final String tag : newTags) {
+            if (tag != null && !tag.trim().isEmpty()) {
+                tags.add(tag.trim());
+            }
+        }
+        configuration.set(path, new ArrayList<>(tags));
+        save();
     }
 
     public void setNote(final String plotKey, final String note) {

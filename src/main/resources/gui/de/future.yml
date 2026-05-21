@@ -1,14 +1,14 @@
 # Deutsches Zukunfts-/Premiumfeatures-Menü.
-# Diese Datei bündelt optionale Featureprofile. Jeder Button kann einzeln per enabled: false
+# Diese Datei bündelt optionale Systeme. Jeder Button kann einzeln per enabled: false
 # abgeschaltet oder mit eigenen Commands, Permissions und Icons versehen werden.
 
-file-version: 1
+file-version: 2
 title: "&8Zukunftsfeatures: {tab}"
 size: 54
 default-tab: analytics
 require-plot: false
 permission: "craftplayplotextras.future"
-bedrock: {enabled: true, title: "Zukunftsfeatures", content: "Optionale Systeme und Profile."}
+bedrock: {enabled: true, title: "Zukunftsfeatures", content: "Optionale Systeme, die direkt vom Plugin bedient werden."}
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
 buttons:
   back: {slot: 49, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
@@ -23,11 +23,11 @@ tabs:
     lore: ["&7Heatmaps, Besucher,", "&7Ranking und Redstone."]
     commands: ["open-menu:future:analytics"]
     buttons:
-      heatmaps: {slot: 19, material: MAGMA_BLOCK, name: "&6Plot Heatmaps", lore: ["&7Profil für Heatmap-Auswertungen."], commands: ["plot list top"], close: true, permission: "craftplayplotextras.future.heatmaps"}
-      visitor-statistics: {slot: 20, material: CLOCK, name: "&aBesucherstatistiken", lore: ["&7Profil für Besuchsstatistiken."], commands: ["open-menu:history:stats"], close: false, permission: "craftplayplotextras.future.visitors"}
-      ranking: {slot: 21, material: GOLD_BLOCK, name: "&6Plot Ranking", lore: ["&7Profil für Ranglisten."], commands: ["plot list top"], close: true, permission: "plots.list"}
-      ai-tagging: {slot: 22, material: COMMAND_BLOCK, name: "&dAI Tagging", lore: ["&7Standardmäßig nur Profilbutton."], commands: ["open-menu:myplots:1:category:all"], close: false, permission: "craftplayplotextras.future.ai"}
-      redstone-analysis: {slot: 23, material: REDSTONE, name: "&cRedstone Analyse", lore: ["&7Profil für Redstone-Prüfungen."], commands: ["plot debugpaste"], close: true, permission: "plots.admin"}
+      heatmaps: {slot: 19, material: MAGMA_BLOCK, name: "&6Plot Heatmaps", lore: ["&7Zeigt die aktivsten Bereiche", "&7des Plots im Chat."], commands: ["future:heatmap"], close: true, permission: "craftplayplotextras.future.heatmaps"}
+      visitor-statistics: {slot: 20, material: CLOCK, name: "&aBesucherstatistiken", lore: ["&7Zeigt Besuche, Aufenthaltsdauer", "&7und letzten Besuch."], commands: ["future:visitors"], close: true, permission: "craftplayplotextras.future.visitors"}
+      ranking: {slot: 21, material: GOLD_BLOCK, name: "&6Plot Ranking", lore: ["&7Zeigt das interne Ranking", "&7aus Besuchen und Aktivität."], commands: ["future:ranking"], close: true, permission: "craftplayplotextras.future.ranking"}
+      ai-tagging: {slot: 22, material: COMMAND_BLOCK, name: "&dAI Tagging", lore: ["&7Analysiert den aktuellen Plot", "&7und ergänzt passende Tags."], commands: ["future:ai-tag"], close: true, permission: "craftplayplotextras.future.ai"}
+      redstone-analysis: {slot: 23, material: REDSTONE, name: "&cRedstone Analyse", lore: ["&7Scant Redstone-Komponenten", "&7und speichert den Score."], commands: ["future:redstone"], close: true, permission: "craftplayplotextras.future.redstone"}
   content:
     slot: 12
     material: PAINTING
@@ -35,10 +35,11 @@ tabs:
     lore: ["&7Galerie, Templates,", "&7Auto-Backups und Undo."]
     commands: ["open-menu:future:content"]
     buttons:
-      gallery: {slot: 19, material: PAINTING, name: "&ePlot Galerie", lore: ["&7Profil für Galerien."], commands: ["plot list top"], close: true, permission: "plots.list"}
-      templates: {slot: 20, material: FILLED_MAP, name: "&aPlot Templates", lore: ["&7Öffnet Vorlagen im Erstellen-Menü."], commands: ["open-menu:create:templates"], close: false, permission: "plots.schematic.paste"}
-      auto-backups: {slot: 21, material: WRITABLE_BOOK, name: "&aAuto Backups", lore: ["&7Backups laufen bereits bei Delete,", "&7Reset und Unmerge automatisch."], commands: ["open-menu:danger:restore"], close: false, permission: "craftplayplotextras.backup.list"}
-      undo: {slot: 22, material: ENDER_CHEST, name: "&eUndo System", lore: ["&7Restore über Plotbackups."], commands: ["open-menu:team-backups:1"], close: false, permission: "craftplayplotextras.backup.restore"}
+      gallery: {slot: 19, material: PAINTING, name: "&ePlot Galerie", lore: ["&7Schaltet den aktuellen Plot", "&7in der Galerie an oder aus."], commands: ["future:gallery:toggle"], close: true, permission: "craftplayplotextras.future.gallery"}
+      gallery-list: {slot: 20, material: ITEM_FRAME, name: "&eGalerie anzeigen", lore: ["&7Listet die aktuellen", "&7Galerieplots im Chat."], commands: ["future:gallery:list"], close: true, permission: "craftplayplotextras.future.gallery"}
+      templates: {slot: 21, material: FILLED_MAP, name: "&aPlot Templates", lore: ["&7Zeigt konfigurierte Templates", "&7und öffnet das Erstellen-Menü."], commands: ["future:template:list", "open-menu:create:templates"], close: false, permission: "craftplayplotextras.future.templates"}
+      auto-backups: {slot: 22, material: WRITABLE_BOOK, name: "&aAuto Backups", lore: ["&7Erstellt sofort ein Backup", "&7vom aktuellen Plot."], commands: ["future:auto-backup"], close: true, permission: "craftplayplotextras.future.backups"}
+      undo: {slot: 23, material: ENDER_CHEST, name: "&eUndo System", lore: ["&7Sucht das letzte Backup", "&7des aktuellen Plots."], commands: ["future:undo"], close: true, permission: "craftplayplotextras.future.undo"}
   economy:
     slot: 14
     material: EMERALD
@@ -46,10 +47,11 @@ tabs:
     lore: ["&7Markt, Handel,", "&7Auktionen und NPCs."]
     commands: ["open-menu:future:economy"]
     buttons:
-      market: {slot: 19, material: EMERALD, name: "&aPlot Markt", lore: ["&7Profil für Marktsysteme."], commands: ["plot list all"], close: true, permission: "craftplayplotextras.future.market"}
-      trading: {slot: 20, material: CHEST, name: "&aPlot Handel", lore: ["&7Profil für Handelssysteme."], commands: ["plot list all"], close: true, permission: "craftplayplotextras.future.trading"}
-      auctions: {slot: 21, material: GOLD_INGOT, name: "&6Plot Auktionen", lore: ["&7Profil für Auktionen."], commands: ["plot list all"], close: true, permission: "craftplayplotextras.future.auctions"}
-      npcs: {slot: 22, material: PLAYER_HEAD, name: "&ePlot NPCs", lore: ["&7Profil für NPC-Systeme."], commands: ["plot info"], close: true, permission: "craftplayplotextras.future.npcs"}
+      market: {slot: 19, material: EMERALD, name: "&aPlot verkaufen", lore: ["&7Fragt einen Preis ab und", "&7listet den Plot im Markt."], commands: ["chat-input:chat-future-market-value:future:market:sale:{input}"], close: true, permission: "craftplayplotextras.future.market"}
+      market-list: {slot: 20, material: EMERALD_BLOCK, name: "&aMarkt anzeigen", lore: ["&7Listet Verkaufsplots", "&7im Chat."], commands: ["future:market:list:sale"], close: true, permission: "craftplayplotextras.future.market"}
+      trading: {slot: 21, material: CHEST, name: "&aPlot handeln", lore: ["&7Fragt einen Handelshinweis ab", "&7und listet den Plot."], commands: ["chat-input:chat-future-market-value:future:market:trade:{input}"], close: true, permission: "craftplayplotextras.future.trading"}
+      auctions: {slot: 22, material: GOLD_INGOT, name: "&6Plot Auktion", lore: ["&7Fragt Startpreis oder Hinweis ab", "&7und listet den Plot als Auktion."], commands: ["chat-input:chat-future-market-value:future:market:auction:{input}"], close: true, permission: "craftplayplotextras.future.auctions"}
+      npcs: {slot: 23, material: PLAYER_HEAD, name: "&ePlot NPCs", lore: ["&7Schaltet das NPC-Profil", "&7für diesen Plot um."], commands: ["future:npc:toggle"], close: true, permission: "craftplayplotextras.future.npcs"}
   integrations:
     slot: 16
     material: BEACON
@@ -57,5 +59,5 @@ tabs:
     lore: ["&7Discord und Webübersicht."]
     commands: ["open-menu:future:integrations"]
     buttons:
-      discord: {slot: 20, material: BELL, name: "&9Discord Integration", lore: ["&7Profil für Discordmeldungen."], commands: ["plot info"], close: true, permission: "craftplayplotextras.future.discord"}
-      web-overview: {slot: 22, material: MAP, name: "&bWebübersicht", lore: ["&7Profil für Webkarten oder Übersichten."], commands: ["plot list top"], close: true, permission: "craftplayplotextras.future.web"}
+      discord: {slot: 20, material: BELL, name: "&9Discord Integration", lore: ["&7Sendet eine Testmeldung", "&7an den konfigurierten Webhook."], commands: ["future:discord:test"], close: true, permission: "craftplayplotextras.future.discord"}
+      web-overview: {slot: 22, material: MAP, name: "&bWebübersicht", lore: ["&7Exportiert die gespeicherten", "&7Plotdaten als plots.json."], commands: ["future:web:export"], close: true, permission: "craftplayplotextras.future.web"}

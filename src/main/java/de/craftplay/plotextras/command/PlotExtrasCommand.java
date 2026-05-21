@@ -73,6 +73,25 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             plugin.getPlotMenuManager().openRoleListMenu(player, 1);
             return true;
         }
+        if (args.length >= 1 && args[0].equalsIgnoreCase("future")) {
+            if (!player.hasPermission("craftplayplotextras.future")) {
+                plugin.getLanguageManager().send(player, "no-permission");
+                return true;
+            }
+            if (args.length == 1) {
+                plugin.getPlotMenuManager().openActionMenu(player, "future");
+                return true;
+            }
+            final StringBuilder payload = new StringBuilder();
+            for (int index = 1; index < args.length; index++) {
+                if (payload.length() > 0) {
+                    payload.append(':');
+                }
+                payload.append(args[index]);
+            }
+            plugin.getPlotFutureService().runCommand(player, payload.toString());
+            return true;
+        }
 
         if (!player.hasPermission("craftplayplotextras.use")) {
             plugin.getLanguageManager().send(player, "no-permission");
@@ -170,6 +189,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (sender.hasPermission("craftplayplotextras.roles.manage") && "roles".startsWith(input)) {
             completions.add("roles");
+        }
+        if (sender.hasPermission("craftplayplotextras.future") && "future".startsWith(input)) {
+            completions.add("future");
         }
         if (sender.hasPermission("craftplayplotextras.use") && "gui".startsWith(input)) {
             completions.add("gui");

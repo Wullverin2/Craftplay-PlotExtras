@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 9
+file-version: 10
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -102,8 +102,26 @@ permissions:
   craftplayplotextras.future.visitors:
     description: Erlaubt Besucherstatistik-Profile.
     default: op
+  craftplayplotextras.future.ranking:
+    description: Erlaubt das interne Plotranking.
+    default: op
   craftplayplotextras.future.ai:
     description: Erlaubt AI-Tagging-Profile.
+    default: op
+  craftplayplotextras.future.gallery:
+    description: Erlaubt die interne Plot-Galerie.
+    default: op
+  craftplayplotextras.future.templates:
+    description: Erlaubt Template-Profile.
+    default: op
+  craftplayplotextras.future.backups:
+    description: Erlaubt Future-Backup-Aktionen.
+    default: op
+  craftplayplotextras.future.undo:
+    description: Erlaubt das Wiederherstellen des letzten Plotbackups.
+    default: op
+  craftplayplotextras.future.redstone:
+    description: Erlaubt Redstone-Analysen.
     default: op
   craftplayplotextras.future.market:
     description: Erlaubt Plotmarkt-Profile.
@@ -122,6 +140,9 @@ permissions:
     default: op
   craftplayplotextras.future.web:
     description: Erlaubt Webübersicht-Profile.
+    default: op
+  craftplayplotextras.future.manage:
+    description: Erlaubt das Bearbeiten fremder Future-Plotdaten.
     default: op
   craftplayplotextras.backup.create:
     # Erlaubt das Erstellen von Plotbackups.

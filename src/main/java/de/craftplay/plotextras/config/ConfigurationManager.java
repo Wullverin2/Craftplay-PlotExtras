@@ -187,6 +187,45 @@ public final class ConfigurationManager {
             existing.set("buttons.future.close", false);
             changed = true;
         }
+        if (resourcePath.replace('\\', '/').endsWith("/future.yml") && existingVersion < 2) {
+            existing.set("tabs.analytics.buttons.heatmaps.commands", Arrays.asList("future:heatmap"));
+            existing.set("tabs.analytics.buttons.heatmaps.close", true);
+            existing.set("tabs.analytics.buttons.visitor-statistics.commands", Arrays.asList("future:visitors"));
+            existing.set("tabs.analytics.buttons.visitor-statistics.close", true);
+            existing.set("tabs.analytics.buttons.ranking.commands", Arrays.asList("future:ranking"));
+            existing.set("tabs.analytics.buttons.ranking.close", true);
+            existing.set("tabs.analytics.buttons.ranking.permission", "craftplayplotextras.future.ranking");
+            existing.set("tabs.analytics.buttons.ai-tagging.commands", Arrays.asList("future:ai-tag"));
+            existing.set("tabs.analytics.buttons.ai-tagging.close", true);
+            existing.set("tabs.analytics.buttons.redstone-analysis.commands", Arrays.asList("future:redstone"));
+            existing.set("tabs.analytics.buttons.redstone-analysis.close", true);
+            existing.set("tabs.analytics.buttons.redstone-analysis.permission", "craftplayplotextras.future.redstone");
+            existing.set("tabs.content.buttons.gallery.commands", Arrays.asList("future:gallery:toggle"));
+            existing.set("tabs.content.buttons.gallery.close", true);
+            existing.set("tabs.content.buttons.gallery.permission", "craftplayplotextras.future.gallery");
+            existing.set("tabs.content.buttons.templates.commands", Arrays.asList("future:template:list", "open-menu:create:templates"));
+            existing.set("tabs.content.buttons.templates.close", false);
+            existing.set("tabs.content.buttons.templates.permission", "craftplayplotextras.future.templates");
+            existing.set("tabs.content.buttons.auto-backups.commands", Arrays.asList("future:auto-backup"));
+            existing.set("tabs.content.buttons.auto-backups.close", true);
+            existing.set("tabs.content.buttons.auto-backups.permission", "craftplayplotextras.future.backups");
+            existing.set("tabs.content.buttons.undo.commands", Arrays.asList("future:undo"));
+            existing.set("tabs.content.buttons.undo.close", true);
+            existing.set("tabs.content.buttons.undo.permission", "craftplayplotextras.future.undo");
+            existing.set("tabs.economy.buttons.market.commands", Arrays.asList("chat-input:chat-future-market-value:future:market:sale:{input}"));
+            existing.set("tabs.economy.buttons.market.close", true);
+            existing.set("tabs.economy.buttons.trading.commands", Arrays.asList("chat-input:chat-future-market-value:future:market:trade:{input}"));
+            existing.set("tabs.economy.buttons.trading.close", true);
+            existing.set("tabs.economy.buttons.auctions.commands", Arrays.asList("chat-input:chat-future-market-value:future:market:auction:{input}"));
+            existing.set("tabs.economy.buttons.auctions.close", true);
+            existing.set("tabs.economy.buttons.npcs.commands", Arrays.asList("future:npc:toggle"));
+            existing.set("tabs.economy.buttons.npcs.close", true);
+            existing.set("tabs.integrations.buttons.discord.commands", Arrays.asList("future:discord:test"));
+            existing.set("tabs.integrations.buttons.discord.close", true);
+            existing.set("tabs.integrations.buttons.web-overview.commands", Arrays.asList("future:web:export"));
+            existing.set("tabs.integrations.buttons.web-overview.close", true);
+            changed = true;
+        }
         if (existingVersion != defaultVersion) {
             existing.set("file-version", defaultVersion);
             changed = true;

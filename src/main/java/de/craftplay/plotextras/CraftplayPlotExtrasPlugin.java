@@ -3,9 +3,11 @@ package de.craftplay.plotextras;
 import de.craftplay.plotextras.backup.PlotBackupService;
 import de.craftplay.plotextras.command.PlotExtrasCommand;
 import de.craftplay.plotextras.config.ConfigurationManager;
+import de.craftplay.plotextras.future.PlotFutureService;
 import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.listener.CommandListener;
 import de.craftplay.plotextras.listener.PlotBackupProtectionListener;
+import de.craftplay.plotextras.listener.PlotFutureListener;
 import de.craftplay.plotextras.menu.PlotMenuManager;
 import de.craftplay.plotextras.myplots.PlotDataStore;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
@@ -26,6 +28,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     private PlotBackupService plotBackupService;
     private ReportService reportService;
     private PlotRoleService plotRoleService;
+    private PlotFutureService plotFutureService;
     private PlotExtrasCommand commandExecutor;
 
     @Override
@@ -45,13 +48,16 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         plotRoleService.reload();
         plotBackupService = new PlotBackupService(this);
         plotBackupService.reload();
+        plotFutureService = new PlotFutureService(this, plotDataStore);
+        plotFutureService.reload();
         plotMenuManager = new PlotMenuManager(this, languageManager, plotSquaredFlagService, plotSquaredPlotService,
-                plotDataStore, plotBackupService, reportService, plotRoleService);
+                plotDataStore, plotBackupService, reportService, plotRoleService, plotFutureService);
         plotMenuManager.reload();
 
         getServer().getPluginManager().registerEvents(plotMenuManager, this);
         getServer().getPluginManager().registerEvents(new CommandListener(this), this);
         getServer().getPluginManager().registerEvents(new PlotBackupProtectionListener(plotBackupService), this);
+        getServer().getPluginManager().registerEvents(new PlotFutureListener(plotFutureService), this);
         registerCommands();
 
         getLogger().info("CraftplayPlotExtras Menü wurde geladen.");
@@ -59,6 +65,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (plotFutureService != null) {
+            plotFutureService.shutdown();
+        }
         getLogger().info("CraftplayPlotExtras Menü wurde beendet.");
     }
 
@@ -70,6 +79,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         reportService.reload();
         plotRoleService.reload();
         plotBackupService.reload();
+        plotFutureService.reload();
         plotMenuManager.reload();
     }
 
@@ -103,6 +113,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
 
     public PlotRoleService getPlotRoleService() {
         return plotRoleService;
+    }
+
+    public PlotFutureService getPlotFutureService() {
+        return plotFutureService;
     }
 
     public PlotExtrasCommand getCommandExecutor() {

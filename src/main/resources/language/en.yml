@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 8
+file-version: 9
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -185,3 +185,54 @@ chat-plot-search: "&eType the search term or player name in chat. &7Type &ccance
 chat-plot-report: "&eBriefly describe the problem on this plot. &7Type &ccancel &7to cancel."
 # Chat prompt for plot notes.
 chat-plot-note: "&eType the new private note for this plot in chat. &7Type &ccancel &7to cancel."
+# Chat prompt for market, trade, and auction values.
+chat-future-market-value: "&eType the price or note for this plot in chat. &7Type &ccancel &7to cancel."
+
+# Message shown when a future feature is disabled.
+future-disabled: "&cThis future feature is currently disabled."
+# Generic empty list message.
+future-list-empty: "&7No entries available."
+# Heatmap header.
+future-heatmap-header: "&6Heatmap for &f{world};{plot}&6:"
+# Heatmap line.
+future-heatmap-line: "&7#{rank} cell &f{cell}&7: &e{changes} changes"
+# Visitor statistics for a plot.
+future-visitors: "&aVisitor statistics for &f{world};{plot}&a: &f{visits} &7visits, &f{duration} &7duration, last visit: &f{last_visit}&7."
+# Ranking header.
+future-ranking-header: "&6Internal plot ranking:"
+# Ranking line.
+future-ranking-line: "&7#{rank} &f{world};{plot} &7by &f{owner} &7- score: &e{score} &7visits: &f{visits}"
+# Message after automatic tagging.
+future-tags-applied: "&aAutomatic tags for &f{world};{plot} &aset: &f{tags}&a."
+# Message when a plot was added to the gallery.
+future-gallery-enabled: "&aPlot &f{world};{plot} &ais now in the gallery."
+# Message when a plot was removed from the gallery.
+future-gallery-disabled: "&ePlot &f{world};{plot} &ewas removed from the gallery."
+# Gallery list header.
+future-gallery-list-header: "&6Plot gallery:"
+# Gallery list line.
+future-gallery-list-line: "&7#{rank} &f{world};{plot} &7by &f{owner} &7merge: &f{merge}"
+# Template overview.
+future-template-list: "&aAvailable templates: &f{templates}"
+# Message when no backup was found for undo.
+future-undo-none: "&cNo matching backup was found for this plot."
+# Redstone analysis.
+future-redstone-scan: "&cRedstone analysis for &f{world};{plot}&c: score &f{score}&7, components &f{components}&7, scanned &f{scanned}&7, level &f{level}&7."
+# Message after market/trade/auction listing.
+future-market-listed: "&aPlot &f{world};{plot} &ais now listed as &f{type}&a. Value: &f{value}&a."
+# Message after removing a market listing.
+future-market-removed: "&eMarket listing for &f{world};{plot} &ewas removed."
+# Market list header.
+future-market-list-header: "&6Plot list for &f{type}&6:"
+# Market list line.
+future-market-list-line: "&7#{rank} &f{world};{plot} &7by &f{owner} &7value: &e{value}"
+# Message after enabling an NPC profile.
+future-npc-enabled: "&aNPC profile for &f{world};{plot} &aenabled."
+# Message after disabling an NPC profile.
+future-npc-disabled: "&eNPC profile for &f{world};{plot} &edisabled."
+# Message when Discord is disabled.
+future-discord-disabled: "&cDiscord is disabled in the config or no webhook is set."
+# Message after Discord test.
+future-discord-sent: "&aDiscord test was sent."
+# Message after web export.
+future-web-exported: "&aWeb overview exported: &f{file}"
