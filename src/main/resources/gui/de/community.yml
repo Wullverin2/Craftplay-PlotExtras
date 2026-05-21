@@ -1,0 +1,21 @@
+# Deutsches Community-Menü.
+# Diese Datei steuert Community-Funktionen wie Top-Plots, neue Plots, Bewertungen und Teilen.
+# Die Buttons sind Command-Profile und können an vorhandene Server-/PlotSquared-Systeme angepasst werden.
+file-version: 1
+title: "&8Community"
+bedrock: {enabled: true, title: "Community", content: "Entdecke, bewerte und teile Plots."}
+size: 27
+require-plot: false
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  rate: {slot: 10, material: NETHER_STAR, name: "&ePlot bewerten", lore: ["&7Bewertet den Plot, auf dem du stehst.", "&7Command frei anpassbar."], commands: ["plot rate"], close: true, permission: "plots.rate"}
+  comments: {slot: 11, material: BOOK, name: "&aKommentare", lore: ["&7Öffnet Kommentare oder Gästebuch."], commands: ["plot comment"], close: true, permission: "plots.comment"}
+  top: {slot: 12, material: GOLD_BLOCK, name: "&6Top-Plots", lore: ["&7Öffnet beliebte Plots."], commands: ["plot list top"], close: true, permission: "plots.list"}
+  newest: {slot: 13, material: CLOCK, name: "&aNeueste Plots", lore: ["&7Öffnet neue Plots."], commands: ["plot list latest"], close: true, permission: "plots.list"}
+  visited: {slot: 14, material: COMPASS, name: "&aMeistbesuchte Plots", lore: ["&7Öffnet besuchte Plots."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+  share: {slot: 15, material: WRITABLE_BOOK, name: "&aPlot teilen", lore: ["&7Sendet Plotinfo in den Chat."], commands: ["plot info"], close: true, permission: "plots.info"}
+  invite: {slot: 16, material: PLAYER_HEAD, name: "&aFreund einladen", lore: ["&7Fragt Spielernamen ab und trustet ihn."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
+  back: {slot: 22, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

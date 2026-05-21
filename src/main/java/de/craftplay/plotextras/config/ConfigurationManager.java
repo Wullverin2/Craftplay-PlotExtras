@@ -30,6 +30,22 @@ public final class ConfigurationManager {
             "gui/en/myplots.yml",
             "gui/de/bedrock-myplots.yml",
             "gui/en/bedrock-myplots.yml",
+            "gui/de/create.yml",
+            "gui/en/create.yml",
+            "gui/de/members.yml",
+            "gui/en/members.yml",
+            "gui/de/search.yml",
+            "gui/en/search.yml",
+            "gui/de/community.yml",
+            "gui/en/community.yml",
+            "gui/de/reports.yml",
+            "gui/en/reports.yml",
+            "gui/de/history.yml",
+            "gui/en/history.yml",
+            "gui/de/danger.yml",
+            "gui/en/danger.yml",
+            "gui/de/help.yml",
+            "gui/en/help.yml",
             "gui/de/flags.yml",
             "gui/en/flags.yml",
             "gui/de/settings.yml",
@@ -119,6 +135,44 @@ public final class ConfigurationManager {
             existing.set("buttons.my-plots.close", false);
             existing.set("buttons.favorites.commands", Arrays.asList("open-menu:myplots:1:name:favorites"));
             existing.set("buttons.favorites.close", false);
+            changed = true;
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/main.yml") && existingVersion < 12) {
+            existing.set("buttons.search.commands", Arrays.asList("open-menu:search"));
+            existing.set("buttons.search.close", false);
+            existing.set("buttons.create.commands", Arrays.asList("open-menu:create:types"));
+            existing.set("buttons.create.close", false);
+            existing.set("buttons.community.commands", Arrays.asList("open-menu:community"));
+            existing.set("buttons.community.close", false);
+            existing.set("buttons.members.commands", Arrays.asList("open-menu:members:overview"));
+            existing.set("buttons.members.close", false);
+            existing.set("buttons.roles.commands", Arrays.asList("open-menu:members:roles"));
+            existing.set("buttons.roles.close", false);
+            existing.set("buttons.reports.commands", Arrays.asList("open-menu:reports"));
+            existing.set("buttons.reports.close", false);
+            existing.set("buttons.history.commands", Arrays.asList("open-menu:history"));
+            existing.set("buttons.history.close", false);
+            existing.set("buttons.help.commands", Arrays.asList("open-menu:help"));
+            existing.set("buttons.help.close", false);
+            changed = true;
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/bedrock.yml") && existingVersion < 3) {
+            existing.set("buttons.search.commands", Arrays.asList("open-menu:search"));
+            existing.set("buttons.search.close", false);
+            existing.set("buttons.create.commands", Arrays.asList("open-menu:create:types"));
+            existing.set("buttons.create.close", false);
+            existing.set("buttons.community.commands", Arrays.asList("open-menu:community"));
+            existing.set("buttons.community.close", false);
+            existing.set("buttons.members.commands", Arrays.asList("open-menu:members:overview"));
+            existing.set("buttons.members.close", false);
+            existing.set("buttons.roles.commands", Arrays.asList("open-menu:members:roles"));
+            existing.set("buttons.roles.close", false);
+            existing.set("buttons.reports.commands", Arrays.asList("open-menu:reports"));
+            existing.set("buttons.reports.close", false);
+            existing.set("buttons.history.commands", Arrays.asList("open-menu:history"));
+            existing.set("buttons.history.close", false);
+            existing.set("buttons.help.commands", Arrays.asList("open-menu:help"));
+            existing.set("buttons.help.close", false);
             changed = true;
         }
         if (existingVersion != defaultVersion) {

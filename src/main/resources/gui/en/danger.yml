@@ -1,0 +1,18 @@
+# English safety menu for dangerous plot actions.
+# This file controls delete, reset, and manual backups.
+# Plot delete/reset are additionally intercepted by the backup system and run only after backup/confirmation.
+file-version: 1
+title: "&8Delete & Reset"
+bedrock: {enabled: true, title: "Delete & Reset", content: "Safely run dangerous plot actions."}
+size: 27
+require-plot: true
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  backup: {slot: 10, material: WRITABLE_BOOK, name: "&aCreate Backup First", lore: ["&7Creates a manual schematic backup."], commands: ["plot-backup:create"], close: true, permission: "craftplayplotextras.backup.create"}
+  delete: {slot: 12, material: TNT, name: "&cDelete Plot", lore: ["&7Intercepted by the backup system.", "&7A confirmation follows."], commands: ["plot delete"], close: true, permission: "plots.delete"}
+  reset: {slot: 14, material: LAVA_BUCKET, name: "&cReset Plot", lore: ["&7Intercepted by the backup system.", "&7A confirmation follows."], commands: ["plot clear"], close: true, permission: "plots.clear"}
+  unmerge: {slot: 16, material: SHEARS, name: "&cUnmerge", lore: ["&7Backed up before execution."], commands: ["plot unmerge"], close: true, permission: "plots.unmerge"}
+  back: {slot: 22, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: RED_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

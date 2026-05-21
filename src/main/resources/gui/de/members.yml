@@ -1,0 +1,74 @@
+# Deutsches Mitglieder- und Rollen-Menü.
+# Diese Datei steuert Added, Trusted, Denied, eigene Rollenprofile, temporäre Rechte und Entfernen.
+# Spieler werden per privater Chat-Eingabe abgefragt. Diese Eingabe ist für andere nicht sichtbar.
+# Eigene Rollen sind als Buttons/Profile konfigurierbar und können beliebige PlotSquared-Commands ausführen.
+
+file-version: 1
+
+title: "&8Mitglieder: {tab}"
+bedrock:
+  enabled: true
+  title: "Mitglieder & Rollen"
+  content: "Verwalte Mitglieder, Rollen und Rechte auf deinem aktuellen Plot."
+size: 54
+default-tab: overview
+require-plot: true
+permission: "plots.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  back: {slot: 49, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+  close: {slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+decorations:
+  border: {slot: [0, 8, 45, 46, 47, 48, 50, 51, 52], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+tabs:
+  overview:
+    slot: 10
+    material: PLAYER_HEAD
+    name: "&aÜbersicht"
+    lore: ["&7Öffnet PlotSquared-Listen", "&7für Rollen und Mitglieder."]
+    commands: ["open-menu:members:overview"]
+    permission: ""
+    buttons:
+      members: {slot: 20, material: PLAYER_HEAD, name: "&aMitgliederliste", lore: ["&7Zeigt alle Mitglieder über PlotSquared."], commands: ["plot members"], close: true, permission: "plots.info"}
+      trusted: {slot: 21, material: LIME_DYE, name: "&aTrusted anzeigen", lore: ["&7Zeigt vertraute Spieler."], commands: ["plot trusted"], close: true, permission: "plots.info"}
+      added: {slot: 22, material: PAPER, name: "&aAdded anzeigen", lore: ["&7Zeigt hinzugefügte Spieler."], commands: ["plot added"], close: true, permission: "plots.info"}
+      denied: {slot: 23, material: RED_DYE, name: "&cDenied anzeigen", lore: ["&7Zeigt ausgeschlossene Spieler."], commands: ["plot denied"], close: true, permission: "plots.info"}
+      online: {slot: 24, material: COMPASS, name: "&aOnline-Status", lore: ["&7Öffnet die PlotSquared-Info.", "&7Dort siehst du Besitzer und Mitglieder."], commands: ["plot info"], close: true, permission: "plots.info"}
+  add:
+    slot: 12
+    material: EMERALD
+    name: "&aSpieler hinzufügen"
+    lore: ["&7Wähle eine Rolle und gib", "&7danach den Spielernamen ein."]
+    commands: ["open-menu:members:add"]
+    permission: ""
+    buttons:
+      added: {slot: 20, material: PAPER, name: "&aAls Added hinzufügen", lore: ["&7Darf bauen, wenn Plotregeln es erlauben."], commands: ["chat-input:chat-member-player:plot add {input}"], close: true, permission: "plots.add"}
+      trusted: {slot: 21, material: LIME_DYE, name: "&aAls Trusted hinzufügen", lore: ["&7Vertraute Spieler erhalten mehr Zugriff."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
+      denied: {slot: 22, material: RED_DYE, name: "&cSpieler denyen", lore: ["&7Spieler vom Plot ausschließen."], commands: ["chat-input:chat-member-player:plot deny {input}"], close: true, permission: "plots.deny"}
+      helper: {slot: 23, material: IRON_PICKAXE, name: "&aRolle Helper", lore: ["&7Beispiel für eine eigene Rolle.", "&7Standard: Plot add."], commands: ["chat-input:chat-member-player:plot add {input}"], close: true, permission: "plots.add"}
+      temp: {slot: 24, material: CLOCK, name: "&eTemporäre Rechte", lore: ["&7Serverabhängiger Beispielbutton.", "&7Command frei anpassbar."], commands: ["chat-input:chat-member-player:plot add {input}"], close: true, permission: "plots.add"}
+  remove:
+    slot: 14
+    material: REDSTONE_BLOCK
+    name: "&cEntfernen"
+    lore: ["&7Untrust, Remove und Undeny", "&7per privater Eingabe."]
+    commands: ["open-menu:members:remove"]
+    permission: ""
+    buttons:
+      remove: {slot: 20, material: BARRIER, name: "&cVom Plot entfernen", lore: ["&7Entfernt Added/Trusted."], commands: ["chat-input:chat-member-player:plot remove {input}"], close: true, permission: "plots.remove"}
+      untrust: {slot: 21, material: GRAY_DYE, name: "&eTrusted entfernen", lore: ["&7Entfernt Trust-Rechte."], commands: ["chat-input:chat-member-player:plot untrust {input}"], close: true, permission: "plots.trust"}
+      undeny: {slot: 22, material: LIME_DYE, name: "&aDeny entfernen", lore: ["&7Hebt Deny wieder auf."], commands: ["chat-input:chat-member-player:plot undeny {input}"], close: true, permission: "plots.deny"}
+      clear-denied: {slot: 24, material: CAULDRON, name: "&cDenied-Liste leeren", lore: ["&7Gefährlicher Command, wenn gewünscht anpassen."], commands: ["plot undeny *"], close: true, permission: "plots.deny"}
+  roles:
+    slot: 16
+    material: WRITABLE_BOOK
+    name: "&aRollen & Rechte"
+    lore: ["&7Befördern, degradieren,", "&7kopieren und exportieren."]
+    commands: ["open-menu:members:roles"]
+    permission: ""
+    buttons:
+      promote: {slot: 19, material: LIME_DYE, name: "&aBefördern zu Trusted", lore: ["&7Fragt Spieler ab und trustet ihn."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
+      demote: {slot: 20, material: ORANGE_DYE, name: "&eDegradieren zu Added", lore: ["&7Entfernt Trust und fügt Added hinzu."], commands: ["chat-input:chat-member-player:plot untrust {input}"], close: true, permission: "plots.trust"}
+      copy-role: {slot: 22, material: BOOK, name: "&aRolle kopieren", lore: ["&7Beispielbutton für externe Rollenplugins.", "&7Command frei anpassbar."], commands: ["plot members"], close: true, permission: "plots.info"}
+      export-role: {slot: 23, material: CHEST, name: "&aRollen exportieren", lore: ["&7Zeigt Mitgliederlisten als Exportbasis."], commands: ["plot members"], close: true, permission: "plots.info"}
+      owner-info: {slot: 25, material: GOLD_BLOCK, name: "&6Owner", lore: ["&7Owner ist PlotSquared-Besitzer.", "&7Diese Rolle wird nicht entfernt."], commands: ["plot info"], close: true, permission: "plots.info"}

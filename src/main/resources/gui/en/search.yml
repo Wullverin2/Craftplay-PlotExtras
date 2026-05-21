@@ -1,0 +1,21 @@
+# English plot search menu.
+# This file controls search buttons for owners, names, tags, categories, and quick filters.
+# Chat input is private and is not sent to other players.
+file-version: 1
+title: "&8Search Plot"
+bedrock: {enabled: true, title: "Search Plot", content: "Search plots by owner, name, category, or usage."}
+size: 27
+require-plot: false
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  by-owner: {slot: 10, material: PLAYER_HEAD, name: "&aBy Owner", lore: ["&7Asks for a player name.", "&7Then /plot visit is used."], commands: ["chat-input:chat-plot-search:plot visit {input}"], close: true, permission: "plots.visit"}
+  by-name: {slot: 11, material: NAME_TAG, name: "&aBy Plot Name", lore: ["&7Asks for a plot name.", "&7Command is configurable."], commands: ["chat-input:chat-plot-search:plot visit {input}"], close: true, permission: "plots.visit"}
+  public: {slot: 12, material: OAK_DOOR, name: "&aPublic Plots", lore: ["&7Opens the public plot list."], commands: ["plot list all"], close: true, permission: "plots.list"}
+  shops: {slot: 13, material: CHEST, name: "&aShops", lore: ["&7Example tag/category search."], commands: ["plot list all"], close: true, permission: "plots.list"}
+  redstone: {slot: 14, material: REDSTONE, name: "&aRedstone Plots", lore: ["&7Example category search."], commands: ["plot list all"], close: true, permission: "plots.list"}
+  online: {slot: 15, material: LIME_DYE, name: "&aOnline Owners", lore: ["&7Server-dependent search button."], commands: ["plot visit"], close: true, permission: "plots.visit"}
+  own: {slot: 16, material: MAP, name: "&aMy Plots", lore: ["&7Back to your plot list."], commands: ["open-menu:myplots"], close: false, permission: ""}
+  back: {slot: 22, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

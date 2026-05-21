@@ -6,7 +6,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 2
+file-version: 3
 
 # Wenn false, wird dieses Bedrock-Menü nicht geladen.
 enabled: true
@@ -44,15 +44,15 @@ buttons:
     order: 20
     label: "Plot suchen"
     commands:
-      - "plot visit"
-    close: true
+      - "open-menu:search"
+    close: false
     permission: ""
   create:
     order: 30
     label: "Plot erstellen"
     commands:
-      - "plot auto"
-    close: true
+      - "open-menu:create:types"
+    close: false
     permission: "plots.auto"
   favorites:
     order: 40
@@ -65,22 +65,22 @@ buttons:
     order: 50
     label: "Community"
     commands:
-      - "plot list all"
-    close: true
+      - "open-menu:community"
+    close: false
     permission: ""
   members:
     order: 60
     label: "Mitglieder"
     commands:
-      - "plot members"
-    close: true
+      - "open-menu:members:overview"
+    close: false
     permission: ""
   roles:
     order: 70
     label: "Rechte & Rollen"
     commands:
-      - "plot members"
-    close: true
+      - "open-menu:members:roles"
+    close: false
     permission: ""
   flags:
     order: 80
@@ -100,22 +100,22 @@ buttons:
     order: 100
     label: "Reports"
     commands:
-      - "plot report"
-    close: true
+      - "open-menu:reports"
+    close: false
     permission: ""
   history:
     order: 110
     label: "Verlauf"
     commands:
-      - "plot list visited"
-    close: true
+      - "open-menu:history"
+    close: false
     permission: ""
   help:
     order: 120
     label: "Hilfe"
     commands:
-      - "plot help"
-    close: true
+      - "open-menu:help"
+    close: false
     permission: ""
   team:
     order: 130
@@ -124,3 +124,10 @@ buttons:
       - "open-menu:team"
     close: true
     permission: "craftplayplotextras.team"
+  danger:
+    order: 125
+    label: "Löschen & Reset"
+    commands:
+      - "open-menu:danger"
+    close: false
+    permission: ""

@@ -1,0 +1,20 @@
+# Deutsches Report-Menü.
+# Diese Datei steuert Report-Kategorien. Eigene Texte werden privat im Chat abgefragt.
+# Die Befehle sind Standardprofile und können an dein Report-/Ticket-System angepasst werden.
+file-version: 1
+title: "&8Plot melden"
+bedrock: {enabled: true, title: "Plot melden", content: "Wähle eine Kategorie oder schreibe einen eigenen Report."}
+size: 27
+require-plot: true
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  grief: {slot: 10, material: TNT, name: "&cGriefing", lore: ["&7Meldet Griefing auf diesem Plot."], commands: ["plot report Griefing"], close: true, permission: "plots.report"}
+  inappropriate: {slot: 11, material: BARRIER, name: "&cUnpassender Inhalt", lore: ["&7Meldet unpassende Inhalte."], commands: ["plot report Unpassender Inhalt"], close: true, permission: "plots.report"}
+  lag: {slot: 12, material: REDSTONE, name: "&cLagmaschine", lore: ["&7Meldet mögliche Lagmaschinen."], commands: ["plot report Lagmaschine"], close: true, permission: "plots.report"}
+  rule: {slot: 13, material: BOOK, name: "&eRegelverstoß", lore: ["&7Meldet einen Regelverstoß."], commands: ["plot report Regelverstoß"], close: true, permission: "plots.report"}
+  custom: {slot: 14, material: WRITABLE_BOOK, name: "&aEigener Report", lore: ["&7Fragt deine Beschreibung im Chat ab."], commands: ["chat-input:chat-plot-report:plot report {input}"], close: true, permission: "plots.report"}
+  info: {slot: 16, material: COMPASS, name: "&aPlot-Info", lore: ["&7Zeigt Infos zum aktuellen Plot."], commands: ["plot info"], close: true, permission: "plots.info"}
+  back: {slot: 22, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

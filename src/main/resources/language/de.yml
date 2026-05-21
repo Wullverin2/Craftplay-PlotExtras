@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 5
+file-version: 6
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -114,3 +114,20 @@ myplots-filter-all: "Alle"
 myplots-filter-favorites: "Favoriten"
 myplots-filter-public: "Öffentlich"
 myplots-filter-private: "Privat"
+
+# Nachricht, wenn eine Chat-Eingabe falsch konfiguriert ist.
+chat-input-invalid: "&cDiese Chat-Eingabe ist falsch konfiguriert."
+# Nachricht, wenn eine Chat-Eingabe abgebrochen wurde.
+chat-input-cancelled: "&cEingabe abgebrochen."
+# Nachricht, wenn eine Chat-Eingabe angenommen wurde.
+chat-input-accepted: "&aEingabe übernommen."
+# Chatfrage für Spielernamen. Die Eingabe ist für andere nicht sichtbar.
+chat-member-player: "&eSchreibe den Spielernamen in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+# Chatfrage für Plotnamen.
+chat-plot-name: "&eSchreibe den neuen Plotnamen in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+# Chatfrage für Plotbeschreibung.
+chat-plot-description: "&eSchreibe die neue Plotbeschreibung in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+# Chatfrage für Suchbegriffe.
+chat-plot-search: "&eSchreibe den Suchbegriff oder Spielernamen in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+# Chatfrage für Reports.
+chat-plot-report: "&eBeschreibe kurz das Problem auf diesem Plot. &7Tippe &ccancel &7zum Abbrechen."

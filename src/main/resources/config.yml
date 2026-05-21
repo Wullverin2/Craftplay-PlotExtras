@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 8
+file-version: 9
 
 # Befehle dieses Plugins.
 command:
@@ -37,6 +37,30 @@ gui:
   # Datei des Bedrock-Meine-Plots-Menüs. Geladen wird gui/<sprache>/<bedrock-my-plots-menu>.
   # Diese Datei ist eine Floodgate-Form und getrennt vom Java-Inventar.
   bedrock-my-plots-menu: bedrock-myplots.yml
+  # Datei des Plot-Erstellen-Menüs. Geladen wird gui/<sprache>/<create-menu>.
+  # Dieses Menü enthält Plottypen, Biome, Namen/Beschreibungen, Vorlagen und Kostenbuttons.
+  create-menu: create.yml
+  # Datei des Mitglieder- und Rollen-Menüs. Geladen wird gui/<sprache>/<members-menu>.
+  # Dieses Menü enthält Hinzufügen, Entfernen, Rollen, temporäre Rechte und Profile.
+  members-menu: members.yml
+  # Datei des Such-Menüs. Geladen wird gui/<sprache>/<search-menu>.
+  # Dieses Menü enthält Suche nach Besitzer, Name, Tags, Kategorien und Schnellfilter.
+  search-menu: search.yml
+  # Datei des Community-Menüs. Geladen wird gui/<sprache>/<community-menu>.
+  # Dieses Menü enthält öffentliche Listen, Top-Plots, neue Plots und Teilen/Freunde-Buttons.
+  community-menu: community.yml
+  # Datei des Report-Menüs. Geladen wird gui/<sprache>/<reports-menu>.
+  # Dieses Menü enthält Report-Kategorien und eigene Report-Eingaben.
+  reports-menu: reports.yml
+  # Datei des Verlaufs-Menüs. Geladen wird gui/<sprache>/<history-menu>.
+  # Dieses Menü enthält zuletzt besuchte und häufig genutzte Plotlisten.
+  history-menu: history.yml
+  # Datei des gefährliche-Aktionen-Menüs. Geladen wird gui/<sprache>/<danger-menu>.
+  # Dieses Menü enthält Plot löschen, zurücksetzen und Bestätigungs-/Backup-Einstiege.
+  danger-menu: danger.yml
+  # Datei des Hilfe-Menüs. Geladen wird gui/<sprache>/<help-menu>.
+  # Dieses Menü enthält Hilfe, Commands und nützliche PlotSquared-Übersichten.
+  help-menu: help.yml
   # Datei des Flag-Untermenüs. Geladen wird gui/<sprache>/<flags-menu>.
   # Dieses Menü zeigt Boolean-Flags von PlotSquared mit Status und Umschaltfunktion.
   flags-menu: flags.yml

@@ -1,0 +1,18 @@
+# Deutsches Sicherheitsmenü für gefährliche Plot-Aktionen.
+# Diese Datei steuert Löschen, Zurücksetzen und manuelle Backups.
+# Plot delete/reset werden zusätzlich vom Backup-System abgefangen und erst nach Backup/Bestätigung ausgeführt.
+file-version: 1
+title: "&8Löschen & Reset"
+bedrock: {enabled: true, title: "Löschen & Reset", content: "Sichere gefährliche Plotaktionen ab."}
+size: 27
+require-plot: true
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  backup: {slot: 10, material: WRITABLE_BOOK, name: "&aVorher sichern", lore: ["&7Erstellt ein manuelles Schematic-Backup."], commands: ["plot-backup:create"], close: true, permission: "craftplayplotextras.backup.create"}
+  delete: {slot: 12, material: TNT, name: "&cPlot löschen", lore: ["&7Wird vom Backup-System abgefangen.", "&7Danach folgt eine Bestätigung."], commands: ["plot delete"], close: true, permission: "plots.delete"}
+  reset: {slot: 14, material: LAVA_BUCKET, name: "&cPlot zurücksetzen", lore: ["&7Wird vom Backup-System abgefangen.", "&7Danach folgt eine Bestätigung."], commands: ["plot clear"], close: true, permission: "plots.clear"}
+  unmerge: {slot: 16, material: SHEARS, name: "&cMerge trennen", lore: ["&7Wird vor dem Ausführen gesichert."], commands: ["plot unmerge"], close: true, permission: "plots.unmerge"}
+  back: {slot: 22, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: RED_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

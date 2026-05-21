@@ -8,7 +8,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 6
+file-version: 7
 
 # Inventory title.
 title: "&8Plot Flags"
@@ -106,6 +106,54 @@ buttons:
     # If true, the menu closes after clicking.
     close: true
     # Optional permission required to see the button.
+    permission: ""
+  category-general:
+    # Category button for general flags.
+    slot: 45
+    material: BOOK
+    name: "&aCategory: General"
+    lore:
+      - "&7Shows PvP, flight,"
+      - "&7notifications, and visits."
+    commands:
+      - "open-menu:flags:1"
+    close: false
+    permission: ""
+  category-technical:
+    # Category button for technical flags.
+    slot: 46
+    material: REDSTONE
+    name: "&aCategory: Technical"
+    lore:
+      - "&7Shows redstone, hoppers,"
+      - "&7pistons, and growth."
+    commands:
+      - "open-menu:flags:2"
+    close: false
+    permission: ""
+  search:
+    # Search button for servers using PlotSquared flag lists.
+    slot: 47
+    material: COMPASS
+    name: "&aSearch Flag"
+    lore:
+      - "&7Opens the PlotSquared flag list."
+      - "&7GUI flags remain permission-based."
+    commands:
+      - "plot flag list"
+    close: true
+    permission: "plots.flag"
+  favorites:
+    # Favorite view. By default it opens the first flag page and can be freely changed.
+    slot: 48
+    material: NETHER_STAR
+    name: "&eFavorite Flags"
+    lore:
+      - "&7Default favorite view."
+      - "&7Adjust the page/buttons freely."
+    commands:
+      - "open-menu:flags:1"
+    close: false
     permission: ""
 # Decoration items are visual-only items without an action.
 # They can use material, HeadDatabase ID, name, lore, slot, and permission.

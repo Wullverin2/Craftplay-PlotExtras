@@ -9,7 +9,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 11
+file-version: 12
 
 # Inventory title.
 title: "&8Plot Menu"
@@ -75,22 +75,22 @@ buttons:
     material: COMPASS
     name: "&aSearch Plot"
     lore:
-      - "&7Opens the PlotSquared"
-      - "&7visit/search command."
+      - "&7Search by owner,"
+      - "&7name, tags, and category."
     commands:
-      - "plot visit"
-    close: true
+      - "open-menu:search"
+    close: false
     permission: ""
   create:
     slot: 3
     material: EMERALD_BLOCK
     name: "&aCreate Plot"
     lore:
-      - "&7Automatically claims a free plot."
-      - "&8Command: /plot auto"
+      - "&7Opens plot types, biomes,"
+      - "&7templates, and plot data."
     commands:
-      - "plot auto"
-    close: true
+      - "open-menu:create:types"
+    close: false
     permission: "plots.auto"
   favorites:
     slot: 4
@@ -111,19 +111,19 @@ buttons:
       - "&7Opens public and popular"
       - "&7community plot lists."
     commands:
-      - "plot list all"
-    close: true
+      - "open-menu:community"
+    close: false
     permission: ""
   members:
     slot: 12
     material: PLAYER_HEAD
     name: "&aMembers"
     lore:
-      - "&7Opens the PlotSquared"
-      - "&7member overview."
+      - "&7Manage Added, Trusted,"
+      - "&7Denied, and custom roles."
     commands:
-      - "plot members"
-    close: true
+      - "open-menu:members:overview"
+    close: false
     permission: ""
   roles:
     slot: 7
@@ -133,8 +133,8 @@ buttons:
       - "&7Opens the current"
       - "&7member and rights overview."
     commands:
-      - "plot members"
-    close: true
+      - "open-menu:members:roles"
+    close: false
     permission: ""
   flags:
     slot: 14
@@ -166,8 +166,8 @@ buttons:
       - "&7Reports a plot directly"
       - "&7through PlotSquared."
     commands:
-      - "plot report"
-    close: true
+      - "open-menu:reports"
+    close: false
     permission: ""
   history:
     slot: 11
@@ -177,19 +177,19 @@ buttons:
       - "&7Opens recently visited"
       - "&7or saved plot lists."
     commands:
-      - "plot list visited"
-    close: true
+      - "open-menu:history"
+    close: false
     permission: ""
   help:
     slot: 16
     material: BOOK
     name: "&bHelp"
     lore:
-      - "&7Opens PlotSquared help."
-      - "&8Command: /plot help"
+      - "&7Opens help, commands,"
+      - "&7and shortcuts."
     commands:
-      - "plot help"
-    close: true
+      - "open-menu:help"
+    close: false
     permission: ""
   team:
     slot: 13
@@ -202,6 +202,17 @@ buttons:
       - "open-menu:team"
     close: false
     permission: "craftplayplotextras.team"
+  danger:
+    slot: 6
+    material: TNT
+    name: "&cDelete & Reset"
+    lore:
+      - "&7Safe actions for"
+      - "&7delete, reset, and backup."
+    commands:
+      - "open-menu:danger"
+    close: false
+    permission: ""
   close:
     slot: 22
     material: BARRIER

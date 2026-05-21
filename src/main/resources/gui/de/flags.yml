@@ -8,7 +8,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 6
+file-version: 7
 
 # Titel des Inventars.
 title: "&8Plot-Flags"
@@ -106,6 +106,54 @@ buttons:
     # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: true
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
+    permission: ""
+  category-general:
+    # Kategorie-Button für allgemeine Flags.
+    slot: 45
+    material: BOOK
+    name: "&aKategorie: Allgemein"
+    lore:
+      - "&7Zeigt PvP, Flug,"
+      - "&7Benachrichtigungen und Besuch."
+    commands:
+      - "open-menu:flags:1"
+    close: false
+    permission: ""
+  category-technical:
+    # Kategorie-Button für technische Flags.
+    slot: 46
+    material: REDSTONE
+    name: "&aKategorie: Technik"
+    lore:
+      - "&7Zeigt Redstone, Hopper,"
+      - "&7Pistons und Wachstum."
+    commands:
+      - "open-menu:flags:2"
+    close: false
+    permission: ""
+  search:
+    # Suchbutton für Server, die PlotSquared-Flaglisten nutzen.
+    slot: 47
+    material: COMPASS
+    name: "&aFlag suchen"
+    lore:
+      - "&7Öffnet die PlotSquared-Flagliste."
+      - "&7Die GUI-Flags bleiben permissionabhängig."
+    commands:
+      - "plot flag list"
+    close: true
+    permission: "plots.flag"
+  favorites:
+    # Favoritenansicht. Standardmäßig zeigt sie die erste Flagseite und kann beliebig angepasst werden.
+    slot: 48
+    material: NETHER_STAR
+    name: "&eFavoritenflags"
+    lore:
+      - "&7Standard-Favoritenansicht."
+      - "&7Passe die Seite/Buttons frei an."
+    commands:
+      - "open-menu:flags:1"
+    close: false
     permission: ""
 # Deko-Items sind reine Anzeigeelemente ohne Aktion.
 # Sie können Material, HeadDatabase-ID, Name, Lore, Slot und Permission nutzen.

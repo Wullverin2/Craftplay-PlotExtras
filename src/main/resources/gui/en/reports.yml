@@ -1,0 +1,20 @@
+# English report menu.
+# This file controls report categories. Custom text is requested privately through chat.
+# Commands are default profiles and can be adjusted to your report/ticket system.
+file-version: 1
+title: "&8Report Plot"
+bedrock: {enabled: true, title: "Report Plot", content: "Choose a category or write a custom report."}
+size: 27
+require-plot: true
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  grief: {slot: 10, material: TNT, name: "&cGriefing", lore: ["&7Reports griefing on this plot."], commands: ["plot report Griefing"], close: true, permission: "plots.report"}
+  inappropriate: {slot: 11, material: BARRIER, name: "&cInappropriate Content", lore: ["&7Reports inappropriate content."], commands: ["plot report Inappropriate content"], close: true, permission: "plots.report"}
+  lag: {slot: 12, material: REDSTONE, name: "&cLag Machine", lore: ["&7Reports possible lag machines."], commands: ["plot report Lag machine"], close: true, permission: "plots.report"}
+  rule: {slot: 13, material: BOOK, name: "&eRule Violation", lore: ["&7Reports a rule violation."], commands: ["plot report Rule violation"], close: true, permission: "plots.report"}
+  custom: {slot: 14, material: WRITABLE_BOOK, name: "&aCustom Report", lore: ["&7Asks for your description in chat."], commands: ["chat-input:chat-plot-report:plot report {input}"], close: true, permission: "plots.report"}
+  info: {slot: 16, material: COMPASS, name: "&aPlot Info", lore: ["&7Shows current plot information."], commands: ["plot info"], close: true, permission: "plots.info"}
+  back: {slot: 22, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

@@ -1,0 +1,20 @@
+# English history menu.
+# This file controls quick access to recently visited, owned, and favorite plots.
+# Internal favorites are handled in My Plots; external PlotSquared lists remain configurable commands.
+file-version: 1
+title: "&8History"
+bedrock: {enabled: true, title: "History", content: "Quick access to visited and saved plots."}
+size: 27
+require-plot: false
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  my-favorites: {slot: 10, material: NETHER_STAR, name: "&eMy Favorites", lore: ["&7Opens internal favorites."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
+  visited: {slot: 11, material: CLOCK, name: "&aRecently Visited", lore: ["&7Opens PlotSquared history."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+  own: {slot: 12, material: MAP, name: "&aMy Plots", lore: ["&7Opens your plot list."], commands: ["open-menu:myplots"], close: false, permission: ""}
+  public: {slot: 13, material: OAK_DOOR, name: "&aPublic Plots", lore: ["&7Opens public plots."], commands: ["plot list all"], close: true, permission: "plots.list"}
+  search: {slot: 14, material: COMPASS, name: "&aSearch", lore: ["&7To plot search."], commands: ["open-menu:search"], close: false, permission: ""}
+  clear: {slot: 16, material: CAULDRON, name: "&cClear History", lore: ["&7Example button for external systems.", "&7Command can be changed."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+  back: {slot: 22, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

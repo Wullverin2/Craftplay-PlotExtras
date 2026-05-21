@@ -1,0 +1,21 @@
+# Deutsches Plot-Suche-Menü.
+# Diese Datei steuert Suchbuttons für Besitzer, Namen, Tags, Kategorien und Schnellfilter.
+# Chat-Eingaben werden privat abgefragt und nicht an andere Spieler gesendet.
+file-version: 1
+title: "&8Plot suchen"
+bedrock: {enabled: true, title: "Plot suchen", content: "Suche Plots nach Besitzer, Name, Kategorie oder Nutzung."}
+size: 27
+require-plot: false
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  by-owner: {slot: 10, material: PLAYER_HEAD, name: "&aNach Besitzer", lore: ["&7Fragt einen Spielernamen ab.", "&7Danach wird /plot visit genutzt."], commands: ["chat-input:chat-plot-search:plot visit {input}"], close: true, permission: "plots.visit"}
+  by-name: {slot: 11, material: NAME_TAG, name: "&aNach Plotname", lore: ["&7Fragt einen Plotnamen ab.", "&7Command ist anpassbar."], commands: ["chat-input:chat-plot-search:plot visit {input}"], close: true, permission: "plots.visit"}
+  public: {slot: 12, material: OAK_DOOR, name: "&aÖffentliche Plots", lore: ["&7Öffnet die öffentliche Plotliste."], commands: ["plot list all"], close: true, permission: "plots.list"}
+  shops: {slot: 13, material: CHEST, name: "&aShops", lore: ["&7Beispiel für Tag-/Kategorie-Suche."], commands: ["plot list all"], close: true, permission: "plots.list"}
+  redstone: {slot: 14, material: REDSTONE, name: "&aRedstone-Plots", lore: ["&7Beispiel für Kategorie-Suche."], commands: ["plot list all"], close: true, permission: "plots.list"}
+  online: {slot: 15, material: LIME_DYE, name: "&aOnline-Besitzer", lore: ["&7Serverabhängiger Suchbutton."], commands: ["plot visit"], close: true, permission: "plots.visit"}
+  own: {slot: 16, material: MAP, name: "&aEigene Plots", lore: ["&7Zur eigenen Plotliste."], commands: ["open-menu:myplots"], close: false, permission: ""}
+  back: {slot: 22, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

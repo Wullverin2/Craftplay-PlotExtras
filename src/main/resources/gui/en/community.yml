@@ -1,0 +1,21 @@
+# English community menu.
+# This file controls community features such as top plots, new plots, ratings, and sharing.
+# Buttons are command profiles and can be adjusted to existing server/PlotSquared systems.
+file-version: 1
+title: "&8Community"
+bedrock: {enabled: true, title: "Community", content: "Discover, rate, and share plots."}
+size: 27
+require-plot: false
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  rate: {slot: 10, material: NETHER_STAR, name: "&eRate Plot", lore: ["&7Rates the plot you stand on.", "&7Command can be changed."], commands: ["plot rate"], close: true, permission: "plots.rate"}
+  comments: {slot: 11, material: BOOK, name: "&aComments", lore: ["&7Opens comments or guestbook."], commands: ["plot comment"], close: true, permission: "plots.comment"}
+  top: {slot: 12, material: GOLD_BLOCK, name: "&6Top Plots", lore: ["&7Opens popular plots."], commands: ["plot list top"], close: true, permission: "plots.list"}
+  newest: {slot: 13, material: CLOCK, name: "&aNewest Plots", lore: ["&7Opens new plots."], commands: ["plot list latest"], close: true, permission: "plots.list"}
+  visited: {slot: 14, material: COMPASS, name: "&aMost Visited", lore: ["&7Opens visited plots."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+  share: {slot: 15, material: WRITABLE_BOOK, name: "&aShare Plot", lore: ["&7Shows plot info in chat."], commands: ["plot info"], close: true, permission: "plots.info"}
+  invite: {slot: 16, material: PLAYER_HEAD, name: "&aInvite Friend", lore: ["&7Asks for a player name and trusts them."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
+  back: {slot: 22, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

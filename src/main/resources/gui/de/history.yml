@@ -1,0 +1,20 @@
+# Deutsches Verlauf-Menü.
+# Diese Datei steuert Schnellzugriff auf zuletzt besuchte, eigene und favorisierte Plots.
+# Echte interne Favoriten liegen im Meine-Plots-Menü; externe PlotSquared-Listen bleiben als Commands konfigurierbar.
+file-version: 1
+title: "&8Verlauf"
+bedrock: {enabled: true, title: "Verlauf", content: "Schnellzugriff auf besuchte und gespeicherte Plots."}
+size: 27
+require-plot: false
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  my-favorites: {slot: 10, material: NETHER_STAR, name: "&eMeine Favoriten", lore: ["&7Öffnet interne Favoriten."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
+  visited: {slot: 11, material: CLOCK, name: "&aZuletzt besucht", lore: ["&7Öffnet PlotSquared-Verlauf."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+  own: {slot: 12, material: MAP, name: "&aEigene Plots", lore: ["&7Öffnet deine Plotliste."], commands: ["open-menu:myplots"], close: false, permission: ""}
+  public: {slot: 13, material: OAK_DOOR, name: "&aÖffentliche Plots", lore: ["&7Öffnet öffentliche Plots."], commands: ["plot list all"], close: true, permission: "plots.list"}
+  search: {slot: 14, material: COMPASS, name: "&aSuche", lore: ["&7Zur Plot-Suche."], commands: ["open-menu:search"], close: false, permission: ""}
+  clear: {slot: 16, material: CAULDRON, name: "&cVerlauf löschen", lore: ["&7Beispielbutton für externe Systeme.", "&7Command frei anpassbar."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+  back: {slot: 22, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

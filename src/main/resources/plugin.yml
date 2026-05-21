@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 6
+file-version: 7
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -58,6 +58,10 @@ permissions:
     # Erlaubt Spielern, das Meine-Plots-Menü zu öffnen.
     description: Erlaubt das Öffnen des Meine-Plots-Menüs.
     default: true
+  craftplayplotextras.create.premium:
+    # Erlaubt das Nutzen des Premiumplot-Buttons im Plot-Erstellen-Menü.
+    description: Erlaubt Premiumplot-Erstellung über das Menü.
+    default: op
   craftplayplotextras.admin:
     # Erlaubt administrative Befehle wie /plotextras reload.
     description: Erlaubt administrative Basisfunktionen wie Reload.

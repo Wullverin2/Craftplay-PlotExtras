@@ -1,0 +1,20 @@
+# Deutsches Hilfe-Menü.
+# Diese Datei bündelt Hilfe, Commands und Schnellzugriffe für PlotSquared-Funktionen.
+# Alle Einträge sind reine Buttonprofile und können an deinen Server angepasst werden.
+file-version: 1
+title: "&8Plot-Hilfe"
+bedrock: {enabled: true, title: "Plot-Hilfe", content: "Hilfe und Schnellzugriffe für Plotfunktionen."}
+size: 27
+require-plot: false
+permission: "craftplayplotextras.use"
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+buttons:
+  plotsquared-help: {slot: 10, material: BOOK, name: "&aPlotSquared-Hilfe", lore: ["&7Öffnet /plot help."], commands: ["plot help"], close: true, permission: "plots.use"}
+  commands: {slot: 11, material: PAPER, name: "&aBefehle", lore: ["&7Zeigt PlotSquared-Befehle."], commands: ["plot help"], close: true, permission: "plots.use"}
+  myplots: {slot: 12, material: MAP, name: "&aMeine Plots", lore: ["&7Öffnet deine Plotliste."], commands: ["open-menu:myplots"], close: false, permission: ""}
+  flags: {slot: 13, material: REDSTONE_TORCH, name: "&aFlags", lore: ["&7Zur Flag-GUI."], commands: ["open-menu:flags"], close: false, permission: ""}
+  settings: {slot: 14, material: REPEATER, name: "&aEinstellungen", lore: ["&7Zur Einstellungs-GUI."], commands: ["open-menu:settings:homes"], close: false, permission: ""}
+  support: {slot: 16, material: BELL, name: "&eSupport", lore: ["&7Melde dein aktuelles Plot."], commands: ["open-menu:reports"], close: false, permission: ""}
+  back: {slot: 22, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+decorations:
+  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

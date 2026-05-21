@@ -10,7 +10,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 5
+file-version: 6
 
 # Titel des Inventars. Platzhalter: {tab}
 title: "&8Plot-Einstellungen: {tab}"
@@ -121,6 +121,58 @@ tabs:
         commands: []
         close: true
         permission: ""
+  info:
+    slot: 28
+    material: NAME_TAG
+    name: "&aPlotdaten"
+    lore:
+      - "&7Name, Beschreibung,"
+      - "&7Tags und Sichtbarkeit."
+    commands:
+      - "open-menu:settings:info"
+    permission: ""
+    buttons:
+      name: {slot: 20, material: NAME_TAG, name: "&aPlotname ändern", lore: ["&7Fragt den neuen Namen im Chat ab."], commands: ["chat-input:chat-plot-name:plot alias set {input}"], close: true, permission: "plots.set.alias"}
+      description: {slot: 21, material: WRITABLE_BOOK, name: "&aBeschreibung ändern", lore: ["&7Fragt die neue Beschreibung im Chat ab."], commands: ["chat-input:chat-plot-description:plot desc {input}"], close: true, permission: "plots.set.desc"}
+      public: {slot: 22, material: OAK_DOOR, name: "&aÖffentlich sichtbar", lore: ["&7Erlaubt Besuchern das Betreten."], commands: ["plot flag set untrusted-visit true"], close: false, permission: "plots.set.flag.untrusted-visit"}
+      private: {slot: 23, material: IRON_DOOR, name: "&7Privat", lore: ["&7Entfernt öffentliche Besucherrechte."], commands: ["plot flag set untrusted-visit false"], close: false, permission: "plots.set.flag.untrusted-visit"}
+      info: {slot: 24, material: COMPASS, name: "&aPlotinfo anzeigen", lore: ["&7Zeigt Besitzer, Größe und Status."], commands: ["plot info"], close: true, permission: "plots.info"}
+      back: {slot: 49, material: ARROW, name: "&cZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+      close: {slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+  music:
+    slot: 30
+    material: JUKEBOX
+    name: "&aMusik"
+    lore:
+      - "&7Musik und Atmosphäre"
+      - "&7für dein Plot."
+    commands:
+      - "open-menu:settings:music"
+    permission: ""
+    buttons:
+      record-13: {slot: 20, material: MUSIC_DISC_13, name: "&aMusik: 13", lore: ["&7Setzt die Plot-Musik."], commands: ["plot flag set music 13"], close: false, permission: "plots.set.flag.music"}
+      record-cat: {slot: 21, material: MUSIC_DISC_CAT, name: "&aMusik: Cat", lore: ["&7Setzt die Plot-Musik."], commands: ["plot flag set music cat"], close: false, permission: "plots.set.flag.music"}
+      record-blocks: {slot: 22, material: MUSIC_DISC_BLOCKS, name: "&aMusik: Blocks", lore: ["&7Setzt die Plot-Musik."], commands: ["plot flag set music blocks"], close: false, permission: "plots.set.flag.music"}
+      reset: {slot: 24, material: BARRIER, name: "&eMusik zurücksetzen", lore: ["&7Entfernt die Musik-Flag."], commands: ["plot flag remove music"], close: false, permission: "plots.flag.remove"}
+      back: {slot: 49, material: ARROW, name: "&cZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+      close: {slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+  stats:
+    slot: 32
+    material: FILLED_MAP
+    name: "&aStatistiken"
+    lore:
+      - "&7Infos, Banner, Bild"
+      - "&7und Featured-Profile."
+    commands:
+      - "open-menu:settings:stats"
+    permission: ""
+    buttons:
+      info: {slot: 20, material: COMPASS, name: "&aPlotstatistiken", lore: ["&7Öffnet PlotSquared-Infos."], commands: ["plot info"], close: true, permission: "plots.info"}
+      visit-list: {slot: 21, material: CLOCK, name: "&aBesucher/Verlauf", lore: ["&7Öffnet besuchte Plotlisten."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+      banner: {slot: 22, material: WHITE_BANNER, name: "&aPlotbanner", lore: ["&7Beispielbutton für externe Systeme."], commands: ["plot info"], close: true, permission: "plots.info"}
+      featured: {slot: 24, material: NETHER_STAR, name: "&eFeatured Plot", lore: ["&7Beispielbutton für Team-/Community-Systeme."], commands: ["plot rate"], close: true, permission: "plots.rate"}
+      back: {slot: 49, material: ARROW, name: "&cZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+      close: {slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
   weather:
     slot: 12
     material: SUNFLOWER

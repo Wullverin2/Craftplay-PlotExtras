@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 5
+file-version: 6
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -114,3 +114,20 @@ myplots-filter-all: "All"
 myplots-filter-favorites: "Favorites"
 myplots-filter-public: "Public"
 myplots-filter-private: "Private"
+
+# Message shown when a chat input is configured incorrectly.
+chat-input-invalid: "&cThis chat input is configured incorrectly."
+# Message shown when a chat input was cancelled.
+chat-input-cancelled: "&cInput cancelled."
+# Message shown when a chat input was accepted.
+chat-input-accepted: "&aInput accepted."
+# Chat prompt for player names. The input is hidden from other players.
+chat-member-player: "&eType the player name in chat. &7Type &ccancel &7to cancel."
+# Chat prompt for plot names.
+chat-plot-name: "&eType the new plot name in chat. &7Type &ccancel &7to cancel."
+# Chat prompt for plot descriptions.
+chat-plot-description: "&eType the new plot description in chat. &7Type &ccancel &7to cancel."
+# Chat prompt for search terms.
+chat-plot-search: "&eType the search term or player name in chat. &7Type &ccancel &7to cancel."
+# Chat prompt for reports.
+chat-plot-report: "&eBriefly describe the problem on this plot. &7Type &ccancel &7to cancel."
