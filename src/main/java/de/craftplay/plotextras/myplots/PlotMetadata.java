@@ -9,6 +9,7 @@ public final class PlotMetadata {
     private final String category;
     private final List<String> tags;
     private final String visibility;
+    private final String note;
     private final double rating;
     private final int visits;
     private final long lastVisit;
@@ -17,6 +18,7 @@ public final class PlotMetadata {
             final String category,
             final List<String> tags,
             final String visibility,
+            final String note,
             final double rating,
             final int visits,
             final long lastVisit
@@ -24,6 +26,7 @@ public final class PlotMetadata {
         this.category = category == null ? "" : category;
         this.tags = tags == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(tags));
         this.visibility = visibility == null || visibility.trim().isEmpty() ? "auto" : visibility.trim().toLowerCase();
+        this.note = note == null ? "" : note;
         this.rating = rating;
         this.visits = visits;
         this.lastVisit = lastVisit;
@@ -39,6 +42,10 @@ public final class PlotMetadata {
 
     public String getVisibility() {
         return visibility;
+    }
+
+    public String getNote() {
+        return note;
     }
 
     public double getRating() {

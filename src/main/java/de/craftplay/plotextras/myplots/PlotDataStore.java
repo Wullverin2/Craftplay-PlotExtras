@@ -41,6 +41,7 @@ public final class PlotDataStore {
                 configuration.getString(path + ".category", ""),
                 configuration.getStringList(path + ".tags"),
                 configuration.getString(path + ".visibility", "auto"),
+                configuration.getString(path + ".note", ""),
                 configuration.getDouble(path + ".rating", 0.0D),
                 configuration.getInt(path + ".visits", 0),
                 configuration.getLong(path + ".last-visit", 0L)
@@ -115,10 +116,22 @@ public final class PlotDataStore {
         return enabled;
     }
 
+    public void setNote(final String plotKey, final String note) {
+        configuration.set(plotPath(plotKey) + ".note", note == null ? "" : note);
+        save();
+    }
+
     public void recordVisit(final String plotKey) {
         final String path = plotPath(plotKey);
         configuration.set(path + ".visits", configuration.getInt(path + ".visits", 0) + 1);
         configuration.set(path + ".last-visit", System.currentTimeMillis());
+        save();
+    }
+
+    public void clearActivity(final String plotKey) {
+        final String path = plotPath(plotKey);
+        configuration.set(path + ".visits", 0);
+        configuration.set(path + ".last-visit", 0L);
         save();
     }
 

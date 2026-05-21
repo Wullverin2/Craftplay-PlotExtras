@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Optionen automatisch zu ergänzen.
-file-version: 1
+file-version: 2
 
 # Titel des Inventars. Platzhalter: {page}, {max_page}, {sort_name}, {filter_name}, {amount}
 title: "&8Meine Plots &7- Seite {page}/{max_page}"
@@ -54,6 +54,7 @@ plot-item:
     - "&7Sichtbarkeit: &f{visibility}"
     - "&7Kategorie: &f{category}"
     - "&7Tags: &f{tags}"
+    - "&7Notiz: &f{note}"
     - "&7Besuche: &f{visits}"
     - "&7Letzter Besuch: &f{last_visit}"
     - ""
@@ -256,6 +257,7 @@ detail:
       - "&7Modus: &f{visibility_mode}"
       - "&7Kategorie: &f{category}"
       - "&7Tags: &f{tags}"
+      - "&7Notiz: &f{note}"
       - "&7Erstellt: &f{created}"
   # Slots der Tag-Buttons.
   tag-slots: [28, 29, 30, 31, 32, 33]
@@ -315,6 +317,19 @@ detail:
         - "&7Aktuell: &f{category}"
       commands: []
       close: false
+      permission: ""
+    note:
+      # Speichert eine private Notiz zu diesem Plot.
+      slot: 24
+      material: PAPER
+      name: "&aNotiz bearbeiten"
+      lore:
+        - "&7Aktuell: &f{note}"
+        - "&7Die Eingabe ist für andere"
+        - "&7Spieler nicht sichtbar."
+      commands:
+        - "chat-input:chat-plot-note:plot-data-note:{plot_key}:{input}"
+      close: true
       permission: ""
     back:
       # Zurück zur Listenansicht.

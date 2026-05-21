@@ -5,7 +5,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new options automatically.
-file-version: 1
+file-version: 2
 
 # If false, this Bedrock form is not loaded.
 enabled: true
@@ -99,6 +99,7 @@ detail:
     Mode: {visibility_mode}
     Category: {category}
     Tags: {tags}
+    Note: {note}
     Visits: {visits}
     Last visit: {last_visit}
   # Label of a tag button.
@@ -124,6 +125,11 @@ detail:
       # Changes the category.
       enabled: true
       label: "Change Category ({category})"
+      permission: ""
+    note:
+      # Stores a private note for this plot.
+      enabled: true
+      label: "Edit Note"
       permission: ""
     back:
       # Returns to the plot list.

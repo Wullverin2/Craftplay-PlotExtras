@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 6
+file-version: 7
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -83,6 +83,12 @@ myplots-tag-active: "Active"
 myplots-tag-inactive: "Inactive"
 # Text when a plot has no tags.
 myplots-no-tags: "None"
+# Text when a plot has no note.
+myplots-no-note: "No note"
+# Message shown when a plot note was saved.
+myplots-note-saved: "&aPlot note saved."
+# Message shown when the internal visit history was cleared.
+myplots-history-cleared: "&aThe internal plot history was cleared."
 # Text when a plot is detected as public.
 myplots-public: "Public"
 # Text when a plot is detected as private.
@@ -127,7 +133,11 @@ chat-member-player: "&eType the player name in chat. &7Type &ccancel &7to cancel
 chat-plot-name: "&eType the new plot name in chat. &7Type &ccancel &7to cancel."
 # Chat prompt for plot descriptions.
 chat-plot-description: "&eType the new plot description in chat. &7Type &ccancel &7to cancel."
+# Chat prompt for biomes.
+chat-plot-biome: "&eType the biome name in chat. &7Type &ccancel &7to cancel."
 # Chat prompt for search terms.
 chat-plot-search: "&eType the search term or player name in chat. &7Type &ccancel &7to cancel."
 # Chat prompt for reports.
 chat-plot-report: "&eBriefly describe the problem on this plot. &7Type &ccancel &7to cancel."
+# Chat prompt for plot notes.
+chat-plot-note: "&eType the new private note for this plot in chat. &7Type &ccancel &7to cancel."

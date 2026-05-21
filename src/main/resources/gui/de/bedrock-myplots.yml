@@ -5,7 +5,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Optionen automatisch zu ergänzen.
-file-version: 1
+file-version: 2
 
 # Wenn false, wird diese Bedrock-Form nicht geladen.
 enabled: true
@@ -99,6 +99,7 @@ detail:
     Modus: {visibility_mode}
     Kategorie: {category}
     Tags: {tags}
+    Notiz: {note}
     Besuche: {visits}
     Letzter Besuch: {last_visit}
   # Beschriftung eines Tag-Buttons.
@@ -124,6 +125,11 @@ detail:
       # Wechselt die Kategorie.
       enabled: true
       label: "Kategorie wechseln ({category})"
+      permission: ""
+    note:
+      # Speichert eine private Notiz für diesen Plot.
+      enabled: true
+      label: "Notiz bearbeiten"
       permission: ""
     back:
       # Zurück zur Plotliste.

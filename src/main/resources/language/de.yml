@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 6
+file-version: 7
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -83,6 +83,12 @@ myplots-tag-active: "Aktiv"
 myplots-tag-inactive: "Inaktiv"
 # Text, wenn ein Plot keine Tags hat.
 myplots-no-tags: "Keine"
+# Text, wenn für einen Plot keine Notiz gesetzt ist.
+myplots-no-note: "Keine Notiz"
+# Nachricht, wenn eine Plotnotiz gespeichert wurde.
+myplots-note-saved: "&aPlotnotiz gespeichert."
+# Nachricht, wenn der interne Besuchsverlauf gelöscht wurde.
+myplots-history-cleared: "&aDer interne Plotverlauf wurde gelöscht."
 # Text, wenn ein Plot öffentlich erkannt wird.
 myplots-public: "Öffentlich"
 # Text, wenn ein Plot privat erkannt wird.
@@ -127,7 +133,11 @@ chat-member-player: "&eSchreibe den Spielernamen in den Chat. &7Tippe &ccancel &
 chat-plot-name: "&eSchreibe den neuen Plotnamen in den Chat. &7Tippe &ccancel &7zum Abbrechen."
 # Chatfrage für Plotbeschreibung.
 chat-plot-description: "&eSchreibe die neue Plotbeschreibung in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+# Chatfrage für Biome.
+chat-plot-biome: "&eSchreibe den Biomnamen in den Chat. &7Tippe &ccancel &7zum Abbrechen."
 # Chatfrage für Suchbegriffe.
 chat-plot-search: "&eSchreibe den Suchbegriff oder Spielernamen in den Chat. &7Tippe &ccancel &7zum Abbrechen."
 # Chatfrage für Reports.
 chat-plot-report: "&eBeschreibe kurz das Problem auf diesem Plot. &7Tippe &ccancel &7zum Abbrechen."
+# Chatfrage für Plotnotizen.
+chat-plot-note: "&eSchreibe die neue private Notiz für diesen Plot in den Chat. &7Tippe &ccancel &7zum Abbrechen."

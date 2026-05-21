@@ -1,18 +1,58 @@
 # English safety menu for dangerous plot actions.
-# This file controls delete, reset, and manual backups.
-# Plot delete/reset are additionally intercepted by the backup system and run only after backup/confirmation.
-file-version: 1
-title: "&8Delete & Reset"
-bedrock: {enabled: true, title: "Delete & Reset", content: "Safely run dangerous plot actions."}
-size: 27
+# Delete, reset, and unmerge are intercepted by the plugin, create a schematic first,
+# and then require confirmation. Buttons here confirm or cancel pending actions.
+
+file-version: 2
+
+title: "&8Delete/Reset Plot: {tab}"
+size: 54
+default-tab: actions
 require-plot: true
 permission: "craftplayplotextras.use"
+bedrock:
+  enabled: true
+  title: "Delete/Reset Plot"
+  content: "Protect dangerous actions with backups and confirmation."
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
 buttons:
-  backup: {slot: 10, material: WRITABLE_BOOK, name: "&aCreate Backup First", lore: ["&7Creates a manual schematic backup."], commands: ["plot-backup:create"], close: true, permission: "craftplayplotextras.backup.create"}
-  delete: {slot: 12, material: TNT, name: "&cDelete Plot", lore: ["&7Intercepted by the backup system.", "&7A confirmation follows."], commands: ["plot delete"], close: true, permission: "plots.delete"}
-  reset: {slot: 14, material: LAVA_BUCKET, name: "&cReset Plot", lore: ["&7Intercepted by the backup system.", "&7A confirmation follows."], commands: ["plot clear"], close: true, permission: "plots.clear"}
-  unmerge: {slot: 16, material: SHEARS, name: "&cUnmerge", lore: ["&7Backed up before execution."], commands: ["plot unmerge"], close: true, permission: "plots.unmerge"}
-  back: {slot: 22, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+  back: {slot: 49, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+  close: {slot: 53, material: BARRIER, name: "&cClose", lore: ["&7Closes this menu."], commands: [], close: true, permission: ""}
 decorations:
-  border: {slot: [0, 8, 18, 26], material: RED_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+  frame: {slot: [0, 8, 45, 46, 47, 48, 50, 51, 52], material: RED_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+tabs:
+  actions:
+    slot: 10
+    material: TNT
+    name: "&cActions"
+    lore: ["&7Delete, reset,", "&7unmerge, and backup."]
+    commands: ["open-menu:danger:actions"]
+    permission: ""
+    buttons:
+      backup: {slot: 19, material: WRITABLE_BOOK, name: "&aManual Backup", lore: ["&7Immediately creates a schematic", "&7backup of this plot or merge."], commands: ["plot-backup:create"], close: true, permission: "craftplayplotextras.backup.create"}
+      delete: {slot: 21, material: TNT, name: "&cDelete Plot", lore: ["&7Creates a backup first.", "&7Then you must confirm.", "&cThis removes the plot."], commands: ["plot delete"], close: true, permission: "plots.delete"}
+      reset: {slot: 23, material: LAVA_BUCKET, name: "&cReset Plot", lore: ["&7Creates a backup first.", "&7Then you must confirm.", "&cThis clears the plot."], commands: ["plot clear"], close: true, permission: "plots.clear"}
+      unmerge: {slot: 25, material: MAP, name: "&cUnmerge Plot", lore: ["&7Creates a backup of", "&7the full merge first.", "&cThen separates the merge."], commands: ["plot unmerge"], close: true, permission: "plots.unmerge"}
+      cooldown: {slot: 31, material: CLOCK, name: "&eCooldown Info", lore: ["&7Cooldowns are handled by PlotSquared", "&7or your permissions plugins.", "&7This button is configurable."], commands: [], close: false, permission: ""}
+  confirm:
+    slot: 12
+    material: LIME_DYE
+    name: "&aConfirmation"
+    lore: ["&7Confirm or cancel", "&7pending actions."]
+    commands: ["open-menu:danger:confirm"]
+    permission: ""
+    buttons:
+      confirm: {slot: 21, material: LIME_CONCRETE, name: "&aYes, Execute", lore: ["&7Confirms the pending", "&7backup/plot action."], commands: ["plot-backup:confirm"], close: true, permission: ""}
+      cancel: {slot: 23, material: RED_CONCRETE, name: "&cCancel", lore: ["&7Cancels the pending", "&7action safely."], commands: ["plot-backup:cancel"], close: true, permission: ""}
+      info: {slot: 31, material: BOOK, name: "&eFlow", lore: ["&71. Click an action.", "&72. Backup is prepared.", "&73. Confirm or cancel here."], commands: [], close: false, permission: ""}
+  restore:
+    slot: 14
+    material: CHEST
+    name: "&eBackups / Undo"
+    lore: ["&7Open backup list", "&7and start restore."]
+    commands: ["open-menu:danger:restore"]
+    permission: "craftplayplotextras.backup.list"
+    buttons:
+      list: {slot: 21, material: CHEST, name: "&eBackup List", lore: ["&7Shows all saved", "&7plot backups with information."], commands: ["open-menu:team-backups:1"], close: false, permission: "craftplayplotextras.backup.list"}
+      manual: {slot: 22, material: WRITABLE_BOOK, name: "&aCreate Another Backup", lore: ["&7Creates another", "&7manual backup."], commands: ["plot-backup:create"], close: true, permission: "craftplayplotextras.backup.create"}
+      restore-info: {slot: 23, material: ENDER_CHEST, name: "&bRestore", lore: ["&7Choose a backup from the list.", "&7It is restored onto the plot", "&7you are standing on."], commands: ["open-menu:team-backups:1"], close: false, permission: "craftplayplotextras.backup.restore"}
+      team: {slot: 31, material: PLAYER_HEAD, name: "&cTeam Menu", lore: ["&7Opens the admin area."], commands: ["open-menu:team"], close: false, permission: "craftplayplotextras.team"}

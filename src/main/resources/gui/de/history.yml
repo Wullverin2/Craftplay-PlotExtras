@@ -1,20 +1,67 @@
 # Deutsches Verlauf-Menü.
-# Diese Datei steuert Schnellzugriff auf zuletzt besuchte, eigene und favorisierte Plots.
-# Echte interne Favoriten liegen im Meine-Plots-Menü; externe PlotSquared-Listen bleiben als Commands konfigurierbar.
-file-version: 1
-title: "&8Verlauf"
-bedrock: {enabled: true, title: "Verlauf", content: "Schnellzugriff auf besuchte und gespeicherte Plots."}
-size: 27
+# Diese Datei steuert Schnellzugriffe auf zuletzt genutzte, häufig besuchte und favorisierte Plots.
+# Die internen Besuchswerte entstehen, wenn Spieler über das Meine-Plots-Menü teleportieren.
+
+file-version: 2
+
+title: "&8Verlauf: {tab}"
+size: 54
+default-tab: recent
 require-plot: false
 permission: "craftplayplotextras.use"
+bedrock:
+  enabled: true
+  title: "Verlauf"
+  content: "Schnellzugriff auf besuchte, häufige und favorisierte Plots."
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
 buttons:
-  my-favorites: {slot: 10, material: NETHER_STAR, name: "&eMeine Favoriten", lore: ["&7Öffnet interne Favoriten."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
-  visited: {slot: 11, material: CLOCK, name: "&aZuletzt besucht", lore: ["&7Öffnet PlotSquared-Verlauf."], commands: ["plot list visited"], close: true, permission: "plots.list"}
-  own: {slot: 12, material: MAP, name: "&aEigene Plots", lore: ["&7Öffnet deine Plotliste."], commands: ["open-menu:myplots"], close: false, permission: ""}
-  public: {slot: 13, material: OAK_DOOR, name: "&aÖffentliche Plots", lore: ["&7Öffnet öffentliche Plots."], commands: ["plot list all"], close: true, permission: "plots.list"}
-  search: {slot: 14, material: COMPASS, name: "&aSuche", lore: ["&7Zur Plot-Suche."], commands: ["open-menu:search"], close: false, permission: ""}
-  clear: {slot: 16, material: CAULDRON, name: "&cVerlauf löschen", lore: ["&7Beispielbutton für externe Systeme.", "&7Command frei anpassbar."], commands: ["plot list visited"], close: true, permission: "plots.list"}
-  back: {slot: 22, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+  back: {slot: 49, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+  close: {slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
 decorations:
-  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+  frame: {slot: [0, 8, 45, 46, 47, 48, 50, 51, 52], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+tabs:
+  recent:
+    slot: 10
+    material: CLOCK
+    name: "&aZuletzt besucht"
+    lore: ["&7Letzte Plots und", "&7Schnellteleport."]
+    commands: ["open-menu:history:recent"]
+    permission: ""
+    buttons:
+      own-activity: {slot: 19, material: FILLED_MAP, name: "&aEigene Plots nach Aktivität", lore: ["&7Öffnet deine Plots nach", "&7letztem Besuch sortiert."], commands: ["open-menu:myplots:1:activity:all"], close: false, permission: ""}
+      plot-list-visited: {slot: 20, material: COMPASS, name: "&aPlotSquared-Verlauf", lore: ["&7Öffnet die PlotSquared-Liste", "&7besuchter Plots."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+      public: {slot: 21, material: OAK_DOOR, name: "&aÖffentliche Plots", lore: ["&7Schnellzugriff auf öffentliche", "&7eigene Plots."], commands: ["open-menu:myplots:1:activity:public"], close: false, permission: ""}
+      private: {slot: 22, material: IRON_DOOR, name: "&7Private Plots", lore: ["&7Schnellzugriff auf private", "&7eigene Plots."], commands: ["open-menu:myplots:1:activity:private"], close: false, permission: ""}
+      search: {slot: 23, material: COMPASS, name: "&bPlot suchen", lore: ["&7Öffnet die Suchfunktion."], commands: ["open-menu:search"], close: false, permission: ""}
+      teleport-help: {slot: 24, material: ENDER_PEARL, name: "&aSchnellteleport", lore: ["&7Wähle in Meine Plots", "&7einen Eintrag per Linksklick."], commands: ["open-menu:myplots:1:activity:all"], close: false, permission: ""}
+      clear: {slot: 25, material: BARRIER, name: "&cInternen Verlauf löschen", lore: ["&7Setzt Besuche und letzte", "&7Nutzung deiner Plots zurück."], commands: ["plot-data-clear-visits"], close: true, permission: ""}
+  favorites:
+    slot: 12
+    material: NETHER_STAR
+    name: "&eFavoriten"
+    lore: ["&7Favoriten speichern,", "&7entfernen und sortieren."]
+    commands: ["open-menu:history:favorites"]
+    permission: ""
+    buttons:
+      open-favorites: {slot: 19, material: NETHER_STAR, name: "&eFavoriten öffnen", lore: ["&7Öffnet alle favorisierten", "&7eigenen Plots."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
+      favorite-by-activity: {slot: 20, material: CLOCK, name: "&eFavoriten nach Aktivität", lore: ["&7Favoriten nach letzter", "&7Nutzung sortieren."], commands: ["open-menu:myplots:1:activity:favorites"], close: false, permission: ""}
+      favorite-by-size: {slot: 21, material: CHEST, name: "&eFavoriten nach Größe", lore: ["&7Favoriten nach Merge-Größe", "&7sortieren."], commands: ["open-menu:myplots:1:size:favorites"], close: false, permission: ""}
+      notes: {slot: 22, material: PAPER, name: "&aNotizen", lore: ["&7Notizen bearbeitest du", "&7in den Plotdetails."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
+      categories: {slot: 23, material: BOOK, name: "&dKategorien", lore: ["&7Kategorien wechselst du", "&7in den Plotdetails."], commands: ["open-menu:myplots:1:category:favorites"], close: false, permission: ""}
+      public-favorites: {slot: 24, material: LIME_DYE, name: "&aÖffentliche Favoriten", lore: ["&7Filterprofil für öffentliche", "&7Favoriten."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
+      private-favorites: {slot: 25, material: GRAY_DYE, name: "&7Private Favoriten", lore: ["&7Filterprofil für private", "&7Favoriten."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
+  stats:
+    slot: 14
+    material: BOOK
+    name: "&bStatistik"
+    lore: ["&7Besuchsdauer, häufige Plots", "&7und Verlaufsdaten."]
+    commands: ["open-menu:history:stats"]
+    permission: ""
+    buttons:
+      most-used: {slot: 19, material: GOLD_INGOT, name: "&6Häufig besuchte Plots", lore: ["&7Sortiert nach gespeicherten", "&7Besuchen im Plugin."], commands: ["open-menu:myplots:1:activity:all"], close: false, permission: ""}
+      visit-count: {slot: 20, material: PAPER, name: "&aBesuchsstatistik", lore: ["&7Besuche stehen in der Lore", "&7deiner Plotdetails."], commands: ["open-menu:myplots:1:activity:all"], close: false, permission: ""}
+      visit-duration: {slot: 21, material: CLOCK, name: "&eBesuchsdauer", lore: ["&7Platzhalter für ein späteres", "&7Zeitmess- oder Websystem."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+      top-plots: {slot: 22, material: DIAMOND, name: "&bServer-Topliste", lore: ["&7Öffnet PlotSquared Topplots."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      newest: {slot: 23, material: FILLED_MAP, name: "&aNeueste Plots", lore: ["&7Öffnet die neuesten Plots."], commands: ["plot list latest"], close: true, permission: "plots.list"}
+      community: {slot: 24, material: HEART_OF_THE_SEA, name: "&bCommunity", lore: ["&7Öffnet Communitylisten."], commands: ["open-menu:community"], close: false, permission: ""}
+      help: {slot: 25, material: BOOK, name: "&aHilfe", lore: ["&7Öffnet die Hilfe."], commands: ["open-menu:help"], close: false, permission: ""}

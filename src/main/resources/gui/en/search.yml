@@ -1,21 +1,68 @@
 # English plot search menu.
-# This file controls search buttons for owners, names, tags, categories, and quick filters.
-# Chat input is private and is not sent to other players.
-file-version: 1
-title: "&8Search Plot"
-bedrock: {enabled: true, title: "Search Plot", content: "Search plots by owner, name, category, or usage."}
-size: 27
+# This file controls search and filter navigation. Every button is configurable:
+# slot, material, name, lore, commands, permission, HeadDatabase ID, and Bedrock label.
+# Replace the example commands when your server has a dedicated search backend.
+
+file-version: 2
+
+title: "&8Plot Search: {tab}"
+size: 54
+default-tab: search
 require-plot: false
 permission: "craftplayplotextras.use"
+bedrock:
+  enabled: true
+  title: "Plot Search"
+  content: "Choose a search mode, filter, or discovery list."
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
 buttons:
-  by-owner: {slot: 10, material: PLAYER_HEAD, name: "&aBy Owner", lore: ["&7Asks for a player name.", "&7Then /plot visit is used."], commands: ["chat-input:chat-plot-search:plot visit {input}"], close: true, permission: "plots.visit"}
-  by-name: {slot: 11, material: NAME_TAG, name: "&aBy Plot Name", lore: ["&7Asks for a plot name.", "&7Command is configurable."], commands: ["chat-input:chat-plot-search:plot visit {input}"], close: true, permission: "plots.visit"}
-  public: {slot: 12, material: OAK_DOOR, name: "&aPublic Plots", lore: ["&7Opens the public plot list."], commands: ["plot list all"], close: true, permission: "plots.list"}
-  shops: {slot: 13, material: CHEST, name: "&aShops", lore: ["&7Example tag/category search."], commands: ["plot list all"], close: true, permission: "plots.list"}
-  redstone: {slot: 14, material: REDSTONE, name: "&aRedstone Plots", lore: ["&7Example category search."], commands: ["plot list all"], close: true, permission: "plots.list"}
-  online: {slot: 15, material: LIME_DYE, name: "&aOnline Owners", lore: ["&7Server-dependent search button."], commands: ["plot visit"], close: true, permission: "plots.visit"}
-  own: {slot: 16, material: MAP, name: "&aMy Plots", lore: ["&7Back to your plot list."], commands: ["open-menu:myplots"], close: false, permission: ""}
-  back: {slot: 22, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+  back: {slot: 49, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+  close: {slot: 53, material: BARRIER, name: "&cClose", lore: ["&7Closes this menu."], commands: [], close: true, permission: ""}
 decorations:
-  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+  frame: {slot: [0, 8, 45, 46, 47, 48, 50, 51, 52], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+tabs:
+  search:
+    slot: 10
+    material: COMPASS
+    name: "&aSearch"
+    lore: ["&7Name, owner, tags,", "&7category, biome, and size."]
+    commands: ["open-menu:search:search"]
+    permission: ""
+    buttons:
+      by-owner: {slot: 19, material: PLAYER_HEAD, skull-owner: "%player_name%", name: "&aBy Owner", lore: ["&7Asks for a player name.", "&7Then starts a plot visit."], commands: ["chat-input:chat-plot-search:plot visit {input}"], close: true, permission: "plots.visit"}
+      by-name: {slot: 20, material: NAME_TAG, name: "&aBy Plot Name", lore: ["&7Asks for a plot name.", "&7The command is fully configurable."], commands: ["chat-input:chat-plot-search:plot visit {input}"], close: true, permission: "plots.visit"}
+      by-tags: {slot: 21, material: BOOK, name: "&aBy Tags", lore: ["&7Example hook for custom", "&7tag search systems."], commands: ["chat-input:chat-plot-search:plot list all"], close: true, permission: "plots.list"}
+      by-category: {slot: 22, material: CHEST, name: "&aBy Category", lore: ["&7Uses custom categories", "&7from My Plots."], commands: ["chat-input:chat-plot-search:plot list all"], close: true, permission: "plots.list"}
+      by-rating: {slot: 23, material: GOLD_INGOT, name: "&6By Rating", lore: ["&7Opens your plots", "&7sorted by rating."], commands: ["open-menu:myplots:1:rating:all"], close: false, permission: ""}
+      by-biome: {slot: 24, material: OAK_SAPLING, name: "&aBy Biome", lore: ["&7Asks for a biome.", "&7Adjust the command to your setup."], commands: ["chat-input:chat-plot-search:plot list all"], close: true, permission: "plots.list"}
+      by-size: {slot: 25, material: MAP, name: "&aBy Size", lore: ["&7Opens your plots", "&7sorted by merge size."], commands: ["open-menu:myplots:1:size:all"], close: false, permission: ""}
+  filters:
+    slot: 12
+    material: HOPPER
+    name: "&bFilters"
+    lore: ["&7Public plots, online owners,", "&7shops, RP, and redstone."]
+    commands: ["open-menu:search:filters"]
+    permission: ""
+    buttons:
+      public: {slot: 19, material: LIME_DYE, name: "&aPublic Plots Only", lore: ["&7Shows public owned plots.", "&7Adjust command for global lists."], commands: ["open-menu:myplots:1:name:public"], close: false, permission: ""}
+      online: {slot: 20, material: PLAYER_HEAD, name: "&aOnline Owners Only", lore: ["&7Server-dependent filter.", "&7Default: open plot list."], commands: ["plot list all"], close: true, permission: "plots.list"}
+      shops: {slot: 21, material: EMERALD, name: "&aShops Only", lore: ["&7Filter profile for shop plots.", "&7Default command is configurable."], commands: ["plot list all"], close: true, permission: "plots.list"}
+      roleplay: {slot: 22, material: WRITABLE_BOOK, name: "&dRP Plots Only", lore: ["&7Filter profile for roleplay plots."], commands: ["plot list all"], close: true, permission: "plots.list"}
+      redstone: {slot: 23, material: REDSTONE, name: "&cRedstone Plots Only", lore: ["&7Filter profile for redstone plots."], commands: ["plot list all"], close: true, permission: "plots.list"}
+      favorites: {slot: 24, material: NETHER_STAR, name: "&eFavorites Only", lore: ["&7Opens your favorite plots."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
+      private: {slot: 25, material: IRON_DOOR, name: "&7Private Owned Plots", lore: ["&7Opens your private plots."], commands: ["open-menu:myplots:1:name:private"], close: false, permission: ""}
+  discover:
+    slot: 14
+    material: ENDER_EYE
+    name: "&eDiscover"
+    lore: ["&7History, trends,", "&7favorites, and top plots."]
+    commands: ["open-menu:search:discover"]
+    permission: ""
+    buttons:
+      history: {slot: 19, material: CLOCK, name: "&aSearch History", lore: ["&7Opens the history menu."], commands: ["open-menu:history"], close: false, permission: ""}
+      search-favorites: {slot: 20, material: NETHER_STAR, name: "&eSearch Favorites", lore: ["&7Opens your favorite plots."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
+      trending: {slot: 21, material: FIREWORK_ROCKET, name: "&6Trending", lore: ["&7Default: PlotSquared top list.", "&7Can point to your own ranking."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      popular-terms: {slot: 22, material: PAPER, name: "&bPopular Terms", lore: ["&7Placeholder button for custom", "&7search stats or web pages."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      latest: {slot: 23, material: FILLED_MAP, name: "&aNewest Plots", lore: ["&7Opens newest plots."], commands: ["plot list latest"], close: true, permission: "plots.list"}
+      top-rated: {slot: 24, material: GOLD_BLOCK, name: "&6Top Rated Plots", lore: ["&7Opens the top list."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      community: {slot: 25, material: HEART_OF_THE_SEA, name: "&bCommunity", lore: ["&7Switches to the community menu."], commands: ["open-menu:community"], close: false, permission: ""}

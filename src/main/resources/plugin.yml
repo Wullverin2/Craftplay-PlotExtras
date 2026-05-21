@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 7
+file-version: 8
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -70,6 +70,14 @@ permissions:
   craftplayplotextras.team:
     # Erlaubt das Öffnen des Team-Menüs.
     description: Erlaubt das Öffnen des Team-Menüs.
+    default: op
+  craftplayplotextras.team.reports:
+    # Erlaubt teaminterne Report-Buttons.
+    description: Erlaubt Report-Funktionen im Team-Menü.
+    default: op
+  craftplayplotextras.team.community:
+    # Erlaubt teaminterne Community-Prüfbuttons.
+    description: Erlaubt Community-Prüffunktionen im Team-Menü.
     default: op
   craftplayplotextras.backup.create:
     # Erlaubt das Erstellen von Plotbackups.

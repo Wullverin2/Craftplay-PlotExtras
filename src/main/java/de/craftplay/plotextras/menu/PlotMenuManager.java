@@ -672,6 +672,9 @@ public final class PlotMenuManager implements Listener {
             cycleCategory(player, plot);
             openBedrockMyPlotDetail(player, plotKey, page, sort, filter);
         });
+        addBedrockAction(player, labels, actions, "detail.buttons.note", placeholders, () -> {
+            runCommand(player, "chat-input:chat-plot-note:plot-data-note:" + plotKey + ":{input}");
+        });
         final List<String> availableTags = availableTags();
         for (final String tag : availableTags) {
             final Map<String, String> tagPlaceholders = new HashMap<>(plotPlaceholders(player, plot));
@@ -879,6 +882,13 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
+        if (floodgateHook.isBedrockPlayer(player)) {
+            if (openBedrockTeamMenu(player)) {
+                return;
+            }
+            languageManager.send(player, "bedrock-form-failed");
+        }
+
         final Inventory inventory = Bukkit.createInventory(
                 new PlotMenuHolder("team"),
                 teamSize,
@@ -895,6 +905,37 @@ public final class PlotMenuManager implements Listener {
             }
         }
         player.openInventory(inventory);
+    }
+
+    private boolean openBedrockTeamMenu(final Player player) {
+        final List<MenuButton> buttons = new ArrayList<>(teamButtonsBySlot.values());
+        buttons.sort(Comparator.comparingInt(MenuButton::getSlot));
+        final List<String> labels = new ArrayList<>();
+        final List<Runnable> actions = new ArrayList<>();
+        final Map<String, String> placeholders = new HashMap<>();
+        for (final MenuButton button : buttons) {
+            if (!canSee(player, button)) {
+                continue;
+            }
+            if (button.getCommands().isEmpty() && !button.isCloseInventory()) {
+                continue;
+            }
+            final String label = button.getBedrockLabel().isEmpty() ? button.getName() : button.getBedrockLabel();
+            labels.add(Text.color(placeholderHook.apply(player, applyPlaceholders(label, placeholders))));
+            actions.add(() -> executeCommands(player, true, button.getCommands()));
+        }
+        return floodgateHook.sendSimpleForm(
+                player,
+                Text.color(placeholderHook.apply(player, teamTitle)),
+                "",
+                labels,
+                clickedButton -> {
+                    if (clickedButton < 0 || clickedButton >= actions.size()) {
+                        return;
+                    }
+                    Bukkit.getScheduler().runTask(plugin, actions.get(clickedButton));
+                }
+        );
     }
 
     public void openBackupListMenu(final Player player, final int page) {
@@ -1807,6 +1848,7 @@ public final class PlotMenuManager implements Listener {
         placeholders.put("plots", plot.getPlotIds().isEmpty() ? plot.getPlotId() : String.join(", ", plot.getPlotIds()));
         placeholders.put("category", displayCategory(metadata.getCategory()));
         placeholders.put("tags", metadata.getTags().isEmpty() ? text("myplots-no-tags", "Keine") : String.join(", ", metadata.getTags()));
+        placeholders.put("note", metadata.getNote().isEmpty() ? text("myplots-no-note", "Keine Notiz") : metadata.getNote());
         placeholders.put("visibility", visiblePublic ? text("myplots-public", "Öffentlich") : text("myplots-private", "Privat"));
         placeholders.put("visibility_mode", visibilityModeName(metadata.getVisibility()));
         placeholders.put("favorite", favorite ? text("myplots-favorite-yes", "★") : text("myplots-favorite-no", "☆"));
@@ -2143,11 +2185,39 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
+        if (command.toLowerCase(Locale.ROOT).startsWith("plot-data-note:")) {
+            final String payload = command.substring("plot-data-note:".length());
+            final int separator = payload.indexOf(':');
+            if (separator < 1) {
+                languageManager.send(player, "chat-input-invalid");
+                return;
+            }
+            final String plotKey = payload.substring(0, separator);
+            final String note = payload.substring(separator + 1).trim();
+            plotDataStore.setNote(plotKey, note);
+            languageManager.send(player, "myplots-note-saved");
+            return;
+        }
+
+        if ("plot-data-clear-visits".equalsIgnoreCase(command)) {
+            for (final OwnedPlot plot : plotService.ownedPlots(player)) {
+                plotDataStore.clearActivity(plot.getKey());
+            }
+            languageManager.send(player, "myplots-history-cleared");
+            return;
+        }
+
         if (command.toLowerCase(Locale.ROOT).startsWith("plot-backup:")) {
             final String backupAction = command.substring("plot-backup:".length()).trim();
             if ("create".equalsIgnoreCase(backupAction)) {
                 player.closeInventory();
                 backupService.requestManualBackup(player);
+            } else if ("confirm".equalsIgnoreCase(backupAction)) {
+                player.closeInventory();
+                backupService.confirm(player);
+            } else if ("cancel".equalsIgnoreCase(backupAction)) {
+                player.closeInventory();
+                backupService.cancel(player);
             } else if (backupAction.toLowerCase(Locale.ROOT).startsWith("restore:")) {
                 player.closeInventory();
                 backupService.requestRestore(player, backupAction.substring("restore:".length()).trim());

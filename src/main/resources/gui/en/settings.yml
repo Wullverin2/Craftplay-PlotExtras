@@ -10,7 +10,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 6
+file-version: 7
 
 # Inventory title. Placeholder: {tab}
 title: "&8Plot Settings: {tab}"
@@ -313,8 +313,107 @@ tabs:
           - "plot biome taiga"
         close: false
         permission: "plots.set.biome"
+      savanna:
+        slot: 28
+        material: ACACIA_LOG
+        name: "&6Savanna"
+        lore:
+          - "&7Sets the plot biome"
+          - "&7to savanna."
+        commands:
+          - "plot biome savanna"
+        close: false
+        permission: "plots.set.biome"
+      snow:
+        slot: 29
+        material: SNOW_BLOCK
+        name: "&fSnow"
+        lore:
+          - "&7Sets the plot biome"
+          - "&7to snowy tundra."
+        commands:
+          - "plot biome snowy_tundra"
+        close: false
+        permission: "plots.set.biome"
+      beach:
+        slot: 30
+        material: SANDSTONE
+        name: "&eBeach"
+        lore:
+          - "&7Sets the plot biome"
+          - "&7to beach."
+        commands:
+          - "plot biome beach"
+        close: false
+        permission: "plots.set.biome"
+      mushroom:
+        slot: 31
+        material: RED_MUSHROOM_BLOCK
+        name: "&dMushroom"
+        lore:
+          - "&7Sets the plot biome"
+          - "&7to mushroom fields."
+        commands:
+          - "plot biome mushroom_fields"
+        close: false
+        permission: "plots.set.biome"
+      nether:
+        slot: 32
+        material: NETHERRACK
+        name: "&cNether"
+        lore:
+          - "&7Sets the plot biome"
+          - "&7to nether wastes."
+        commands:
+          - "plot biome nether_wastes"
+        close: false
+        permission: "plots.set.biome"
+      end:
+        slot: 33
+        material: END_STONE
+        name: "&5End"
+        lore:
+          - "&7Sets the plot biome"
+          - "&7to the end."
+        commands:
+          - "plot biome the_end"
+        close: false
+        permission: "plots.set.biome"
+      ocean:
+        slot: 34
+        material: WATER_BUCKET
+        name: "&bOcean"
+        lore:
+          - "&7Sets the plot biome"
+          - "&7to ocean."
+        commands:
+          - "plot biome ocean"
+        close: false
+        permission: "plots.set.biome"
+      custom:
+        slot: 37
+        material: COMMAND_BLOCK
+        name: "&dCustom Biome"
+        lore:
+          - "&7Asks for the biome name in chat."
+          - "&7Useful for custom biomes."
+        commands:
+          - "chat-input:chat-plot-biome:plot biome {input}"
+        close: true
+        permission: "plots.set.biome"
+      packages:
+        slot: 38
+        material: CHEST
+        name: "&aBiome Packages"
+        lore:
+          - "&7Example button for custom"
+          - "&7biome packages or themes."
+        commands:
+          - "plot biome plains"
+        close: false
+        permission: "plots.set.biome"
       reset:
-        slot: 25
+        slot: 43
         material: COMPASS
         name: "&eReset Biome"
         lore:

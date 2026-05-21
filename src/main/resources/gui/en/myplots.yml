@@ -9,7 +9,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new options automatically.
-file-version: 1
+file-version: 2
 
 # Inventory title. Placeholders: {page}, {max_page}, {sort_name}, {filter_name}, {amount}
 title: "&8My Plots &7- Page {page}/{max_page}"
@@ -54,6 +54,7 @@ plot-item:
     - "&7Visibility: &f{visibility}"
     - "&7Category: &f{category}"
     - "&7Tags: &f{tags}"
+    - "&7Note: &f{note}"
     - "&7Visits: &f{visits}"
     - "&7Last visit: &f{last_visit}"
     - ""
@@ -256,6 +257,7 @@ detail:
       - "&7Mode: &f{visibility_mode}"
       - "&7Category: &f{category}"
       - "&7Tags: &f{tags}"
+      - "&7Note: &f{note}"
       - "&7Created: &f{created}"
   # Slots for tag buttons.
   tag-slots: [28, 29, 30, 31, 32, 33]
@@ -315,6 +317,19 @@ detail:
         - "&7Current: &f{category}"
       commands: []
       close: false
+      permission: ""
+    note:
+      # Stores a private note for this plot.
+      slot: 24
+      material: PAPER
+      name: "&aEdit Note"
+      lore:
+        - "&7Current: &f{note}"
+        - "&7The input is not visible"
+        - "&7to other players."
+      commands:
+        - "chat-input:chat-plot-note:plot-data-note:{plot_key}:{input}"
+      close: true
       permission: ""
     back:
       # Returns to the list view.

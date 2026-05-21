@@ -1,89 +1,220 @@
 # Deutsches Team-Menü.
-# Diese Datei steuert Teamfunktionen wie Plotbackups und die Backupliste.
+# Diese Datei steuert Team- und Adminfunktionen wie Plotbackups, Reports,
+# Analyse-Buttons, Audit-Profile und technische PlotSquared-Helfer.
 # Alle Buttons sind frei anpassbar: Slot, Material, HeadDatabase-ID, Name, Lore, Commands und Permission.
 # Buttons und Deko-Items können slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
-# Spieler-Köpfe sind per material: PLAYERHEAD %player_name% oder skull-owner: "%player_name%" möglich.
-# PlaceholderAPI-Platzhalter funktionieren in Titeln, Namen, Lore und Commands.
+# Bedrock-Spieler erhalten aus diesen Buttons automatisch eine Floodgate-Form.
 
-# Dateiversion dieser GUI-Datei.
-# Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 3
+file-version: 4
 
-# Titel des Team-Hauptinventars.
 title: "&8Team-Menü"
-# Größe des Team-Hauptinventars. Erlaubt sind 9, 18, 27, 36, 45 oder 54 Slots.
-size: 27
-# Füllitem für leere Slots.
+size: 54
 filler:
-  # Wenn true, werden leere Slots mit dem unten angegebenen Material gefüllt.
   enabled: true
-  # Materialname aus Minecraft/Spigot.
   material: BLACK_STAINED_GLASS_PANE
-  # Anzeigename des Füllitems. &r macht den Namen leer/unauffällig.
   name: "&r"
-# Buttons im Team-Hauptmenü.
 buttons:
   create-backup:
-    # Slot im Inventar. 0 ist oben links.
-    slot: 11
-    # Item, das für diesen Button angezeigt wird.
+    slot: 10
     material: WRITABLE_BOOK
-    # Anzeigename des Buttons.
     name: "&aPlot sichern"
-    # Beschreibung unter dem Buttonnamen.
-    lore:
-      - "&7Erstellt ein Schematic-Backup"
-      - "&7des Plots oder Plotmerges,"
-      - "&7auf dem du stehst."
-    # Spezieller Plugin-Befehl zum Erstellen eines Backups.
-    commands:
-      - "plot-backup:create"
-    # Wenn true, wird das Menü nach dem Klick geschlossen.
+    lore: ["&7Erstellt ein Schematic-Backup", "&7des Plots oder Plotmerges,", "&7auf dem du stehst."]
+    commands: ["plot-backup:create"]
     close: true
-    # Permission, die zum Sehen und Nutzen benötigt wird.
     permission: "craftplayplotextras.backup.create"
+    bedrock-label: "Plot sichern"
   list-backups:
-    slot: 15
+    slot: 11
     material: CHEST
     name: "&ePlotbackups"
-    lore:
-      - "&7Zeigt alle gespeicherten"
-      - "&7Plotbackups mit Informationen."
-    commands:
-      - "open-menu:team-backups:1"
+    lore: ["&7Zeigt alle gespeicherten", "&7Plotbackups mit Informationen."]
+    commands: ["open-menu:team-backups:1"]
     close: false
     permission: "craftplayplotextras.backup.list"
+    bedrock-label: "Plotbackups"
+  teleport-plot:
+    slot: 12
+    material: ENDER_PEARL
+    name: "&aPlot teleportieren"
+    lore: ["&7Fragt Plot-ID oder Spieler ab", "&7und nutzt /plot visit."]
+    commands: ["chat-input:chat-plot-search:plot visit {input}"]
+    close: true
+    permission: "plots.visit"
+    bedrock-label: "Plot teleportieren"
+  change-owner:
+    slot: 13
+    material: PLAYER_HEAD
+    name: "&eBesitzer ändern"
+    lore: ["&7Fragt einen Spielernamen ab.", "&7Befehl kann an deine Rechte", "&7und PlotSquared-Version angepasst werden."]
+    commands: ["chat-input:chat-member-player:plot setowner {input}"]
+    close: true
+    permission: "plots.admin.command.setowner"
+    bedrock-label: "Besitzer ändern"
+  lock-plot:
+    slot: 14
+    material: IRON_DOOR
+    name: "&cPlot sperren"
+    lore: ["&7Setzt einen konfigurierbaren", "&7Sperr-/Zugriffsbutton."]
+    commands: ["plot flag set deny-entry true"]
+    close: true
+    permission: "plots.admin.command.flag"
+    bedrock-label: "Plot sperren"
+  freeze-plot:
+    slot: 15
+    material: BLUE_ICE
+    name: "&bPlot einfrieren"
+    lore: ["&7Beispiel für einen Freeze-Button.", "&7Passe den Befehl an dein", "&7Moderationssystem an."]
+    commands: ["plot flag set use false"]
+    close: true
+    permission: "plots.admin.command.flag"
+    bedrock-label: "Plot einfrieren"
+  force-flags:
+    slot: 16
+    material: REDSTONE_TORCH
+    name: "&cFlags erzwingen"
+    lore: ["&7Öffnet das Flagmenü", "&7für Admin-Anpassungen."]
+    commands: ["open-menu:flags"]
+    close: false
+    permission: "plots.admin.command.flag"
+    bedrock-label: "Flags erzwingen"
+  merge-repair:
+    slot: 19
+    material: MAP
+    name: "&aMerge reparieren"
+    lore: ["&7Profilbutton für Merge-", "&7Straßen- oder Randreparaturen.", "&7Standardbefehl ist anpassbar."]
+    commands: ["plot debugroadregen"]
+    close: true
+    permission: "plots.admin"
+    bedrock-label: "Merge reparieren"
+  database-tools:
+    slot: 20
+    material: COMMAND_BLOCK
+    name: "&dDatenbanktools"
+    lore: ["&7Öffnet PlotSquared-", "&7Datenbankwerkzeuge, falls verfügbar."]
+    commands: ["plot database"]
+    close: true
+    permission: "plots.admin"
+    bedrock-label: "Datenbanktools"
+  inactive-plots:
+    slot: 21
+    material: CLOCK
+    name: "&eInaktive Plots"
+    lore: ["&7Sucht abgelaufene oder", "&7inaktive Plots."]
+    commands: ["plot list expired"]
+    close: true
+    permission: "plots.admin.command.list"
+    bedrock-label: "Inaktive Plots"
+  reports:
+    slot: 22
+    material: REDSTONE_TORCH
+    name: "&cReports verwalten"
+    lore: ["&7Öffnet Report-Menü oder", "&7PlotSquared-Inbox."]
+    commands: ["open-menu:reports"]
+    close: false
+    permission: "craftplayplotextras.team.reports"
+    bedrock-label: "Reports verwalten"
+  audit-logs:
+    slot: 23
+    material: WRITABLE_BOOK
+    name: "&bAudit Logs"
+    lore: ["&7Profilbutton für Logs,", "&7Prüfungen oder externe Systeme."]
+    commands: ["plot debug"]
+    close: true
+    permission: "plots.admin"
+    bedrock-label: "Audit Logs"
+  lagscanner:
+    slot: 24
+    material: REDSTONE
+    name: "&cLagscanner"
+    lore: ["&7Profilbutton für Redstone-", "&7oder Performance-Analyse."]
+    commands: ["plot debugpaste"]
+    close: true
+    permission: "plots.admin"
+    bedrock-label: "Lagscanner"
+  plot-analysis:
+    slot: 25
+    material: COMPASS
+    name: "&aPlotanalyse"
+    lore: ["&7Zeigt aktuelle Plotinfos", "&7und dient als Analyse-Profil."]
+    commands: ["plot info"]
+    close: true
+    permission: "plots.info"
+    bedrock-label: "Plotanalyse"
+  heatmaps:
+    slot: 28
+    material: MAGMA_BLOCK
+    name: "&6Heatmaps"
+    lore: ["&7Platzhalter für Heatmap-", "&7oder Webanalyse-Systeme."]
+    commands: ["plot list top"]
+    close: true
+    permission: "plots.admin.command.list"
+    bedrock-label: "Heatmaps"
+  activity-check:
+    slot: 29
+    material: FILLED_MAP
+    name: "&aAktivitätsprüfung"
+    lore: ["&7Öffnet besuchte Plots", "&7oder eigene Aktivitätslisten."]
+    commands: ["plot list visited"]
+    close: true
+    permission: "plots.admin.command.list"
+    bedrock-label: "Aktivitätsprüfung"
+  restore-backups:
+    slot: 30
+    material: ENDER_CHEST
+    name: "&eBackup wiederherstellen"
+    lore: ["&7Öffnet die Backupliste.", "&7Wiederherstellung erfolgt auf", "&7dem aktuellen Plot."]
+    commands: ["open-menu:team-backups:1"]
+    close: false
+    permission: "craftplayplotextras.backup.restore"
+    bedrock-label: "Backup wiederherstellen"
+  danger:
+    slot: 31
+    material: TNT
+    name: "&cLöschen / Reset"
+    lore: ["&7Öffnet das sichere", "&7Lösch- und Resetmenü."]
+    commands: ["open-menu:danger"]
+    close: false
+    permission: "craftplayplotextras.use"
+    bedrock-label: "Löschen / Reset"
+  community:
+    slot: 32
+    material: HEART_OF_THE_SEA
+    name: "&bCommunity prüfen"
+    lore: ["&7Öffnet Communitylisten", "&7und Bewertungen."]
+    commands: ["open-menu:community"]
+    close: false
+    permission: "craftplayplotextras.team.community"
+    bedrock-label: "Community prüfen"
+  help:
+    slot: 33
+    material: BOOK
+    name: "&aTeam-Hilfe"
+    lore: ["&7Öffnet die Hilfeseite."]
+    commands: ["open-menu:help"]
+    close: false
+    permission: "craftplayplotextras.team"
+    bedrock-label: "Team-Hilfe"
   back:
-    slot: 18
+    slot: 45
     material: ARROW
     name: "&eZurück"
-    lore:
-      - "&7Zurück zum Hauptmenü."
-    commands:
-      - "open-menu:main"
+    lore: ["&7Zurück zum Hauptmenü."]
+    commands: ["open-menu:main"]
     close: false
     permission: ""
+    bedrock-label: "Zurück"
   close:
-    slot: 22
+    slot: 53
     material: BARRIER
-    head-database-id: ""
     name: "&cSchließen"
-    lore:
-      - "&7Schließt dieses Menü."
+    lore: ["&7Schließt dieses Menü."]
     commands: []
     close: true
     permission: ""
-# Deko-Items sind reine Anzeigeelemente ohne Aktion.
+    bedrock-label: "Schließen"
 decorations:
-  left:
-    slot: 0
-    material: RED_STAINED_GLASS_PANE
-    head-database-id: ""
-    name: "&r"
-    lore: []
-    permission: ""
-  right:
-    slot: 8
+  frame:
+    slot: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 46, 47, 48, 49, 50, 51, 52]
     material: RED_STAINED_GLASS_PANE
     head-database-id: ""
     name: "&r"
@@ -102,28 +233,7 @@ backup-list:
     material: BLACK_STAINED_GLASS_PANE
     name: "&r"
   # Slots, auf denen Backups angezeigt werden.
-  slots:
-    - 10
-    - 11
-    - 12
-    - 13
-    - 14
-    - 15
-    - 16
-    - 19
-    - 20
-    - 21
-    - 22
-    - 23
-    - 24
-    - 25
-    - 28
-    - 29
-    - 30
-    - 31
-    - 32
-    - 33
-    - 34
+  slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
   # Vorlage für jedes Backup-Item.
   item:
     material: FILLED_MAP
@@ -143,58 +253,11 @@ backup-list:
       - "&7auf dem Plot, auf dem du stehst."
   # Buttons in der Backupliste.
   buttons:
-    previous:
-      slot: 45
-      material: ARROW
-      name: "&eVorherige Seite"
-      lore:
-        - "&7Öffnet Seite {previous_page}."
-      commands:
-        - "open-menu:team-backups:{previous_page}"
-      close: false
-      permission: "craftplayplotextras.backup.list"
-    next:
-      slot: 53
-      material: ARROW
-      name: "&eNächste Seite"
-      lore:
-        - "&7Öffnet Seite {next_page}."
-      commands:
-        - "open-menu:team-backups:{next_page}"
-      close: false
-      permission: "craftplayplotextras.backup.list"
-    back:
-      slot: 49
-      material: OAK_DOOR
-      name: "&eZurück"
-      lore:
-        - "&7Zurück zum Team-Menü."
-      commands:
-        - "open-menu:team"
-      close: false
-      permission: "craftplayplotextras.team"
-    close:
-      slot: 50
-      material: BARRIER
-      name: "&cSchließen"
-      lore:
-        - "&7Schließt dieses Menü."
-      commands: []
-      close: true
-      permission: ""
+    previous: {slot: 45, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:team-backups:{previous_page}"], close: false, permission: "craftplayplotextras.backup.list"}
+    next: {slot: 53, material: ARROW, name: "&eNächste Seite", lore: ["&7Öffnet Seite {next_page}."], commands: ["open-menu:team-backups:{next_page}"], close: false, permission: "craftplayplotextras.backup.list"}
+    back: {slot: 49, material: OAK_DOOR, name: "&eZurück", lore: ["&7Zurück zum Team-Menü."], commands: ["open-menu:team"], close: false, permission: "craftplayplotextras.team"}
+    close: {slot: 50, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
   # Deko-Items in der Backupliste.
   decorations:
-    top-left:
-      slot: 0
-      material: RED_STAINED_GLASS_PANE
-      head-database-id: ""
-      name: "&r"
-      lore: []
-      permission: ""
-    top-right:
-      slot: 8
-      material: RED_STAINED_GLASS_PANE
-      head-database-id: ""
-      name: "&r"
-      lore: []
-      permission: ""
+    top-left: {slot: 0, material: RED_STAINED_GLASS_PANE, head-database-id: "", name: "&r", lore: [], permission: ""}
+    top-right: {slot: 8, material: RED_STAINED_GLASS_PANE, head-database-id: "", name: "&r", lore: [], permission: ""}
