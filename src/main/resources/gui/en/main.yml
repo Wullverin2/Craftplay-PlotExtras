@@ -1,16 +1,15 @@
 # English main menu.
 # This file controls the main menu for English players.
-# Here you configure title, size, filler items, decorations, sounds, animations,
-# Bedrock forms, and all buttons.
+# Here you configure title, size, filler items, decorations, sounds, animations, and all Java buttons.
 # Each button can run custom commands. Prefixes: console:, player:, op:, open-menu:.
 # Buttons and decorations can use slot: 13, slot: [13, 14, 15], or slots: [13, 14, 15].
 # Optionally, a HeadDatabase head can be used with head-database-id instead of the material.
 # Player heads can use material: PLAYERHEAD %player_name% or skull-owner: "%player_name%".
-# PlaceholderAPI placeholders work in titles, names, lore, Bedrock labels, and commands.
+# PlaceholderAPI placeholders work in titles, names, lore, and commands.
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 9
+file-version: 10
 
 # Inventory title.
 title: "&8Plot Menu"
@@ -50,14 +49,6 @@ animation:
   enabled: true
   # Delay between two revealed buttons in ticks.
   delay-ticks: 1
-# Bedrock form for Floodgate players.
-bedrock-form:
-  # If true, this main menu opens as a Floodgate form for Bedrock players.
-  enabled: true
-  # Bedrock form title.
-  title: "Plot Menu"
-  # Text shown above the Bedrock buttons.
-  content: "Choose what you want to do with your plots."
 # All buttons in this menu.
 buttons:
   my-plots:
@@ -67,8 +58,6 @@ buttons:
     material: GRASS_BLOCK
     # Button display name.
     name: "&aMy Plots"
-    # Bedrock form label. Empty means the normal name is used.
-    bedrock-label: "My Plots"
     # Description below the button name.
     lore:
       - "&7Shows your own plots."
@@ -84,7 +73,6 @@ buttons:
     slot: 2
     material: COMPASS
     name: "&aSearch Plot"
-    bedrock-label: "Search Plot"
     lore:
       - "&7Opens the PlotSquared"
       - "&7visit/search command."
@@ -96,7 +84,6 @@ buttons:
     slot: 3
     material: EMERALD_BLOCK
     name: "&aCreate Plot"
-    bedrock-label: "Create Plot"
     lore:
       - "&7Automatically claims a free plot."
       - "&8Command: /plot auto"
@@ -108,7 +95,6 @@ buttons:
     slot: 4
     material: NETHER_STAR
     name: "&aFavorites"
-    bedrock-label: "Favorites"
     lore:
       - "&7Opens your favorite plots."
       - "&7The command can be changed."
@@ -120,7 +106,6 @@ buttons:
     slot: 5
     material: SUNFLOWER
     name: "&aCommunity"
-    bedrock-label: "Community"
     lore:
       - "&7Opens public and popular"
       - "&7community plot lists."
@@ -132,7 +117,6 @@ buttons:
     slot: 12
     material: PLAYER_HEAD
     name: "&aMembers"
-    bedrock-label: "Members"
     lore:
       - "&7Opens the PlotSquared"
       - "&7member overview."
@@ -144,7 +128,6 @@ buttons:
     slot: 7
     material: WRITABLE_BOOK
     name: "&aRights & Roles"
-    bedrock-label: "Rights & Roles"
     lore:
       - "&7Opens the current"
       - "&7member and rights overview."
@@ -156,7 +139,6 @@ buttons:
     slot: 14
     material: REDSTONE_TORCH
     name: "&aFlags"
-    bedrock-label: "Flags"
     lore:
       - "&7Opens the flag menu"
       - "&7with status and toggles."
@@ -168,7 +150,6 @@ buttons:
     slot: 15
     material: REPEATER
     name: "&aSettings"
-    bedrock-label: "Settings"
     lore:
       - "&7Opens homes, weather,"
       - "&7biomes, and time."
@@ -180,7 +161,6 @@ buttons:
     slot: 10
     material: BELL
     name: "&eReports"
-    bedrock-label: "Reports"
     lore:
       - "&7Reports a plot directly"
       - "&7through PlotSquared."
@@ -192,7 +172,6 @@ buttons:
     slot: 11
     material: CLOCK
     name: "&aHistory"
-    bedrock-label: "History"
     lore:
       - "&7Opens recently visited"
       - "&7or saved plot lists."
@@ -204,7 +183,6 @@ buttons:
     slot: 16
     material: BOOK
     name: "&bHelp"
-    bedrock-label: "Help"
     lore:
       - "&7Opens PlotSquared help."
       - "&8Command: /plot help"
@@ -216,7 +194,6 @@ buttons:
     slot: 13
     material: COMMAND_BLOCK
     name: "&cStaff"
-    bedrock-label: "Staff"
     lore:
       - "&7Opens staff tools"
       - "&7for plot backups."
@@ -229,7 +206,6 @@ buttons:
     material: BARRIER
     head-database-id: ""
     name: "&cClose"
-    bedrock-label: "Close"
     lore:
       - "&7Closes this menu."
     commands: []

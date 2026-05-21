@@ -24,6 +24,8 @@ public final class ConfigurationManager {
             "language/en.yml",
             "gui/de/main.yml",
             "gui/en/main.yml",
+            "gui/de/bedrock.yml",
+            "gui/en/bedrock.yml",
             "gui/de/flags.yml",
             "gui/en/flags.yml",
             "gui/de/settings.yml",
@@ -83,6 +85,22 @@ public final class ConfigurationManager {
             if (hiddenButtons.removeIf(hiddenButton -> "help".equalsIgnoreCase(hiddenButton))) {
                 existing.set("gui.hidden-main-buttons", hiddenButtons);
                 changed = true;
+            }
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/main.yml") && existingVersion < 10) {
+            if (existing.contains("bedrock-form")) {
+                existing.set("bedrock-form", null);
+                changed = true;
+            }
+            final org.bukkit.configuration.ConfigurationSection buttons = existing.getConfigurationSection("buttons");
+            if (buttons != null) {
+                for (final String buttonId : buttons.getKeys(false)) {
+                    final String bedrockLabelPath = "buttons." + buttonId + ".bedrock-label";
+                    if (existing.contains(bedrockLabelPath)) {
+                        existing.set(bedrockLabelPath, null);
+                        changed = true;
+                    }
+                }
             }
         }
         if (existingVersion != defaultVersion) {

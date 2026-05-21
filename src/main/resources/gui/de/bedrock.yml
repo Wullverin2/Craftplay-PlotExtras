@@ -1,0 +1,126 @@
+# Deutsches Bedrock-Hauptmenü.
+# Diese Datei steuert das Hauptmenü für Bedrock-Spieler über Floodgate-Forms.
+# Sie ist bewusst von der Java-Inventar-GUI in main.yml getrennt.
+# Jeder Button kann eigene Befehle ausführen. Prefixe: console:, player:, op:, open-menu:.
+# PlaceholderAPI-Platzhalter funktionieren in Titel, Beschreibung, Labels und Commands.
+
+# Dateiversion dieser GUI-Datei.
+# Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
+file-version: 1
+
+# Wenn false, wird dieses Bedrock-Menü nicht geladen.
+enabled: true
+# Titel der Bedrock-Form.
+title: "Plot-Menü"
+# Beschreibung über den Buttons der Bedrock-Form.
+content: "Wähle aus, was du mit deinen Plots machen möchtest."
+# Standardsound, der beim Auswählen eines Buttons abgespielt wird.
+click-sound:
+  # Wenn true, hören Spieler beim Klicken einen Button-Sound.
+  enabled: true
+  # Bukkit-Soundname.
+  sound: UI_BUTTON_CLICK
+  # Lautstärke des Sounds.
+  volume: 0.8
+  # Tonhöhe des Sounds.
+  pitch: 1.0
+# Button-IDs, die in der Bedrock-Form nicht angezeigt werden sollen.
+hidden-buttons: []
+# Alle Buttons der Bedrock-Form.
+buttons:
+  my-plots:
+    # Reihenfolge in der Form. Kleinere Zahlen stehen weiter oben.
+    order: 10
+    # Text auf dem Bedrock-Button.
+    label: "Eigene Plots"
+    # Befehle werden als Spieler ausgeführt. Mit console: davor als Konsole.
+    commands:
+      - "plot list mine"
+    # Wenn true, wird die Form nach dem Klick geschlossen.
+    close: true
+    # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
+    permission: ""
+  search:
+    order: 20
+    label: "Plot suchen"
+    commands:
+      - "plot visit"
+    close: true
+    permission: ""
+  create:
+    order: 30
+    label: "Plot erstellen"
+    commands:
+      - "plot auto"
+    close: true
+    permission: "plots.auto"
+  favorites:
+    order: 40
+    label: "Favoriten"
+    commands:
+      - "plot list favorites"
+    close: true
+    permission: ""
+  community:
+    order: 50
+    label: "Community"
+    commands:
+      - "plot list all"
+    close: true
+    permission: ""
+  members:
+    order: 60
+    label: "Mitglieder"
+    commands:
+      - "plot members"
+    close: true
+    permission: ""
+  roles:
+    order: 70
+    label: "Rechte & Rollen"
+    commands:
+      - "plot members"
+    close: true
+    permission: ""
+  flags:
+    order: 80
+    label: "Flags"
+    commands:
+      - "open-menu:flags"
+    close: true
+    permission: ""
+  settings:
+    order: 90
+    label: "Einstellungen"
+    commands:
+      - "open-menu:settings:homes"
+    close: true
+    permission: ""
+  reports:
+    order: 100
+    label: "Reports"
+    commands:
+      - "plot report"
+    close: true
+    permission: ""
+  history:
+    order: 110
+    label: "Verlauf"
+    commands:
+      - "plot list visited"
+    close: true
+    permission: ""
+  help:
+    order: 120
+    label: "Hilfe"
+    commands:
+      - "plot help"
+    close: true
+    permission: ""
+  team:
+    order: 130
+    label: "Team"
+    commands:
+      - "open-menu:team"
+    close: true
+    permission: "craftplayplotextras.team"

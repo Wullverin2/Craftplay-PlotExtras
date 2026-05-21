@@ -1,0 +1,126 @@
+# English Bedrock main menu.
+# This file controls the main menu for Bedrock players through Floodgate forms.
+# It is intentionally separate from the Java inventory GUI in main.yml.
+# Each button can run custom commands. Prefixes: console:, player:, op:, open-menu:.
+# PlaceholderAPI placeholders work in the title, content, labels, and commands.
+
+# File version of this GUI file.
+# The plugin uses this value to add new menu options automatically.
+file-version: 1
+
+# If false, this Bedrock menu is not loaded.
+enabled: true
+# Bedrock form title.
+title: "Plot Menu"
+# Text shown above the Bedrock buttons.
+content: "Choose what you want to do with your plots."
+# Default sound played when a button is selected.
+click-sound:
+  # If true, players hear a button sound when they click.
+  enabled: true
+  # Bukkit sound name.
+  sound: UI_BUTTON_CLICK
+  # Sound volume.
+  volume: 0.8
+  # Sound pitch.
+  pitch: 1.0
+# Button IDs hidden from the Bedrock form.
+hidden-buttons: []
+# All buttons in the Bedrock form.
+buttons:
+  my-plots:
+    # Order in the form. Smaller numbers are shown first.
+    order: 10
+    # Text shown on the Bedrock button.
+    label: "My Plots"
+    # Commands run as the player. Prefix with console: to run as console.
+    commands:
+      - "plot list mine"
+    # If true, the form closes after clicking.
+    close: true
+    # Optional permission required to see the button.
+    permission: ""
+  search:
+    order: 20
+    label: "Search Plot"
+    commands:
+      - "plot visit"
+    close: true
+    permission: ""
+  create:
+    order: 30
+    label: "Create Plot"
+    commands:
+      - "plot auto"
+    close: true
+    permission: "plots.auto"
+  favorites:
+    order: 40
+    label: "Favorites"
+    commands:
+      - "plot list favorites"
+    close: true
+    permission: ""
+  community:
+    order: 50
+    label: "Community"
+    commands:
+      - "plot list all"
+    close: true
+    permission: ""
+  members:
+    order: 60
+    label: "Members"
+    commands:
+      - "plot members"
+    close: true
+    permission: ""
+  roles:
+    order: 70
+    label: "Rights & Roles"
+    commands:
+      - "plot members"
+    close: true
+    permission: ""
+  flags:
+    order: 80
+    label: "Flags"
+    commands:
+      - "open-menu:flags"
+    close: true
+    permission: ""
+  settings:
+    order: 90
+    label: "Settings"
+    commands:
+      - "open-menu:settings:homes"
+    close: true
+    permission: ""
+  reports:
+    order: 100
+    label: "Reports"
+    commands:
+      - "plot report"
+    close: true
+    permission: ""
+  history:
+    order: 110
+    label: "History"
+    commands:
+      - "plot list visited"
+    close: true
+    permission: ""
+  help:
+    order: 120
+    label: "Help"
+    commands:
+      - "plot help"
+    close: true
+    permission: ""
+  team:
+    order: 130
+    label: "Staff"
+    commands:
+      - "open-menu:team"
+    close: true
+    permission: "craftplayplotextras.team"

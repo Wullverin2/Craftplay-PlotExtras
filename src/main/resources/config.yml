@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 6
+file-version: 7
 
 # Befehle dieses Plugins.
 command:
@@ -26,8 +26,11 @@ language:
 # GUI-Grundeinstellungen.
 gui:
   # Datei des Hauptmenüs. Geladen wird gui/<sprache>/<main-menu>.
-  # So kannst du später andere Hauptmenü-Dateien nutzen, ohne Code zu ändern.
+  # Diese Datei ist das Java-Inventar-Hauptmenü.
   main-menu: main.yml
+  # Datei des Bedrock-Hauptmenüs. Geladen wird gui/<sprache>/<bedrock-main-menu>.
+  # Diese Datei ist eine Floodgate-Form und getrennt vom Java-Inventar.
+  bedrock-main-menu: bedrock.yml
   # Datei des Flag-Untermenüs. Geladen wird gui/<sprache>/<flags-menu>.
   # Dieses Menü zeigt Boolean-Flags von PlotSquared mit Status und Umschaltfunktion.
   flags-menu: flags.yml

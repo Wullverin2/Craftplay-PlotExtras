@@ -45,6 +45,7 @@ public final class PlotMenuManager implements Listener {
     private final PlaceholderHook placeholderHook;
     private final FloodgateHook floodgateHook;
     private final Map<Integer, MenuButton> mainButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> bedrockMainButtonsByOrder = new HashMap<>();
     private final Map<Integer, MenuButton> flagButtonsBySlot = new HashMap<>();
     private final Map<Integer, Map<Integer, FlagMenuEntry>> flagsByPageAndSlot = new HashMap<>();
     private final Map<Integer, MenuButton> settingsDecorationsBySlot = new HashMap<>();
@@ -62,8 +63,11 @@ public final class PlotMenuManager implements Listener {
     private boolean mainAnimationEnabled;
     private long mainAnimationDelayTicks;
     private boolean bedrockFormsEnabled;
+    private boolean bedrockMainLoaded;
     private String bedrockMainTitle;
     private String bedrockMainContent;
+    private MenuSound bedrockClickSound;
+    private List<String> hiddenBedrockMainButtons;
     private String flagsTitle;
     private int flagsSize;
     private ItemStack flagsFiller;
@@ -108,6 +112,7 @@ public final class PlotMenuManager implements Listener {
 
     public void reload() {
         mainButtonsBySlot.clear();
+        bedrockMainButtonsByOrder.clear();
         flagButtonsBySlot.clear();
         flagsByPageAndSlot.clear();
         settingsDecorationsBySlot.clear();
@@ -115,6 +120,7 @@ public final class PlotMenuManager implements Listener {
         teamButtonsBySlot.clear();
         backupListButtonsBySlot.clear();
         mainLoaded = false;
+        bedrockMainLoaded = false;
         flagsLoaded = false;
         settingsLoaded = false;
         teamLoaded = false;
@@ -136,13 +142,21 @@ public final class PlotMenuManager implements Listener {
         mainClickSound = loadSound(menuConfig, "click-sound");
         mainAnimationEnabled = menuConfig.getBoolean("animation.enabled", false);
         mainAnimationDelayTicks = Math.max(1L, menuConfig.getLong("animation.delay-ticks", 1L));
-        bedrockFormsEnabled = plugin.getConfig().getBoolean("bedrock.enabled", true)
-                && menuConfig.getBoolean("bedrock-form.enabled", true);
-        bedrockMainTitle = menuConfig.getString("bedrock-form.title", mainTitle);
-        bedrockMainContent = menuConfig.getString("bedrock-form.content", "");
         loadButtons(menuConfig, mainButtonsBySlot, mainSize);
         loadDecorations(menuConfig, mainButtonsBySlot, mainSize);
         mainLoaded = true;
+
+        bedrockFormsEnabled = plugin.getConfig().getBoolean("bedrock.enabled", true);
+        final YamlConfiguration bedrockConfig = loadMenuConfig(plugin.getConfig().getString("gui.bedrock-main-menu", "bedrock.yml"));
+        if (bedrockConfig != null) {
+            bedrockFormsEnabled = bedrockFormsEnabled && bedrockConfig.getBoolean("enabled", true);
+            bedrockMainTitle = bedrockConfig.getString("title", mainTitle);
+            bedrockMainContent = bedrockConfig.getString("content", "");
+            bedrockClickSound = loadSound(bedrockConfig, "click-sound");
+            hiddenBedrockMainButtons = bedrockConfig.getStringList("hidden-buttons");
+            loadBedrockButtons(bedrockConfig);
+            bedrockMainLoaded = true;
+        }
 
         final YamlConfiguration flagsConfig = loadMenuConfig(plugin.getConfig().getString("gui.flags-menu", "flags.yml"));
         if (flagsConfig == null) {
@@ -225,7 +239,7 @@ public final class PlotMenuManager implements Listener {
     }
 
     public boolean openBedrockMainMenu(final Player player) {
-        if (!mainLoaded) {
+        if (!bedrockMainLoaded) {
             languageManager.send(player, "menu-missing");
             return false;
         }
@@ -234,7 +248,7 @@ public final class PlotMenuManager implements Listener {
             return false;
         }
 
-        final List<MenuButton> buttons = visibleMainActionButtons(player);
+        final List<MenuButton> buttons = visibleBedrockMainActionButtons(player);
         final List<String> labels = new ArrayList<>();
         for (final MenuButton button : buttons) {
             labels.add(bedrockLabel(player, button));
@@ -247,7 +261,7 @@ public final class PlotMenuManager implements Listener {
             }
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (player.isOnline()) {
-                    executeButtonCommands(player, buttons.get(clickedButton), mainClickSound);
+                    executeButtonCommands(player, buttons.get(clickedButton), bedrockClickSound);
                 }
             });
         });
@@ -318,6 +332,28 @@ public final class PlotMenuManager implements Listener {
             }
         }
         return buttons;
+    }
+
+    private List<MenuButton> visibleBedrockMainActionButtons(final Player player) {
+        final List<MenuButton> buttons = new ArrayList<>(bedrockMainButtonsByOrder.values());
+        buttons.sort((first, second) -> Integer.compare(first.getSlot(), second.getSlot()));
+        final List<MenuButton> visible = new ArrayList<>();
+        final Set<String> seen = new LinkedHashSet<>();
+        for (final MenuButton button : buttons) {
+            if (button.getCommands().isEmpty() && !button.isCloseInventory()) {
+                continue;
+            }
+            if (!canSee(player, button)) {
+                continue;
+            }
+            if (isHiddenBedrockMainButton(button)) {
+                continue;
+            }
+            if (seen.add(button.getId().toLowerCase(Locale.ROOT))) {
+                visible.add(button);
+            }
+        }
+        return visible;
     }
 
     private String bedrockLabel(final Player player, final MenuButton button) {
@@ -583,6 +619,42 @@ public final class PlotMenuManager implements Listener {
             for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menübutton", id)) {
                 target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, commands, close, permission, clickSound, bedrockLabel));
             }
+        }
+    }
+
+    private void loadBedrockButtons(final YamlConfiguration menuConfig) {
+        final ConfigurationSection section = menuConfig.getConfigurationSection("buttons");
+        if (section == null) {
+            return;
+        }
+
+        int fallbackOrder = 0;
+        for (final String id : section.getKeys(false)) {
+            final String path = "buttons." + id + ".";
+            final int order = menuConfig.contains(path + "order")
+                    ? menuConfig.getInt(path + "order")
+                    : menuConfig.getInt(path + "slot", fallbackOrder);
+            fallbackOrder++;
+            final String label = menuConfig.getString(path + "label",
+                    menuConfig.getString(path + "name", "&a" + id));
+            final List<String> commands = configuredCommands(menuConfig, path);
+            final boolean close = menuConfig.getBoolean(path + "close", true);
+            final String permission = menuConfig.getString(path + "permission", "");
+            final MenuSound clickSound = loadButtonSound(menuConfig, path);
+            bedrockMainButtonsByOrder.put(order, new MenuButton(
+                    id,
+                    order,
+                    Material.STONE_BUTTON,
+                    "",
+                    "",
+                    label,
+                    Collections.emptyList(),
+                    commands,
+                    close,
+                    permission,
+                    clickSound,
+                    label
+            ));
         }
     }
 
@@ -1087,6 +1159,18 @@ public final class PlotMenuManager implements Listener {
             return false;
         }
         for (final String hiddenButton : hiddenMainButtons) {
+            if (button.getId().equalsIgnoreCase(hiddenButton)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isHiddenBedrockMainButton(final MenuButton button) {
+        if (hiddenBedrockMainButtons == null || hiddenBedrockMainButtons.isEmpty()) {
+            return false;
+        }
+        for (final String hiddenButton : hiddenBedrockMainButtons) {
             if (button.getId().equalsIgnoreCase(hiddenButton)) {
                 return true;
             }
