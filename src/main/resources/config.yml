@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 11
+file-version: 12
 
 # Befehle dieses Plugins.
 command:
@@ -114,6 +114,26 @@ roles:
     - "build"
     - "interact"
     - "container"
+
+# Teamfunktionen.
+team-features:
+  # Aktiviert oder deaktiviert die internen Teamfunktionen wie Sperren, Einfrieren und Auditlogs.
+  enabled: true
+  # Datendatei für Plot-Sperren, Plot-Freezes und Auditlogs.
+  data-file: teamdata.yml
+  lock:
+    # Wenn false, kann das Plugin keine Plots per Teamfunktion sperren.
+    enabled: true
+  freeze:
+    # Wenn false, kann das Plugin keine Plots per Teamfunktion einfrieren.
+    enabled: true
+  audit:
+    # Wenn true, werden Teamaktionen in teamdata.yml gespeichert.
+    enabled: true
+    # Maximale Anzahl gespeicherter Audit-Einträge.
+    max-entries: 500
+    # Anzahl Audit-Einträge, die im Chat angezeigt werden.
+    show-limit: 10
 
 # Technische Einstellungen.
 technical:

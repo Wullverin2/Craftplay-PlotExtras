@@ -8,12 +8,14 @@ import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.listener.CommandListener;
 import de.craftplay.plotextras.listener.PlotBackupProtectionListener;
 import de.craftplay.plotextras.listener.PlotFutureListener;
+import de.craftplay.plotextras.listener.TeamFeatureProtectionListener;
 import de.craftplay.plotextras.menu.PlotMenuManager;
 import de.craftplay.plotextras.myplots.PlotDataStore;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
 import de.craftplay.plotextras.reports.ReportService;
 import de.craftplay.plotextras.roles.PlotRoleService;
+import de.craftplay.plotextras.team.TeamFeatureService;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,6 +31,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     private ReportService reportService;
     private PlotRoleService plotRoleService;
     private PlotFutureService plotFutureService;
+    private TeamFeatureService teamFeatureService;
     private PlotExtrasCommand commandExecutor;
 
     @Override
@@ -50,14 +53,17 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         plotBackupService.reload();
         plotFutureService = new PlotFutureService(this, plotDataStore);
         plotFutureService.reload();
+        teamFeatureService = new TeamFeatureService(this);
+        teamFeatureService.reload();
         plotMenuManager = new PlotMenuManager(this, languageManager, plotSquaredFlagService, plotSquaredPlotService,
-                plotDataStore, plotBackupService, reportService, plotRoleService, plotFutureService);
+                plotDataStore, plotBackupService, reportService, plotRoleService, plotFutureService, teamFeatureService);
         plotMenuManager.reload();
 
         getServer().getPluginManager().registerEvents(plotMenuManager, this);
         getServer().getPluginManager().registerEvents(new CommandListener(this), this);
         getServer().getPluginManager().registerEvents(new PlotBackupProtectionListener(plotBackupService), this);
         getServer().getPluginManager().registerEvents(new PlotFutureListener(plotFutureService), this);
+        getServer().getPluginManager().registerEvents(new TeamFeatureProtectionListener(teamFeatureService), this);
         registerCommands();
 
         getLogger().info("CraftplayPlotExtras Menü wurde geladen.");
@@ -80,6 +86,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         plotRoleService.reload();
         plotBackupService.reload();
         plotFutureService.reload();
+        teamFeatureService.reload();
         plotMenuManager.reload();
     }
 
@@ -117,6 +124,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
 
     public PlotFutureService getPlotFutureService() {
         return plotFutureService;
+    }
+
+    public TeamFeatureService getTeamFeatureService() {
+        return teamFeatureService;
     }
 
     public PlotExtrasCommand getCommandExecutor() {

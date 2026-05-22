@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 10
+file-version: 11
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -79,6 +79,30 @@ permissions:
   craftplayplotextras.team.community:
     # Erlaubt teaminterne Community-Prüfbuttons.
     description: Erlaubt Community-Prüffunktionen im Team-Menü.
+    default: op
+  craftplayplotextras.team.lock:
+    description: Erlaubt das Sperren und Entsperren eines Plots.
+    default: op
+  craftplayplotextras.team.freeze:
+    description: Erlaubt das Einfrieren und Auftauen eines Plots.
+    default: op
+  craftplayplotextras.team.audit:
+    description: Erlaubt das Anzeigen der Team-Auditlogs.
+    default: op
+  craftplayplotextras.team.lagscan:
+    description: Erlaubt teaminterne Lag- und Redstone-Scans.
+    default: op
+  craftplayplotextras.team.activity:
+    description: Erlaubt teaminterne Aktivitätsprüfungen.
+    default: op
+  craftplayplotextras.team.analysis:
+    description: Erlaubt teaminterne Plotanalysen.
+    default: op
+  craftplayplotextras.team.bypass-lock:
+    description: Erlaubt das Betreten gesperrter Plots.
+    default: op
+  craftplayplotextras.team.bypass-freeze:
+    description: Erlaubt Änderungen auf eingefrorenen Plots.
     default: op
   craftplayplotextras.reports.create:
     # Erlaubt Spielern, plugininterne Plotreports zu erstellen.

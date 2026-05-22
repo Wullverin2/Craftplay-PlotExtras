@@ -5,7 +5,7 @@
 # Buttons und Deko-Items können slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
 # Bedrock-Spieler erhalten aus diesen Buttons automatisch eine Floodgate-Form.
 
-file-version: 4
+file-version: 5
 
 title: "&8Team-Menü"
 size: 54
@@ -54,19 +54,19 @@ buttons:
     slot: 14
     material: IRON_DOOR
     name: "&cPlot sperren"
-    lore: ["&7Setzt einen konfigurierbaren", "&7Sperr-/Zugriffsbutton."]
-    commands: ["plot flag set deny-entry true"]
+    lore: ["&7Sperrt oder entsperrt", "&7den aktuellen Plot intern.", "&7Spieler ohne Bypass kommen nicht hinein."]
+    commands: ["team:lock"]
     close: true
-    permission: "plots.admin.command.flag"
+    permission: "craftplayplotextras.team.lock"
     bedrock-label: "Plot sperren"
   freeze-plot:
     slot: 15
     material: BLUE_ICE
     name: "&bPlot einfrieren"
-    lore: ["&7Beispiel für einen Freeze-Button.", "&7Passe den Befehl an dein", "&7Moderationssystem an."]
-    commands: ["plot flag set use false"]
+    lore: ["&7Friert den aktuellen Plot ein", "&7oder gibt ihn wieder frei.", "&7Änderungen werden blockiert."]
+    commands: ["team:freeze"]
     close: true
-    permission: "plots.admin.command.flag"
+    permission: "craftplayplotextras.team.freeze"
     bedrock-label: "Plot einfrieren"
   force-flags:
     slot: 16
@@ -117,46 +117,46 @@ buttons:
     slot: 23
     material: WRITABLE_BOOK
     name: "&bAudit Logs"
-    lore: ["&7Profilbutton für Logs,", "&7Prüfungen oder externe Systeme."]
-    commands: ["plot debug"]
+    lore: ["&7Zeigt die letzten", "&7plugininternen Teamaktionen."]
+    commands: ["team:audit"]
     close: true
-    permission: "plots.admin"
+    permission: "craftplayplotextras.team.audit"
     bedrock-label: "Audit Logs"
   lagscanner:
     slot: 24
     material: REDSTONE
     name: "&cLagscanner"
-    lore: ["&7Profilbutton für Redstone-", "&7oder Performance-Analyse."]
-    commands: ["plot debugpaste"]
+    lore: ["&7Startet eine interne", "&7Redstone- und Lagprüfung."]
+    commands: ["team:lagscan"]
     close: true
-    permission: "plots.admin"
+    permission: "craftplayplotextras.team.lagscan"
     bedrock-label: "Lagscanner"
   plot-analysis:
     slot: 25
     material: COMPASS
     name: "&aPlotanalyse"
-    lore: ["&7Zeigt aktuelle Plotinfos", "&7und dient als Analyse-Profil."]
-    commands: ["plot info"]
+    lore: ["&7Zeigt Owner, Merge,", "&7Backups, Sperre und Freeze."]
+    commands: ["team:analysis"]
     close: true
-    permission: "plots.info"
+    permission: "craftplayplotextras.team.analysis"
     bedrock-label: "Plotanalyse"
   heatmaps:
     slot: 28
     material: MAGMA_BLOCK
     name: "&6Heatmaps"
-    lore: ["&7Platzhalter für Heatmap-", "&7oder Webanalyse-Systeme."]
-    commands: ["plot list top"]
+    lore: ["&7Zeigt die aktivsten", "&7Bereiche des aktuellen Plots."]
+    commands: ["team:heatmap"]
     close: true
-    permission: "plots.admin.command.list"
+    permission: "craftplayplotextras.future.heatmaps"
     bedrock-label: "Heatmaps"
   activity-check:
     slot: 29
     material: FILLED_MAP
     name: "&aAktivitätsprüfung"
-    lore: ["&7Öffnet besuchte Plots", "&7oder eigene Aktivitätslisten."]
-    commands: ["plot list visited"]
+    lore: ["&7Zeigt Besucherstatistik", "&7und internes Ranking."]
+    commands: ["team:activity"]
     close: true
-    permission: "plots.admin.command.list"
+    permission: "craftplayplotextras.team.activity"
     bedrock-label: "Aktivitätsprüfung"
   restore-backups:
     slot: 30

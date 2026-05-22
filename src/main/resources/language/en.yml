@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 9
+file-version: 10
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -236,3 +236,20 @@ future-discord-disabled: "&cDiscord is disabled in the config or no webhook is s
 future-discord-sent: "&aDiscord test was sent."
 # Message after web export.
 future-web-exported: "&aWeb overview exported: &f{file}"
+
+# Message shown when a team feature is disabled.
+team-feature-disabled: "&cThis team feature is currently disabled."
+# Message shown when a plot was locked.
+team-plot-locked: "&cPlot &f{world};{plot} &cwas locked."
+# Message shown when a plot was unlocked.
+team-plot-unlocked: "&aPlot &f{world};{plot} &awas unlocked."
+# Message shown when a plot was frozen.
+team-plot-frozen: "&bPlot &f{world};{plot} &bwas frozen."
+# Message shown when a plot was unfrozen.
+team-plot-unfrozen: "&aPlot &f{world};{plot} &awas unfrozen."
+# Audit log header.
+team-audit-header: "&6Latest team actions:"
+# Audit log line.
+team-audit-line: "&7{time} &f{actor} &7-> &e{action} &7on &f{world};{plot} &7owner: &f{owner}"
+# Team plot analysis.
+team-analysis: "&aPlot analysis &f{world};{plot}&a: owner &f{owner}&7, merge &f{merge}&7, plots &f{plots}&7, backups &f{backups}&7, locked &f{locked}&7, frozen &f{frozen}&7."

@@ -17,6 +17,7 @@ import de.craftplay.plotextras.reports.PlotReport;
 import de.craftplay.plotextras.reports.ReportService;
 import de.craftplay.plotextras.roles.PlotRole;
 import de.craftplay.plotextras.roles.PlotRoleService;
+import de.craftplay.plotextras.team.TeamFeatureService;
 import de.craftplay.plotextras.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -62,6 +63,7 @@ public final class PlotMenuManager implements Listener {
     private final ReportService reportService;
     private final PlotRoleService roleService;
     private final PlotFutureService futureService;
+    private final TeamFeatureService teamFeatureService;
     private final HeadDatabaseHook headDatabaseHook;
     private final PlaceholderHook placeholderHook;
     private final FloodgateHook floodgateHook;
@@ -163,7 +165,8 @@ public final class PlotMenuManager implements Listener {
             final PlotBackupService backupService,
             final ReportService reportService,
             final PlotRoleService roleService,
-            final PlotFutureService futureService
+            final PlotFutureService futureService,
+            final TeamFeatureService teamFeatureService
     ) {
         this.plugin = plugin;
         this.languageManager = languageManager;
@@ -174,6 +177,7 @@ public final class PlotMenuManager implements Listener {
         this.reportService = reportService;
         this.roleService = roleService;
         this.futureService = futureService;
+        this.teamFeatureService = teamFeatureService;
         this.headDatabaseHook = new HeadDatabaseHook(plugin);
         this.placeholderHook = new PlaceholderHook(plugin);
         this.floodgateHook = new FloodgateHook(plugin);
@@ -2563,6 +2567,11 @@ public final class PlotMenuManager implements Listener {
 
         if (command.toLowerCase(Locale.ROOT).startsWith("future:")) {
             futureService.runCommand(player, command.substring("future:".length()).trim());
+            return;
+        }
+
+        if (command.toLowerCase(Locale.ROOT).startsWith("team:")) {
+            teamFeatureService.runCommand(player, command.substring("team:".length()).trim());
             return;
         }
 

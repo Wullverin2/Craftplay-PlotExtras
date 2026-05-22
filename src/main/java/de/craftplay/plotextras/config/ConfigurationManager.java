@@ -226,6 +226,30 @@ public final class ConfigurationManager {
             existing.set("tabs.integrations.buttons.web-overview.close", true);
             changed = true;
         }
+        if (resourcePath.replace('\\', '/').endsWith("/team.yml") && existingVersion < 5) {
+            existing.set("buttons.lock-plot.commands", Arrays.asList("team:lock"));
+            existing.set("buttons.lock-plot.close", true);
+            existing.set("buttons.lock-plot.permission", "craftplayplotextras.team.lock");
+            existing.set("buttons.freeze-plot.commands", Arrays.asList("team:freeze"));
+            existing.set("buttons.freeze-plot.close", true);
+            existing.set("buttons.freeze-plot.permission", "craftplayplotextras.team.freeze");
+            existing.set("buttons.audit-logs.commands", Arrays.asList("team:audit"));
+            existing.set("buttons.audit-logs.close", true);
+            existing.set("buttons.audit-logs.permission", "craftplayplotextras.team.audit");
+            existing.set("buttons.lagscanner.commands", Arrays.asList("team:lagscan"));
+            existing.set("buttons.lagscanner.close", true);
+            existing.set("buttons.lagscanner.permission", "craftplayplotextras.team.lagscan");
+            existing.set("buttons.plot-analysis.commands", Arrays.asList("team:analysis"));
+            existing.set("buttons.plot-analysis.close", true);
+            existing.set("buttons.plot-analysis.permission", "craftplayplotextras.team.analysis");
+            existing.set("buttons.heatmaps.commands", Arrays.asList("team:heatmap"));
+            existing.set("buttons.heatmaps.close", true);
+            existing.set("buttons.heatmaps.permission", "craftplayplotextras.future.heatmaps");
+            existing.set("buttons.activity-check.commands", Arrays.asList("team:activity"));
+            existing.set("buttons.activity-check.close", true);
+            existing.set("buttons.activity-check.permission", "craftplayplotextras.team.activity");
+            changed = true;
+        }
         if (existingVersion != defaultVersion) {
             existing.set("file-version", defaultVersion);
             changed = true;

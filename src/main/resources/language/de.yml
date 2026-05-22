@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 9
+file-version: 10
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -236,3 +236,20 @@ future-discord-disabled: "&cDiscord ist in der Config deaktiviert oder kein Webh
 future-discord-sent: "&aDiscord-Test wurde gesendet."
 # Nachricht nach Webexport.
 future-web-exported: "&aWebübersicht exportiert: &f{file}"
+
+# Nachricht, wenn eine Teamfunktion deaktiviert ist.
+team-feature-disabled: "&cDiese Teamfunktion ist aktuell deaktiviert."
+# Nachricht, wenn ein Plot gesperrt wurde.
+team-plot-locked: "&cPlot &f{world};{plot} &cwurde gesperrt."
+# Nachricht, wenn eine Plotsperre aufgehoben wurde.
+team-plot-unlocked: "&aPlot &f{world};{plot} &awurde entsperrt."
+# Nachricht, wenn ein Plot eingefroren wurde.
+team-plot-frozen: "&bPlot &f{world};{plot} &bwurde eingefroren."
+# Nachricht, wenn ein Plot wieder freigegeben wurde.
+team-plot-unfrozen: "&aPlot &f{world};{plot} &awurde aufgetaut."
+# Überschrift der Auditlogs.
+team-audit-header: "&6Letzte Team-Aktionen:"
+# Zeile in den Auditlogs.
+team-audit-line: "&7{time} &f{actor} &7-> &e{action} &7auf &f{world};{plot} &7Besitzer: &f{owner}"
+# Plotanalyse im Teammenü.
+team-analysis: "&aPlotanalyse &f{world};{plot}&a: Besitzer &f{owner}&7, Merge &f{merge}&7, Plots &f{plots}&7, Backups &f{backups}&7, gesperrt &f{locked}&7, eingefroren &f{frozen}&7."

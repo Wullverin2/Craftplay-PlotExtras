@@ -563,11 +563,25 @@ public final class PlotFutureService {
         }
         if (permission != null && !permission.trim().isEmpty()
                 && !player.hasPermission(permission)
+                && !hasTeamFeaturePermission(player, feature)
                 && !player.hasPermission("craftplayplotextras.admin")) {
             plugin.getLanguageManager().send(player, "no-permission");
             return false;
         }
         return true;
+    }
+
+    private boolean hasTeamFeaturePermission(final Player player, final String feature) {
+        if ("visitor-statistics".equals(feature) || "ranking".equals(feature)) {
+            return player.hasPermission("craftplayplotextras.team.activity");
+        }
+        if ("redstone-analysis".equals(feature)) {
+            return player.hasPermission("craftplayplotextras.team.lagscan");
+        }
+        if ("heatmaps".equals(feature)) {
+            return player.hasPermission("craftplayplotextras.future.heatmaps");
+        }
+        return false;
     }
 
     private boolean isFeatureEnabled(final String feature) {
