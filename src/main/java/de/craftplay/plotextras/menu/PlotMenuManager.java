@@ -68,21 +68,27 @@ public final class PlotMenuManager implements Listener {
     private final PlaceholderHook placeholderHook;
     private final FloodgateHook floodgateHook;
     private final Map<Integer, MenuButton> mainButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> mainDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> bedrockMainButtonsByOrder = new HashMap<>();
     private final Map<Integer, MenuButton> myPlotsButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> myPlotsDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> myPlotDetailButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> myPlotDetailDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> flagButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> flagDecorationsBySlot = new HashMap<>();
     private final Map<Integer, Map<Integer, FlagMenuEntry>> flagsByPageAndSlot = new HashMap<>();
     private final Map<Integer, MenuButton> settingsDecorationsBySlot = new HashMap<>();
     private final Map<String, SettingsTab> settingsTabs = new LinkedHashMap<>();
     private final Map<String, ActionMenu> actionMenus = new LinkedHashMap<>();
     private final Map<UUID, PendingChatInput> pendingChatInputs = new HashMap<>();
     private final Map<Integer, MenuButton> teamButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> teamDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> backupListButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> backupListDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> reportListButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> reportListDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> roleListButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> roleListDecorationsBySlot = new HashMap<>();
 
     private String mainTitle;
     private int mainSize;
@@ -185,20 +191,26 @@ public final class PlotMenuManager implements Listener {
 
     public void reload() {
         mainButtonsBySlot.clear();
+        mainDecorationsBySlot.clear();
         bedrockMainButtonsByOrder.clear();
         myPlotsButtonsBySlot.clear();
         myPlotsDecorationsBySlot.clear();
         myPlotDetailButtonsBySlot.clear();
         myPlotDetailDecorationsBySlot.clear();
         flagButtonsBySlot.clear();
+        flagDecorationsBySlot.clear();
         flagsByPageAndSlot.clear();
         settingsDecorationsBySlot.clear();
         settingsTabs.clear();
         actionMenus.clear();
         teamButtonsBySlot.clear();
+        teamDecorationsBySlot.clear();
         backupListButtonsBySlot.clear();
+        backupListDecorationsBySlot.clear();
         reportListButtonsBySlot.clear();
+        reportListDecorationsBySlot.clear();
         roleListButtonsBySlot.clear();
+        roleListDecorationsBySlot.clear();
         mainLoaded = false;
         bedrockMainLoaded = false;
         myPlotsLoaded = false;
@@ -225,7 +237,7 @@ public final class PlotMenuManager implements Listener {
         mainAnimationEnabled = menuConfig.getBoolean("animation.enabled", false);
         mainAnimationDelayTicks = Math.max(1L, menuConfig.getLong("animation.delay-ticks", 1L));
         loadButtons(menuConfig, mainButtonsBySlot, mainSize);
-        loadDecorations(menuConfig, mainButtonsBySlot, mainSize);
+        loadDecorations(menuConfig, mainDecorationsBySlot, mainSize);
         mainLoaded = true;
 
         bedrockFormsEnabled = plugin.getConfig().getBoolean("bedrock.enabled", true);
@@ -258,7 +270,7 @@ public final class PlotMenuManager implements Listener {
         statusDisabled = flagsConfig.getString("status.disabled", "&cInaktiv");
         reopenDelayTicks = Math.max(1L, flagsConfig.getLong("reopen-delay-ticks", 2L));
         loadButtons(flagsConfig, flagButtonsBySlot, flagsSize);
-        loadDecorations(flagsConfig, flagButtonsBySlot, flagsSize);
+        loadDecorations(flagsConfig, flagDecorationsBySlot, flagsSize);
         loadFlags(flagsConfig);
         flagsLoaded = true;
 
@@ -290,7 +302,7 @@ public final class PlotMenuManager implements Listener {
         teamSize = normalizeSize(teamConfig.getInt("size", 27));
         teamFiller = createFiller(teamConfig);
         loadButtons(teamConfig, teamButtonsBySlot, teamSize);
-        loadDecorations(teamConfig, teamButtonsBySlot, teamSize);
+        loadDecorations(teamConfig, teamDecorationsBySlot, teamSize);
         teamLoaded = true;
 
         backupListTitle = teamConfig.getString("backup-list.title", "&8Plotbackups");
@@ -307,7 +319,7 @@ public final class PlotMenuManager implements Listener {
         backupListItemName = teamConfig.getString("backup-list.item.name", "&e{owner} &7- &f{plot}");
         backupListItemLore = teamConfig.getStringList("backup-list.item.lore");
         loadButtonsFromSection(teamConfig, "backup-list.buttons", backupListButtonsBySlot, backupListSize);
-        loadDecorationsFromSection(teamConfig, "backup-list.decorations", backupListButtonsBySlot, backupListSize);
+        loadDecorationsFromSection(teamConfig, "backup-list.decorations", backupListDecorationsBySlot, backupListSize);
         backupListLoaded = true;
     }
 
@@ -370,6 +382,11 @@ public final class PlotMenuManager implements Listener {
         if (mainFiller != null) {
             for (int slot = 0; slot < mainSize; slot++) {
                 inventory.setItem(slot, mainFiller);
+            }
+        }
+        for (final MenuButton decoration : mainDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration));
             }
         }
 
@@ -523,6 +540,11 @@ public final class PlotMenuManager implements Listener {
                     if (canSee(player, selector)) {
                         inventory.setItem(selector.getSlot(), createButtonItem(player, selector, placeholders));
                     }
+                }
+            }
+            for (final MenuButton decoration : tab.getDecorationsBySlot().values()) {
+                if (canSee(player, decoration)) {
+                    inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
                 }
             }
             for (final MenuButton button : tab.getButtonsBySlot().values()) {
@@ -839,6 +861,11 @@ public final class PlotMenuManager implements Listener {
                 inventory.setItem(slot, flagsFiller);
             }
         }
+        for (final MenuButton decoration : flagDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration));
+            }
+        }
 
         for (final MenuButton button : flagButtonsBySlot.values()) {
             if (!canSee(player, button)) {
@@ -902,6 +929,13 @@ public final class PlotMenuManager implements Listener {
             }
         }
 
+        for (final MenuButton decoration : tab.getDecorationsBySlot().values()) {
+            if (!canSee(player, decoration)) {
+                continue;
+            }
+            inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration));
+        }
+
         for (final MenuButton button : tab.getButtonsBySlot().values()) {
             if (!canSee(player, button)) {
                 continue;
@@ -937,6 +971,11 @@ public final class PlotMenuManager implements Listener {
         if (teamFiller != null) {
             for (int slot = 0; slot < teamSize; slot++) {
                 inventory.setItem(slot, teamFiller);
+            }
+        }
+        for (final MenuButton decoration : teamDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration));
             }
         }
         for (final MenuButton button : teamButtonsBySlot.values()) {
@@ -1003,6 +1042,11 @@ public final class PlotMenuManager implements Listener {
         pagePlaceholders.put("page", String.valueOf(normalizedPage));
         pagePlaceholders.put("next_page", String.valueOf(normalizedPage + 1));
         pagePlaceholders.put("previous_page", String.valueOf(Math.max(1, normalizedPage - 1)));
+        for (final MenuButton decoration : backupListDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, pagePlaceholders));
+            }
+        }
         for (final MenuButton button : backupListButtonsBySlot.values()) {
             if (canSee(player, button)) {
                 inventory.setItem(button.getSlot(), createButtonItem(player, button, pagePlaceholders));
@@ -1044,6 +1088,11 @@ public final class PlotMenuManager implements Listener {
                 inventory.setItem(slot, reportListFiller);
             }
         }
+        for (final MenuButton decoration : reportListDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, pagePlaceholders));
+            }
+        }
         for (final MenuButton button : reportListButtonsBySlot.values()) {
             if (canSee(player, button)) {
                 inventory.setItem(button.getSlot(), createButtonItem(player, button, pagePlaceholders));
@@ -1078,6 +1127,11 @@ public final class PlotMenuManager implements Listener {
         if (roleListFiller != null) {
             for (int slot = 0; slot < roleListSize; slot++) {
                 inventory.setItem(slot, roleListFiller);
+            }
+        }
+        for (final MenuButton decoration : roleListDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, pagePlaceholders));
             }
         }
         for (final MenuButton button : roleListButtonsBySlot.values()) {
@@ -1307,7 +1361,7 @@ public final class PlotMenuManager implements Listener {
         reportListItemName = reportsConfig.getString("admin-list.item.name", "&c{id} &7- &f{category}");
         reportListItemLore = reportsConfig.getStringList("admin-list.item.lore");
         loadButtonsFromSection(reportsConfig, "admin-list.buttons", reportListButtonsBySlot, reportListSize);
-        loadDecorationsFromSection(reportsConfig, "admin-list.decorations", reportListButtonsBySlot, reportListSize);
+        loadDecorationsFromSection(reportsConfig, "admin-list.decorations", reportListDecorationsBySlot, reportListSize);
     }
 
     private void loadRoleListMenu() {
@@ -1329,7 +1383,7 @@ public final class PlotMenuManager implements Listener {
         roleListItemName = membersConfig.getString("role-list.item.name", "&a{role}");
         roleListItemLore = membersConfig.getStringList("role-list.item.lore");
         loadButtonsFromSection(membersConfig, "role-list.buttons", roleListButtonsBySlot, roleListSize);
-        loadDecorationsFromSection(membersConfig, "role-list.decorations", roleListButtonsBySlot, roleListSize);
+        loadDecorationsFromSection(membersConfig, "role-list.decorations", roleListDecorationsBySlot, roleListSize);
     }
 
     private void loadActionMenu(final String id, final String fileName) {
@@ -1409,9 +1463,10 @@ public final class PlotMenuManager implements Listener {
                 continue;
             }
             final Map<Integer, MenuButton> tabButtons = new HashMap<>();
+            final Map<Integer, MenuButton> tabDecorations = new HashMap<>();
             loadButtonsFromSection(menuConfig, path + "buttons", tabButtons, menuSize);
-            loadDecorationsFromSection(menuConfig, path + "decorations", tabButtons, menuSize);
-            target.put(id.toLowerCase(Locale.ROOT), new SettingsTab(id.toLowerCase(Locale.ROOT), selectors, tabButtons));
+            loadDecorationsFromSection(menuConfig, path + "decorations", tabDecorations, menuSize);
+            target.put(id.toLowerCase(Locale.ROOT), new SettingsTab(id.toLowerCase(Locale.ROOT), selectors, tabButtons, tabDecorations));
         }
     }
 
@@ -1427,6 +1482,9 @@ public final class PlotMenuManager implements Listener {
 
         for (final String flag : section.getKeys(false)) {
             final String path = "flags." + flag + ".";
+            if (!menuConfig.getBoolean(path + "enabled", true)) {
+                continue;
+            }
             final int page = Math.max(1, menuConfig.getInt(path + "page", 1));
             if (!flagService.isBooleanFlag(flag)) {
                 plugin.getLogger().warning("Flag '" + flag + "' ist keine bekannte Boolean-Flag und wird übersprungen.");
@@ -1490,9 +1548,10 @@ public final class PlotMenuManager implements Listener {
                 continue;
             }
             final Map<Integer, MenuButton> tabButtons = new HashMap<>();
+            final Map<Integer, MenuButton> tabDecorations = new HashMap<>();
             loadButtonsFromSection(menuConfig, path + "buttons", tabButtons, settingsSize);
-            loadDecorationsFromSection(menuConfig, path + "decorations", tabButtons, settingsSize);
-            settingsTabs.put(id.toLowerCase(Locale.ROOT), new SettingsTab(id.toLowerCase(Locale.ROOT), selectors, tabButtons));
+            loadDecorationsFromSection(menuConfig, path + "decorations", tabDecorations, settingsSize);
+            settingsTabs.put(id.toLowerCase(Locale.ROOT), new SettingsTab(id.toLowerCase(Locale.ROOT), selectors, tabButtons, tabDecorations));
         }
     }
 
@@ -2575,6 +2634,11 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
+        if (command.toLowerCase(Locale.ROOT).startsWith("plot-danger:")) {
+            runPlotDangerCommand(player, command.substring("plot-danger:".length()).trim());
+            return;
+        }
+
         if (command.toLowerCase(Locale.ROOT).startsWith("plot-backup:")) {
             final String backupAction = command.substring("plot-backup:".length()).trim();
             if ("create".equalsIgnoreCase(backupAction)) {
@@ -2594,6 +2658,26 @@ public final class PlotMenuManager implements Listener {
         }
 
         player.performCommand(command);
+    }
+
+    private void runPlotDangerCommand(final Player player, final String payload) {
+        final int separator = payload.indexOf(':');
+        if (separator < 1 || separator >= payload.length() - 1) {
+            languageManager.send(player, "chat-input-invalid");
+            return;
+        }
+
+        final String action = payload.substring(0, separator).trim().toLowerCase(Locale.ROOT);
+        final String originalCommand = stripCommandPrefix(payload.substring(separator + 1).trim());
+        if (action.isEmpty() || originalCommand.isEmpty()) {
+            languageManager.send(player, "chat-input-invalid");
+            return;
+        }
+
+        if (!backupService.requestProtectedAction(player, action, originalCommand)) {
+            return;
+        }
+        openActionMenu(player, "danger", "confirm");
     }
 
     private void runReportCommand(final Player player, final String payload) {

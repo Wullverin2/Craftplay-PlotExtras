@@ -76,11 +76,11 @@ public final class PlotBackupService {
         return schematicAdapter != null && schematicAdapter.isAvailable();
     }
 
-    public void requestProtectedAction(final Player player, final String action, final String originalCommand) {
+    public boolean requestProtectedAction(final Player player, final String action, final String originalCommand) {
         final Optional<PlotContext> context = currentContext(player);
         if (!context.isPresent()) {
             plugin.getLanguageManager().send(player, "no-plot");
-            return;
+            return false;
         }
 
         pendingOperations.put(player.getUniqueId(), PendingOperation.plotAction(action, originalCommand));
@@ -90,6 +90,7 @@ public final class PlotBackupService {
         placeholders.put("prefix", commandPrefix());
         plugin.getLanguageManager().send(player, "backup-protected-action-start", placeholders);
         plugin.getLanguageManager().send(player, "backup-confirm-question", placeholders);
+        return true;
     }
 
     public void requestManualBackup(final Player player) {

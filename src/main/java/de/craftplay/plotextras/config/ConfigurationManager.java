@@ -250,6 +250,25 @@ public final class ConfigurationManager {
             existing.set("buttons.activity-check.permission", "craftplayplotextras.team.activity");
             changed = true;
         }
+        if (resourcePath.replace('\\', '/').endsWith("/danger.yml") && existingVersion < 3) {
+            final boolean english = resourcePath.replace('\\', '/').contains("/en/");
+            existing.set("tabs.actions.lore", english
+                    ? Arrays.asList("&7Delete, reset", "&7and unmerge.")
+                    : Arrays.asList("&7Löschen, resetten", "&7und unmergen."));
+            existing.set("tabs.actions.buttons.backup.enabled", false);
+            existing.set("tabs.actions.buttons.backup.commands", Arrays.asList());
+            existing.set("tabs.actions.buttons.backup.close", false);
+            existing.set("tabs.actions.buttons.delete.commands", Arrays.asList("plot-danger:delete:plot delete"));
+            existing.set("tabs.actions.buttons.delete.close", false);
+            existing.set("tabs.actions.buttons.reset.commands", Arrays.asList("plot-danger:reset:plot clear"));
+            existing.set("tabs.actions.buttons.reset.close", false);
+            existing.set("tabs.actions.buttons.unmerge.commands", Arrays.asList("plot-danger:unmerge:plot unmerge"));
+            existing.set("tabs.actions.buttons.unmerge.close", false);
+            existing.set("tabs.restore.buttons.manual.enabled", false);
+            existing.set("tabs.restore.buttons.manual.commands", Arrays.asList());
+            existing.set("tabs.restore.buttons.manual.close", false);
+            changed = true;
+        }
         if (existingVersion != defaultVersion) {
             existing.set("file-version", defaultVersion);
             changed = true;

@@ -9,11 +9,22 @@ public final class SettingsTab {
     private final String id;
     private final List<MenuButton> selectors;
     private final Map<Integer, MenuButton> buttonsBySlot;
+    private final Map<Integer, MenuButton> decorationsBySlot;
 
     public SettingsTab(final String id, final List<MenuButton> selectors, final Map<Integer, MenuButton> buttonsBySlot) {
+        this(id, selectors, buttonsBySlot, Collections.emptyMap());
+    }
+
+    public SettingsTab(
+            final String id,
+            final List<MenuButton> selectors,
+            final Map<Integer, MenuButton> buttonsBySlot,
+            final Map<Integer, MenuButton> decorationsBySlot
+    ) {
         this.id = id;
         this.selectors = selectors == null ? Collections.emptyList() : Collections.unmodifiableList(selectors);
         this.buttonsBySlot = buttonsBySlot;
+        this.decorationsBySlot = decorationsBySlot;
     }
 
     public String getId() {
@@ -30,5 +41,9 @@ public final class SettingsTab {
 
     public Map<Integer, MenuButton> getButtonsBySlot() {
         return buttonsBySlot;
+    }
+
+    public Map<Integer, MenuButton> getDecorationsBySlot() {
+        return decorationsBySlot;
     }
 }
