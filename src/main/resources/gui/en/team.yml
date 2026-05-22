@@ -5,7 +5,7 @@
 # Buttons and decorations can use slot: 13, slot: [13, 14, 15], or slots: [13, 14, 15].
 # Bedrock players automatically receive a Floodgate form from these buttons.
 
-file-version: 5
+file-version: 6
 
 title: "&8Team Menu"
 size: 54
@@ -245,6 +245,10 @@ backup-list:
   slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
   # Template for each backup item.
   item:
+    # If false, clickable backup entries are hidden.
+    enabled: true
+    # Optional permission required to see and click backup entries.
+    permission: "craftplayplotextras.backup.restore"
     material: FILLED_MAP
     head-database-id: ""
     # Placeholders: {id}, {file}, {owner}, {created_by}, {created_at}, {action}, {world}, {plot}, {plots}, {merge}

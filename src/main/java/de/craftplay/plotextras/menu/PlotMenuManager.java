@@ -143,6 +143,8 @@ public final class PlotMenuManager implements Listener {
     private String backupListItemSkullOwner;
     private String backupListItemName;
     private List<String> backupListItemLore;
+    private boolean backupListItemEnabled;
+    private String backupListItemPermission;
     private String reportListTitle;
     private int reportListSize;
     private ItemStack reportListFiller;
@@ -152,6 +154,8 @@ public final class PlotMenuManager implements Listener {
     private String reportListItemSkullOwner;
     private String reportListItemName;
     private List<String> reportListItemLore;
+    private boolean reportListItemEnabled;
+    private String reportListItemPermission;
     private String roleListTitle;
     private int roleListSize;
     private ItemStack roleListFiller;
@@ -161,6 +165,8 @@ public final class PlotMenuManager implements Listener {
     private String roleListItemSkullOwner;
     private String roleListItemName;
     private List<String> roleListItemLore;
+    private boolean roleListItemEnabled;
+    private String roleListItemPermission;
 
     public PlotMenuManager(
             final CraftplayPlotExtrasPlugin plugin,
@@ -318,6 +324,8 @@ public final class PlotMenuManager implements Listener {
         backupListItemSkullOwner = skullOwner(teamConfig, "backup-list.item.", backupListItemDefinition.getSkullOwner());
         backupListItemName = teamConfig.getString("backup-list.item.name", "&e{owner} &7- &f{plot}");
         backupListItemLore = teamConfig.getStringList("backup-list.item.lore");
+        backupListItemEnabled = teamConfig.getBoolean("backup-list.item.enabled", true);
+        backupListItemPermission = teamConfig.getString("backup-list.item.permission", "");
         loadButtonsFromSection(teamConfig, "backup-list.buttons", backupListButtonsBySlot, backupListSize);
         loadDecorationsFromSection(teamConfig, "backup-list.decorations", backupListDecorationsBySlot, backupListSize);
         backupListLoaded = true;
@@ -647,9 +655,11 @@ public final class PlotMenuManager implements Listener {
 
         final int start = (actualPage - 1) * pageSize;
         final int end = Math.min(plots.size(), start + pageSize);
-        for (int index = start; index < end; index++) {
-            final int slot = myPlotsSlots.get(index - start);
-            inventory.setItem(slot, createMyPlotItem(player, plots.get(index)));
+        if (configuredItemVisible(player, myPlotsConfig, "plot-item.")) {
+            for (int index = start; index < end; index++) {
+                final int slot = myPlotsSlots.get(index - start);
+                inventory.setItem(slot, createMyPlotItem(player, plots.get(index)));
+            }
         }
         player.openInventory(inventory);
     }
@@ -688,10 +698,12 @@ public final class PlotMenuManager implements Listener {
         final int start = (actualPage - 1) * pageSize;
         final int end = Math.min(plots.size(), start + pageSize);
         final String plotLabel = bedrockMyPlotsConfig.getString("plot-label", "{favorite} {name} - {visibility}");
-        for (int index = start; index < end; index++) {
-            final OwnedPlot plot = plots.get(index);
-            labels.add(Text.color(placeholderHook.apply(player, applyPlaceholders(plotLabel, plotPlaceholders(player, plot)))));
-            actions.add(() -> openBedrockMyPlotDetail(player, plot.getKey(), actualPage, normalizedSort, normalizedFilter));
+        if (configuredItemVisible(player, bedrockMyPlotsConfig, "plot-button.")) {
+            for (int index = start; index < end; index++) {
+                final OwnedPlot plot = plots.get(index);
+                labels.add(Text.color(placeholderHook.apply(player, applyPlaceholders(plotLabel, plotPlaceholders(player, plot)))));
+                actions.add(() -> openBedrockMyPlotDetail(player, plot.getKey(), actualPage, normalizedSort, normalizedFilter));
+            }
         }
         addBedrockAction(player, labels, actions, "buttons.back", placeholders, () -> openMenu(player));
 
@@ -737,19 +749,21 @@ public final class PlotMenuManager implements Listener {
         addBedrockAction(player, labels, actions, "detail.buttons.note", placeholders, () -> {
             runCommand(player, "chat-input:chat-plot-note:plot-data-note:" + plotKey + ":{input}");
         });
-        final List<String> availableTags = availableTags();
-        for (final String tag : availableTags) {
-            final Map<String, String> tagPlaceholders = new HashMap<>(plotPlaceholders(player, plot));
-            tagPlaceholders.put("tag", tag);
-            tagPlaceholders.put("tag_status", plotDataStore.metadata(plotKey).getTags().contains(tag)
-                    ? text("myplots-tag-active", "Aktiv")
-                    : text("myplots-tag-inactive", "Inaktiv"));
-            final String label = bedrockMyPlotsConfig.getString("detail.tag-label", "{tag}: {tag_status}");
-            labels.add(Text.color(placeholderHook.apply(player, applyPlaceholders(label, tagPlaceholders))));
-            actions.add(() -> {
-                toggleTag(player, plot, tag);
-                openBedrockMyPlotDetail(player, plotKey, page, sort, filter);
-            });
+        if (configuredItemVisible(player, bedrockMyPlotsConfig, "detail.tag-button.")) {
+            final List<String> availableTags = availableTags();
+            for (final String tag : availableTags) {
+                final Map<String, String> tagPlaceholders = new HashMap<>(plotPlaceholders(player, plot));
+                tagPlaceholders.put("tag", tag);
+                tagPlaceholders.put("tag_status", plotDataStore.metadata(plotKey).getTags().contains(tag)
+                        ? text("myplots-tag-active", "Aktiv")
+                        : text("myplots-tag-inactive", "Inaktiv"));
+                final String label = bedrockMyPlotsConfig.getString("detail.tag-label", "{tag}: {tag_status}");
+                labels.add(Text.color(placeholderHook.apply(player, applyPlaceholders(label, tagPlaceholders))));
+                actions.add(() -> {
+                    toggleTag(player, plot, tag);
+                    openBedrockMyPlotDetail(player, plotKey, page, sort, filter);
+                });
+            }
         }
         addBedrockAction(player, labels, actions, "detail.buttons.back", placeholders, () -> openMyPlotsMenu(player, page, sort, filter));
 
@@ -775,7 +789,7 @@ public final class PlotMenuManager implements Listener {
             return;
         }
         final String permission = bedrockMyPlotsConfig.getString(path + ".permission", "");
-        if (permission != null && !permission.trim().isEmpty() && !player.hasPermission(permission)) {
+        if (permission != null && !permission.trim().isEmpty() && !hasConfiguredPermission(player, permission.trim())) {
             return;
         }
         labels.add(Text.color(placeholderHook.apply(player, applyPlaceholders(bedrockMyPlotsConfig.getString(path + ".label", path), placeholders))));
@@ -815,7 +829,7 @@ public final class PlotMenuManager implements Listener {
             }
         }
         final int previewSlot = myPlotsConfig.getInt("detail.preview.slot", 13);
-        if (previewSlot >= 0 && previewSlot < myPlotDetailSize) {
+        if (previewSlot >= 0 && previewSlot < myPlotDetailSize && configuredItemVisible(player, myPlotsConfig, "detail.preview.")) {
             inventory.setItem(previewSlot, createDynamicItem(player, myPlotsConfig, "detail.preview.", Material.FILLED_MAP, placeholders));
         }
         for (final MenuButton button : myPlotDetailButtonsBySlot.values()) {
@@ -829,9 +843,13 @@ public final class PlotMenuManager implements Listener {
             final int slot = myPlotDetailTagSlots.get(index);
             final Map<String, String> tagPlaceholders = new HashMap<>(placeholders);
             final boolean active = plotDataStore.metadata(plotKey).getTags().contains(tag);
+            final String tagPath = active ? "detail.tag-active." : "detail.tag-inactive.";
+            if (!configuredItemVisible(player, myPlotsConfig, tagPath)) {
+                continue;
+            }
             tagPlaceholders.put("tag", tag);
             tagPlaceholders.put("tag_status", active ? text("myplots-tag-active", "Aktiv") : text("myplots-tag-inactive", "Inaktiv"));
-            inventory.setItem(slot, createDynamicItem(player, myPlotsConfig, active ? "detail.tag-active." : "detail.tag-inactive.", active ? Material.NAME_TAG : Material.PAPER, tagPlaceholders));
+            inventory.setItem(slot, createDynamicItem(player, myPlotsConfig, tagPath, active ? Material.NAME_TAG : Material.PAPER, tagPlaceholders));
         }
         player.openInventory(inventory);
     }
@@ -1057,10 +1075,12 @@ public final class PlotMenuManager implements Listener {
         final int pageSize = Math.max(1, backupListSlots.size());
         final int start = (normalizedPage - 1) * pageSize;
         final int end = Math.min(backups.size(), start + pageSize);
-        for (int index = start; index < end; index++) {
-            final int slot = backupListSlots.get(index - start);
-            final PlotBackupMetadata metadata = backups.get(index);
-            inventory.setItem(slot, createBackupListItem(player, metadata));
+        if (configuredItemVisible(player, backupListItemEnabled, backupListItemPermission)) {
+            for (int index = start; index < end; index++) {
+                final int slot = backupListSlots.get(index - start);
+                final PlotBackupMetadata metadata = backups.get(index);
+                inventory.setItem(slot, createBackupListItem(player, metadata));
+            }
         }
         player.openInventory(inventory);
     }
@@ -1103,8 +1123,10 @@ public final class PlotMenuManager implements Listener {
         final int pageSize = Math.max(1, reportListSlots.size());
         final int start = (normalizedPage - 1) * pageSize;
         final int end = Math.min(reports.size(), start + pageSize);
-        for (int index = start; index < end; index++) {
-            inventory.setItem(reportListSlots.get(index - start), createReportListItem(player, reports.get(index)));
+        if (configuredItemVisible(player, reportListItemEnabled, reportListItemPermission)) {
+            for (int index = start; index < end; index++) {
+                inventory.setItem(reportListSlots.get(index - start), createReportListItem(player, reports.get(index)));
+            }
         }
         player.openInventory(inventory);
     }
@@ -1144,8 +1166,10 @@ public final class PlotMenuManager implements Listener {
         final int pageSize = Math.max(1, roleListSlots.size());
         final int start = (normalizedPage - 1) * pageSize;
         final int end = Math.min(roles.size(), start + pageSize);
-        for (int index = start; index < end; index++) {
-            inventory.setItem(roleListSlots.get(index - start), createRoleListItem(player, roles.get(index)));
+        if (configuredItemVisible(player, roleListItemEnabled, roleListItemPermission)) {
+            for (int index = start; index < end; index++) {
+                inventory.setItem(roleListSlots.get(index - start), createRoleListItem(player, roles.get(index)));
+            }
         }
         player.openInventory(inventory);
     }
@@ -1360,6 +1384,8 @@ public final class PlotMenuManager implements Listener {
         reportListItemSkullOwner = skullOwner(reportsConfig, "admin-list.item.", itemDefinition.getSkullOwner());
         reportListItemName = reportsConfig.getString("admin-list.item.name", "&c{id} &7- &f{category}");
         reportListItemLore = reportsConfig.getStringList("admin-list.item.lore");
+        reportListItemEnabled = reportsConfig.getBoolean("admin-list.item.enabled", true);
+        reportListItemPermission = reportsConfig.getString("admin-list.item.permission", "");
         loadButtonsFromSection(reportsConfig, "admin-list.buttons", reportListButtonsBySlot, reportListSize);
         loadDecorationsFromSection(reportsConfig, "admin-list.decorations", reportListDecorationsBySlot, reportListSize);
     }
@@ -1382,6 +1408,8 @@ public final class PlotMenuManager implements Listener {
         roleListItemSkullOwner = skullOwner(membersConfig, "role-list.item.", itemDefinition.getSkullOwner());
         roleListItemName = membersConfig.getString("role-list.item.name", "&a{role}");
         roleListItemLore = membersConfig.getStringList("role-list.item.lore");
+        roleListItemEnabled = membersConfig.getBoolean("role-list.item.enabled", true);
+        roleListItemPermission = membersConfig.getString("role-list.item.permission", "");
         loadButtonsFromSection(membersConfig, "role-list.buttons", roleListButtonsBySlot, roleListSize);
         loadDecorationsFromSection(membersConfig, "role-list.decorations", roleListDecorationsBySlot, roleListSize);
     }
@@ -1803,6 +1831,30 @@ public final class PlotMenuManager implements Listener {
         return hasConfiguredPermission(player, permission);
     }
 
+    private boolean configuredItemVisible(
+            final Player player,
+            final YamlConfiguration configuration,
+            final String path
+    ) {
+        if (configuration == null) {
+            return false;
+        }
+        if (!configuration.getBoolean(path + "enabled", true)) {
+            return false;
+        }
+        return configuredItemVisible(player, true, configuration.getString(path + "permission", ""));
+    }
+
+    private boolean configuredItemVisible(final Player player, final boolean enabled, final String permission) {
+        if (!enabled) {
+            return false;
+        }
+        if (permission == null || permission.trim().isEmpty()) {
+            return true;
+        }
+        return hasConfiguredPermission(player, permission.trim());
+    }
+
     private boolean isFeatureDisabled(final String id) {
         if (id == null || id.trim().isEmpty()) {
             return false;
@@ -1853,6 +1905,9 @@ public final class PlotMenuManager implements Listener {
         if (plot == null) {
             return;
         }
+        if (!configuredItemVisible(player, myPlotsConfig, "plot-item.")) {
+            return;
+        }
         if (clickType == ClickType.SHIFT_LEFT) {
             toggleFavorite(player, plot);
             openJavaMyPlotsMenu(player, page, sort, filter);
@@ -1883,7 +1938,13 @@ public final class PlotMenuManager implements Listener {
 
         final int tagIndex = myPlotDetailTagSlots == null ? -1 : myPlotDetailTagSlots.indexOf(slot);
         if (tagIndex >= 0 && tagIndex < availableTags().size()) {
-            toggleTag(player, plot, availableTags().get(tagIndex));
+            final String tag = availableTags().get(tagIndex);
+            final boolean active = plotDataStore.metadata(plotKey).getTags().contains(tag);
+            final String tagPath = active ? "detail.tag-active." : "detail.tag-inactive.";
+            if (!configuredItemVisible(player, myPlotsConfig, tagPath)) {
+                return;
+            }
+            toggleTag(player, plot, tag);
             openMyPlotDetailMenu(player, plotKey, page, sort, filter);
             return;
         }
@@ -2030,6 +2091,9 @@ public final class PlotMenuManager implements Listener {
         if (backupId == null) {
             return;
         }
+        if (!configuredItemVisible(player, backupListItemEnabled, backupListItemPermission)) {
+            return;
+        }
         player.closeInventory();
         backupService.requestRestore(player, backupId);
     }
@@ -2054,6 +2118,9 @@ public final class PlotMenuManager implements Listener {
 
         final PlotReport report = reportAt(page, status, slot);
         if (report == null) {
+            return;
+        }
+        if (!configuredItemVisible(player, reportListItemEnabled, reportListItemPermission)) {
             return;
         }
         if (clickType == ClickType.RIGHT) {
@@ -2094,6 +2161,9 @@ public final class PlotMenuManager implements Listener {
 
         final PlotRole role = roleAt(player, page, slot);
         if (role == null) {
+            return;
+        }
+        if (!configuredItemVisible(player, roleListItemEnabled, roleListItemPermission)) {
             return;
         }
         if (clickType == ClickType.RIGHT) {

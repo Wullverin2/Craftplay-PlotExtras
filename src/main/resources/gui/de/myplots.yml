@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Optionen automatisch zu ergänzen.
-file-version: 2
+file-version: 3
 
 # Titel des Inventars. Platzhalter: {page}, {max_page}, {sort_name}, {filter_name}, {amount}
 title: "&8Meine Plots &7- Seite {page}/{max_page}"
@@ -41,6 +41,10 @@ tags:
 
 # Darstellung eines Plots in der Listenansicht.
 plot-item:
+  # Wenn false, werden die klickbaren Plot-Einträge ausgeblendet.
+  enabled: true
+  # Optional: Permission, damit Plot-Einträge sichtbar und anklickbar sind.
+  permission: ""
   # Material des Plot-Eintrags.
   material: FILLED_MAP
   # Name des Plot-Eintrags. Platzhalter stehen weiter unten in der Lore.
@@ -244,6 +248,8 @@ detail:
     name: "&r"
   # Vorschau-Item mit den wichtigsten Daten des Plots.
   preview:
+    enabled: true
+    permission: ""
     slot: 13
     material: FILLED_MAP
     name: "&aVorschau: {name}"
@@ -263,6 +269,8 @@ detail:
   tag-slots: [28, 29, 30, 31, 32, 33]
   # Darstellung aktiver Tags.
   tag-active:
+    enabled: true
+    permission: ""
     material: LIME_DYE
     name: "&aTag: {tag}"
     lore:
@@ -270,6 +278,8 @@ detail:
       - "&eKlicken zum Entfernen."
   # Darstellung inaktiver Tags.
   tag-inactive:
+    enabled: true
+    permission: ""
     material: GRAY_DYE
     name: "&7Tag: {tag}"
     lore:

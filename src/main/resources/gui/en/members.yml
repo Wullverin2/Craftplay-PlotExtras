@@ -3,7 +3,7 @@
 # Players are requested through private chat input. The input is not visible to other players.
 # Custom roles are configurable button profiles and can run any PlotSquared commands.
 
-file-version: 2
+file-version: 3
 
 title: "&8Members: {tab}"
 bedrock:
@@ -80,6 +80,10 @@ role-list:
   filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
   slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25]
   item:
+    # If false, clickable role entries are hidden.
+    enabled: true
+    # Optional permission required to see and click role entries.
+    permission: ""
     material: WRITABLE_BOOK
     name: "&a{role}"
     lore:

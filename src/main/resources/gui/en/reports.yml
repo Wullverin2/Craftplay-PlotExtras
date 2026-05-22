@@ -3,7 +3,7 @@
 # Reports are stored by the plugin and can be managed by staff in the admin area.
 # Every button can be disabled individually with enabled: false.
 
-file-version: 2
+file-version: 3
 title: "&8Report Plot"
 bedrock: {enabled: true, title: "Report Plot", content: "Choose a category or write a custom report."}
 size: 27
@@ -28,6 +28,10 @@ admin-list:
   filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
   slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
   item:
+    # If false, clickable report entries are hidden.
+    enabled: true
+    # Optional permission required to see and click report entries.
+    permission: "craftplayplotextras.reports.manage"
     material: WRITABLE_BOOK
     name: "&c{id} &7- &f{category}"
     lore:

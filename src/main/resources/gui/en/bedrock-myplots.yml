@@ -5,7 +5,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new options automatically.
-file-version: 2
+file-version: 3
 
 # If false, this Bedrock form is not loaded.
 enabled: true
@@ -20,6 +20,10 @@ content: |-
 page-size: 8
 # Label of a plot button.
 plot-label: "{favorite} {name} | {visibility} | {category}"
+# Controls the automatically generated plot buttons.
+plot-button:
+  enabled: true
+  permission: ""
 
 # Buttons in the list form.
 buttons:
@@ -104,6 +108,10 @@ detail:
     Last visit: {last_visit}
   # Label of a tag button.
   tag-label: "Tag {tag}: {tag_status}"
+  # Controls the automatically generated tag buttons.
+  tag-button:
+    enabled: true
+    permission: ""
   # Buttons in the detail form.
   buttons:
     teleport:

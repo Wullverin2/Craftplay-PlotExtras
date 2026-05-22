@@ -3,7 +3,7 @@
 # Spieler werden per privater Chat-Eingabe abgefragt. Diese Eingabe ist für andere nicht sichtbar.
 # Eigene Rollen sind als Buttons/Profile konfigurierbar und können beliebige PlotSquared-Commands ausführen.
 
-file-version: 2
+file-version: 3
 
 title: "&8Mitglieder: {tab}"
 bedrock:
@@ -80,6 +80,10 @@ role-list:
   filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
   slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25]
   item:
+    # Wenn false, werden die klickbaren Rollen-Einträge ausgeblendet.
+    enabled: true
+    # Optional: Permission, damit Rollen-Einträge sichtbar und anklickbar sind.
+    permission: ""
     material: WRITABLE_BOOK
     name: "&a{role}"
     lore:

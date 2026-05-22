@@ -9,7 +9,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new options automatically.
-file-version: 2
+file-version: 3
 
 # Inventory title. Placeholders: {page}, {max_page}, {sort_name}, {filter_name}, {amount}
 title: "&8My Plots &7- Page {page}/{max_page}"
@@ -41,6 +41,10 @@ tags:
 
 # Plot item shown in the list view.
 plot-item:
+  # If false, clickable plot entries are hidden.
+  enabled: true
+  # Optional permission required to see and click plot entries.
+  permission: ""
   # Material of the plot entry.
   material: FILLED_MAP
   # Name of the plot entry. Placeholders are shown in the lore below.
@@ -244,6 +248,8 @@ detail:
     name: "&r"
   # Preview item with the most important plot data.
   preview:
+    enabled: true
+    permission: ""
     slot: 13
     material: FILLED_MAP
     name: "&aPreview: {name}"
@@ -263,6 +269,8 @@ detail:
   tag-slots: [28, 29, 30, 31, 32, 33]
   # Active tag display.
   tag-active:
+    enabled: true
+    permission: ""
     material: LIME_DYE
     name: "&aTag: {tag}"
     lore:
@@ -270,6 +278,8 @@ detail:
       - "&eClick to remove."
   # Inactive tag display.
   tag-inactive:
+    enabled: true
+    permission: ""
     material: GRAY_DYE
     name: "&7Tag: {tag}"
     lore:

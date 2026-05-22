@@ -5,7 +5,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Optionen automatisch zu ergänzen.
-file-version: 2
+file-version: 3
 
 # Wenn false, wird diese Bedrock-Form nicht geladen.
 enabled: true
@@ -20,6 +20,10 @@ content: |-
 page-size: 8
 # Beschriftung eines Plot-Buttons.
 plot-label: "{favorite} {name} | {visibility} | {category}"
+# Steuerung der automatisch erzeugten Plot-Buttons.
+plot-button:
+  enabled: true
+  permission: ""
 
 # Buttons der Listenform.
 buttons:
@@ -104,6 +108,10 @@ detail:
     Letzter Besuch: {last_visit}
   # Beschriftung eines Tag-Buttons.
   tag-label: "Tag {tag}: {tag_status}"
+  # Steuerung der automatisch erzeugten Tag-Buttons.
+  tag-button:
+    enabled: true
+    permission: ""
   # Buttons der Detailform.
   buttons:
     teleport:
