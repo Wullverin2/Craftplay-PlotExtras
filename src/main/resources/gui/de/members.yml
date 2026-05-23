@@ -3,7 +3,7 @@
 # Die Verwaltung findet im GUI statt. Nur beim Hinzufügen eines Spielers wird der Name per privater Chat-Eingabe abgefragt.
 # Alle Buttons, Deko-Items, Listen, Slots, Materialien, Namen, Lore und Permissions können hier angepasst werden.
 
-file-version: 5
+file-version: 6
 
 title: "&8Mitglieder: {tab}"
 bedrock:
@@ -80,7 +80,7 @@ tabs:
       owner-info: {enabled: true, slot: 25, material: GOLD_BLOCK, name: "&6Owner", lore: ["&7Owner ist der PlotSquared-Besitzer.", "&7Diese Rolle wird nicht entfernt."], commands: [], close: false, permission: "plots.info"}
 
 role-list:
-  # Liste der Plotrollen. Rollennamen werden aus vorkonfigurierten Buttons erstellt, damit keine Chat-Eingabe nötig ist.
+  # Liste der Plotrollen. Erstellen und Umbenennen dürfen den Chat als private Namenseingabe nutzen.
   title: "&8Plotrollen &7- Seite {page}"
   size: 54
   filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
@@ -96,12 +96,13 @@ role-list:
       - ""
       - "&aLinksklick: Spieler zuweisen"
       - "&eRechtsklick: Rechte verwalten"
-      - "&bShift-Linksklick: Rechte verwalten"
+      - "&bShift-Linksklick: Rolle umbenennen"
       - "&cShift-Rechtsklick: Rolle löschen"
   buttons:
     create-helper: {enabled: true, slot: 45, material: EMERALD, name: "&aRolle Helper erstellen", lore: ["&7Erstellt die Rolle Helper.", "&7Name in der YAML änderbar."], commands: ["role:create:Helper", "open-menu:roles-list:{page}"], close: false, permission: ""}
     create-builder: {enabled: true, slot: 46, material: BRICKS, name: "&aRolle Builder erstellen", lore: ["&7Erstellt die Rolle Builder.", "&7Weitere Rollen als Buttons ergänzen."], commands: ["role:create:Builder", "open-menu:roles-list:{page}"], close: false, permission: ""}
     create-friend: {enabled: true, slot: 47, material: SUNFLOWER, name: "&aRolle Freund erstellen", lore: ["&7Erstellt die Rolle Freund.", "&7Weitere Vorlagen sind möglich."], commands: ["role:create:Freund", "open-menu:roles-list:{page}"], close: false, permission: ""}
+    create-custom: {enabled: true, slot: 52, material: NAME_TAG, name: "&aEigene Rolle erstellen", lore: ["&7Fragt den Rollennamen", "&7privat im Chat ab."], commands: ["chat-input:chat-role-name:role:create:{input}"], close: true, permission: ""}
     previous: {enabled: true, slot: 48, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:roles-list:{previous_page}"], close: false, permission: ""}
     next: {enabled: true, slot: 50, material: ARROW, name: "&eNächste Seite", lore: ["&7Öffnet Seite {next_page}."], commands: ["open-menu:roles-list:{next_page}"], close: false, permission: ""}
     back: {enabled: true, slot: 49, material: OAK_DOOR, name: "&eZurück", lore: ["&7Zurück zum Mitglieder-Menü."], commands: ["open-menu:members:roles"], close: false, permission: ""}

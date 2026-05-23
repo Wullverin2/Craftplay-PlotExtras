@@ -3,7 +3,7 @@
 # Management happens in the GUI. Only adding a player asks for the name through private chat input.
 # All buttons, decorations, lists, slots, materials, names, lore, and permissions can be adjusted here.
 
-file-version: 5
+file-version: 6
 
 title: "&8Members: {tab}"
 bedrock:
@@ -80,7 +80,7 @@ tabs:
       owner-info: {enabled: true, slot: 25, material: GOLD_BLOCK, name: "&6Owner", lore: ["&7Owner is the PlotSquared owner.", "&7This role is not removed."], commands: [], close: false, permission: "plots.info"}
 
 role-list:
-  # Plot role list. Role names are created through configured buttons so chat input is not needed.
+  # Plot role list. Creating and renaming roles may use chat as private name input.
   title: "&8Plot Roles &7- Page {page}"
   size: 54
   filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
@@ -96,12 +96,13 @@ role-list:
       - ""
       - "&aLeft click: assign players"
       - "&eRight click: manage rights"
-      - "&bShift-left: manage rights"
+      - "&bShift-left: rename role"
       - "&cShift-right: delete role"
   buttons:
     create-helper: {enabled: true, slot: 45, material: EMERALD, name: "&aCreate Helper Role", lore: ["&7Creates the Helper role.", "&7Name can be changed in YAML."], commands: ["role:create:Helper", "open-menu:roles-list:{page}"], close: false, permission: ""}
     create-builder: {enabled: true, slot: 46, material: BRICKS, name: "&aCreate Builder Role", lore: ["&7Creates the Builder role.", "&7Add more roles as buttons."], commands: ["role:create:Builder", "open-menu:roles-list:{page}"], close: false, permission: ""}
     create-friend: {enabled: true, slot: 47, material: SUNFLOWER, name: "&aCreate Friend Role", lore: ["&7Creates the Friend role.", "&7More templates are possible."], commands: ["role:create:Friend", "open-menu:roles-list:{page}"], close: false, permission: ""}
+    create-custom: {enabled: true, slot: 52, material: NAME_TAG, name: "&aCreate Custom Role", lore: ["&7Asks for the role name", "&7privately in chat."], commands: ["chat-input:chat-role-name:role:create:{input}"], close: true, permission: ""}
     previous: {enabled: true, slot: 48, material: ARROW, name: "&ePrevious Page", lore: ["&7Opens page {previous_page}."], commands: ["open-menu:roles-list:{previous_page}"], close: false, permission: ""}
     next: {enabled: true, slot: 50, material: ARROW, name: "&eNext Page", lore: ["&7Opens page {next_page}."], commands: ["open-menu:roles-list:{next_page}"], close: false, permission: ""}
     back: {enabled: true, slot: 49, material: OAK_DOOR, name: "&eBack", lore: ["&7Back to members menu."], commands: ["open-menu:members:roles"], close: false, permission: ""}

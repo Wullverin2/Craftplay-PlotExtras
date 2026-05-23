@@ -321,6 +321,23 @@ public final class ConfigurationManager {
             existing.set("role-list.buttons.unassign.close", false);
             changed = true;
         }
+        if (resourcePath.replace('\\', '/').endsWith("/members.yml") && existingVersion < 6) {
+            final boolean english = resourcePath.replace('\\', '/').contains("/en/");
+            existing.set("role-list.item.lore", english
+                    ? Arrays.asList("&7Rights: &f{permissions}", "&7Protected: &f{protected}", "", "&aLeft click: assign players", "&eRight click: manage rights", "&bShift-left: rename role", "&cShift-right: delete role")
+                    : Arrays.asList("&7Rechte: &f{permissions}", "&7Geschützt: &f{protected}", "", "&aLinksklick: Spieler zuweisen", "&eRechtsklick: Rechte verwalten", "&bShift-Linksklick: Rolle umbenennen", "&cShift-Rechtsklick: Rolle löschen"));
+            existing.set("role-list.buttons.create-custom.enabled", true);
+            existing.set("role-list.buttons.create-custom.slot", 52);
+            existing.set("role-list.buttons.create-custom.material", "NAME_TAG");
+            existing.set("role-list.buttons.create-custom.name", english ? "&aCreate Custom Role" : "&aEigene Rolle erstellen");
+            existing.set("role-list.buttons.create-custom.lore", english
+                    ? Arrays.asList("&7Asks for the role name", "&7privately in chat.")
+                    : Arrays.asList("&7Fragt den Rollennamen", "&7privat im Chat ab."));
+            existing.set("role-list.buttons.create-custom.commands", Arrays.asList("chat-input:chat-role-name:role:create:{input}"));
+            existing.set("role-list.buttons.create-custom.close", true);
+            existing.set("role-list.buttons.create-custom.permission", "");
+            changed = true;
+        }
         if (existingVersion != defaultVersion) {
             existing.set("file-version", defaultVersion);
             changed = true;

@@ -2632,7 +2632,7 @@ public final class PlotMenuManager implements Listener {
             return;
         }
         if (clickType == ClickType.SHIFT_LEFT) {
-            openRolePermissionListMenu(player, 1, role.getName());
+            runCommand(player, "chat-input:chat-role-name:role:rename:" + role.getName() + ":{input}");
             return;
         }
         if (clickType == ClickType.SHIFT_RIGHT) {
