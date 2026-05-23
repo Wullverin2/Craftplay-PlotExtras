@@ -108,8 +108,9 @@ public final class PlotMenuManager implements Listener {
     private List<String> hiddenMainButtons;
     private MenuSound mainOpenSound;
     private MenuSound mainClickSound;
-    private boolean mainAnimationEnabled;
-    private long mainAnimationDelayTicks;
+    private boolean inventoryAnimationEnabled;
+    private long inventoryAnimationDelayTicks;
+    private boolean inventoryAnimationKeepFillerVisible;
     private boolean bedrockFormsEnabled;
     private boolean bedrockMainLoaded;
     private String bedrockMainTitle;
@@ -289,8 +290,9 @@ public final class PlotMenuManager implements Listener {
         mainFiller = createFiller(menuConfig);
         mainOpenSound = loadSound(menuConfig, "open-sound");
         mainClickSound = loadSound(menuConfig, "click-sound");
-        mainAnimationEnabled = menuConfig.getBoolean("animation.enabled", false);
-        mainAnimationDelayTicks = Math.max(1L, menuConfig.getLong("animation.delay-ticks", 1L));
+        inventoryAnimationEnabled = plugin.getConfig().getBoolean("gui.animations.enabled", menuConfig.getBoolean("animation.enabled", true));
+        inventoryAnimationDelayTicks = Math.max(1L, plugin.getConfig().getLong("gui.animations.delay-ticks", menuConfig.getLong("animation.delay-ticks", 1L)));
+        inventoryAnimationKeepFillerVisible = plugin.getConfig().getBoolean("gui.animations.keep-filler-visible", true);
         loadButtons(menuConfig, mainButtonsBySlot, mainSize);
         loadDecorations(menuConfig, mainDecorationsBySlot, mainSize);
         mainLoaded = true;
@@ -447,20 +449,11 @@ public final class PlotMenuManager implements Listener {
             }
         }
 
-        final List<MenuButton> buttons = visibleMainButtons(player);
-        if (mainAnimationEnabled) {
-            player.openInventory(inventory);
-            playSound(player, mainOpenSound);
-            animateButtons(player, inventory, buttons);
-            return;
-        }
-
-        for (final MenuButton button : buttons) {
+        for (final MenuButton button : visibleMainButtons(player)) {
             inventory.setItem(button.getSlot(), createButtonItem(player, button));
         }
 
-        player.openInventory(inventory);
-        playSound(player, mainOpenSound);
+        openAnimatedInventory(player, inventory, mainFiller, mainOpenSound);
     }
 
     private List<MenuButton> visibleMainButtons(final Player player) {
@@ -521,9 +514,40 @@ public final class PlotMenuManager implements Listener {
         return Text.color(placeholderHook.apply(player, label));
     }
 
-    private void animateButtons(final Player player, final Inventory inventory, final List<MenuButton> buttons) {
+    private void openAnimatedInventory(final Player player, final Inventory inventory, final ItemStack filler) {
+        openAnimatedInventory(player, inventory, filler, null);
+    }
+
+    private void openAnimatedInventory(
+            final Player player,
+            final Inventory inventory,
+            final ItemStack filler,
+            final MenuSound openSound
+    ) {
+        if (!inventoryAnimationEnabled) {
+            player.openInventory(inventory);
+            playSound(player, openSound);
+            return;
+        }
+
+        final List<AnimatedInventorySlot> animatedSlots = new ArrayList<>();
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            final ItemStack item = inventory.getItem(slot);
+            if (item == null || item.getType() == Material.AIR) {
+                continue;
+            }
+            if (inventoryAnimationKeepFillerVisible && filler != null && item.isSimilar(filler)) {
+                continue;
+            }
+            animatedSlots.add(new AnimatedInventorySlot(slot, item.clone()));
+            inventory.clear(slot);
+        }
+
+        player.openInventory(inventory);
+        playSound(player, openSound);
+
         long delay = 0L;
-        for (final MenuButton button : buttons) {
+        for (final AnimatedInventorySlot animatedSlot : animatedSlots) {
             final long scheduledDelay = delay;
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 if (!player.isOnline()) {
@@ -532,9 +556,9 @@ public final class PlotMenuManager implements Listener {
                 if (player.getOpenInventory().getTopInventory() != inventory) {
                     return;
                 }
-                inventory.setItem(button.getSlot(), createButtonItem(player, button));
+                inventory.setItem(animatedSlot.getSlot(), animatedSlot.getItem());
             }, scheduledDelay);
-            delay += mainAnimationDelayTicks;
+            delay += inventoryAnimationDelayTicks;
         }
     }
 
@@ -610,7 +634,7 @@ public final class PlotMenuManager implements Listener {
                 }
             }
         }
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, menu.getFiller());
     }
 
     private boolean openBedrockActionMenu(final Player player, final ActionMenu menu, final String requestedTabId) {
@@ -710,7 +734,7 @@ public final class PlotMenuManager implements Listener {
                 inventory.setItem(slot, createMyPlotItem(player, plots.get(index)));
             }
         }
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, myPlotsFiller);
     }
 
     private boolean openBedrockMyPlotsMenu(final Player player, final int page, final String sort, final String filter) {
@@ -900,7 +924,7 @@ public final class PlotMenuManager implements Listener {
             tagPlaceholders.put("tag_status", active ? text("myplots-tag-active", "Aktiv") : text("myplots-tag-inactive", "Inaktiv"));
             inventory.setItem(slot, createDynamicItem(player, myPlotsConfig, tagPath, active ? Material.NAME_TAG : Material.PAPER, tagPlaceholders));
         }
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, myPlotDetailFiller);
     }
 
     public void openFlagsMenu(final Player player) {
@@ -946,7 +970,7 @@ public final class PlotMenuManager implements Listener {
             inventory.setItem(flagEntry.getSlot(), createFlagItem(player, flagEntry));
         }
 
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, flagsFiller);
     }
 
     public void openSettingsMenu(final Player player) {
@@ -1007,7 +1031,7 @@ public final class PlotMenuManager implements Listener {
             inventory.setItem(button.getSlot(), createButtonItem(player, button));
         }
 
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, settingsFiller);
     }
 
     public void openTeamMenu(final Player player) {
@@ -1047,7 +1071,7 @@ public final class PlotMenuManager implements Listener {
                 inventory.setItem(button.getSlot(), createButtonItem(player, button));
             }
         }
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, teamFiller);
     }
 
     private boolean openBedrockTeamMenu(final Player player) {
@@ -1128,7 +1152,7 @@ public final class PlotMenuManager implements Listener {
                 inventory.setItem(slot, createBackupListItem(player, metadata));
             }
         }
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, backupListFiller);
     }
 
     public void openReportListMenu(final Player player, final int page, final String status) {
@@ -1174,7 +1198,7 @@ public final class PlotMenuManager implements Listener {
                 inventory.setItem(reportListSlots.get(index - start), createReportListItem(player, reports.get(index)));
             }
         }
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, reportListFiller);
     }
 
     public void openRoleListMenu(final Player player, final int page) {
@@ -1217,7 +1241,7 @@ public final class PlotMenuManager implements Listener {
                 inventory.setItem(roleListSlots.get(index - start), createRoleListItem(player, roles.get(index)));
             }
         }
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, roleListFiller);
     }
 
     public void openMemberListMenu(final Player player, final int page, final String filter) {
@@ -1261,7 +1285,7 @@ public final class PlotMenuManager implements Listener {
                 inventory.setItem(memberListSlots.get(index - start), createMemberListItem(player, members.get(index), plotKey, normalizedFilter, actualPage));
             }
         }
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, memberListFiller);
     }
 
     public void openRoleMemberListMenu(final Player player, final int page, final String roleName) {
@@ -1308,7 +1332,7 @@ public final class PlotMenuManager implements Listener {
                 inventory.setItem(roleMemberListSlots.get(index - start), createRoleMemberListItem(player, members.get(index), role.getName(), plotKey, actualPage));
             }
         }
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, roleMemberListFiller);
     }
 
     public void openRolePermissionListMenu(final Player player, final int page, final String roleName) {
@@ -1354,7 +1378,7 @@ public final class PlotMenuManager implements Listener {
                 inventory.setItem(rolePermissionListSlots.get(index - start), createRolePermissionItem(player, role, template, actualPage));
             }
         }
-        player.openInventory(inventory);
+        openAnimatedInventory(player, inventory, rolePermissionListFiller);
     }
 
     @EventHandler
@@ -4200,6 +4224,25 @@ public final class PlotMenuManager implements Listener {
 
         private String getPermission() {
             return permission;
+        }
+    }
+
+    private static final class AnimatedInventorySlot {
+
+        private final int slot;
+        private final ItemStack item;
+
+        private AnimatedInventorySlot(final int slot, final ItemStack item) {
+            this.slot = slot;
+            this.item = item;
+        }
+
+        private int getSlot() {
+            return slot;
+        }
+
+        private ItemStack getItem() {
+            return item;
         }
     }
 

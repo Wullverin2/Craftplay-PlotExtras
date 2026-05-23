@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 14
+file-version: 15
 
 # Befehle dieses Plugins.
 command:
@@ -197,6 +197,15 @@ gui:
   hidden-main-buttons:
     - info
     - home
+  # Globale Öffnungsanimationen für alle Java-Inventar-GUIs.
+  # Bedrock-Forms können technisch keine Inventar-Animation nutzen.
+  animations:
+    # Wenn true, werden Items beim Öffnen der Java-GUIs nacheinander eingeblendet.
+    enabled: true
+    # Verzögerung zwischen zwei eingeblendeten Items in Ticks. 1 Tick = 0,05 Sekunden.
+    delay-ticks: 1
+    # Wenn true, bleibt das Füllitem sofort sichtbar und nur Buttons/Deko/Listeneinträge werden animiert.
+    keep-filler-visible: true
 
 # Bedrock-/Floodgate-Unterstützung.
 bedrock:
