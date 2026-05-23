@@ -26,6 +26,10 @@ filler:
   enabled: true
   material: BLACK_STAINED_GLASS_PANE
   name: "&r"
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 buttons:
   back:
     enabled: true

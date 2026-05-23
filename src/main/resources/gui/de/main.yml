@@ -49,6 +49,7 @@ animation:
   enabled: true
   # Verzögerung zwischen zwei eingeblendeten Buttons in Ticks.
   delay-ticks: 1
+  keep-filler-visible: true
 # Alle Buttons des Menüs.
 buttons:
   my-plots:

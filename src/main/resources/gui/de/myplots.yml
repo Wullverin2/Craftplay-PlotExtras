@@ -28,6 +28,10 @@ filler:
   name: "&r"
 
 # Kategorien, die Spieler in der Detailansicht für ihre Plots durchschalten können.
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 categories:
   # Kategorie, die genutzt wird, wenn ein Plot noch keine Kategorie hat.
   default: "Allgemein"

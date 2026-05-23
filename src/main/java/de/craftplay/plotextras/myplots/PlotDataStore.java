@@ -1,5 +1,6 @@
 package de.craftplay.plotextras.myplots;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -7,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +45,9 @@ public final class PlotDataStore {
                 configuration.getString(path + ".visibility", "auto"),
                 configuration.getString(path + ".note", ""),
                 configuration.getDouble(path + ".rating", 0.0D),
+                configuration.getInt(path + ".rating-count", ratingCount(plotKey)),
+                likeCount(plotKey),
+                commentCount(plotKey),
                 configuration.getInt(path + ".visits", 0),
                 configuration.getLong(path + ".last-visit", 0L)
         );
@@ -147,6 +153,143 @@ public final class PlotDataStore {
         configuration.set(path + ".visits", 0);
         configuration.set(path + ".last-visit", 0L);
         save();
+    }
+
+    public boolean hasLike(final UUID playerUuid, final String plotKey) {
+        if (playerUuid == null) {
+            return false;
+        }
+        return configuration.getStringList(plotPath(plotKey) + ".likes").contains(playerUuid.toString());
+    }
+
+    public boolean toggleLike(final UUID playerUuid, final String playerName, final String plotKey) {
+        if (playerUuid == null) {
+            return false;
+        }
+        final String path = plotPath(plotKey);
+        final List<String> likes = new ArrayList<>(configuration.getStringList(path + ".likes"));
+        final String uuid = playerUuid.toString();
+        final boolean liked;
+        if (likes.contains(uuid)) {
+            likes.remove(uuid);
+            configuration.set(path + ".like-names." + uuid, null);
+            liked = false;
+        } else {
+            likes.add(uuid);
+            configuration.set(path + ".like-names." + uuid, cleanName(playerName));
+            liked = true;
+        }
+        configuration.set(path + ".likes", likes);
+        save();
+        return liked;
+    }
+
+    public int likeCount(final String plotKey) {
+        return configuration.getStringList(plotPath(plotKey) + ".likes").size();
+    }
+
+    public void setRating(final UUID playerUuid, final String playerName, final String plotKey, final int rating) {
+        if (playerUuid == null) {
+            return;
+        }
+        final int value = Math.max(1, Math.min(5, rating));
+        final String path = plotPath(plotKey) + ".ratings." + playerUuid;
+        configuration.set(path + ".name", cleanName(playerName));
+        configuration.set(path + ".value", value);
+        configuration.set(path + ".created", System.currentTimeMillis());
+        updateRatingSummary(plotKey);
+        save();
+    }
+
+    public double averageRating(final String plotKey) {
+        return calculateRatingSummary(plotKey)[0] / 100.0D;
+    }
+
+    public int ratingCount(final String plotKey) {
+        return (int) calculateRatingSummary(plotKey)[1];
+    }
+
+    public void addComment(final UUID playerUuid, final String playerName, final String plotKey, final String message) {
+        final String cleanedMessage = message == null ? "" : message.trim();
+        if (cleanedMessage.isEmpty()) {
+            return;
+        }
+        final String commentsPath = plotPath(plotKey) + ".comments";
+        long id = System.currentTimeMillis();
+        while (configuration.contains(commentsPath + "." + id)) {
+            id++;
+        }
+        final String path = commentsPath + "." + id;
+        configuration.set(path + ".author-uuid", playerUuid == null ? "" : playerUuid.toString());
+        configuration.set(path + ".author-name", cleanName(playerName));
+        configuration.set(path + ".message", cleanedMessage);
+        configuration.set(path + ".created", System.currentTimeMillis());
+        save();
+    }
+
+    public List<PlotComment> comments(final String plotKey) {
+        final ConfigurationSection section = configuration.getConfigurationSection(plotPath(plotKey) + ".comments");
+        if (section == null) {
+            return Collections.emptyList();
+        }
+        final List<PlotComment> comments = new ArrayList<>();
+        for (final String id : section.getKeys(false)) {
+            final String path = section.getCurrentPath() + "." + id;
+            UUID authorUuid = null;
+            final String rawUuid = configuration.getString(path + ".author-uuid", "");
+            if (rawUuid != null && !rawUuid.trim().isEmpty()) {
+                try {
+                    authorUuid = UUID.fromString(rawUuid);
+                } catch (final IllegalArgumentException ignored) {
+                    authorUuid = null;
+                }
+            }
+            comments.add(new PlotComment(
+                    id,
+                    authorUuid,
+                    configuration.getString(path + ".author-name", ""),
+                    configuration.getString(path + ".message", ""),
+                    configuration.getLong(path + ".created", 0L)
+            ));
+        }
+        comments.sort(Comparator.comparingLong(PlotComment::getCreatedAt).reversed());
+        return comments;
+    }
+
+    public int commentCount(final String plotKey) {
+        final ConfigurationSection section = configuration.getConfigurationSection(plotPath(plotKey) + ".comments");
+        return section == null ? 0 : section.getKeys(false).size();
+    }
+
+    private void updateRatingSummary(final String plotKey) {
+        final long[] summary = calculateRatingSummary(plotKey);
+        configuration.set(plotPath(plotKey) + ".rating", summary[0] / 100.0D);
+        configuration.set(plotPath(plotKey) + ".rating-count", (int) summary[1]);
+    }
+
+    private long[] calculateRatingSummary(final String plotKey) {
+        final ConfigurationSection section = configuration.getConfigurationSection(plotPath(plotKey) + ".ratings");
+        if (section == null) {
+            return new long[]{0L, 0L};
+        }
+        int total = 0;
+        int count = 0;
+        for (final String uuid : section.getKeys(false)) {
+            final int rating = configuration.getInt(section.getCurrentPath() + "." + uuid + ".value", 0);
+            if (rating < 1 || rating > 5) {
+                continue;
+            }
+            total += rating;
+            count++;
+        }
+        if (count <= 0) {
+            return new long[]{0L, 0L};
+        }
+        return new long[]{Math.round((total / (double) count) * 100.0D), count};
+    }
+
+    private String cleanName(final String playerName) {
+        return playerName == null || playerName.trim().isEmpty() ? "Unbekannt" : playerName.trim();
     }
 
     private String plotPath(final String plotKey) {

@@ -11,6 +11,9 @@ public final class PlotMetadata {
     private final String visibility;
     private final String note;
     private final double rating;
+    private final int ratingCount;
+    private final int likes;
+    private final int comments;
     private final int visits;
     private final long lastVisit;
 
@@ -20,6 +23,9 @@ public final class PlotMetadata {
             final String visibility,
             final String note,
             final double rating,
+            final int ratingCount,
+            final int likes,
+            final int comments,
             final int visits,
             final long lastVisit
     ) {
@@ -28,6 +34,9 @@ public final class PlotMetadata {
         this.visibility = visibility == null || visibility.trim().isEmpty() ? "auto" : visibility.trim().toLowerCase();
         this.note = note == null ? "" : note;
         this.rating = rating;
+        this.ratingCount = ratingCount;
+        this.likes = likes;
+        this.comments = comments;
         this.visits = visits;
         this.lastVisit = lastVisit;
     }
@@ -50,6 +59,18 @@ public final class PlotMetadata {
 
     public double getRating() {
         return rating;
+    }
+
+    public int getRatingCount() {
+        return ratingCount;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public int getComments() {
+        return comments;
     }
 
     public int getVisits() {

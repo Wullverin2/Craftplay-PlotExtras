@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 11
+file-version: 12
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -216,8 +216,27 @@ chat-plot-search: "&eSchreibe den Suchbegriff oder Spielernamen in den Chat. &7T
 chat-plot-report: "&eBeschreibe kurz das Problem auf diesem Plot. &7Tippe &ccancel &7zum Abbrechen."
 # Chatfrage für Plotnotizen.
 chat-plot-note: "&eSchreibe die neue private Notiz für diesen Plot in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+# Chatfrage für öffentliche Plot-Kommentare.
+chat-plot-comment: "&eSchreibe deinen Plot-Kommentar in den Chat. &7Tippe &ccancel &7zum Abbrechen."
 # Chatfrage für Plotmarkt, Handel und Auktionen.
 chat-future-market-value: "&eSchreibe den Preis oder Hinweis für diesen Plot in den Chat. &7Tippe &ccancel &7zum Abbrechen."
+
+# Nachricht, wenn ein Like gesetzt wurde. Platzhalter: {likes}, {rating_average}, {rating_count}, {comments}
+community-like-added: "&aDu hast dieses Plot geliked."
+# Nachricht, wenn ein Like entfernt wurde.
+community-like-removed: "&eDu hast deinen Like für dieses Plot entfernt."
+# Nachricht nach einer Bewertung. Platzhalter: {rating}, {rating_average}, {rating_count}
+community-rated: "&aDu hast dieses Plot mit &f{rating} &aSternen bewertet."
+# Nachricht nach einem Kommentar.
+community-comment-added: "&aDein Kommentar wurde gespeichert."
+# Text, wenn ein Plot keine Kommentare hat.
+community-no-comments: "&7Keine Kommentare vorhanden."
+# Text im Bewertungs-GUI, wenn der Spieler geliked hat.
+community-liked-yes: "Ja"
+# Text im Bewertungs-GUI, wenn der Spieler nicht geliked hat.
+community-liked-no: "Nein"
+# Zurück-Text für Bedrock-Kommentarlisten.
+community-back: "&eZurück"
 
 # Nachricht, wenn ein Future-Feature deaktiviert ist.
 future-disabled: "&cDieses Zukunftsfeature ist aktuell deaktiviert."

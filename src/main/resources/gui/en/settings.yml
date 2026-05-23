@@ -27,6 +27,10 @@ filler:
   # Display name of the filler item. &r keeps it visually empty.
   name: "&r"
 # Decoration items shown in every tab.
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 decorations:
   bottom-spacer:
     enabled: true

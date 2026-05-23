@@ -84,7 +84,8 @@ public final class ConfigurationManager {
 
         final int defaultVersionHint = readResourceVersion(resourcePath, -1);
         final int existingVersionHint = readFileVersion(target, -1);
-        if (defaultVersionHint > 0 && existingVersionHint >= defaultVersionHint) {
+        final boolean needsGuiAnimationDefaults = isJavaInventoryGuiFile(resourcePath) && hasMissingGuiAnimation(target);
+        if (defaultVersionHint > 0 && existingVersionHint >= defaultVersionHint && !needsGuiAnimationDefaults) {
             return;
         }
 
@@ -104,6 +105,9 @@ public final class ConfigurationManager {
             } else {
                 existing.set(key, defaults.get(key));
             }
+            changed = true;
+        }
+        if (applyGuiAnimationDefaults(existing, resourcePath)) {
             changed = true;
         }
 
@@ -338,7 +342,22 @@ public final class ConfigurationManager {
             existing.set("role-list.buttons.create-custom.permission", "");
             changed = true;
         }
-        if (existingVersion != defaultVersion) {
+        if (resourcePath.replace('\\', '/').endsWith("/community.yml") && existingVersion < 4) {
+            existing.set("tabs.rating.buttons.rate.enabled", false);
+            existing.set("tabs.rating.buttons.rate.commands", Arrays.asList());
+            existing.set("tabs.rating.buttons.rate.close", false);
+            existing.set("tabs.rating.buttons.comments.enabled", false);
+            existing.set("tabs.rating.buttons.comments.commands", Arrays.asList());
+            existing.set("tabs.rating.buttons.comments.close", false);
+            existing.set("tabs.rating.buttons.stars.enabled", false);
+            existing.set("tabs.rating.buttons.stars.commands", Arrays.asList());
+            existing.set("tabs.rating.buttons.stars.close", false);
+            existing.set("tabs.rating.buttons.like.commands", Arrays.asList("community:like"));
+            existing.set("tabs.rating.buttons.like.close", false);
+            existing.set("tabs.rating.buttons.like.permission", "plots.rate");
+            changed = true;
+        }
+        if (existingVersion < defaultVersion) {
             existing.set("file-version", defaultVersion);
             changed = true;
         }
@@ -369,6 +388,41 @@ public final class ConfigurationManager {
             plugin.getLogger().log(Level.WARNING, "Standarddatei konnte nicht gelesen werden: " + resourcePath, exception);
             return new YamlConfiguration();
         }
+    }
+
+    private boolean isJavaInventoryGuiFile(final String resourcePath) {
+        final String normalized = resourcePath == null ? "" : resourcePath.replace('\\', '/');
+        return normalized.startsWith("gui/")
+                && normalized.endsWith(".yml")
+                && !normalized.endsWith("/bedrock.yml")
+                && !normalized.endsWith("/bedrock-myplots.yml");
+    }
+
+    private boolean hasMissingGuiAnimation(final File target) {
+        final YamlConfiguration existing = YamlConfiguration.loadConfiguration(target);
+        return !existing.contains("animation.enabled")
+                || !existing.contains("animation.delay-ticks")
+                || !existing.contains("animation.keep-filler-visible");
+    }
+
+    private boolean applyGuiAnimationDefaults(final YamlConfiguration existing, final String resourcePath) {
+        if (!isJavaInventoryGuiFile(resourcePath)) {
+            return false;
+        }
+        boolean changed = false;
+        if (!existing.contains("animation.enabled")) {
+            existing.set("animation.enabled", true);
+            changed = true;
+        }
+        if (!existing.contains("animation.delay-ticks")) {
+            existing.set("animation.delay-ticks", 1);
+            changed = true;
+        }
+        if (!existing.contains("animation.keep-filler-visible")) {
+            existing.set("animation.keep-filler-visible", true);
+            changed = true;
+        }
+        return changed;
     }
 
     private int readResourceVersion(final String resourcePath, final int fallback) {

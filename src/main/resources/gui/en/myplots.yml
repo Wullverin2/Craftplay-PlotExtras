@@ -28,6 +28,10 @@ filler:
   name: "&r"
 
 # Categories players can cycle through for their plots in the detail view.
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 categories:
   # Category used when a plot has no stored category yet.
   default: "General"

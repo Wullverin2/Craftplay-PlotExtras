@@ -8,6 +8,7 @@ import de.craftplay.plotextras.hook.FloodgateHook;
 import de.craftplay.plotextras.hook.HeadDatabaseHook;
 import de.craftplay.plotextras.hook.PlaceholderHook;
 import de.craftplay.plotextras.language.LanguageManager;
+import de.craftplay.plotextras.myplots.PlotComment;
 import de.craftplay.plotextras.myplots.PlotDataStore;
 import de.craftplay.plotextras.myplots.PlotMetadata;
 import de.craftplay.plotextras.plotsquared.OwnedPlot;
@@ -91,6 +92,8 @@ public final class PlotMenuManager implements Listener {
     private final Map<Integer, MenuButton> backupListDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> reportListButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> reportListDecorationsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> commentListButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> commentListDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> roleListButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> roleListDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> memberListButtonsBySlot = new HashMap<>();
@@ -170,6 +173,17 @@ public final class PlotMenuManager implements Listener {
     private List<String> reportListItemLore;
     private boolean reportListItemEnabled;
     private String reportListItemPermission;
+    private String commentListTitle;
+    private int commentListSize;
+    private ItemStack commentListFiller;
+    private List<Integer> commentListSlots;
+    private Material commentListItemMaterial;
+    private String commentListItemHeadDatabaseId;
+    private String commentListItemSkullOwner;
+    private String commentListItemName;
+    private List<String> commentListItemLore;
+    private boolean commentListItemEnabled;
+    private String commentListItemPermission;
     private String roleListTitle;
     private int roleListSize;
     private ItemStack roleListFiller;
@@ -256,6 +270,8 @@ public final class PlotMenuManager implements Listener {
         backupListDecorationsBySlot.clear();
         reportListButtonsBySlot.clear();
         reportListDecorationsBySlot.clear();
+        commentListButtonsBySlot.clear();
+        commentListDecorationsBySlot.clear();
         roleListButtonsBySlot.clear();
         roleListDecorationsBySlot.clear();
         memberListButtonsBySlot.clear();
@@ -594,7 +610,7 @@ public final class PlotMenuManager implements Listener {
 
     private void openJavaActionMenu(final Player player, final ActionMenu menu, final String requestedTabId) {
         final SettingsTab tab = actionMenuTab(menu, requestedTabId);
-        final Map<String, String> placeholders = actionMenuPlaceholders(menu, tab);
+        final Map<String, String> placeholders = actionMenuPlaceholders(player, menu, tab);
         final Inventory inventory = Bukkit.createInventory(
                 new PlotMenuHolder("action-" + menu.getId(), tab == null ? "" : tab.getId()),
                 menu.getSize(),
@@ -639,7 +655,7 @@ public final class PlotMenuManager implements Listener {
 
     private boolean openBedrockActionMenu(final Player player, final ActionMenu menu, final String requestedTabId) {
         final SettingsTab tab = actionMenuTab(menu, requestedTabId);
-        final Map<String, String> placeholders = actionMenuPlaceholders(menu, tab);
+        final Map<String, String> placeholders = actionMenuPlaceholders(player, menu, tab);
         final List<String> labels = new ArrayList<>();
         final List<Runnable> actions = new ArrayList<>();
         if (tab != null) {
@@ -1201,6 +1217,86 @@ public final class PlotMenuManager implements Listener {
         openAnimatedInventory(player, inventory, reportListFiller);
     }
 
+    public void openCommentListMenu(final Player player, final int page) {
+        final String plotKey = currentPlotKey(player);
+        if (plotKey.isEmpty()) {
+            languageManager.send(player, "no-plot");
+            return;
+        }
+        final List<PlotComment> comments = plotDataStore.comments(plotKey);
+        if (floodgateHook.isBedrockPlayer(player) && openBedrockCommentListMenu(player, comments)) {
+            return;
+        }
+        final int pageSize = Math.max(1, commentListSlots == null || commentListSlots.isEmpty() ? 1 : commentListSlots.size());
+        final int maxPage = Math.max(1, (int) Math.ceil(comments.size() / (double) pageSize));
+        final int actualPage = Math.min(Math.max(1, page), maxPage);
+        final Map<String, String> placeholders = commentListPlaceholders(actualPage, maxPage, comments.size());
+
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("comments-list", actualPage),
+                commentListSize,
+                Text.color(placeholderHook.apply(player, applyPlaceholders(commentListTitle, placeholders)))
+        );
+        if (commentListFiller != null) {
+            for (int slot = 0; slot < commentListSize; slot++) {
+                inventory.setItem(slot, commentListFiller);
+            }
+        }
+        for (final MenuButton decoration : commentListDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
+            }
+        }
+        for (final MenuButton button : commentListButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, placeholders));
+            }
+        }
+
+        final int start = (actualPage - 1) * pageSize;
+        final int end = Math.min(comments.size(), start + pageSize);
+        if (configuredItemVisible(player, commentListItemEnabled, commentListItemPermission)) {
+            for (int index = start; index < end; index++) {
+                inventory.setItem(commentListSlots.get(index - start), createCommentListItem(player, comments.get(index)));
+            }
+        }
+        openAnimatedInventory(player, inventory, commentListFiller);
+    }
+
+    private boolean openBedrockCommentListMenu(final Player player, final List<PlotComment> comments) {
+        final List<String> labels = new ArrayList<>();
+        final List<Runnable> actions = new ArrayList<>();
+        final StringBuilder content = new StringBuilder();
+        if (comments.isEmpty()) {
+            content.append(text("community-no-comments", "Keine Kommentare vorhanden."));
+        } else {
+            for (final PlotComment comment : comments) {
+                if (content.length() > 0) {
+                    content.append("\n\n");
+                }
+                content.append(comment.getAuthorName())
+                        .append(" - ")
+                        .append(comment.getCreatedAt() <= 0L ? "-" : formatDate(comment.getCreatedAt()))
+                        .append("\n")
+                        .append(comment.getMessage());
+            }
+        }
+        labels.add(Text.color(text("community-back", "&eZurück")));
+        actions.add(() -> openActionMenu(player, "community", "rating"));
+        return floodgateHook.sendSimpleForm(
+                player,
+                Text.color(placeholderHook.apply(player, commentListTitle.replace("{page}", "1").replace("{max_page}", "1"))),
+                Text.color(placeholderHook.apply(player, content.toString())),
+                labels,
+                clickedButton -> {
+                    if (clickedButton < 0 || clickedButton >= actions.size()) {
+                        return;
+                    }
+                    Bukkit.getScheduler().runTask(plugin, actions.get(clickedButton));
+                }
+        );
+    }
+
     public void openRoleListMenu(final Player player, final int page) {
         if (!roleService.canManage(player)) {
             return;
@@ -1429,6 +1525,10 @@ public final class PlotMenuManager implements Listener {
             handleReportListClick(player, holder.getPage(), holder.getTabId(), event.getSlot(), event.getClick());
             return;
         }
+        if ("comments-list".equalsIgnoreCase(holder.getMenuId())) {
+            handleCommentListClick(player, holder.getPage(), event.getSlot());
+            return;
+        }
         if ("members-list".equalsIgnoreCase(holder.getMenuId())) {
             handleMemberListClick(player, holder.getPage(), holder.getTabId(), event.getSlot(), event.getClick());
             return;
@@ -1582,6 +1682,7 @@ public final class PlotMenuManager implements Listener {
         loadActionMenu("help", plugin.getConfig().getString("gui.help-menu", "help.yml"));
         loadActionMenu("future", plugin.getConfig().getString("gui.future-menu", "future.yml"));
         loadReportListMenu();
+        loadCommunityCommentListMenu();
         loadRoleListMenu();
     }
 
@@ -1607,6 +1708,30 @@ public final class PlotMenuManager implements Listener {
         reportListItemPermission = reportsConfig.getString("admin-list.item.permission", "");
         loadButtonsFromSection(reportsConfig, "admin-list.buttons", reportListButtonsBySlot, reportListSize);
         loadDecorationsFromSection(reportsConfig, "admin-list.decorations", reportListDecorationsBySlot, reportListSize);
+    }
+
+    private void loadCommunityCommentListMenu() {
+        final YamlConfiguration communityConfig = loadMenuConfig(plugin.getConfig().getString("gui.community-menu", "community.yml"));
+        if (communityConfig == null) {
+            return;
+        }
+        commentListTitle = communityConfig.getString("comments-list.title", "&8Plot-Kommentare &7- Seite {page}");
+        commentListSize = normalizeSize(communityConfig.getInt("comments-list.size", 54));
+        commentListFiller = createFiller(communityConfig, "comments-list.filler");
+        commentListSlots = communityConfig.getIntegerList("comments-list.slots");
+        if (commentListSlots.isEmpty()) {
+            commentListSlots = defaultListSlots(commentListSize);
+        }
+        final MaterialDefinition itemDefinition = materialDefinition(communityConfig, "comments-list.item.", Material.WRITABLE_BOOK);
+        commentListItemMaterial = itemDefinition.getMaterial();
+        commentListItemHeadDatabaseId = headDatabaseId(communityConfig, "comments-list.item.");
+        commentListItemSkullOwner = skullOwner(communityConfig, "comments-list.item.", itemDefinition.getSkullOwner());
+        commentListItemName = communityConfig.getString("comments-list.item.name", "&a{author}");
+        commentListItemLore = communityConfig.getStringList("comments-list.item.lore");
+        commentListItemEnabled = communityConfig.getBoolean("comments-list.item.enabled", true);
+        commentListItemPermission = communityConfig.getString("comments-list.item.permission", "");
+        loadButtonsFromSection(communityConfig, "comments-list.buttons", commentListButtonsBySlot, commentListSize);
+        loadDecorationsFromSection(communityConfig, "comments-list.decorations", commentListDecorationsBySlot, commentListSize);
     }
 
     private void loadRoleListMenu() {
@@ -2103,6 +2228,22 @@ public final class PlotMenuManager implements Listener {
         return item;
     }
 
+    private ItemStack createCommentListItem(final Player player, final PlotComment comment) {
+        ItemStack item = headDatabaseHook.getHead(commentListItemHeadDatabaseId);
+        if (item == null) {
+            item = new ItemStack(commentListItemMaterial);
+        }
+        final ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            final Map<String, String> placeholders = commentPlaceholders(comment);
+            applySkullOwner(player, meta, commentListItemSkullOwner, placeholders);
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(commentListItemName, placeholders))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(commentListItemLore, placeholders))));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
     private ItemStack createRoleListItem(final Player player, final PlotRole role) {
         ItemStack item = headDatabaseHook.getHead(roleListItemHeadDatabaseId);
         if (item == null) {
@@ -2594,6 +2735,26 @@ public final class PlotMenuManager implements Listener {
         player.performCommand("plot visit " + report.getWorld() + ";" + report.getPlot());
     }
 
+    private void handleCommentListClick(final Player player, final int page, final int slot) {
+        final MenuButton button = commentListButtonsBySlot.get(slot);
+        if (button != null) {
+            if (!canSee(player, button)) {
+                return;
+            }
+            final List<PlotComment> comments = plotDataStore.comments(currentPlotKey(player));
+            final int pageSize = Math.max(1, commentListSlots == null || commentListSlots.isEmpty() ? 1 : commentListSlots.size());
+            final int maxPage = Math.max(1, (int) Math.ceil(comments.size() / (double) pageSize));
+            executeCommands(player, button.isCloseInventory(), applyCommandState(button.getCommands(), commentListPlaceholders(page, maxPage, comments.size())));
+            return;
+        }
+
+        final PlotComment comment = commentAt(player, page, slot);
+        if (comment == null || !configuredItemVisible(player, commentListItemEnabled, commentListItemPermission)) {
+            return;
+        }
+        openCommentListMenu(player, page);
+    }
+
     private void handleMemberListClick(final Player player, final int page, final String filter, final int slot, final ClickType clickType) {
         final MenuButton button = memberListButtonsBySlot.get(slot);
         if (button != null) {
@@ -2741,6 +2902,26 @@ public final class PlotMenuManager implements Listener {
             return null;
         }
         return reports.get(index);
+    }
+
+    private PlotComment commentAt(final Player player, final int page, final int slot) {
+        if (commentListSlots == null || commentListSlots.isEmpty()) {
+            return null;
+        }
+        final int slotIndex = commentListSlots.indexOf(slot);
+        if (slotIndex < 0) {
+            return null;
+        }
+        final String plotKey = currentPlotKey(player);
+        if (plotKey.isEmpty()) {
+            return null;
+        }
+        final List<PlotComment> comments = plotDataStore.comments(plotKey);
+        final int index = (Math.max(1, page) - 1) * commentListSlots.size() + slotIndex;
+        if (index < 0 || index >= comments.size()) {
+            return null;
+        }
+        return comments.get(index);
     }
 
     private PlotRole roleAt(final Player player, final int page, final int slot) {
@@ -2939,6 +3120,49 @@ public final class PlotMenuManager implements Listener {
         return placeholders;
     }
 
+    private Map<String, String> commentListPlaceholders(final int page, final int maxPage, final int amount) {
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("page", String.valueOf(page));
+        placeholders.put("max_page", String.valueOf(Math.max(1, maxPage)));
+        placeholders.put("next_page", String.valueOf(Math.min(Math.max(1, maxPage), page + 1)));
+        placeholders.put("previous_page", String.valueOf(Math.max(1, page - 1)));
+        placeholders.put("comments", String.valueOf(amount));
+        placeholders.put("amount", String.valueOf(amount));
+        return placeholders;
+    }
+
+    private Map<String, String> communityPlaceholders(final Player player) {
+        final Map<String, String> placeholders = new HashMap<>();
+        final String plotKey = currentPlotKey(player);
+        placeholders.put("plot_key", plotKey.isEmpty() ? "-" : plotKey);
+        if (plotKey.isEmpty()) {
+            placeholders.put("likes", "0");
+            placeholders.put("rating_average", "0.0");
+            placeholders.put("rating_count", "0");
+            placeholders.put("comments", "0");
+            placeholders.put("liked", text("community-liked-no", "Nein"));
+            return placeholders;
+        }
+        placeholders.put("likes", String.valueOf(plotDataStore.likeCount(plotKey)));
+        placeholders.put("rating_average", String.format(Locale.US, "%.1f", plotDataStore.averageRating(plotKey)));
+        placeholders.put("rating_count", String.valueOf(plotDataStore.ratingCount(plotKey)));
+        placeholders.put("comments", String.valueOf(plotDataStore.commentCount(plotKey)));
+        placeholders.put("liked", plotDataStore.hasLike(player.getUniqueId(), plotKey)
+                ? text("community-liked-yes", "Ja")
+                : text("community-liked-no", "Nein"));
+        return placeholders;
+    }
+
+    private Map<String, String> commentPlaceholders(final PlotComment comment) {
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("id", comment.getId());
+        placeholders.put("author", comment.getAuthorName());
+        placeholders.put("author_uuid", comment.getAuthorUuid() == null ? "" : comment.getAuthorUuid().toString());
+        placeholders.put("message", comment.getMessage());
+        placeholders.put("created", comment.getCreatedAt() <= 0L ? "-" : formatDate(comment.getCreatedAt()));
+        return placeholders;
+    }
+
     private Map<String, String> memberPlaceholders(
             final Player player,
             final PlotMemberEntry member,
@@ -3130,6 +3354,9 @@ public final class PlotMenuManager implements Listener {
         placeholders.put("last_visit", metadata.getLastVisit() <= 0L ? text("myplots-never", "Nie") : formatDate(metadata.getLastVisit()));
         placeholders.put("created", plot.getCreatedAt() <= 0L ? "-" : formatDate(plot.getCreatedAt()));
         placeholders.put("rating", String.format(Locale.US, "%.1f", metadata.getRating()));
+        placeholders.put("rating_count", String.valueOf(metadata.getRatingCount()));
+        placeholders.put("likes", String.valueOf(metadata.getLikes()));
+        placeholders.put("comments", String.valueOf(metadata.getComments()));
         return placeholders;
     }
 
@@ -3332,11 +3559,14 @@ public final class PlotMenuManager implements Listener {
         return menu.getTabs().values().iterator().next();
     }
 
-    private Map<String, String> actionMenuPlaceholders(final ActionMenu menu, final SettingsTab tab) {
+    private Map<String, String> actionMenuPlaceholders(final Player player, final ActionMenu menu, final SettingsTab tab) {
         final Map<String, String> placeholders = new HashMap<>();
         placeholders.put("menu", menu.getId());
         placeholders.put("tab", tab == null ? "" : tabName(tab));
         placeholders.put("tab_id", tab == null ? "" : tab.getId());
+        if ("community".equalsIgnoreCase(menu.getId())) {
+            placeholders.putAll(communityPlaceholders(player));
+        }
         return placeholders;
     }
 
@@ -3447,6 +3677,8 @@ public final class PlotMenuManager implements Listener {
                 openBackupListMenu(player, menuPage(menuId));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("reports-list")) {
                 openReportListMenu(player, menuPage(menuId), menuArgument(menuId, 2, "open"));
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("comments-list")) {
+                openCommentListMenu(player, menuPage(menuId));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("members-list")) {
                 openMemberListMenu(player, menuPage(menuId), menuArgument(menuId, 2, "all"));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("roles-list")) {
@@ -3492,6 +3724,11 @@ public final class PlotMenuManager implements Listener {
 
         if (command.toLowerCase(Locale.ROOT).startsWith("report:")) {
             runReportCommand(player, command.substring("report:".length()).trim());
+            return;
+        }
+
+        if (command.toLowerCase(Locale.ROOT).startsWith("community:")) {
+            runCommunityCommand(player, command.substring("community:".length()).trim());
             return;
         }
 
@@ -3585,6 +3822,57 @@ public final class PlotMenuManager implements Listener {
         }
         if ("note".equals(action) && parts.length >= 3) {
             reportService.setNote(player, parts[1], parts[2]);
+            return;
+        }
+        languageManager.send(player, "chat-input-invalid");
+    }
+
+    private void runCommunityCommand(final Player player, final String payload) {
+        final String[] parts = payload.split(":", 2);
+        if (parts.length == 0 || parts[0].trim().isEmpty()) {
+            languageManager.send(player, "chat-input-invalid");
+            return;
+        }
+        final String plotKey = currentPlotKey(player);
+        if (plotKey.isEmpty()) {
+            languageManager.send(player, "no-plot");
+            return;
+        }
+
+        final String action = parts[0].trim().toLowerCase(Locale.ROOT);
+        if ("like".equals(action)) {
+            final boolean liked = plotDataStore.toggleLike(player.getUniqueId(), player.getName(), plotKey);
+            languageManager.send(player, liked ? "community-like-added" : "community-like-removed", communityPlaceholders(player));
+            openActionMenu(player, "community", "rating");
+            return;
+        }
+        if ("rate".equals(action) && parts.length >= 2) {
+            try {
+                final int rating = Math.max(1, Math.min(5, Integer.parseInt(parts[1].trim())));
+                plotDataStore.setRating(player.getUniqueId(), player.getName(), plotKey, rating);
+                final Map<String, String> placeholders = communityPlaceholders(player);
+                placeholders.put("rating", String.valueOf(rating));
+                languageManager.send(player, "community-rated", placeholders);
+                openActionMenu(player, "community", "rating");
+                return;
+            } catch (final NumberFormatException exception) {
+                languageManager.send(player, "chat-input-invalid");
+                return;
+            }
+        }
+        if ("comment".equals(action) && parts.length >= 2) {
+            final String message = parts[1].trim();
+            if (message.isEmpty()) {
+                languageManager.send(player, "chat-input-invalid");
+                return;
+            }
+            plotDataStore.addComment(player.getUniqueId(), player.getName(), plotKey, message);
+            languageManager.send(player, "community-comment-added", communityPlaceholders(player));
+            openCommentListMenu(player, 1);
+            return;
+        }
+        if ("comments".equals(action)) {
+            openCommentListMenu(player, 1);
             return;
         }
         languageManager.send(player, "chat-input-invalid");

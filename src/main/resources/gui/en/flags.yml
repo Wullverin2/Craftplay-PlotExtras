@@ -44,6 +44,10 @@ filler:
   # Display name of the filler item. &r keeps it visually empty.
   name: "&r"
 # Static buttons in this menu.
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 buttons:
   back:
     enabled: true

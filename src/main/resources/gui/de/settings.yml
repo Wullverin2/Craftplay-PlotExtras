@@ -27,6 +27,10 @@ filler:
   # Anzeigename des Füllitems. &r macht den Namen leer/unauffällig.
   name: "&r"
 # Deko-Items, die in jedem Tab angezeigt werden.
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 decorations:
   bottom-spacer:
     enabled: true

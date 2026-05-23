@@ -8,6 +8,10 @@ size: 27
 require-plot: false
 permission: "craftplayplotextras.use"
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 buttons:
   plotsquared-help: {enabled: true, slot: 10, material: BOOK, name: "&aPlotSquared Help", lore: ["&7Opens /plot help."], commands: ["plot help"], close: true, permission: "plots.use"}
   commands: {enabled: true, slot: 11, material: PAPER, name: "&aCommands", lore: ["&7Shows PlotSquared commands."], commands: ["plot help"], close: true, permission: "plots.use"}

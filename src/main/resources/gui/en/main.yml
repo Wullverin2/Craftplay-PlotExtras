@@ -49,6 +49,7 @@ animation:
   enabled: true
   # Delay between two revealed buttons in ticks.
   delay-ticks: 1
+  keep-filler-visible: true
 # All buttons in this menu.
 buttons:
   my-plots:

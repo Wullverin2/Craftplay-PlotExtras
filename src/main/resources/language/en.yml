@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 11
+file-version: 12
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -216,8 +216,27 @@ chat-plot-search: "&eType the search term or player name in chat. &7Type &ccance
 chat-plot-report: "&eBriefly describe the problem on this plot. &7Type &ccancel &7to cancel."
 # Chat prompt for plot notes.
 chat-plot-note: "&eType the new private note for this plot in chat. &7Type &ccancel &7to cancel."
+# Chat prompt for public plot comments.
+chat-plot-comment: "&eType your plot comment in chat. &7Type &ccancel &7to cancel."
 # Chat prompt for market, trade, and auction values.
 chat-future-market-value: "&eType the price or note for this plot in chat. &7Type &ccancel &7to cancel."
+
+# Message shown when a like was added. Placeholders: {likes}, {rating_average}, {rating_count}, {comments}
+community-like-added: "&aYou liked this plot."
+# Message shown when a like was removed.
+community-like-removed: "&eYou removed your like from this plot."
+# Message shown after rating. Placeholders: {rating}, {rating_average}, {rating_count}
+community-rated: "&aYou rated this plot with &f{rating} &astars."
+# Message shown after adding a comment.
+community-comment-added: "&aYour comment was saved."
+# Text shown when a plot has no comments.
+community-no-comments: "&7No comments available."
+# Text in the rating GUI when the player liked the plot.
+community-liked-yes: "Yes"
+# Text in the rating GUI when the player has not liked the plot.
+community-liked-no: "No"
+# Back label for Bedrock comment lists.
+community-back: "&eBack"
 
 # Message shown when a future feature is disabled.
 future-disabled: "&cThis future feature is currently disabled."

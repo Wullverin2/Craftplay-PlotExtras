@@ -10,6 +10,10 @@ size: 27
 require-plot: true
 permission: "craftplayplotextras.use"
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 buttons:
   grief: {enabled: true, slot: 10, material: TNT, name: "&cGriefing", lore: ["&7Meldet Griefing auf diesem Plot."], commands: ["report:create:Griefing:Griefing auf dem Plot"], close: true, permission: "craftplayplotextras.reports.create"}
   inappropriate: {enabled: true, slot: 11, material: BARRIER, name: "&cUnpassender Inhalt", lore: ["&7Meldet unpassende Inhalte."], commands: ["report:create:Unpassender Inhalt:Unpassender Inhalt auf dem Plot"], close: true, permission: "craftplayplotextras.reports.create"}

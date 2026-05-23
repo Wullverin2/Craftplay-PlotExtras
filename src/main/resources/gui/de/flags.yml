@@ -44,6 +44,10 @@ filler:
   # Anzeigename des Füllitems. &r macht den Namen leer/unauffällig.
   name: "&r"
 # Feste Buttons im Menü.
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 buttons:
   back:
     enabled: true

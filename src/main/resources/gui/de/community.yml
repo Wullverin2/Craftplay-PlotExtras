@@ -1,8 +1,8 @@
 # Deutsches Community-Menü.
-# Diese Datei steuert Bewertungen, Kommentare, Toplisten, Empfehlungen, Teilen,
-# Einladungen und frei anpassbare Event-/Wettbewerbsbuttons.
+# Diese Datei steuert Bewertungen, Likes, Kommentare, Toplisten, Empfehlungen,
+# Teilen, Einladungen und frei anpassbare Event-/Wettbewerbsbuttons.
 
-file-version: 3
+file-version: 4
 
 title: "&8Community: {tab}"
 size: 54
@@ -14,6 +14,10 @@ bedrock:
   title: "Community"
   content: "Bewerten, entdecken, teilen und an Events teilnehmen."
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 buttons:
   back: {enabled: true, slot: 49, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
   close: {enabled: true, slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
@@ -29,13 +33,101 @@ tabs:
     commands: ["open-menu:community:rating"]
     permission: ""
     buttons:
-      rate: {enabled: true, slot: 19, material: GOLD_INGOT, name: "&6Plot bewerten", lore: ["&7Öffnet die PlotSquared-Bewertung", "&7für den Plot, auf dem du stehst."], commands: ["plot rate"], close: true, permission: "plots.rate"}
-      comments: {enabled: true, slot: 20, material: WRITABLE_BOOK, name: "&aKommentare", lore: ["&7Öffnet PlotSquared-Kommentare", "&7oder ein eigenes Kommentarsystem."], commands: ["plot comment"], close: true, permission: "plots.comment"}
-      like: {enabled: true, slot: 21, material: LIME_DYE, name: "&aLike vergeben", lore: ["&7Standard: Bewertungsbefehl.", "&7Kann auf ein eigenes Like-System zeigen."], commands: ["plot rate"], close: true, permission: "plots.rate"}
-      stars: {enabled: true, slot: 22, material: NETHER_STAR, name: "&eSternesystem", lore: ["&7Bewertungsprofil für Sterne.", "&7Befehl ist frei anpassbar."], commands: ["plot rate"], close: true, permission: "plots.rate"}
-      report: {enabled: true, slot: 23, material: REDSTONE_TORCH, name: "&cPlot melden", lore: ["&7Wechselt ins Report-Menü."], commands: ["open-menu:reports"], close: false, permission: "plots.report"}
-      share: {enabled: true, slot: 24, material: MAP, name: "&bPlot teilen", lore: ["&7Zeigt Plotinformationen", "&7zum Teilen im Chat."], commands: ["plot info"], close: true, permission: "plots.info"}
-      invite: {enabled: true, slot: 25, material: PLAYER_HEAD, skull-owner: "%player_name%", name: "&aFreund einladen", lore: ["&7Fragt einen Namen ab", "&7und vertraut den Spieler."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
+      rating-info:
+        enabled: true
+        slot: 19
+        material: NETHER_STAR
+        name: "&6Bewertungsübersicht"
+        lore:
+          - "&7Durchschnitt: &e{rating_average} &7/ 5"
+          - "&7Bewertungen: &f{rating_count}"
+          - "&7Likes: &a{likes}"
+          - "&7Kommentare: &f{comments}"
+          - "&7Von dir geliked: &f{liked}"
+        commands: []
+        close: false
+        permission: ""
+      like:
+        enabled: true
+        slot: 20
+        material: LIME_DYE
+        name: "&aLike umschalten"
+        lore:
+          - "&7Vergibt oder entfernt deinen"
+          - "&7Like für dieses Plot."
+        commands: ["community:like"]
+        close: false
+        permission: "plots.rate"
+      rate-1:
+        enabled: true
+        slot: 28
+        material: COPPER_INGOT
+        name: "&e1 Stern"
+        lore: ["&7Bewerte dieses Plot mit &e1&7/5."]
+        commands: ["community:rate:1"]
+        close: false
+        permission: "plots.rate"
+      rate-2:
+        enabled: true
+        slot: 29
+        material: IRON_INGOT
+        name: "&e2 Sterne"
+        lore: ["&7Bewerte dieses Plot mit &e2&7/5."]
+        commands: ["community:rate:2"]
+        close: false
+        permission: "plots.rate"
+      rate-3:
+        enabled: true
+        slot: 30
+        material: GOLD_INGOT
+        name: "&e3 Sterne"
+        lore: ["&7Bewerte dieses Plot mit &e3&7/5."]
+        commands: ["community:rate:3"]
+        close: false
+        permission: "plots.rate"
+      rate-4:
+        enabled: true
+        slot: 31
+        material: EMERALD
+        name: "&e4 Sterne"
+        lore: ["&7Bewerte dieses Plot mit &e4&7/5."]
+        commands: ["community:rate:4"]
+        close: false
+        permission: "plots.rate"
+      rate-5:
+        enabled: true
+        slot: 32
+        material: DIAMOND
+        name: "&e5 Sterne"
+        lore: ["&7Bewerte dieses Plot mit &e5&7/5."]
+        commands: ["community:rate:5"]
+        close: false
+        permission: "plots.rate"
+      add-comment:
+        enabled: true
+        slot: 22
+        material: WRITABLE_BOOK
+        name: "&aKommentar schreiben"
+        lore:
+          - "&7Nur die Nachricht wird im"
+          - "&7Chat eingegeben."
+        commands: ["chat-input:chat-plot-comment:community:comment:{input}"]
+        close: true
+        permission: "plots.comment"
+      read-comments:
+        enabled: true
+        slot: 23
+        material: BOOK
+        name: "&aKommentare lesen"
+        lore:
+          - "&7Öffnet alle gespeicherten"
+          - "&7Kommentare im GUI."
+        commands: ["open-menu:comments-list:1"]
+        close: false
+        permission: "plots.comment"
+      report: {enabled: true, slot: 24, material: REDSTONE_TORCH, name: "&cPlot melden", lore: ["&7Wechselt ins Report-Menü."], commands: ["open-menu:reports"], close: false, permission: "plots.report"}
+      share: {enabled: true, slot: 25, material: MAP, name: "&bPlot teilen", lore: ["&7Zeigt Plotinformationen", "&7zum Teilen im Chat."], commands: ["plot info"], close: true, permission: "plots.info"}
+      invite: {enabled: true, slot: 34, material: PLAYER_HEAD, skull-owner: "%player_name%", name: "&aFreund einladen", lore: ["&7Fragt einen Namen ab", "&7und vertraut den Spieler."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
   discover:
     enabled: true
     slot: 12
@@ -68,3 +160,26 @@ tabs:
       market: {enabled: true, slot: 23, material: EMERALD, name: "&aPlot-Markt", lore: ["&7Platzhalter für Markt-", "&7Handel- oder Auktionssysteme."], commands: ["plot list all"], close: true, permission: "plots.list"}
       gallery: {enabled: true, slot: 24, material: PAINTING, name: "&ePlot-Galerie", lore: ["&7Platzhalter für Galerien", "&7oder Webübersichten."], commands: ["plot list top"], close: true, permission: "plots.list"}
       help: {enabled: true, slot: 25, material: BOOK, name: "&aCommunity-Hilfe", lore: ["&7Öffnet die Hilfe."], commands: ["open-menu:help"], close: false, permission: ""}
+comments-list:
+  title: "&8Plot-Kommentare &7- Seite {page}"
+  size: 54
+  filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+  slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+  item:
+    enabled: true
+    material: WRITTEN_BOOK
+    head-database-id: ""
+    skull-owner: ""
+    name: "&a{author}"
+    lore:
+      - "&7Geschrieben: &f{created}"
+      - ""
+      - "&f{message}"
+    permission: ""
+  buttons:
+    previous: {enabled: true, slot: 45, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:comments-list:{previous_page}"], close: false, permission: ""}
+    next: {enabled: true, slot: 53, material: ARROW, name: "&eNächste Seite", lore: ["&7Öffnet Seite {next_page}."], commands: ["open-menu:comments-list:{next_page}"], close: false, permission: ""}
+    back: {enabled: true, slot: 49, material: OAK_DOOR, name: "&eZurück", lore: ["&7Zurück zum Community-Menü."], commands: ["open-menu:community:rating"], close: false, permission: ""}
+    close: {enabled: true, slot: 50, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+  decorations:
+    frame: {enabled: true, slot: [0, 8, 36, 44, 46, 47, 48, 51, 52], material: BLUE_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

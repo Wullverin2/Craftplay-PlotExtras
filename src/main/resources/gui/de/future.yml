@@ -10,6 +10,10 @@ require-plot: false
 permission: "craftplayplotextras.future"
 bedrock: {enabled: true, title: "Zukunftsfeatures", content: "Optionale Systeme, die direkt vom Plugin bedient werden."}
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
 buttons:
   back: {enabled: true, slot: 49, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
   close: {enabled: true, slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
