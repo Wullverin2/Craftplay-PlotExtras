@@ -1,14 +1,15 @@
 # Deutsches Flag-Untermenü.
 # Diese Datei steuert das Menü, in dem Spieler Boolean-Flags ihres aktuellen Plots sehen und umschalten.
-# Alle Namen, Slots, Materialien und Beschreibungen können hier angepasst werden.
-# Buttons, Deko-Items und Flag-Einträge können slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
+# Alle Namen, Slotbereiche, Materialien und Beschreibungen können hier angepasst werden.
+# Buttons und Deko-Items können slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
+# Flags werden standardmäßig automatisch in die Bereiche unter flag-layout einsortiert.
 # Feste Buttons und Deko-Items unterstützen optional head-database-id für HeadDatabase-Köpfe.
 # Spieler-Köpfe sind bei festen Buttons und Deko per material: PLAYERHEAD %player_name% oder skull-owner: "%player_name%" möglich.
 # PlaceholderAPI-Platzhalter funktionieren in Titel, festen Buttons, Deko, Namen, Lore und Commands.
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 8
+file-version: 9
 
 # Titel des Inventars.
 title: "&8Plot-Flags"
@@ -16,6 +17,18 @@ title: "&8Plot-Flags"
 size: 54
 # Nach wie vielen Ticks das Menü nach dem Umschalten aktualisiert wird.
 reopen-delay-ticks: 2
+# Automatische Platzierung der Flags.
+# Wenn enabled true ist, ignoriert das Plugin page/slot an einzelnen Flags und füllt die Bereiche unten der Reihe nach.
+# Spieler sehen nur erlaubte Flags; Lücken durch fehlende Permissions werden automatisch geschlossen.
+# Bereiche können als einzelne Slots, Listen oder Ranges angegeben werden, z. B. "0-8", "18..26" oder [0, 1, 2].
+flag-layout:
+  enabled: true
+  slots:
+    - "0-8"
+    - "9-17"
+    - "18-26"
+    - "27-35"
+    - "36-44"
 # Text, der in der Lore für aktive und inaktive Flags eingesetzt wird.
 status:
   # Anzeige für eine eingeschaltete Flag.
@@ -182,12 +195,12 @@ decorations:
     permission: ""
 # PlotSquared-Boolean-Flags, die im Menü angezeigt werden können.
 # Spieler sehen nur Flags, für die sie passende PlotSquared-Permissions besitzen.
-# Pro Flag sind page, slot, enabled-material, disabled-material, name, lore und permission anpassbar.
+# Pro Flag sind enabled, enabled-material, disabled-material, name, lore und permission anpassbar.
+# Wenn du flag-layout.enabled auf false stellst, kannst du optional wieder page und slot pro Flag nutzen.
 # Platzhalter in Name und Lore: {flag}, {status}, {next_status}
 flags:
   pvp:
     enabled: true
-    slot: 0
     enabled-material: DIAMOND_SWORD
     disabled-material: WOODEN_SWORD
     name: "&aSpielerkampf"
@@ -200,7 +213,6 @@ flags:
     permission: ""
   pve:
     enabled: true
-    slot: 1
     enabled-material: IRON_SWORD
     disabled-material: STONE_SWORD
     name: "&aKampf gegen Kreaturen"
@@ -213,7 +225,6 @@ flags:
     permission: ""
   fly:
     enabled: true
-    slot: 2
     enabled-material: FEATHER
     disabled-material: GRAY_DYE
     name: "&aFliegen"
@@ -226,7 +237,6 @@ flags:
     permission: ""
   redstone:
     enabled: true
-    slot: 3
     enabled-material: REDSTONE_TORCH
     disabled-material: LEVER
     name: "&aRedstone"
@@ -239,7 +249,6 @@ flags:
     permission: ""
   explosion:
     enabled: true
-    slot: 4
     enabled-material: TNT
     disabled-material: GUNPOWDER
     name: "&aExplosionen"
@@ -252,7 +261,6 @@ flags:
     permission: ""
   titles:
     enabled: true
-    slot: 5
     enabled-material: NAME_TAG
     disabled-material: PAPER
     name: "&aPlot-Titel"
@@ -265,7 +273,6 @@ flags:
     permission: ""
   notify-enter:
     enabled: true
-    slot: 6
     enabled-material: OAK_DOOR
     disabled-material: DARK_OAK_DOOR
     name: "&aBetreten melden"
@@ -278,7 +285,6 @@ flags:
     permission: ""
   notify-leave:
     enabled: true
-    slot: 7
     enabled-material: SPRUCE_DOOR
     disabled-material: DARK_OAK_DOOR
     name: "&aVerlassen melden"
@@ -291,7 +297,6 @@ flags:
     permission: ""
   invincible:
     enabled: true
-    slot: 8
     enabled-material: SHIELD
     disabled-material: GRAY_DYE
     name: "&aUnverwundbar"
@@ -304,7 +309,6 @@ flags:
     permission: ""
   deny-exit:
     enabled: true
-    slot: 10
     enabled-material: IRON_DOOR
     disabled-material: OAK_DOOR
     name: "&aVerlassen verhindern"
@@ -317,7 +321,6 @@ flags:
     permission: ""
   forcefield:
     enabled: true
-    slot: 11
     enabled-material: ENDER_PEARL
     disabled-material: GRAY_DYE
     name: "&aSchutzfeld"
@@ -330,7 +333,6 @@ flags:
     permission: ""
   item-drop:
     enabled: true
-    slot: 12
     enabled-material: HOPPER
     disabled-material: GRAY_DYE
     name: "&aItems fallen lassen"
@@ -343,7 +345,6 @@ flags:
     permission: ""
   instabreak:
     enabled: true
-    slot: 13
     enabled-material: GOLDEN_PICKAXE
     disabled-material: STONE_PICKAXE
     name: "&aSofort abbauen"
@@ -356,7 +357,6 @@ flags:
     permission: ""
   drop-protection:
     enabled: true
-    slot: 14
     enabled-material: CHEST
     disabled-material: GRAY_DYE
     name: "&aDrop-Schutz"
@@ -369,7 +369,6 @@ flags:
     permission: ""
   grass-grow:
     enabled: true
-    slot: 15
     enabled-material: GRASS_BLOCK
     disabled-material: DIRT
     name: "&aGraswachstum"
@@ -382,7 +381,6 @@ flags:
     permission: ""
   vine-grow:
     enabled: true
-    slot: 16
     enabled-material: VINE
     disabled-material: DEAD_BUSH
     name: "&aRankenwachstum"
@@ -395,7 +393,6 @@ flags:
     permission: ""
   mycel-grow:
     enabled: true
-    slot: 17
     enabled-material: MYCELIUM
     disabled-material: DIRT
     name: "&aMyzelwachstum"
@@ -408,7 +405,6 @@ flags:
     permission: ""
   soil-dry:
     enabled: true
-    slot: 18
     enabled-material: FARMLAND
     disabled-material: DIRT
     name: "&aAckerboden trocknet"
@@ -421,7 +417,6 @@ flags:
     permission: ""
   snow-form:
     enabled: true
-    slot: 19
     enabled-material: SNOW_BLOCK
     disabled-material: SNOWBALL
     name: "&aSchnee bildet sich"
@@ -434,7 +429,6 @@ flags:
     permission: ""
   snow-melt:
     enabled: true
-    slot: 20
     enabled-material: SNOWBALL
     disabled-material: SNOW_BLOCK
     name: "&aSchnee schmilzt"
@@ -447,7 +441,6 @@ flags:
     permission: ""
   ice-form:
     enabled: true
-    slot: 21
     enabled-material: ICE
     disabled-material: WATER_BUCKET
     name: "&aEis bildet sich"
@@ -460,7 +453,6 @@ flags:
     permission: ""
   ice-melt:
     enabled: true
-    slot: 22
     enabled-material: BLUE_ICE
     disabled-material: ICE
     name: "&aEis schmilzt"
@@ -473,7 +465,6 @@ flags:
     permission: ""
   block-burn:
     enabled: true
-    slot: 24
     enabled-material: CAMPFIRE
     disabled-material: CHARCOAL
     name: "&aBlöcke verbrennen"
@@ -486,7 +477,6 @@ flags:
     permission: ""
   block-ignition:
     enabled: true
-    slot: 25
     enabled-material: FIRE_CHARGE
     disabled-material: CHARCOAL
     name: "&aBlöcke entzünden"
@@ -499,7 +489,6 @@ flags:
     permission: ""
   liquid-flow:
     enabled: true
-    slot: 26
     enabled-material: WATER_BUCKET
     disabled-material: BUCKET
     name: "&aFlüssigkeiten fließen"
@@ -512,7 +501,6 @@ flags:
     permission: ""
   disable-physics:
     enabled: true
-    slot: 27
     enabled-material: ANVIL
     disabled-material: GRAY_DYE
     name: "&aPhysik deaktivieren"
@@ -525,7 +513,6 @@ flags:
     permission: ""
   device-interact:
     enabled: true
-    slot: 28
     enabled-material: STONE_BUTTON
     disabled-material: GRAY_DYE
     name: "&aGeräte benutzen"
@@ -538,7 +525,6 @@ flags:
     permission: ""
   player-interact:
     enabled: true
-    slot: 29
     enabled-material: PLAYER_HEAD
     disabled-material: GRAY_DYE
     name: "&aSpielerinteraktion"
@@ -551,7 +537,6 @@ flags:
     permission: ""
   villager-interact:
     enabled: true
-    slot: 30
     enabled-material: EMERALD
     disabled-material: GRAY_DYE
     name: "&aDorfbewohner benutzen"
@@ -564,7 +549,6 @@ flags:
     permission: ""
   animal-interact:
     enabled: true
-    slot: 31
     enabled-material: WHEAT
     disabled-material: GRAY_DYE
     name: "&aTiere benutzen"
@@ -577,7 +561,6 @@ flags:
     permission: ""
   animal-attack:
     enabled: true
-    slot: 32
     enabled-material: BONE
     disabled-material: GRAY_DYE
     name: "&aTiere angreifen"
@@ -590,7 +573,6 @@ flags:
     permission: ""
   hostile-interact:
     enabled: true
-    slot: 33
     enabled-material: ROTTEN_FLESH
     disabled-material: GRAY_DYE
     name: "&aMonster benutzen"
@@ -603,7 +585,6 @@ flags:
     permission: ""
   hostile-attack:
     enabled: true
-    slot: 34
     enabled-material: IRON_AXE
     disabled-material: GRAY_DYE
     name: "&aMonster angreifen"
@@ -616,7 +597,6 @@ flags:
     permission: ""
   tamed-interact:
     enabled: true
-    slot: 35
     enabled-material: LEAD
     disabled-material: GRAY_DYE
     name: "&aGezähmte Tiere benutzen"
@@ -629,7 +609,6 @@ flags:
     permission: ""
   tamed-attack:
     enabled: true
-    slot: 36
     enabled-material: BONE
     disabled-material: GRAY_DYE
     name: "&aGezähmte Tiere angreifen"
@@ -642,7 +621,6 @@ flags:
     permission: ""
   mob-place:
     enabled: true
-    slot: 37
     enabled-material: SPAWNER
     disabled-material: GRAY_DYE
     name: "&aKreaturen platzieren"
@@ -655,7 +633,6 @@ flags:
     permission: ""
   mob-break:
     enabled: true
-    slot: 38
     enabled-material: COBWEB
     disabled-material: GRAY_DYE
     name: "&aKreaturen zerstören"
@@ -668,7 +645,6 @@ flags:
     permission: ""
   vehicle-use:
     enabled: true
-    slot: 39
     enabled-material: MINECART
     disabled-material: GRAY_DYE
     name: "&aFahrzeuge benutzen"
@@ -681,7 +657,6 @@ flags:
     permission: ""
   vehicle-place:
     enabled: true
-    slot: 40
     enabled-material: OAK_BOAT
     disabled-material: GRAY_DYE
     name: "&aFahrzeuge platzieren"
@@ -694,7 +669,6 @@ flags:
     permission: ""
   vehicle-break:
     enabled: true
-    slot: 41
     enabled-material: RAIL
     disabled-material: GRAY_DYE
     name: "&aFahrzeuge abbauen"
@@ -707,7 +681,6 @@ flags:
     permission: ""
   hanging-place:
     enabled: true
-    slot: 43
     enabled-material: ITEM_FRAME
     disabled-material: GRAY_DYE
     name: "&aHängende Objekte platzieren"
@@ -720,7 +693,6 @@ flags:
     permission: ""
   hanging-break:
     enabled: true
-    slot: 44
     enabled-material: SHEARS
     disabled-material: GRAY_DYE
     name: "&aHängende Objekte abbauen"
@@ -733,7 +705,6 @@ flags:
     permission: ""
   misc-interact:
     enabled: true
-    slot: 45
     enabled-material: ARMOR_STAND
     disabled-material: GRAY_DYE
     name: "&aSonstige Objekte benutzen"
@@ -746,7 +717,6 @@ flags:
     permission: ""
   misc-place:
     enabled: true
-    slot: 46
     enabled-material: EGG
     disabled-material: GRAY_DYE
     name: "&aSonstige Objekte platzieren"
@@ -759,7 +729,6 @@ flags:
     permission: ""
   misc-break:
     enabled: true
-    slot: 47
     enabled-material: STONE_AXE
     disabled-material: GRAY_DYE
     name: "&aSonstige Objekte abbauen"
@@ -772,7 +741,6 @@ flags:
     permission: ""
   no-worldedit:
     enabled: true
-    slot: 48
     enabled-material: WOODEN_AXE
     disabled-material: GRAY_DYE
     name: "&aWorldEdit sperren"
@@ -785,8 +753,6 @@ flags:
     permission: ""
   hide-info:
     enabled: true
-    page: 2
-    slot: 22
     enabled-material: BOOK
     disabled-material: PAPER
     name: "&aPlot-Info verstecken"
@@ -799,8 +765,6 @@ flags:
     permission: ""
   server-plot:
     enabled: true
-    page: 2
-    slot: 23
     enabled-material: COMMAND_BLOCK
     disabled-material: GRAY_DYE
     name: "&aServer-Plot"
@@ -813,8 +777,6 @@ flags:
     permission: ""
   chat:
     enabled: true
-    page: 2
-    slot: 0
     enabled-material: WRITABLE_BOOK
     disabled-material: PAPER
     name: "&aPlot-Chat"
@@ -827,8 +789,6 @@ flags:
     permission: ""
   beacon-effects:
     enabled: true
-    page: 2
-    slot: 1
     enabled-material: BEACON
     disabled-material: GLASS
     name: "&aLeuchtfeuer-Effekte"
@@ -841,8 +801,6 @@ flags:
     permission: ""
   concrete-harden:
     enabled: true
-    page: 2
-    slot: 2
     enabled-material: WHITE_CONCRETE
     disabled-material: WHITE_CONCRETE_POWDER
     name: "&aBeton härtet aus"
@@ -855,8 +813,6 @@ flags:
     permission: ""
   coral-dry:
     enabled: true
-    page: 2
-    slot: 3
     enabled-material: DEAD_BRAIN_CORAL
     disabled-material: BRAIN_CORAL
     name: "&aKorallen trocknen"
@@ -869,8 +825,6 @@ flags:
     permission: ""
   crop-grow:
     enabled: true
-    page: 2
-    slot: 4
     enabled-material: WHEAT
     disabled-material: WHEAT_SEEDS
     name: "&aPflanzenwachstum"
@@ -883,8 +837,6 @@ flags:
     permission: ""
   copper-oxide:
     enabled: true
-    page: 2
-    slot: 5
     enabled-material: OXIDIZED_COPPER
     disabled-material: COPPER_BLOCK
     name: "&aKupfer oxidiert"
@@ -897,8 +849,6 @@ flags:
     permission: ""
   deny-portal-travel:
     enabled: true
-    page: 2
-    slot: 6
     enabled-material: CRYING_OBSIDIAN
     disabled-material: OBSIDIAN
     name: "&aPortalreisen sperren"
@@ -911,8 +861,6 @@ flags:
     permission: ""
   deny-portals:
     enabled: true
-    page: 2
-    slot: 7
     enabled-material: OBSIDIAN
     disabled-material: FLINT_AND_STEEL
     name: "&aPortale verhindern"
@@ -925,8 +873,6 @@ flags:
     permission: ""
   edit-sign:
     enabled: true
-    page: 2
-    slot: 8
     enabled-material: OAK_SIGN
     disabled-material: PAPER
     name: "&aSchilder bearbeiten"
@@ -939,8 +885,6 @@ flags:
     permission: ""
   entity-change-block:
     enabled: true
-    page: 2
-    slot: 9
     enabled-material: ENDERMAN_SPAWN_EGG
     disabled-material: GRAY_DYE
     name: "&aEntitys verändern Blöcke"
@@ -953,8 +897,6 @@ flags:
     permission: ""
   fishing:
     enabled: true
-    page: 2
-    slot: 10
     enabled-material: FISHING_ROD
     disabled-material: GRAY_DYE
     name: "&aAngeln"
@@ -967,8 +909,6 @@ flags:
     permission: ""
   keep-inventory:
     enabled: true
-    page: 2
-    slot: 11
     enabled-material: ENDER_CHEST
     disabled-material: CHEST
     name: "&aInventar behalten"
@@ -981,8 +921,6 @@ flags:
     permission: ""
   kelp-grow:
     enabled: true
-    page: 2
-    slot: 12
     enabled-material: KELP
     disabled-material: DRIED_KELP
     name: "&aSeetangwachstum"
@@ -995,8 +933,6 @@ flags:
     permission: ""
   leaf-decay:
     enabled: true
-    page: 2
-    slot: 13
     enabled-material: OAK_LEAVES
     disabled-material: STICK
     name: "&aBlätter zerfallen"
@@ -1009,8 +945,6 @@ flags:
     permission: ""
   lectern-read-book:
     enabled: true
-    page: 2
-    slot: 14
     enabled-material: LECTERN
     disabled-material: BOOK
     name: "&aLesepulte nutzen"
@@ -1023,8 +957,6 @@ flags:
     permission: ""
   prevent-creative-copy:
     enabled: true
-    page: 2
-    slot: 15
     enabled-material: WRITABLE_BOOK
     disabled-material: PAPER
     name: "&aKreativ-Kopieren sperren"
@@ -1037,8 +969,6 @@ flags:
     permission: ""
   projectiles:
     enabled: true
-    page: 2
-    slot: 16
     enabled-material: ARROW
     disabled-material: GRAY_DYE
     name: "&aProjektile"
@@ -1051,8 +981,6 @@ flags:
     permission: ""
   projectile-change-block:
     enabled: true
-    page: 2
-    slot: 17
     enabled-material: FIRE_CHARGE
     disabled-material: GRAY_DYE
     name: "&aProjektile verändern Blöcke"
@@ -1065,8 +993,6 @@ flags:
     permission: ""
   sculk-sensor-interact:
     enabled: true
-    page: 2
-    slot: 18
     enabled-material: SCULK_SENSOR
     disabled-material: GRAY_DYE
     name: "&aSculk-Sensoren"
@@ -1079,8 +1005,6 @@ flags:
     permission: ""
   tile-drop:
     enabled: true
-    page: 2
-    slot: 19
     enabled-material: DROPPER
     disabled-material: GRAY_DYE
     name: "&aBlock-Drops"
@@ -1093,8 +1017,6 @@ flags:
     permission: ""
   untrusted-visit:
     enabled: true
-    page: 2
-    slot: 20
     enabled-material: OAK_DOOR
     disabled-material: IRON_DOOR
     name: "&aUntrusted dürfen besuchen"
@@ -1107,8 +1029,6 @@ flags:
     permission: ""
   weaving-death-place:
     enabled: true
-    page: 2
-    slot: 21
     enabled-material: COBWEB
     disabled-material: GRAY_DYE
     name: "&aWeaving-Netze"
