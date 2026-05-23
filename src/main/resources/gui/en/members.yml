@@ -3,7 +3,7 @@
 # Management happens in the GUI. Only adding a player asks for the name through private chat input.
 # All buttons, decorations, lists, slots, materials, names, lore, and permissions can be adjusted here.
 
-file-version: 6
+file-version: 7
 
 title: "&8Members: {tab}"
 bedrock:
@@ -182,6 +182,7 @@ role-permission-list:
     container: {enabled: true, value: "container", material: CHEST, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aContainer", lore: ["&7Status: &f{status}", "&7For chests and storage access."], permission: ""}
     manage-members: {enabled: true, value: "manage-members", material: PLAYER_HEAD, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aManage Members", lore: ["&7Status: &f{status}", "&7Allows member management through roles."], permission: ""}
     manage-roles: {enabled: true, value: "manage-roles", material: WRITABLE_BOOK, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aManage Roles", lore: ["&7Status: &f{status}", "&7Allows role management through roles."], permission: ""}
+    flags: {enabled: true, value: "flags.*", material: REDSTONE_TORCH, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aChange Flags", lore: ["&7Status: &f{status}", "&7Allows changing all plot flags.", "&7Single rights can use flags.<flag>."], permission: ""}
     future: {enabled: true, value: "future", material: ENDER_EYE, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&bFuture Features", lore: ["&7Status: &f{status}", "&7Allows internal extra features."], permission: ""}
   buttons:
     previous: {enabled: true, slot: 45, material: ARROW, name: "&ePrevious Page", lore: ["&7Opens page {previous_page}."], commands: ["open-menu:role-permissions-list:{previous_page}:{role}"], close: false, permission: ""}

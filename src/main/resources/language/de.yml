@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 13
+file-version: 14
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -22,6 +22,8 @@ bedrock-form-failed: "&cDas Bedrock-Menü konnte nicht geöffnet werden."
 no-plot: "&cDu stehst auf keinem Plot."
 # Nachricht, wenn ein Spieler eine Flag nicht umschalten darf.
 flag-no-permission: "&cDu darfst diese Plot-Flag nicht ändern."
+# Nachricht, wenn ein Spieler die Flag auf diesem Plot nicht ändern darf.
+flag-no-plot-right: "&cDu darfst Flags nur auf deinem eigenen Plot ändern oder wenn dir eine Plotrolle dieses Recht gibt."
 # Nachricht nach dem Umschalten einer Flag. Platzhalter: {flag}, {status}
 flag-toggled: "&a{flag} &7ist jetzt {status}&7."
 # Nachricht, wenn Plotbackups deaktiviert sind.

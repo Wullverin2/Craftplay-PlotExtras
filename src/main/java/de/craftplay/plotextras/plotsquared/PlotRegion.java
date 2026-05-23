@@ -63,13 +63,17 @@ public final class PlotRegion {
         if (location == null || location.getWorld() == null) {
             return false;
         }
-        return worldName.equalsIgnoreCase(location.getWorld().getName())
-                && location.getBlockX() >= minX
-                && location.getBlockX() <= maxX
-                && location.getBlockY() >= minY
-                && location.getBlockY() <= maxY
-                && location.getBlockZ() >= minZ
-                && location.getBlockZ() <= maxZ;
+        return contains(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+    }
+
+    public boolean contains(final String worldName, final int x, final int y, final int z) {
+        return this.worldName.equalsIgnoreCase(worldName)
+                && x >= minX
+                && x <= maxX
+                && y >= minY
+                && y <= maxY
+                && z >= minZ
+                && z <= maxZ;
     }
 
     public PlotRegion withWorldBounds(final World world, final int fallbackMinY) {

@@ -54,6 +54,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -2621,6 +2622,9 @@ public final class PlotMenuManager implements Listener {
         }
         final boolean current = flagService.isFlagEnabled(player, flagEntry.getFlag());
         final boolean target = !current;
+        if (!canModifyCurrentPlotFlag(player, flagEntry.getFlag())) {
+            return;
+        }
         if (!flagService.hasTogglePermission(player, flagEntry.getFlag(), target)) {
             languageManager.send(player, "flag-no-permission");
             return;
@@ -3217,11 +3221,38 @@ public final class PlotMenuManager implements Listener {
     }
 
     private String currentPlotKey(final Player player) {
-        final java.util.Optional<PlotContext> context = flagService.currentPlotContext(player);
+        final Optional<PlotContext> context = flagService.currentPlotContext(player);
         if (!context.isPresent() || !context.get().isComplete()) {
             return "";
         }
         return context.get().getWorldName() + ";" + context.get().getPlotId();
+    }
+
+    private boolean canModifyCurrentPlotFlag(final Player player, final String flag) {
+        final Optional<PlotContext> context = flagService.currentPlotContext(player);
+        if (!context.isPresent() || !context.get().isComplete()) {
+            languageManager.send(player, "no-plot");
+            return false;
+        }
+        final PlotContext plot = context.get();
+        if (plot.getOwnerUuid() != null && plot.getOwnerUuid().equals(player.getUniqueId())) {
+            return true;
+        }
+        if (player.hasPermission("craftplayplotextras.flags.bypass")) {
+            return true;
+        }
+        final String normalizedFlag = flag == null ? "" : flag.trim().toLowerCase(Locale.ROOT);
+        if (normalizedFlag.isEmpty()) {
+            languageManager.send(player, "flag-no-plot-right");
+            return false;
+        }
+        if (roleService.hasRolePermission(player, "flags")
+                || roleService.hasRolePermission(player, "flags." + normalizedFlag)
+                || roleService.hasRolePermission(player, "flag." + normalizedFlag)) {
+            return true;
+        }
+        languageManager.send(player, "flag-no-plot-right");
+        return false;
     }
 
     private PlotRole roleByName(final Player player, final String roleName) {

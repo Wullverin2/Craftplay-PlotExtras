@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 12
+file-version: 13
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -115,6 +115,10 @@ permissions:
   craftplayplotextras.roles.manage:
     # Erlaubt das Verwalten eigener Plotrollen.
     description: Erlaubt das Verwalten von Plotrollen.
+    default: op
+  craftplayplotextras.flags.bypass:
+    # Erlaubt das Ändern von Plotflags auf fremden Plots über das Menü.
+    description: Erlaubt das Ändern von Plotflags auf fremden Plots über das Menü.
     default: op
   craftplayplotextras.future:
     # Erlaubt das Öffnen des Zukunftsfeature-Menüs.

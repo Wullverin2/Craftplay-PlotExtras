@@ -3,6 +3,7 @@ package de.craftplay.plotextras.extras;
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
 import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.plotsquared.PlotContext;
+import de.craftplay.plotextras.plotsquared.PlotRegion;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.util.Text;
 import org.bukkit.Bukkit;
@@ -167,12 +168,11 @@ public final class ExtrasService implements Listener {
         }
         final PlotContext context = optionalContext.get();
         if (requireOwnPlot && !player.hasPermission(bypassPlotPermission)
-                && context.getOwnerUuid() != null
-                && !context.getOwnerUuid().equals(player.getUniqueId())) {
+                && (context.getOwnerUuid() == null || !context.getOwnerUuid().equals(player.getUniqueId()))) {
             languageManager.send(player, "extras-worldedit-not-owner", contextPlaceholders(context));
             return;
         }
-        if (!context.getBounds().contains(location)) {
+        if (!isAllowedPlotBlock(context, location)) {
             languageManager.send(player, "extras-worldedit-outside-plot", contextPlaceholders(context));
             return;
         }
@@ -205,16 +205,21 @@ public final class ExtrasService implements Listener {
             languageManager.send(player, "extras-worldedit-different-world");
             return;
         }
-        if (!context.getBounds().contains(first) || !context.getBounds().contains(second)) {
+        if (!isAllowedPlotBlock(context, first) || !isAllowedPlotBlock(context, second)) {
             languageManager.send(player, "extras-worldedit-outside-plot", contextPlaceholders(context));
             return;
         }
 
-        final long blocks = volume(first, second);
-        if (blocks > maxSelectionBlocks) {
-            final Map<String, String> placeholders = placeholders(player, blocks, 0.0D, isOnCooldown(player.getUniqueId()), cooldownRemaining(player.getUniqueId()));
+        final long rawBlocks = volume(first, second);
+        if (rawBlocks > maxSelectionBlocks) {
+            final Map<String, String> placeholders = placeholders(player, rawBlocks, 0.0D, isOnCooldown(player.getUniqueId()), cooldownRemaining(player.getUniqueId()));
             placeholders.put("max_blocks", String.valueOf(maxSelectionBlocks));
             languageManager.send(player, "extras-worldedit-too-large", placeholders);
+            return;
+        }
+        final long blocks = allowedSelectionBlocks(first, second, context);
+        if (blocks < 0L) {
+            languageManager.send(player, "extras-worldedit-outside-plot", contextPlaceholders(context));
             return;
         }
         if (!isWorldEditAvailable()) {
@@ -350,6 +355,47 @@ public final class ExtrasService implements Listener {
             return Long.MAX_VALUE;
         }
         return area * depth;
+    }
+
+    private long allowedSelectionBlocks(final Location first, final Location second, final PlotContext context) {
+        if (first.getWorld() == null) {
+            return -1L;
+        }
+        final String worldName = first.getWorld().getName();
+        final int minX = Math.min(first.getBlockX(), second.getBlockX());
+        final int maxX = Math.max(first.getBlockX(), second.getBlockX());
+        final int minY = Math.min(first.getBlockY(), second.getBlockY());
+        final int maxY = Math.max(first.getBlockY(), second.getBlockY());
+        final int minZ = Math.min(first.getBlockZ(), second.getBlockZ());
+        final int maxZ = Math.max(first.getBlockZ(), second.getBlockZ());
+        long blocks = 0L;
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    if (!isAllowedPlotBlock(context, worldName, x, y, z)) {
+                        return -1L;
+                    }
+                    blocks++;
+                }
+            }
+        }
+        return blocks;
+    }
+
+    private boolean isAllowedPlotBlock(final PlotContext context, final Location location) {
+        if (location == null || location.getWorld() == null) {
+            return false;
+        }
+        return isAllowedPlotBlock(context, location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+    }
+
+    private boolean isAllowedPlotBlock(final PlotContext context, final String worldName, final int x, final int y, final int z) {
+        for (final PlotRegion region : context.getRegions()) {
+            if (region.contains(worldName, x, y, z)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isOnCooldown(final UUID playerUuid) {

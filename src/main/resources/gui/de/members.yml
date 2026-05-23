@@ -3,7 +3,7 @@
 # Die Verwaltung findet im GUI statt. Nur beim Hinzufügen eines Spielers wird der Name per privater Chat-Eingabe abgefragt.
 # Alle Buttons, Deko-Items, Listen, Slots, Materialien, Namen, Lore und Permissions können hier angepasst werden.
 
-file-version: 6
+file-version: 7
 
 title: "&8Mitglieder: {tab}"
 bedrock:
@@ -182,6 +182,7 @@ role-permission-list:
     container: {enabled: true, value: "container", material: CHEST, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aContainer", lore: ["&7Status: &f{status}", "&7Für Kisten und Lagerzugriff."], permission: ""}
     manage-members: {enabled: true, value: "manage-members", material: PLAYER_HEAD, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aMitglieder verwalten", lore: ["&7Status: &f{status}", "&7Erlaubt Mitgliederverwaltung über Rollen."], permission: ""}
     manage-roles: {enabled: true, value: "manage-roles", material: WRITABLE_BOOK, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aRollen verwalten", lore: ["&7Status: &f{status}", "&7Erlaubt Rollenverwaltung über Rollen."], permission: ""}
+    flags: {enabled: true, value: "flags.*", material: REDSTONE_TORCH, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aFlags ändern", lore: ["&7Status: &f{status}", "&7Erlaubt das Ändern aller Plotflags.", "&7Einzelrechte sind als flags.<flag> möglich."], permission: ""}
     future: {enabled: true, value: "future", material: ENDER_EYE, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&bZukunftsfunktionen", lore: ["&7Status: &f{status}", "&7Erlaubt interne Zusatzfunktionen."], permission: ""}
   buttons:
     previous: {enabled: true, slot: 45, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:role-permissions-list:{previous_page}:{role}"], close: false, permission: ""}
