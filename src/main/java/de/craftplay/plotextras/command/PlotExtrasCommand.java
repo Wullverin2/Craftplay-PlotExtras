@@ -9,8 +9,10 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
 
@@ -31,6 +33,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
     }
 
     public boolean execute(final CommandSender sender, final String[] args) {
+        if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
+            return version(sender);
+        }
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             return reload(sender);
         }
@@ -133,6 +138,17 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean version(final CommandSender sender) {
+        final List<String> authors = plugin.getDescription().getAuthors();
+        final String developer = authors == null || authors.isEmpty() ? "Craftplay" : String.join(", ", authors);
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("plugin", plugin.getDescription().getName());
+        placeholders.put("version", plugin.getDescription().getVersion());
+        placeholders.put("developer", developer == null || developer.trim().isEmpty() ? "Craftplay" : developer);
+        plugin.getLanguageManager().send(sender, "plugin-version", placeholders);
+        return true;
+    }
+
     private boolean reload(final CommandSender sender) {
         if (!sender.hasPermission("craftplayplotextras.admin")) {
             plugin.getLanguageManager().send(sender, "no-permission");
@@ -197,6 +213,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
 
         final String input = args[0].toLowerCase(Locale.ROOT);
         final List<String> completions = new ArrayList<>();
+        if ("version".startsWith(input)) {
+            completions.add("version");
+        }
         if (sender.hasPermission("craftplayplotextras.admin") && "reload".startsWith(input)) {
             completions.add("reload");
         }

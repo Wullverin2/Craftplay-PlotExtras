@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 17
+file-version: 18
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -12,6 +12,8 @@ no-permission: "&cYou do not have permission to do that."
 only-players: "&cOnly players can use this command."
 # Message shown after /plotextras reload.
 reloaded: "&aCraftplayPlotExtras has been reloaded."
+# Message shown after /cpe version. Placeholders: {plugin}, {version}, {developer}
+plugin-version: "&a{plugin} &7Version: &f{version} &8| &7Developer: &f{developer}"
 # Message shown when the GUI file is missing or could not be loaded.
 menu-missing: "&cThe plot menu could not be loaded. Please contact a staff member."
 # Message shown when a Java player tries to open a Bedrock-only form menu.
