@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 13
+file-version: 14
 
 # Befehle dieses Plugins.
 command:
@@ -24,16 +24,45 @@ language:
   default: de
 
 # Speicher-System für interne Plugin-Daten.
-# Schematics bleiben immer normale .schem-Dateien im Plotbackup-Ordner.
-# Alle anderen Plugin-Daten können hiermit in YAML, SQLite, MySQL/MariaDB, PostgreSQL, Redis oder MongoDB gespeichert werden.
+# Hier wird festgelegt, wo das Plugin seine eigenen Daten speichert:
+# Plotfavoriten, Tags, Kategorien, Reports, Rollen, Teamdaten, Zukunftsfeatures und Plotbackup-Metadaten.
+# Wichtig: Plot-Schematics bleiben immer normale .schem-Dateien im Plotbackup-Ordner.
+# Nur die Metadaten und sonstigen Plugin-Daten wechseln je nach storage.type den Speicherort.
+# Migration zwischen Speicherarten: /plotextras storage migrate <quelle> <ziel>
+# Beispiel: /plotextras storage migrate yaml mysql
 storage:
-  # Aktiver Speichertyp. Erlaubt: yaml, sqlite, mysql, mariadb, postgresql, redis, mongodb.
+  # ============================================================
+  # SPEICHERART AUSWÄHLEN
+  # ============================================================
+  # Dieser Wert entscheidet, welcher Speicher aktiv genutzt wird.
+  # Erlaubte Werte:
+  # yaml       = Standard. Speichert alles als .yml-Dateien im Pluginordner. Einfach und gut für kleine Server.
+  # sqlite     = Lokale Datenbankdatei. Gut, wenn viele Daten anfallen, aber kein externer Datenbankserver genutzt wird.
+  # mysql      = Externer MySQL-Server. Gut für Netzwerke oder mehrere Server.
+  # mariadb    = Externer MariaDB-Server. MySQL-kompatibel und oft auf Linux-Servern genutzt.
+  # postgresql = Externer PostgreSQL-Server. Stabil für große Datenmengen und langfristige Speicherung.
+  # redis      = Sehr schneller Key-Value-Speicher. Nur nutzen, wenn Redis mit Persistenz läuft.
+  # mongodb    = Dokumenten-Datenbank. Gut, wenn du MongoDB bereits im Netzwerk nutzt.
   type: yaml
+
+  # ============================================================
+  # GEMEINSAME STORAGE-EINSTELLUNGEN
+  # ============================================================
   # Tabellenpräfix für SQL-Datenbanken. Aus diesem Wert wird z. B. cpe_data.
+  # Betrifft nur sqlite, mysql, mariadb und postgresql.
   table-prefix: cpe_
+
+  # ============================================================
+  # SQLITE
+  # ============================================================
   sqlite:
     # SQLite-Datei relativ zum Pluginordner.
+    # Diese Datei enthält alle internen Plugin-Daten, wenn storage.type auf sqlite steht.
     file: storage/database.db
+
+  # ============================================================
+  # MYSQL
+  # ============================================================
   mysql:
     # Hostname oder IP des MySQL-Servers.
     host: 127.0.0.1
@@ -46,7 +75,12 @@ storage:
     # Passwort.
     password: ""
     # Wenn true, wird SSL in der JDBC-URL aktiviert.
+    # Nur aktivieren, wenn dein MySQL-Server SSL korrekt eingerichtet hat.
     use-ssl: false
+
+  # ============================================================
+  # MARIADB
+  # ============================================================
   mariadb:
     # Hostname oder IP des MariaDB-Servers.
     host: 127.0.0.1
@@ -59,7 +93,12 @@ storage:
     # Passwort.
     password: ""
     # Wenn true, wird SSL in der JDBC-URL aktiviert.
+    # Nur aktivieren, wenn dein MariaDB-Server SSL korrekt eingerichtet hat.
     use-ssl: false
+
+  # ============================================================
+  # POSTGRESQL
+  # ============================================================
   postgresql:
     # Hostname oder IP des PostgreSQL-Servers.
     host: 127.0.0.1
@@ -71,21 +110,32 @@ storage:
     username: postgres
     # Passwort.
     password: ""
+
+  # ============================================================
+  # REDIS
+  # ============================================================
   redis:
     # Hostname oder IP des Redis-Servers.
     host: 127.0.0.1
     # Port des Redis-Servers.
     port: 6379
     # Redis-Datenbanknummer.
+    # Üblich ist 0. Nutze andere Nummern nur, wenn du Redis bewusst trennen möchtest.
     database: 0
     # Passwort. Leer lassen, wenn Redis kein Passwort nutzt.
     password: ""
     # Timeout für Redis-Verbindungen in Millisekunden.
+    # Bei langsamen Netzwerken kann dieser Wert erhöht werden.
     timeout-millis: 2000
     # Schlüsselpräfix, damit mehrere Plugins dieselbe Redis-Instanz nutzen können.
     key-prefix: "craftplayplotextras:"
+
+  # ============================================================
+  # MONGODB
+  # ============================================================
   mongodb:
     # MongoDB-Verbindungs-URI.
+    # Hier können auch Benutzername, Passwort und Replica-Sets eingetragen werden.
     uri: "mongodb://127.0.0.1:27017"
     # Datenbankname.
     database: craftplay_plotextras
