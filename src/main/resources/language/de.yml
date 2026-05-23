@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 10
+file-version: 11
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -100,6 +100,37 @@ role-unassigned: "&e{member} wurde aus der Plotrolle entfernt."
 role-permission-added: "&aRecht &f{permission} &awurde zu &f{role} &ahinzugefügt."
 # Nachricht, wenn ein Recht entfernt wurde.
 role-permission-removed: "&eRecht &f{permission} &ewurde von &f{role} &eentfernt."
+# Text, wenn ein Rollenrecht aktiv ist.
+role-permission-active: "Aktiv"
+# Text, wenn ein Rollenrecht inaktiv ist.
+role-permission-inactive: "Inaktiv"
+# Text, wenn ein Spieler der geöffneten Rolle zugewiesen ist.
+role-assigned-yes: "Ja"
+# Text, wenn ein Spieler der geöffneten Rolle nicht zugewiesen ist.
+role-assigned-no: "Nein"
+
+# Anzeigenamen der PlotSquared-Mitgliedertypen.
+member-type-owner: "Besitzer"
+member-type-trusted: "Trusted"
+member-type-added: "Added"
+member-type-denied: "Denied"
+# Anzeigenamen der Filter in der Mitgliederliste.
+member-filter-all: "Alle"
+member-filter-trusted: "Trusted"
+member-filter-added: "Added"
+member-filter-denied: "Denied"
+# Anzeigename der Owner-Rolle in Mitgliederlisten.
+member-role-owner: "Owner"
+# Nachricht, wenn ein geschützter Owner-Eintrag angeklickt wird.
+member-owner-protected: "&cDer Besitzer-Eintrag von &f{member} &ckann nicht geändert werden."
+# Nachricht nach Beförderung zu Trusted.
+member-promoted: "&a{member} wurde zu Trusted befördert."
+# Nachricht nach Degradierung zu Added.
+member-demoted: "&e{member} wurde zu Added degradiert."
+# Nachricht nach dem Freigeben eines Denied-Spielers.
+member-allowed: "&a{member} darf das Plot wieder betreten."
+# Nachricht nach dem Entfernen eines Mitglieds.
+member-removed: "&e{member} wurde aus der Liste entfernt."
 
 # Nachricht, wenn ein Plot aus dem Meine-Plots-Menü nicht mehr gefunden wurde.
 myplots-plot-not-found: "&cDieser Plot wurde nicht gefunden oder gehört dir nicht mehr."

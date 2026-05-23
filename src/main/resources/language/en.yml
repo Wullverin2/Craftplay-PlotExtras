@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 10
+file-version: 11
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -100,6 +100,37 @@ role-unassigned: "&e{member} was removed from the plot role."
 role-permission-added: "&aRight &f{permission} &awas added to &f{role}&a."
 # Message shown when a right was removed.
 role-permission-removed: "&eRight &f{permission} &ewas removed from &f{role}&e."
+# Text when a role right is active.
+role-permission-active: "Active"
+# Text when a role right is inactive.
+role-permission-inactive: "Inactive"
+# Text when a player is assigned to the opened role.
+role-assigned-yes: "Yes"
+# Text when a player is not assigned to the opened role.
+role-assigned-no: "No"
+
+# Display names for PlotSquared member types.
+member-type-owner: "Owner"
+member-type-trusted: "Trusted"
+member-type-added: "Added"
+member-type-denied: "Denied"
+# Display names for filters in the member list.
+member-filter-all: "All"
+member-filter-trusted: "Trusted"
+member-filter-added: "Added"
+member-filter-denied: "Denied"
+# Display name of the owner role in member lists.
+member-role-owner: "Owner"
+# Message shown when a protected owner entry is clicked.
+member-owner-protected: "&cThe owner entry for &f{member} &ccannot be changed."
+# Message after promoting to trusted.
+member-promoted: "&a{member} was promoted to Trusted."
+# Message after demoting to added.
+member-demoted: "&e{member} was demoted to Added."
+# Message after allowing a denied player again.
+member-allowed: "&a{member} may enter the plot again."
+# Message after removing a member.
+member-removed: "&e{member} was removed from the list."
 
 # Message shown when a plot from the My Plots menu can no longer be found.
 myplots-plot-not-found: "&cThat plot was not found or is no longer yours."

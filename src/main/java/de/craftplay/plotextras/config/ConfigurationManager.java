@@ -276,6 +276,51 @@ public final class ConfigurationManager {
             existing.set("tabs.restore.buttons.manual.close", false);
             changed = true;
         }
+        if (resourcePath.replace('\\', '/').endsWith("/members.yml") && existingVersion < 5) {
+            final boolean english = resourcePath.replace('\\', '/').contains("/en/");
+            existing.set("tabs.overview.lore", english
+                    ? Arrays.asList("&7Opens GUI lists", "&7for members and roles.")
+                    : Arrays.asList("&7Öffnet die GUI-Listen", "&7für Mitglieder und Rollen."));
+            existing.set("tabs.overview.buttons.members.commands", Arrays.asList("open-menu:members-list:1:all"));
+            existing.set("tabs.overview.buttons.members.close", false);
+            existing.set("tabs.overview.buttons.trusted.commands", Arrays.asList("open-menu:members-list:1:trusted"));
+            existing.set("tabs.overview.buttons.trusted.close", false);
+            existing.set("tabs.overview.buttons.added.commands", Arrays.asList("open-menu:members-list:1:added"));
+            existing.set("tabs.overview.buttons.added.close", false);
+            existing.set("tabs.overview.buttons.denied.commands", Arrays.asList("open-menu:members-list:1:denied"));
+            existing.set("tabs.overview.buttons.denied.close", false);
+            existing.set("tabs.overview.buttons.online.commands", Arrays.asList("open-menu:members-list:1:all"));
+            existing.set("tabs.overview.buttons.online.close", false);
+            existing.set("tabs.remove.lore", english
+                    ? Arrays.asList("&7Removing and allowing", "&7runs through the GUI list.")
+                    : Arrays.asList("&7Entfernen und Freigeben", "&7läuft über die GUI-Liste."));
+            existing.set("tabs.remove.buttons.remove.commands", Arrays.asList("open-menu:members-list:1:all"));
+            existing.set("tabs.remove.buttons.remove.close", false);
+            existing.set("tabs.remove.buttons.untrust.commands", Arrays.asList("open-menu:members-list:1:trusted"));
+            existing.set("tabs.remove.buttons.untrust.close", false);
+            existing.set("tabs.remove.buttons.undeny.commands", Arrays.asList("open-menu:members-list:1:denied"));
+            existing.set("tabs.remove.buttons.undeny.close", false);
+            existing.set("tabs.roles.buttons.promote.commands", Arrays.asList("open-menu:members-list:1:added"));
+            existing.set("tabs.roles.buttons.promote.close", false);
+            existing.set("tabs.roles.buttons.demote.commands", Arrays.asList("open-menu:members-list:1:trusted"));
+            existing.set("tabs.roles.buttons.demote.close", false);
+            existing.set("tabs.roles.buttons.copy-role.commands", Arrays.asList("open-menu:roles-list:1"));
+            existing.set("tabs.roles.buttons.copy-role.close", false);
+            existing.set("tabs.roles.buttons.export-role.commands", Arrays.asList("open-menu:roles-list:1"));
+            existing.set("tabs.roles.buttons.export-role.close", false);
+            existing.set("tabs.roles.buttons.owner-info.commands", Arrays.asList());
+            existing.set("tabs.roles.buttons.owner-info.close", false);
+            existing.set("role-list.item.lore", english
+                    ? Arrays.asList("&7Rights: &f{permissions}", "&7Protected: &f{protected}", "", "&aLeft click: assign players", "&eRight click: manage rights", "&bShift-left: manage rights", "&cShift-right: delete role")
+                    : Arrays.asList("&7Rechte: &f{permissions}", "&7Geschützt: &f{protected}", "", "&aLinksklick: Spieler zuweisen", "&eRechtsklick: Rechte verwalten", "&bShift-Linksklick: Rechte verwalten", "&cShift-Rechtsklick: Rolle löschen"));
+            existing.set("role-list.buttons.create.enabled", false);
+            existing.set("role-list.buttons.create.commands", Arrays.asList());
+            existing.set("role-list.buttons.create.close", false);
+            existing.set("role-list.buttons.unassign.enabled", false);
+            existing.set("role-list.buttons.unassign.commands", Arrays.asList());
+            existing.set("role-list.buttons.unassign.close", false);
+            changed = true;
+        }
         if (existingVersion != defaultVersion) {
             existing.set("file-version", defaultVersion);
             changed = true;

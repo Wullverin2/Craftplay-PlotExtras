@@ -1,9 +1,9 @@
 # Deutsches Mitglieder- und Rollen-Menü.
-# Diese Datei steuert Added, Trusted, Denied, eigene Rollenprofile, temporäre Rechte und Entfernen.
-# Spieler werden per privater Chat-Eingabe abgefragt. Diese Eingabe ist für andere nicht sichtbar.
-# Eigene Rollen sind als Buttons/Profile konfigurierbar und können beliebige PlotSquared-Commands ausführen.
+# Diese Datei steuert alle Java-Inventare und Bedrock-Form-Einstiege für Mitglieder und Rollen.
+# Die Verwaltung findet im GUI statt. Nur beim Hinzufügen eines Spielers wird der Name per privater Chat-Eingabe abgefragt.
+# Alle Buttons, Deko-Items, Listen, Slots, Materialien, Namen, Lore und Permissions können hier angepasst werden.
 
-file-version: 4
+file-version: 5
 
 title: "&8Mitglieder: {tab}"
 bedrock:
@@ -26,67 +26,67 @@ tabs:
     slot: 10
     material: PLAYER_HEAD
     name: "&aÜbersicht"
-    lore: ["&7Öffnet PlotSquared-Listen", "&7für Rollen und Mitglieder."]
+    lore: ["&7Öffnet die GUI-Listen", "&7für Mitglieder und Rollen."]
     commands: ["open-menu:members:overview"]
     permission: ""
     buttons:
-      members: {enabled: true, slot: 20, material: PLAYER_HEAD, name: "&aMitgliederliste", lore: ["&7Zeigt alle Mitglieder über PlotSquared."], commands: ["plot members"], close: true, permission: "plots.info"}
-      trusted: {enabled: true, slot: 21, material: LIME_DYE, name: "&aTrusted anzeigen", lore: ["&7Zeigt vertraute Spieler."], commands: ["plot trusted"], close: true, permission: "plots.info"}
-      added: {enabled: true, slot: 22, material: PAPER, name: "&aAdded anzeigen", lore: ["&7Zeigt hinzugefügte Spieler."], commands: ["plot added"], close: true, permission: "plots.info"}
-      denied: {enabled: true, slot: 23, material: RED_DYE, name: "&cDenied anzeigen", lore: ["&7Zeigt ausgeschlossene Spieler."], commands: ["plot denied"], close: true, permission: "plots.info"}
-      online: {enabled: true, slot: 24, material: COMPASS, name: "&aOnline-Status", lore: ["&7Öffnet die PlotSquared-Info.", "&7Dort siehst du Besitzer und Mitglieder."], commands: ["plot info"], close: true, permission: "plots.info"}
+      members: {enabled: true, slot: 20, material: PLAYER_HEAD, name: "&aAlle Mitglieder", lore: ["&7Zeigt Besitzer, Trusted,", "&7Added und Denied im GUI."], commands: ["open-menu:members-list:1:all"], close: false, permission: "plots.info"}
+      trusted: {enabled: true, slot: 21, material: LIME_DYE, name: "&aTrusted", lore: ["&7Zeigt nur vertraute Spieler."], commands: ["open-menu:members-list:1:trusted"], close: false, permission: "plots.info"}
+      added: {enabled: true, slot: 22, material: PAPER, name: "&aAdded", lore: ["&7Zeigt nur hinzugefügte Spieler."], commands: ["open-menu:members-list:1:added"], close: false, permission: "plots.info"}
+      denied: {enabled: true, slot: 23, material: RED_DYE, name: "&cDenied", lore: ["&7Zeigt ausgeschlossene Spieler."], commands: ["open-menu:members-list:1:denied"], close: false, permission: "plots.info"}
+      roles: {enabled: true, slot: 24, material: WRITABLE_BOOK, name: "&aRollen verwalten", lore: ["&7Öffnet die Rollenliste", "&7für dieses Plot."], commands: ["open-menu:roles-list:1"], close: false, permission: ""}
   add:
     enabled: true
     slot: 12
     material: EMERALD
     name: "&aSpieler hinzufügen"
-    lore: ["&7Wähle eine Rolle und gib", "&7danach den Spielernamen ein."]
+    lore: ["&7Wähle eine Art und gib", "&7danach den Spielernamen ein."]
     commands: ["open-menu:members:add"]
     permission: ""
     buttons:
-      added: {enabled: true, slot: 20, material: PAPER, name: "&aAls Added hinzufügen", lore: ["&7Darf bauen, wenn Plotregeln es erlauben."], commands: ["chat-input:chat-member-player:plot add {input}"], close: true, permission: "plots.add"}
-      trusted: {enabled: true, slot: 21, material: LIME_DYE, name: "&aAls Trusted hinzufügen", lore: ["&7Vertraute Spieler erhalten mehr Zugriff."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
-      denied: {enabled: true, slot: 22, material: RED_DYE, name: "&cSpieler denyen", lore: ["&7Spieler vom Plot ausschließen."], commands: ["chat-input:chat-member-player:plot deny {input}"], close: true, permission: "plots.deny"}
-      helper: {enabled: true, slot: 23, material: IRON_PICKAXE, name: "&aRolle Helper", lore: ["&7Beispiel für eine eigene Rolle.", "&7Standard: Plot add."], commands: ["chat-input:chat-member-player:plot add {input}"], close: true, permission: "plots.add"}
-      temp: {enabled: true, slot: 24, material: CLOCK, name: "&eTemporäre Rechte", lore: ["&7Serverabhängiger Beispielbutton.", "&7Command frei anpassbar."], commands: ["chat-input:chat-member-player:plot add {input}"], close: true, permission: "plots.add"}
+      added: {enabled: true, slot: 20, material: PAPER, name: "&aAls Added hinzufügen", lore: ["&7Fragt nur den Namen ab", "&7und führt dann Plot add aus."], commands: ["chat-input:chat-member-player:plot add {input}"], close: true, permission: "plots.add"}
+      trusted: {enabled: true, slot: 21, material: LIME_DYE, name: "&aAls Trusted hinzufügen", lore: ["&7Fragt nur den Namen ab", "&7und vertraut den Spieler."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
+      denied: {enabled: true, slot: 22, material: RED_DYE, name: "&cSpieler ausschließen", lore: ["&7Fragt nur den Namen ab", "&7und sperrt den Spieler vom Plot."], commands: ["chat-input:chat-member-player:plot deny {input}"], close: true, permission: "plots.deny"}
+      helper: {enabled: true, slot: 23, material: IRON_PICKAXE, name: "&aBeispiel: Helper", lore: ["&7Eigener Add-Button.", "&7Befehl frei anpassbar."], commands: ["chat-input:chat-member-player:plot add {input}"], close: true, permission: "plots.add"}
+      temp: {enabled: true, slot: 24, material: CLOCK, name: "&eTemporäre Rechte", lore: ["&7Serverabhängiger Beispielbutton.", "&7Befehl frei anpassbar."], commands: ["chat-input:chat-member-player:plot add {input}"], close: true, permission: "plots.add"}
   remove:
     enabled: true
     slot: 14
     material: REDSTONE_BLOCK
     name: "&cEntfernen"
-    lore: ["&7Untrust, Remove und Undeny", "&7per privater Eingabe."]
+    lore: ["&7Entfernen und Freigeben", "&7läuft über die GUI-Liste."]
     commands: ["open-menu:members:remove"]
     permission: ""
     buttons:
-      remove: {enabled: true, slot: 20, material: BARRIER, name: "&cVom Plot entfernen", lore: ["&7Entfernt Added/Trusted."], commands: ["chat-input:chat-member-player:plot remove {input}"], close: true, permission: "plots.remove"}
-      untrust: {enabled: true, slot: 21, material: GRAY_DYE, name: "&eTrusted entfernen", lore: ["&7Entfernt Trust-Rechte."], commands: ["chat-input:chat-member-player:plot untrust {input}"], close: true, permission: "plots.trust"}
-      undeny: {enabled: true, slot: 22, material: LIME_DYE, name: "&aDeny entfernen", lore: ["&7Hebt Deny wieder auf."], commands: ["chat-input:chat-member-player:plot undeny {input}"], close: true, permission: "plots.deny"}
-      clear-denied: {enabled: true, slot: 24, material: CAULDRON, name: "&cDenied-Liste leeren", lore: ["&7Gefährlicher Command, wenn gewünscht anpassen."], commands: ["plot undeny *"], close: true, permission: "plots.deny"}
+      all: {enabled: true, slot: 20, material: PLAYER_HEAD, name: "&aMitgliederliste", lore: ["&7Shift-Rechtsklick auf einen", "&7Eintrag entfernt ihn passend."], commands: ["open-menu:members-list:1:all"], close: false, permission: "plots.info"}
+      trusted: {enabled: true, slot: 21, material: GRAY_DYE, name: "&eTrusted entfernen", lore: ["&7Öffnet die Trusted-Liste."], commands: ["open-menu:members-list:1:trusted"], close: false, permission: "plots.trust"}
+      added: {enabled: true, slot: 22, material: BARRIER, name: "&cAdded entfernen", lore: ["&7Öffnet die Added-Liste."], commands: ["open-menu:members-list:1:added"], close: false, permission: "plots.remove"}
+      denied: {enabled: true, slot: 23, material: LIME_DYE, name: "&aDeny entfernen", lore: ["&7Öffnet die Denied-Liste."], commands: ["open-menu:members-list:1:denied"], close: false, permission: "plots.deny"}
+      clear-denied: {enabled: true, slot: 24, material: CAULDRON, name: "&cDenied-Liste leeren", lore: ["&7Optionaler Direktbutton.", "&7Bei Bedarf deaktivieren."], commands: ["plot undeny *"], close: true, permission: "plots.deny"}
   roles:
     enabled: true
     slot: 16
     material: WRITABLE_BOOK
     name: "&aRollen & Rechte"
-    lore: ["&7Befördern, degradieren,", "&7kopieren und exportieren."]
+    lore: ["&7Rollen, Rechte und", "&7Zuweisungen im GUI."]
     commands: ["open-menu:members:roles"]
     permission: ""
     buttons:
-      open-roles: {enabled: true, slot: 18, material: CHEST, name: "&aRollen verwalten", lore: ["&7Öffnet die gespeicherten", "&7Plotrollen dieses Plots."], commands: ["open-menu:roles-list:1"], close: false, permission: ""}
-      promote: {enabled: true, slot: 19, material: LIME_DYE, name: "&aBefördern zu Trusted", lore: ["&7Fragt Spieler ab und trustet ihn."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
-      demote: {enabled: true, slot: 20, material: ORANGE_DYE, name: "&eDegradieren zu Added", lore: ["&7Entfernt Trust und fügt Added hinzu."], commands: ["chat-input:chat-member-player:plot untrust {input}"], close: true, permission: "plots.trust"}
-      copy-role: {enabled: true, slot: 22, material: BOOK, name: "&aRolle kopieren", lore: ["&7Beispielbutton für externe Rollenplugins.", "&7Command frei anpassbar."], commands: ["plot members"], close: true, permission: "plots.info"}
-      export-role: {enabled: true, slot: 23, material: CHEST, name: "&aRollen exportieren", lore: ["&7Zeigt Mitgliederlisten als Exportbasis."], commands: ["plot members"], close: true, permission: "plots.info"}
-      owner-info: {enabled: true, slot: 25, material: GOLD_BLOCK, name: "&6Owner", lore: ["&7Owner ist PlotSquared-Besitzer.", "&7Diese Rolle wird nicht entfernt."], commands: ["plot info"], close: true, permission: "plots.info"}
+      open-roles: {enabled: true, slot: 18, material: CHEST, name: "&aRollenliste", lore: ["&7Öffnet alle gespeicherten", "&7Plotrollen dieses Plots."], commands: ["open-menu:roles-list:1"], close: false, permission: ""}
+      promote: {enabled: true, slot: 19, material: LIME_DYE, name: "&aBefördern", lore: ["&7Öffnet Added-Spieler.", "&7Klick: zu Trusted befördern."], commands: ["open-menu:members-list:1:added"], close: false, permission: "plots.trust"}
+      demote: {enabled: true, slot: 20, material: ORANGE_DYE, name: "&eDegradieren", lore: ["&7Öffnet Trusted-Spieler.", "&7Klick: zu Added degradieren."], commands: ["open-menu:members-list:1:trusted"], close: false, permission: "plots.trust"}
+      assign-role: {enabled: true, slot: 22, material: NAME_TAG, name: "&aRolle zuweisen", lore: ["&7Öffne eine Rolle und", "&7weise Spieler per Klick zu."], commands: ["open-menu:roles-list:1"], close: false, permission: ""}
+      role-rights: {enabled: true, slot: 23, material: ENCHANTED_BOOK, name: "&bRollenrechte", lore: ["&7Rechtsklick auf eine Rolle", "&7öffnet die Rechte-Liste."], commands: ["open-menu:roles-list:1"], close: false, permission: ""}
+      owner-info: {enabled: true, slot: 25, material: GOLD_BLOCK, name: "&6Owner", lore: ["&7Owner ist der PlotSquared-Besitzer.", "&7Diese Rolle wird nicht entfernt."], commands: [], close: false, permission: "plots.info"}
 
 role-list:
+  # Liste der Plotrollen. Rollennamen werden aus vorkonfigurierten Buttons erstellt, damit keine Chat-Eingabe nötig ist.
   title: "&8Plotrollen &7- Seite {page}"
   size: 54
   filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
   slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25]
   item:
-    # Wenn false, werden die klickbaren Rollen-Einträge ausgeblendet.
     enabled: true
-    # Optional: Permission, damit Rollen-Einträge sichtbar und anklickbar sind.
     permission: ""
     material: WRITABLE_BOOK
     name: "&a{role}"
@@ -95,15 +95,92 @@ role-list:
       - "&7Geschützt: &f{protected}"
       - ""
       - "&aLinksklick: Spieler zuweisen"
-      - "&eRechtsklick: Recht hinzufügen"
-      - "&bShift-Linksklick: Recht entfernen"
+      - "&eRechtsklick: Rechte verwalten"
+      - "&bShift-Linksklick: Rechte verwalten"
       - "&cShift-Rechtsklick: Rolle löschen"
   buttons:
-    create: {enabled: true, slot: 45, material: EMERALD, name: "&aRolle erstellen", lore: ["&7Fragt den Rollennamen im Chat ab."], commands: ["chat-input:chat-role-name:role:create:{input}"], close: true, permission: ""}
-    unassign: {enabled: true, slot: 46, material: BARRIER, name: "&cSpieler aus Rolle entfernen", lore: ["&7Fragt den Spielernamen ab."], commands: ["chat-input:chat-member-player:role:unassign:{input}"], close: true, permission: ""}
+    create-helper: {enabled: true, slot: 45, material: EMERALD, name: "&aRolle Helper erstellen", lore: ["&7Erstellt die Rolle Helper.", "&7Name in der YAML änderbar."], commands: ["role:create:Helper", "open-menu:roles-list:{page}"], close: false, permission: ""}
+    create-builder: {enabled: true, slot: 46, material: BRICKS, name: "&aRolle Builder erstellen", lore: ["&7Erstellt die Rolle Builder.", "&7Weitere Rollen als Buttons ergänzen."], commands: ["role:create:Builder", "open-menu:roles-list:{page}"], close: false, permission: ""}
+    create-friend: {enabled: true, slot: 47, material: SUNFLOWER, name: "&aRolle Freund erstellen", lore: ["&7Erstellt die Rolle Freund.", "&7Weitere Vorlagen sind möglich."], commands: ["role:create:Freund", "open-menu:roles-list:{page}"], close: false, permission: ""}
     previous: {enabled: true, slot: 48, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:roles-list:{previous_page}"], close: false, permission: ""}
     next: {enabled: true, slot: 50, material: ARROW, name: "&eNächste Seite", lore: ["&7Öffnet Seite {next_page}."], commands: ["open-menu:roles-list:{next_page}"], close: false, permission: ""}
     back: {enabled: true, slot: 49, material: OAK_DOOR, name: "&eZurück", lore: ["&7Zurück zum Mitglieder-Menü."], commands: ["open-menu:members:roles"], close: false, permission: ""}
     close: {enabled: true, slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
   decorations:
-    frame: {enabled: true, slot: [0, 8, 9, 17, 18, 26, 27, 35, 36, 44, 47, 51, 52], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+    frame: {enabled: true, slot: [0, 8, 9, 17, 18, 26, 27, 35, 36, 44, 51, 52], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+
+member-list:
+  # Dynamische PlotSquared-Mitgliederliste. Klicks ändern Added, Trusted und Denied direkt im GUI.
+  title: "&8Mitglieder &7- {filter_name} &7- Seite {page}"
+  size: 54
+  filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+  slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+  item:
+    enabled: true
+    permission: ""
+    material: "PLAYER_HEAD {member}"
+    name: "&a{member}"
+    lore:
+      - "&7Typ: &f{type}"
+      - "&7Rolle: &f{role}"
+      - ""
+      - "&aKlick: befördern/degradieren/freigeben"
+      - "&cShift-Rechtsklick: entfernen"
+      - "&7Owner ist geschützt."
+  buttons:
+    all: {enabled: true, slot: 45, material: PLAYER_HEAD, name: "&aAlle", lore: ["&7Zeigt alle Einträge."], commands: ["open-menu:members-list:1:all"], close: false, permission: "plots.info"}
+    trusted: {enabled: true, slot: 46, material: LIME_DYE, name: "&aTrusted", lore: ["&7Zeigt Trusted."], commands: ["open-menu:members-list:1:trusted"], close: false, permission: "plots.info"}
+    added: {enabled: true, slot: 47, material: PAPER, name: "&aAdded", lore: ["&7Zeigt Added."], commands: ["open-menu:members-list:1:added"], close: false, permission: "plots.info"}
+    denied: {enabled: true, slot: 48, material: RED_DYE, name: "&cDenied", lore: ["&7Zeigt Denied."], commands: ["open-menu:members-list:1:denied"], close: false, permission: "plots.info"}
+    previous: {enabled: true, slot: 49, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:members-list:{previous_page}:{filter}"], close: false, permission: ""}
+    next: {enabled: true, slot: 50, material: ARROW, name: "&eNächste Seite", lore: ["&7Öffnet Seite {next_page}."], commands: ["open-menu:members-list:{next_page}:{filter}"], close: false, permission: ""}
+    back: {enabled: true, slot: 52, material: OAK_DOOR, name: "&eZurück", lore: ["&7Zurück zum Mitglieder-Menü."], commands: ["open-menu:members:overview"], close: false, permission: ""}
+    close: {enabled: true, slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+  decorations:
+    frame: {enabled: true, slot: [0, 8, 9, 17, 18, 26, 27, 35, 36, 44, 51], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+
+role-member-list:
+  # Weist vorhandene PlotSquared-Mitglieder einer eigenen Rolle zu oder entfernt die Zuweisung wieder.
+  title: "&8Rolle {role} &7- Mitglieder"
+  size: 54
+  filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+  slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+  item:
+    enabled: true
+    permission: ""
+    material: "PLAYER_HEAD {member}"
+    name: "&a{member}"
+    lore:
+      - "&7PlotSquared-Typ: &f{type}"
+      - "&7Aktuelle Rolle: &f{current_role}"
+      - "&7Zielrolle: &f{role}"
+      - "&7Zugewiesen: &f{assigned}"
+      - ""
+      - "&aLinksklick: dieser Rolle zuweisen"
+      - "&cRechtsklick: aus eigener Rolle entfernen"
+  buttons:
+    previous: {enabled: true, slot: 45, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:role-members-list:{previous_page}:{role}"], close: false, permission: ""}
+    next: {enabled: true, slot: 53, material: ARROW, name: "&eNächste Seite", lore: ["&7Öffnet Seite {next_page}."], commands: ["open-menu:role-members-list:{next_page}:{role}"], close: false, permission: ""}
+    back: {enabled: true, slot: 49, material: OAK_DOOR, name: "&eZurück", lore: ["&7Zurück zur Rollenliste."], commands: ["open-menu:roles-list:1"], close: false, permission: ""}
+  decorations:
+    frame: {enabled: true, slot: [0, 8, 9, 17, 18, 26, 27, 35, 36, 44, 46, 47, 48, 50, 51, 52], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+
+role-permission-list:
+  # Rechte-Vorlagen für Rollen. Ein Klick schaltet das jeweilige Recht für die geöffnete Rolle um.
+  title: "&8Rechte: {role} &7- Seite {page}"
+  size: 54
+  filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+  slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25]
+  permissions:
+    build: {enabled: true, value: "build", material: BRICKS, active-material: LIME_CONCRETE, inactive-material: GRAY_CONCRETE, name: "&aBauen", lore: ["&7Status: &f{status}", "&7Erlaubt rollenbasierte Baurechte."], permission: ""}
+    interact: {enabled: true, value: "interact", material: LEVER, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aInteragieren", lore: ["&7Status: &f{status}", "&7Für Schalter, Türen und ähnliche Aktionen."], permission: ""}
+    container: {enabled: true, value: "container", material: CHEST, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aContainer", lore: ["&7Status: &f{status}", "&7Für Kisten und Lagerzugriff."], permission: ""}
+    manage-members: {enabled: true, value: "manage-members", material: PLAYER_HEAD, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aMitglieder verwalten", lore: ["&7Status: &f{status}", "&7Erlaubt Mitgliederverwaltung über Rollen."], permission: ""}
+    manage-roles: {enabled: true, value: "manage-roles", material: WRITABLE_BOOK, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&aRollen verwalten", lore: ["&7Status: &f{status}", "&7Erlaubt Rollenverwaltung über Rollen."], permission: ""}
+    future: {enabled: true, value: "future", material: ENDER_EYE, active-material: LIME_DYE, inactive-material: GRAY_DYE, name: "&bZukunftsfunktionen", lore: ["&7Status: &f{status}", "&7Erlaubt interne Zusatzfunktionen."], permission: ""}
+  buttons:
+    previous: {enabled: true, slot: 45, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:role-permissions-list:{previous_page}:{role}"], close: false, permission: ""}
+    next: {enabled: true, slot: 53, material: ARROW, name: "&eNächste Seite", lore: ["&7Öffnet Seite {next_page}."], commands: ["open-menu:role-permissions-list:{next_page}:{role}"], close: false, permission: ""}
+    back: {enabled: true, slot: 49, material: OAK_DOOR, name: "&eZurück", lore: ["&7Zurück zur Rollenliste."], commands: ["open-menu:roles-list:1"], close: false, permission: ""}
+  decorations:
+    frame: {enabled: true, slot: [0, 8, 9, 17, 18, 26, 27, 35, 36, 44, 46, 47, 48, 50, 51, 52], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}

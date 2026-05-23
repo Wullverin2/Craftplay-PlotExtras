@@ -11,6 +11,9 @@ import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.myplots.PlotDataStore;
 import de.craftplay.plotextras.myplots.PlotMetadata;
 import de.craftplay.plotextras.plotsquared.OwnedPlot;
+import de.craftplay.plotextras.plotsquared.PlotContext;
+import de.craftplay.plotextras.plotsquared.PlotMemberEntry;
+import de.craftplay.plotextras.plotsquared.PlotMemberType;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
 import de.craftplay.plotextras.reports.PlotReport;
@@ -90,6 +93,13 @@ public final class PlotMenuManager implements Listener {
     private final Map<Integer, MenuButton> reportListDecorationsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> roleListButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> roleListDecorationsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> memberListButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> memberListDecorationsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> roleMemberListButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> roleMemberListDecorationsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> rolePermissionListButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> rolePermissionListDecorationsBySlot = new HashMap<>();
+    private final List<RolePermissionTemplate> rolePermissionTemplates = new ArrayList<>();
 
     private String mainTitle;
     private int mainSize;
@@ -170,6 +180,32 @@ public final class PlotMenuManager implements Listener {
     private List<String> roleListItemLore;
     private boolean roleListItemEnabled;
     private String roleListItemPermission;
+    private String memberListTitle;
+    private int memberListSize;
+    private ItemStack memberListFiller;
+    private List<Integer> memberListSlots;
+    private Material memberListItemMaterial;
+    private String memberListItemHeadDatabaseId;
+    private String memberListItemSkullOwner;
+    private String memberListItemName;
+    private List<String> memberListItemLore;
+    private boolean memberListItemEnabled;
+    private String memberListItemPermission;
+    private String roleMemberListTitle;
+    private int roleMemberListSize;
+    private ItemStack roleMemberListFiller;
+    private List<Integer> roleMemberListSlots;
+    private Material roleMemberListItemMaterial;
+    private String roleMemberListItemHeadDatabaseId;
+    private String roleMemberListItemSkullOwner;
+    private String roleMemberListItemName;
+    private List<String> roleMemberListItemLore;
+    private boolean roleMemberListItemEnabled;
+    private String roleMemberListItemPermission;
+    private String rolePermissionListTitle;
+    private int rolePermissionListSize;
+    private ItemStack rolePermissionListFiller;
+    private List<Integer> rolePermissionListSlots;
 
     public PlotMenuManager(
             final CraftplayPlotExtrasPlugin plugin,
@@ -221,6 +257,13 @@ public final class PlotMenuManager implements Listener {
         reportListDecorationsBySlot.clear();
         roleListButtonsBySlot.clear();
         roleListDecorationsBySlot.clear();
+        memberListButtonsBySlot.clear();
+        memberListDecorationsBySlot.clear();
+        roleMemberListButtonsBySlot.clear();
+        roleMemberListDecorationsBySlot.clear();
+        rolePermissionListButtonsBySlot.clear();
+        rolePermissionListDecorationsBySlot.clear();
+        rolePermissionTemplates.clear();
         mainLoaded = false;
         bedrockMainLoaded = false;
         myPlotsLoaded = false;
@@ -1177,6 +1220,143 @@ public final class PlotMenuManager implements Listener {
         player.openInventory(inventory);
     }
 
+    public void openMemberListMenu(final Player player, final int page, final String filter) {
+        if (!flagService.isOnPlot(player)) {
+            languageManager.send(player, "no-plot");
+            return;
+        }
+        final String normalizedFilter = normalizeMemberFilter(filter);
+        final List<PlotMemberEntry> members = filteredPlotMembers(player, normalizedFilter);
+        final int pageSize = Math.max(1, memberListSlots.size());
+        final int maxPage = Math.max(1, (int) Math.ceil(members.size() / (double) pageSize));
+        final int actualPage = Math.min(Math.max(1, page), maxPage);
+        final Map<String, String> placeholders = memberListPlaceholders(actualPage, maxPage, normalizedFilter, members.size());
+
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("members-list", actualPage, normalizedFilter),
+                memberListSize,
+                Text.color(placeholderHook.apply(player, applyPlaceholders(memberListTitle, placeholders)))
+        );
+        if (memberListFiller != null) {
+            for (int slot = 0; slot < memberListSize; slot++) {
+                inventory.setItem(slot, memberListFiller);
+            }
+        }
+        for (final MenuButton decoration : memberListDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
+            }
+        }
+        for (final MenuButton button : memberListButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, placeholders));
+            }
+        }
+
+        final String plotKey = currentPlotKey(player);
+        final int start = (actualPage - 1) * pageSize;
+        final int end = Math.min(members.size(), start + pageSize);
+        if (configuredItemVisible(player, memberListItemEnabled, memberListItemPermission)) {
+            for (int index = start; index < end; index++) {
+                inventory.setItem(memberListSlots.get(index - start), createMemberListItem(player, members.get(index), plotKey, normalizedFilter, actualPage));
+            }
+        }
+        player.openInventory(inventory);
+    }
+
+    public void openRoleMemberListMenu(final Player player, final int page, final String roleName) {
+        if (!roleService.canManage(player)) {
+            return;
+        }
+        final PlotRole role = roleByName(player, roleName);
+        if (role == null) {
+            languageManager.send(player, "role-not-found", rolePlaceholder(roleName));
+            return;
+        }
+        final List<PlotMemberEntry> members = filteredPlotMembers(player, "all");
+        final int pageSize = Math.max(1, roleMemberListSlots.size());
+        final int maxPage = Math.max(1, (int) Math.ceil(members.size() / (double) pageSize));
+        final int actualPage = Math.min(Math.max(1, page), maxPage);
+        final Map<String, String> placeholders = roleListPlaceholders(actualPage, maxPage, role.getName(), members.size());
+
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("role-members-list", actualPage, role.getName()),
+                roleMemberListSize,
+                Text.color(placeholderHook.apply(player, applyPlaceholders(roleMemberListTitle, placeholders)))
+        );
+        if (roleMemberListFiller != null) {
+            for (int slot = 0; slot < roleMemberListSize; slot++) {
+                inventory.setItem(slot, roleMemberListFiller);
+            }
+        }
+        for (final MenuButton decoration : roleMemberListDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
+            }
+        }
+        for (final MenuButton button : roleMemberListButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, placeholders));
+            }
+        }
+
+        final String plotKey = currentPlotKey(player);
+        final int start = (actualPage - 1) * pageSize;
+        final int end = Math.min(members.size(), start + pageSize);
+        if (configuredItemVisible(player, roleMemberListItemEnabled, roleMemberListItemPermission)) {
+            for (int index = start; index < end; index++) {
+                inventory.setItem(roleMemberListSlots.get(index - start), createRoleMemberListItem(player, members.get(index), role.getName(), plotKey, actualPage));
+            }
+        }
+        player.openInventory(inventory);
+    }
+
+    public void openRolePermissionListMenu(final Player player, final int page, final String roleName) {
+        if (!roleService.canManage(player)) {
+            return;
+        }
+        final PlotRole role = roleByName(player, roleName);
+        if (role == null) {
+            languageManager.send(player, "role-not-found", rolePlaceholder(roleName));
+            return;
+        }
+        final int pageSize = Math.max(1, rolePermissionListSlots.size());
+        final int maxPage = Math.max(1, (int) Math.ceil(rolePermissionTemplates.size() / (double) pageSize));
+        final int actualPage = Math.min(Math.max(1, page), maxPage);
+        final Map<String, String> placeholders = roleListPlaceholders(actualPage, maxPage, role.getName(), rolePermissionTemplates.size());
+
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("role-permissions-list", actualPage, role.getName()),
+                rolePermissionListSize,
+                Text.color(placeholderHook.apply(player, applyPlaceholders(rolePermissionListTitle, placeholders)))
+        );
+        if (rolePermissionListFiller != null) {
+            for (int slot = 0; slot < rolePermissionListSize; slot++) {
+                inventory.setItem(slot, rolePermissionListFiller);
+            }
+        }
+        for (final MenuButton decoration : rolePermissionListDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
+            }
+        }
+        for (final MenuButton button : rolePermissionListButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, placeholders));
+            }
+        }
+
+        final int start = (actualPage - 1) * pageSize;
+        final int end = Math.min(rolePermissionTemplates.size(), start + pageSize);
+        for (int index = start; index < end; index++) {
+            final RolePermissionTemplate template = rolePermissionTemplates.get(index);
+            if (configuredItemVisible(player, true, template.getPermission())) {
+                inventory.setItem(rolePermissionListSlots.get(index - start), createRolePermissionItem(player, role, template, actualPage));
+            }
+        }
+        player.openInventory(inventory);
+    }
+
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) {
@@ -1225,8 +1405,20 @@ public final class PlotMenuManager implements Listener {
             handleReportListClick(player, holder.getPage(), holder.getTabId(), event.getSlot(), event.getClick());
             return;
         }
+        if ("members-list".equalsIgnoreCase(holder.getMenuId())) {
+            handleMemberListClick(player, holder.getPage(), holder.getTabId(), event.getSlot(), event.getClick());
+            return;
+        }
         if ("roles-list".equalsIgnoreCase(holder.getMenuId())) {
             handleRoleListClick(player, holder.getPage(), event.getSlot(), event.getClick());
+            return;
+        }
+        if ("role-members-list".equalsIgnoreCase(holder.getMenuId())) {
+            handleRoleMemberListClick(player, holder.getPage(), holder.getTabId(), event.getSlot(), event.getClick());
+            return;
+        }
+        if ("role-permissions-list".equalsIgnoreCase(holder.getMenuId())) {
+            handleRolePermissionListClick(player, holder.getPage(), holder.getTabId(), event.getSlot());
             return;
         }
 
@@ -1415,6 +1607,84 @@ public final class PlotMenuManager implements Listener {
         roleListItemPermission = membersConfig.getString("role-list.item.permission", "");
         loadButtonsFromSection(membersConfig, "role-list.buttons", roleListButtonsBySlot, roleListSize);
         loadDecorationsFromSection(membersConfig, "role-list.decorations", roleListDecorationsBySlot, roleListSize);
+
+        memberListTitle = membersConfig.getString("member-list.title", "&8Mitglieder &7- {filter} - Seite {page}");
+        memberListSize = normalizeSize(membersConfig.getInt("member-list.size", 54));
+        memberListFiller = createFiller(membersConfig, "member-list.filler");
+        memberListSlots = membersConfig.getIntegerList("member-list.slots");
+        if (memberListSlots.isEmpty()) {
+            memberListSlots = defaultListSlots(memberListSize);
+        }
+        final MaterialDefinition memberItemDefinition = materialDefinition(membersConfig, "member-list.item.", Material.PLAYER_HEAD);
+        memberListItemMaterial = memberItemDefinition.getMaterial();
+        memberListItemHeadDatabaseId = headDatabaseId(membersConfig, "member-list.item.");
+        memberListItemSkullOwner = skullOwner(membersConfig, "member-list.item.", memberItemDefinition.getSkullOwner());
+        memberListItemName = membersConfig.getString("member-list.item.name", "&a{member}");
+        memberListItemLore = membersConfig.getStringList("member-list.item.lore");
+        memberListItemEnabled = membersConfig.getBoolean("member-list.item.enabled", true);
+        memberListItemPermission = membersConfig.getString("member-list.item.permission", "");
+        loadButtonsFromSection(membersConfig, "member-list.buttons", memberListButtonsBySlot, memberListSize);
+        loadDecorationsFromSection(membersConfig, "member-list.decorations", memberListDecorationsBySlot, memberListSize);
+
+        roleMemberListTitle = membersConfig.getString("role-member-list.title", "&8Rolle {role} &7- Seite {page}");
+        roleMemberListSize = normalizeSize(membersConfig.getInt("role-member-list.size", 54));
+        roleMemberListFiller = createFiller(membersConfig, "role-member-list.filler");
+        roleMemberListSlots = membersConfig.getIntegerList("role-member-list.slots");
+        if (roleMemberListSlots.isEmpty()) {
+            roleMemberListSlots = defaultListSlots(roleMemberListSize);
+        }
+        final MaterialDefinition roleMemberItemDefinition = materialDefinition(membersConfig, "role-member-list.item.", Material.PLAYER_HEAD);
+        roleMemberListItemMaterial = roleMemberItemDefinition.getMaterial();
+        roleMemberListItemHeadDatabaseId = headDatabaseId(membersConfig, "role-member-list.item.");
+        roleMemberListItemSkullOwner = skullOwner(membersConfig, "role-member-list.item.", roleMemberItemDefinition.getSkullOwner());
+        roleMemberListItemName = membersConfig.getString("role-member-list.item.name", "&a{member}");
+        roleMemberListItemLore = membersConfig.getStringList("role-member-list.item.lore");
+        roleMemberListItemEnabled = membersConfig.getBoolean("role-member-list.item.enabled", true);
+        roleMemberListItemPermission = membersConfig.getString("role-member-list.item.permission", "");
+        loadButtonsFromSection(membersConfig, "role-member-list.buttons", roleMemberListButtonsBySlot, roleMemberListSize);
+        loadDecorationsFromSection(membersConfig, "role-member-list.decorations", roleMemberListDecorationsBySlot, roleMemberListSize);
+
+        rolePermissionListTitle = membersConfig.getString("role-permission-list.title", "&8Rechte: {role} &7- Seite {page}");
+        rolePermissionListSize = normalizeSize(membersConfig.getInt("role-permission-list.size", 54));
+        rolePermissionListFiller = createFiller(membersConfig, "role-permission-list.filler");
+        rolePermissionListSlots = membersConfig.getIntegerList("role-permission-list.slots");
+        if (rolePermissionListSlots.isEmpty()) {
+            rolePermissionListSlots = defaultListSlots(rolePermissionListSize);
+        }
+        loadButtonsFromSection(membersConfig, "role-permission-list.buttons", rolePermissionListButtonsBySlot, rolePermissionListSize);
+        loadDecorationsFromSection(membersConfig, "role-permission-list.decorations", rolePermissionListDecorationsBySlot, rolePermissionListSize);
+        loadRolePermissionTemplates(membersConfig);
+    }
+
+    private void loadRolePermissionTemplates(final YamlConfiguration membersConfig) {
+        final ConfigurationSection section = membersConfig.getConfigurationSection("role-permission-list.permissions");
+        if (section == null) {
+            return;
+        }
+        for (final String id : section.getKeys(false)) {
+            final String path = "role-permission-list.permissions." + id + ".";
+            if (!membersConfig.getBoolean(path + "enabled", true)) {
+                continue;
+            }
+            final String value = membersConfig.getString(path + "value", id);
+            if (value == null || value.trim().isEmpty()) {
+                continue;
+            }
+            final MaterialDefinition materialDefinition = materialDefinition(membersConfig, path, Material.PAPER);
+            final Material activeMaterial = material(membersConfig.getString(path + "active-material", "LIME_DYE"), Material.LIME_DYE);
+            final Material inactiveMaterial = material(membersConfig.getString(path + "inactive-material", materialDefinition.getMaterial().name()), materialDefinition.getMaterial());
+            rolePermissionTemplates.add(new RolePermissionTemplate(
+                    id,
+                    value.trim(),
+                    activeMaterial,
+                    inactiveMaterial,
+                    headDatabaseId(membersConfig, path),
+                    skullOwner(membersConfig, path, materialDefinition.getSkullOwner()),
+                    membersConfig.getString(path + "name", "&a" + id),
+                    membersConfig.getStringList(path + "lore"),
+                    membersConfig.getString(path + "permission", "")
+            ));
+        }
     }
 
     private void loadActionMenu(final String id, final String fileName) {
@@ -1825,6 +2095,80 @@ public final class PlotMenuManager implements Listener {
         return item;
     }
 
+    private ItemStack createMemberListItem(
+            final Player player,
+            final PlotMemberEntry member,
+            final String plotKey,
+            final String filter,
+            final int page
+    ) {
+        ItemStack item = headDatabaseHook.getHead(memberListItemHeadDatabaseId);
+        if (item == null) {
+            item = new ItemStack(memberListItemMaterial);
+        }
+        final ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            final Map<String, String> placeholders = memberPlaceholders(player, member, plotKey, filter, page);
+            applySkullOwner(player, meta, memberListItemSkullOwner, placeholders);
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(memberListItemName, placeholders))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(memberListItemLore, placeholders))));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private ItemStack createRoleMemberListItem(
+            final Player player,
+            final PlotMemberEntry member,
+            final String roleName,
+            final String plotKey,
+            final int page
+    ) {
+        ItemStack item = headDatabaseHook.getHead(roleMemberListItemHeadDatabaseId);
+        if (item == null) {
+            item = new ItemStack(roleMemberListItemMaterial);
+        }
+        final ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            final Map<String, String> placeholders = memberPlaceholders(player, member, plotKey, "all", page);
+            final String currentRole = roleService.memberRole(plotKey, member.getUuid());
+            placeholders.put("role", roleName == null ? "" : roleName);
+            placeholders.put("current_role", currentRole == null || currentRole.trim().isEmpty() ? "-" : currentRole);
+            placeholders.put("assigned", currentRole != null && currentRole.equalsIgnoreCase(roleName)
+                    ? text("role-assigned-yes", "Ja")
+                    : text("role-assigned-no", "Nein"));
+            applySkullOwner(player, meta, roleMemberListItemSkullOwner, placeholders);
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(roleMemberListItemName, placeholders))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(roleMemberListItemLore, placeholders))));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private ItemStack createRolePermissionItem(
+            final Player player,
+            final PlotRole role,
+            final RolePermissionTemplate template,
+            final int page
+    ) {
+        final boolean active = hasRolePermission(role, template.getValue());
+        ItemStack item = headDatabaseHook.getHead(template.getHeadDatabaseId());
+        if (item == null) {
+            item = new ItemStack(active ? template.getActiveMaterial() : template.getInactiveMaterial());
+        }
+        final ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            final Map<String, String> placeholders = roleListPlaceholders(page, page, role.getName(), rolePermissionTemplates.size());
+            placeholders.put("permission", template.getValue());
+            placeholders.put("status", active ? text("role-permission-active", "Aktiv") : text("role-permission-inactive", "Inaktiv"));
+            applySkullOwner(player, meta, template.getSkullOwner(), placeholders);
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(template.getName(), placeholders))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(template.getLore(), placeholders))));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
     private void applySkullOwner(
             final Player player,
             final ItemMeta meta,
@@ -2226,6 +2570,39 @@ public final class PlotMenuManager implements Listener {
         player.performCommand("plot visit " + report.getWorld() + ";" + report.getPlot());
     }
 
+    private void handleMemberListClick(final Player player, final int page, final String filter, final int slot, final ClickType clickType) {
+        final MenuButton button = memberListButtonsBySlot.get(slot);
+        if (button != null) {
+            if (!canSee(player, button)) {
+                return;
+            }
+            executeCommands(player, button.isCloseInventory(), applyCommandState(button.getCommands(), memberListPlaceholders(page, page, normalizeMemberFilter(filter), filteredPlotMembers(player, normalizeMemberFilter(filter)).size())));
+            return;
+        }
+
+        final PlotMemberEntry member = memberAt(player, page, filter, slot);
+        if (member == null || !configuredItemVisible(player, memberListItemEnabled, memberListItemPermission)) {
+            return;
+        }
+        if (member.getType() == PlotMemberType.OWNER) {
+            languageManager.send(player, "member-owner-protected", memberPlaceholders(player, member, currentPlotKey(player), normalizeMemberFilter(filter), page));
+            return;
+        }
+        if (clickType == ClickType.SHIFT_RIGHT) {
+            removePlotMember(player, member);
+            reopenMemberList(player, page, filter);
+            return;
+        }
+        if (member.getType() == PlotMemberType.TRUSTED) {
+            demotePlotMember(player, member);
+        } else if (member.getType() == PlotMemberType.ADDED) {
+            promotePlotMember(player, member);
+        } else if (member.getType() == PlotMemberType.DENIED) {
+            allowDeniedMember(player, member);
+        }
+        reopenMemberList(player, page, filter);
+    }
+
     private void handleRoleListClick(final Player player, final int page, final int slot, final ClickType clickType) {
         final MenuButton button = roleListButtonsBySlot.get(slot);
         if (button != null) {
@@ -2251,11 +2628,11 @@ public final class PlotMenuManager implements Listener {
             return;
         }
         if (clickType == ClickType.RIGHT) {
-            runCommand(player, "chat-input:chat-role-permission:role:add-permission:" + role.getName() + ":{input}");
+            openRolePermissionListMenu(player, 1, role.getName());
             return;
         }
         if (clickType == ClickType.SHIFT_LEFT) {
-            runCommand(player, "chat-input:chat-role-permission:role:remove-permission:" + role.getName() + ":{input}");
+            openRolePermissionListMenu(player, 1, role.getName());
             return;
         }
         if (clickType == ClickType.SHIFT_RIGHT) {
@@ -2263,7 +2640,67 @@ public final class PlotMenuManager implements Listener {
             openRoleListMenu(player, page);
             return;
         }
-        runCommand(player, "chat-input:chat-member-player:role:assign:" + role.getName() + ":{input}");
+        openRoleMemberListMenu(player, 1, role.getName());
+    }
+
+    private void handleRoleMemberListClick(final Player player, final int page, final String roleName, final int slot, final ClickType clickType) {
+        final MenuButton button = roleMemberListButtonsBySlot.get(slot);
+        if (button != null) {
+            if (!canSee(player, button)) {
+                return;
+            }
+            executeCommands(player, button.isCloseInventory(), applyCommandState(button.getCommands(), roleListPlaceholders(page, page, roleName, filteredPlotMembers(player, "all").size())));
+            return;
+        }
+
+        final PlotRole role = roleByName(player, roleName);
+        if (role == null) {
+            languageManager.send(player, "role-not-found", rolePlaceholder(roleName));
+            return;
+        }
+        final PlotMemberEntry member = roleMemberAt(player, page, slot);
+        if (member == null || !configuredItemVisible(player, roleMemberListItemEnabled, roleMemberListItemPermission)) {
+            return;
+        }
+        if (member.getType() == PlotMemberType.OWNER) {
+            languageManager.send(player, "member-owner-protected", memberPlaceholders(player, member, currentPlotKey(player), "all", page));
+            return;
+        }
+        final String plotKey = currentPlotKey(player);
+        final String currentRole = roleService.memberRole(plotKey, member.getUuid());
+        if (clickType == ClickType.RIGHT || clickType == ClickType.SHIFT_RIGHT || currentRole.equalsIgnoreCase(role.getName())) {
+            roleService.unassign(player, member.getUuid(), member.getName());
+        } else {
+            roleService.assign(player, role.getName(), member.getUuid(), member.getName());
+        }
+        openRoleMemberListMenu(player, page, role.getName());
+    }
+
+    private void handleRolePermissionListClick(final Player player, final int page, final String roleName, final int slot) {
+        final MenuButton button = rolePermissionListButtonsBySlot.get(slot);
+        if (button != null) {
+            if (!canSee(player, button)) {
+                return;
+            }
+            executeCommands(player, button.isCloseInventory(), applyCommandState(button.getCommands(), roleListPlaceholders(page, page, roleName, rolePermissionTemplates.size())));
+            return;
+        }
+
+        final PlotRole role = roleByName(player, roleName);
+        if (role == null) {
+            languageManager.send(player, "role-not-found", rolePlaceholder(roleName));
+            return;
+        }
+        final RolePermissionTemplate template = rolePermissionAt(page, slot);
+        if (template == null || !configuredItemVisible(player, true, template.getPermission())) {
+            return;
+        }
+        if (hasRolePermission(role, template.getValue())) {
+            roleService.removePermission(player, role.getName(), template.getValue());
+        } else {
+            roleService.addPermission(player, role.getName(), template.getValue());
+        }
+        openRolePermissionListMenu(player, page, role.getName());
     }
 
     private PlotReport reportAt(final int page, final String status, final int slot) {
@@ -2296,6 +2733,53 @@ public final class PlotMenuManager implements Listener {
             return null;
         }
         return roles.get(index);
+    }
+
+    private PlotMemberEntry memberAt(final Player player, final int page, final String filter, final int slot) {
+        if (memberListSlots == null || memberListSlots.isEmpty()) {
+            return null;
+        }
+        final int slotIndex = memberListSlots.indexOf(slot);
+        if (slotIndex < 0) {
+            return null;
+        }
+        final List<PlotMemberEntry> members = filteredPlotMembers(player, normalizeMemberFilter(filter));
+        final int index = (Math.max(1, page) - 1) * memberListSlots.size() + slotIndex;
+        if (index < 0 || index >= members.size()) {
+            return null;
+        }
+        return members.get(index);
+    }
+
+    private PlotMemberEntry roleMemberAt(final Player player, final int page, final int slot) {
+        if (roleMemberListSlots == null || roleMemberListSlots.isEmpty()) {
+            return null;
+        }
+        final int slotIndex = roleMemberListSlots.indexOf(slot);
+        if (slotIndex < 0) {
+            return null;
+        }
+        final List<PlotMemberEntry> members = filteredPlotMembers(player, "all");
+        final int index = (Math.max(1, page) - 1) * roleMemberListSlots.size() + slotIndex;
+        if (index < 0 || index >= members.size()) {
+            return null;
+        }
+        return members.get(index);
+    }
+
+    private RolePermissionTemplate rolePermissionAt(final int page, final int slot) {
+        if (rolePermissionListSlots == null || rolePermissionListSlots.isEmpty()) {
+            return null;
+        }
+        final int slotIndex = rolePermissionListSlots.indexOf(slot);
+        if (slotIndex < 0) {
+            return null;
+        }
+        final int index = (Math.max(1, page) - 1) * rolePermissionListSlots.size() + slotIndex;
+        if (index < 0 || index >= rolePermissionTemplates.size()) {
+            return null;
+        }
+        return rolePermissionTemplates.get(index);
     }
 
     private OwnedPlot plotAt(final Player player, final int page, final String sort, final String filter, final int slot) {
@@ -2363,6 +2847,214 @@ public final class PlotMenuManager implements Listener {
 
     private ItemStack createMyPlotItem(final Player player, final OwnedPlot plot) {
         return createDynamicItem(player, myPlotsConfig, "plot-item.", Material.FILLED_MAP, plotPlaceholders(player, plot));
+    }
+
+    private List<PlotMemberEntry> filteredPlotMembers(final Player player, final String filter) {
+        final String normalizedFilter = normalizeMemberFilter(filter);
+        final List<PlotMemberEntry> members = new ArrayList<>();
+        for (final PlotMemberEntry member : flagService.currentPlotMembers(player)) {
+            if (!"all".equals(normalizedFilter) && !normalizedFilter.equals(member.getType().name().toLowerCase(Locale.ROOT))) {
+                continue;
+            }
+            members.add(member);
+        }
+        members.sort((first, second) -> {
+            final int typeCompare = Integer.compare(memberTypeOrder(first.getType()), memberTypeOrder(second.getType()));
+            if (typeCompare != 0) {
+                return typeCompare;
+            }
+            return first.getName().compareToIgnoreCase(second.getName());
+        });
+        return members;
+    }
+
+    private int memberTypeOrder(final PlotMemberType type) {
+        if (type == PlotMemberType.OWNER) {
+            return 0;
+        }
+        if (type == PlotMemberType.TRUSTED) {
+            return 1;
+        }
+        if (type == PlotMemberType.ADDED) {
+            return 2;
+        }
+        return 3;
+    }
+
+    private String normalizeMemberFilter(final String filter) {
+        if (filter == null || filter.trim().isEmpty()) {
+            return "all";
+        }
+        final String normalized = filter.trim().toLowerCase(Locale.ROOT);
+        if ("trusted".equals(normalized) || "added".equals(normalized) || "denied".equals(normalized)) {
+            return normalized;
+        }
+        return "all";
+    }
+
+    private Map<String, String> memberListPlaceholders(final int page, final int maxPage, final String filter, final int amount) {
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("page", String.valueOf(page));
+        placeholders.put("max_page", String.valueOf(Math.max(1, maxPage)));
+        placeholders.put("next_page", String.valueOf(page + 1));
+        placeholders.put("previous_page", String.valueOf(Math.max(1, page - 1)));
+        placeholders.put("filter", normalizeMemberFilter(filter));
+        placeholders.put("filter_name", memberFilterName(filter));
+        placeholders.put("amount", String.valueOf(amount));
+        return placeholders;
+    }
+
+    private Map<String, String> roleListPlaceholders(final int page, final int maxPage, final String roleName, final int amount) {
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("page", String.valueOf(page));
+        placeholders.put("max_page", String.valueOf(Math.max(1, maxPage)));
+        placeholders.put("next_page", String.valueOf(page + 1));
+        placeholders.put("previous_page", String.valueOf(Math.max(1, page - 1)));
+        placeholders.put("role", roleName == null ? "" : roleName);
+        placeholders.put("amount", String.valueOf(amount));
+        return placeholders;
+    }
+
+    private Map<String, String> memberPlaceholders(
+            final Player player,
+            final PlotMemberEntry member,
+            final String plotKey,
+            final String filter,
+            final int page
+    ) {
+        final Map<String, String> placeholders = memberListPlaceholders(page, page, filter, 0);
+        placeholders.put("member", member.getName());
+        placeholders.put("member_name", member.getName());
+        placeholders.put("uuid", member.getUuid().toString());
+        placeholders.put("type", memberTypeName(member.getType()));
+        placeholders.put("type_id", member.getType().name().toLowerCase(Locale.ROOT));
+        final String roleName = member.getType() == PlotMemberType.OWNER
+                ? text("member-role-owner", "Owner")
+                : roleService.memberRole(plotKey, member.getUuid());
+        placeholders.put("role", roleName == null || roleName.trim().isEmpty() ? "-" : roleName);
+        placeholders.put("player", player.getName());
+        return placeholders;
+    }
+
+    private String memberTypeName(final PlotMemberType type) {
+        if (type == PlotMemberType.OWNER) {
+            return text("member-type-owner", "Besitzer");
+        }
+        if (type == PlotMemberType.TRUSTED) {
+            return text("member-type-trusted", "Trusted");
+        }
+        if (type == PlotMemberType.ADDED) {
+            return text("member-type-added", "Added");
+        }
+        return text("member-type-denied", "Denied");
+    }
+
+    private String memberFilterName(final String filter) {
+        final String normalized = normalizeMemberFilter(filter);
+        if ("trusted".equals(normalized)) {
+            return text("member-filter-trusted", "Trusted");
+        }
+        if ("added".equals(normalized)) {
+            return text("member-filter-added", "Added");
+        }
+        if ("denied".equals(normalized)) {
+            return text("member-filter-denied", "Denied");
+        }
+        return text("member-filter-all", "Alle");
+    }
+
+    private String currentPlotKey(final Player player) {
+        final java.util.Optional<PlotContext> context = flagService.currentPlotContext(player);
+        if (!context.isPresent() || !context.get().isComplete()) {
+            return "";
+        }
+        return context.get().getWorldName() + ";" + context.get().getPlotId();
+    }
+
+    private PlotRole roleByName(final Player player, final String roleName) {
+        if (roleName == null || roleName.trim().isEmpty()) {
+            return null;
+        }
+        for (final PlotRole role : roleService.roles(player)) {
+            if (role.getName().equalsIgnoreCase(roleName.trim())) {
+                return role;
+            }
+        }
+        return null;
+    }
+
+    private Map<String, String> rolePlaceholder(final String roleName) {
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("role", roleName == null ? "" : roleName);
+        return placeholders;
+    }
+
+    private boolean hasRolePermission(final PlotRole role, final String permission) {
+        for (final String current : role.getPermissions()) {
+            if (current.equalsIgnoreCase(permission)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void promotePlotMember(final Player player, final PlotMemberEntry member) {
+        if (!hasConfiguredPermission(player, "plots.trust")) {
+            languageManager.send(player, "no-permission");
+            return;
+        }
+        player.performCommand("plot trust " + member.getName());
+        languageManager.send(player, "member-promoted", memberPlaceholders(player, member, currentPlotKey(player), "all", 1));
+    }
+
+    private void demotePlotMember(final Player player, final PlotMemberEntry member) {
+        if (!hasConfiguredPermission(player, "plots.trust") || !hasConfiguredPermission(player, "plots.add")) {
+            languageManager.send(player, "no-permission");
+            return;
+        }
+        player.performCommand("plot untrust " + member.getName());
+        player.performCommand("plot add " + member.getName());
+        languageManager.send(player, "member-demoted", memberPlaceholders(player, member, currentPlotKey(player), "all", 1));
+    }
+
+    private void allowDeniedMember(final Player player, final PlotMemberEntry member) {
+        if (!hasConfiguredPermission(player, "plots.deny")) {
+            languageManager.send(player, "no-permission");
+            return;
+        }
+        player.performCommand("plot undeny " + member.getName());
+        languageManager.send(player, "member-allowed", memberPlaceholders(player, member, currentPlotKey(player), "all", 1));
+    }
+
+    private void removePlotMember(final Player player, final PlotMemberEntry member) {
+        if (member.getType() == PlotMemberType.TRUSTED) {
+            if (!hasConfiguredPermission(player, "plots.trust")) {
+                languageManager.send(player, "no-permission");
+                return;
+            }
+            player.performCommand("plot untrust " + member.getName());
+        } else if (member.getType() == PlotMemberType.ADDED) {
+            if (!hasConfiguredPermission(player, "plots.remove")) {
+                languageManager.send(player, "no-permission");
+                return;
+            }
+            player.performCommand("plot remove " + member.getName());
+        } else if (member.getType() == PlotMemberType.DENIED) {
+            if (!hasConfiguredPermission(player, "plots.deny")) {
+                languageManager.send(player, "no-permission");
+                return;
+            }
+            player.performCommand("plot undeny " + member.getName());
+        }
+        languageManager.send(player, "member-removed", memberPlaceholders(player, member, currentPlotKey(player), "all", 1));
+    }
+
+    private void reopenMemberList(final Player player, final int page, final String filter) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            if (player.isOnline()) {
+                openMemberListMenu(player, page, filter);
+            }
+        }, reopenDelayTicks);
     }
 
     private ItemStack createDynamicItem(
@@ -2731,8 +3423,14 @@ public final class PlotMenuManager implements Listener {
                 openBackupListMenu(player, menuPage(menuId));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("reports-list")) {
                 openReportListMenu(player, menuPage(menuId), menuArgument(menuId, 2, "open"));
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("members-list")) {
+                openMemberListMenu(player, menuPage(menuId), menuArgument(menuId, 2, "all"));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("roles-list")) {
                 openRoleListMenu(player, menuPage(menuId));
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("role-members-list")) {
+                openRoleMemberListMenu(player, menuPage(menuId), menuArgument(menuId, 2, ""));
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("role-permissions-list")) {
+                openRolePermissionListMenu(player, menuPage(menuId), menuArgument(menuId, 2, ""));
             } else if ("team".equalsIgnoreCase(menuId)) {
                 openTeamMenu(player);
             } else if ("main".equalsIgnoreCase(menuId)) {
@@ -3427,6 +4125,77 @@ public final class PlotMenuManager implements Listener {
 
         private boolean isBedrockEnabled() {
             return bedrockEnabled;
+        }
+
+        private String getPermission() {
+            return permission;
+        }
+    }
+
+    private static final class RolePermissionTemplate {
+
+        private final String id;
+        private final String value;
+        private final Material activeMaterial;
+        private final Material inactiveMaterial;
+        private final String headDatabaseId;
+        private final String skullOwner;
+        private final String name;
+        private final List<String> lore;
+        private final String permission;
+
+        private RolePermissionTemplate(
+                final String id,
+                final String value,
+                final Material activeMaterial,
+                final Material inactiveMaterial,
+                final String headDatabaseId,
+                final String skullOwner,
+                final String name,
+                final List<String> lore,
+                final String permission
+        ) {
+            this.id = id;
+            this.value = value;
+            this.activeMaterial = activeMaterial;
+            this.inactiveMaterial = inactiveMaterial;
+            this.headDatabaseId = headDatabaseId == null ? "" : headDatabaseId;
+            this.skullOwner = skullOwner == null ? "" : skullOwner;
+            this.name = name;
+            this.lore = lore == null ? Collections.emptyList() : lore;
+            this.permission = permission == null ? "" : permission.trim();
+        }
+
+        private String getId() {
+            return id;
+        }
+
+        private String getValue() {
+            return value;
+        }
+
+        private Material getActiveMaterial() {
+            return activeMaterial;
+        }
+
+        private Material getInactiveMaterial() {
+            return inactiveMaterial;
+        }
+
+        private String getHeadDatabaseId() {
+            return headDatabaseId;
+        }
+
+        private String getSkullOwner() {
+            return skullOwner;
+        }
+
+        private String getName() {
+            return name;
+        }
+
+        private List<String> getLore() {
+            return lore;
         }
 
         private String getPermission() {

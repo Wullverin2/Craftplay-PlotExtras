@@ -7,13 +7,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -114,6 +118,25 @@ public final class PlotSquaredFlagService {
         ));
     }
 
+    public List<PlotMemberEntry> currentPlotMembers(final Player player) {
+        final Object plot = currentPlot(player);
+        if (plot == null) {
+            return Collections.emptyList();
+        }
+
+        final Map<UUID, PlotMemberEntry> entries = new LinkedHashMap<>();
+        for (final Object memberPlot : membershipPlots(plot)) {
+            addSingleMember(entries, invokeNoArgs(memberPlot, "getOwner"), PlotMemberType.OWNER);
+            addSingleMember(entries, invokeNoArgs(memberPlot, "getOwnerAbs"), PlotMemberType.OWNER);
+            addMemberCollection(entries, invokeNoArgs(memberPlot, "getOwners"), PlotMemberType.OWNER);
+            addMemberCollection(entries, invokeNoArgs(memberPlot, "getTrusted"), PlotMemberType.TRUSTED);
+            addMemberCollection(entries, invokeNoArgs(memberPlot, "getMembers"), PlotMemberType.ADDED);
+            addMemberCollection(entries, invokeNoArgs(memberPlot, "getDenied"), PlotMemberType.DENIED);
+        }
+
+        return new ArrayList<>(entries.values());
+    }
+
     private Object currentPlot(final Player player) {
         final Object plotPlayer = plotPlayer(player);
         if (plotPlayer == null) {
@@ -126,6 +149,114 @@ public final class PlotSquaredFlagService {
             warn("PlotSquared-Spielerobjekt konnte nicht gelesen werden.", exception);
             return null;
         }
+    }
+
+    private List<Object> membershipPlots(final Object plot) {
+        final List<Object> plots = new ArrayList<>();
+        plots.add(plot);
+        final Object connected = invokeNoArgs(plot, "getConnectedPlots");
+        if (connected instanceof Iterable) {
+            for (final Object connectedPlot : (Iterable<?>) connected) {
+                if (connectedPlot != null && !plots.contains(connectedPlot)) {
+                    plots.add(connectedPlot);
+                }
+            }
+            return plots;
+        }
+        if (connected != null && connected.getClass().isArray()) {
+            final int length = Array.getLength(connected);
+            for (int index = 0; index < length; index++) {
+                final Object connectedPlot = Array.get(connected, index);
+                if (connectedPlot != null && !plots.contains(connectedPlot)) {
+                    plots.add(connectedPlot);
+                }
+            }
+        }
+        return plots;
+    }
+
+    private void addMemberCollection(
+            final Map<UUID, PlotMemberEntry> entries,
+            final Object members,
+            final PlotMemberType type
+    ) {
+        if (members == null) {
+            return;
+        }
+        if (members instanceof Iterable) {
+            for (final Object member : (Iterable<?>) members) {
+                addSingleMember(entries, member, type);
+            }
+            return;
+        }
+        if (members.getClass().isArray()) {
+            final int length = Array.getLength(members);
+            for (int index = 0; index < length; index++) {
+                addSingleMember(entries, Array.get(members, index), type);
+            }
+            return;
+        }
+        addSingleMember(entries, members, type);
+    }
+
+    private void addSingleMember(
+            final Map<UUID, PlotMemberEntry> entries,
+            final Object member,
+            final PlotMemberType type
+    ) {
+        final UUID uuid = memberUuid(member);
+        if (uuid == null || entries.containsKey(uuid)) {
+            return;
+        }
+        entries.put(uuid, new PlotMemberEntry(uuid, memberName(member, uuid), type));
+    }
+
+    private UUID memberUuid(final Object member) {
+        if (member == null) {
+            return null;
+        }
+        if (member instanceof UUID) {
+            return (UUID) member;
+        }
+        if (member instanceof String) {
+            try {
+                return UUID.fromString(((String) member).trim());
+            } catch (final IllegalArgumentException ignored) {
+                return Bukkit.getOfflinePlayer(((String) member).trim()).getUniqueId();
+            }
+        }
+        for (final String methodName : new String[]{"getUuid", "getUUID", "getUniqueId", "uuid"}) {
+            final Object value = invokeNoArgs(member, methodName);
+            if (value instanceof UUID) {
+                return (UUID) value;
+            }
+            if (value instanceof String) {
+                try {
+                    return UUID.fromString(((String) value).trim());
+                } catch (final IllegalArgumentException ignored) {
+                    // Try the next method name.
+                }
+            }
+        }
+        return null;
+    }
+
+    private String memberName(final Object member, final UUID uuid) {
+        if (member instanceof String) {
+            final String text = ((String) member).trim();
+            if (!text.isEmpty() && !text.equalsIgnoreCase(uuid.toString())) {
+                return text;
+            }
+        }
+        for (final String methodName : new String[]{"getName", "getUsername", "name", "username"}) {
+            final Object value = invokeNoArgs(member, methodName);
+            if (value != null && !value.toString().trim().isEmpty()) {
+                return value.toString().trim();
+            }
+        }
+        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+        final String name = offlinePlayer.getName();
+        return name == null || name.trim().isEmpty() ? uuid.toString() : name;
     }
 
     private World world(final Player player, final Object plot) {

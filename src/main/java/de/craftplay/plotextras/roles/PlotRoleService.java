@@ -82,6 +82,13 @@ public final class PlotRoleService {
         return Collections.unmodifiableMap(data(plotKey).members);
     }
 
+    public String memberRole(final String plotKey, final UUID uuid) {
+        if (plotKey == null || uuid == null) {
+            return "";
+        }
+        return data(plotKey).members.getOrDefault(uuid, "");
+    }
+
     public boolean hasRolePermission(final Player player, final String permission) {
         if (!enabled || permission == null || permission.trim().isEmpty()) {
             return false;
@@ -203,6 +210,11 @@ public final class PlotRoleService {
     }
 
     public boolean assign(final Player player, final String roleName, final String targetName) {
+        final OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
+        return assign(player, roleName, target.getUniqueId(), targetName);
+    }
+
+    public boolean assign(final Player player, final String roleName, final UUID targetUuid, final String targetName) {
         if (!canManage(player)) {
             return false;
         }
@@ -216,17 +228,26 @@ public final class PlotRoleService {
             plugin.getLanguageManager().send(player, "role-not-found", placeholders(roleName));
             return false;
         }
-        final OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
-        data.members.put(target.getUniqueId(), data.roles.get(key).getName());
-        data.memberNames.put(target.getUniqueId(), targetName);
+        if (targetUuid == null) {
+            plugin.getLanguageManager().send(player, "role-invalid-name");
+            return false;
+        }
+        final String displayName = targetName == null || targetName.trim().isEmpty() ? targetUuid.toString() : targetName.trim();
+        data.members.put(targetUuid, data.roles.get(key).getName());
+        data.memberNames.put(targetUuid, displayName);
         save();
         final Map<String, String> placeholders = placeholders(data.roles.get(key).getName());
-        placeholders.put("member", targetName);
+        placeholders.put("member", displayName);
         plugin.getLanguageManager().send(player, "role-assigned", placeholders);
         return true;
     }
 
     public boolean unassign(final Player player, final String targetName) {
+        final OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
+        return unassign(player, target.getUniqueId(), targetName);
+    }
+
+    public boolean unassign(final Player player, final UUID targetUuid, final String targetName) {
         if (!canManage(player)) {
             return false;
         }
@@ -235,12 +256,15 @@ public final class PlotRoleService {
             return false;
         }
         final PlotRoleData data = data(plotKey.get());
-        final OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
-        data.members.remove(target.getUniqueId());
-        data.memberNames.remove(target.getUniqueId());
+        if (targetUuid == null) {
+            plugin.getLanguageManager().send(player, "role-invalid-name");
+            return false;
+        }
+        data.members.remove(targetUuid);
+        data.memberNames.remove(targetUuid);
         save();
         final Map<String, String> placeholders = placeholders("");
-        placeholders.put("member", targetName);
+        placeholders.put("member", targetName == null || targetName.trim().isEmpty() ? targetUuid.toString() : targetName.trim());
         plugin.getLanguageManager().send(player, "role-unassigned", placeholders);
         return true;
     }
