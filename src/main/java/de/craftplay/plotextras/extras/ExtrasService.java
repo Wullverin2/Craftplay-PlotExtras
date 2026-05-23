@@ -17,19 +17,27 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,8 +54,11 @@ public final class ExtrasService implements Listener {
     private final PlotSquaredFlagService flagService;
     private final NamespacedKey wandKey;
     private final Map<UUID, Selection> selections = new HashMap<>();
+    private final Map<UUID, PendingWorldEditAction> pendingActions = new HashMap<>();
+    private final Map<String, WorldEditMode> modes = new LinkedHashMap<>();
 
     private YamlConfiguration data;
+    private YamlConfiguration guiConfig;
     private String dataFile;
     private boolean enabled;
     private boolean worldEditServiceEnabled;
@@ -66,6 +77,14 @@ public final class ExtrasService implements Listener {
     private List<String> wandLore;
     private int wandCustomModelData;
     private List<String> successCommands;
+    private int confirmSize;
+    private String confirmTitle;
+    private String confirmSelectedText;
+    private String confirmNotSelectedText;
+    private ConfirmButton confirmInfoButton;
+    private ConfirmButton confirmAcceptButton;
+    private ConfirmButton confirmCancelButton;
+    private ConfirmButton confirmFiller;
     private Object economy;
     private Method economyHasMethod;
     private Method economyWithdrawMethod;
@@ -108,7 +127,96 @@ public final class ExtrasService implements Listener {
         wandLore = plugin.getConfig().getStringList(root + "item.lore");
         wandCustomModelData = plugin.getConfig().getInt(root + "item.custom-model-data", 0);
         successCommands = plugin.getConfig().getStringList(root + "commands-after-payment");
+        loadModes(root + "modes.");
+        loadConfirmGui();
         setupEconomy();
+    }
+
+    private void loadModes(final String root) {
+        modes.clear();
+        loadMode("air", root + "air.", true, Material.AIR, "");
+        loadMode("water", root + "water.", true, Material.WATER, "");
+        loadMode("lava", root + "lava.", true, Material.LAVA, "");
+    }
+
+    private void loadMode(
+            final String id,
+            final String path,
+            final boolean fallbackEnabled,
+            final Material fallbackMaterial,
+            final String fallbackPermission
+    ) {
+        final boolean modeEnabled = plugin.getConfig().getBoolean(path + "enabled", fallbackEnabled);
+        final Material targetMaterial = material(plugin.getConfig().getString(path + "target-material", fallbackMaterial.name()), fallbackMaterial);
+        final String modePermission = plugin.getConfig().getString(path + "permission", fallbackPermission);
+        modes.put(id, new WorldEditMode(id, modeEnabled, targetMaterial, modePermission));
+    }
+
+    private void loadConfirmGui() {
+        guiConfig = loadExtrasGuiConfig();
+        confirmSize = normalizeSize(guiConfig.getInt("worldedit-confirm.size", 27));
+        confirmTitle = guiConfig.getString("worldedit-confirm.title", "&8WorldEdit-Service");
+        confirmSelectedText = guiConfig.getString("worldedit-confirm.selected-text", "&aAusgewählt");
+        confirmNotSelectedText = guiConfig.getString("worldedit-confirm.not-selected-text", "&7Nicht ausgewählt");
+        confirmFiller = loadConfirmButton("worldedit-confirm.filler.", true, 0, Material.BLACK_STAINED_GLASS_PANE, "&r", Collections.emptyList(), "");
+        confirmInfoButton = loadConfirmButton("worldedit-confirm.buttons.info.", true, 4, Material.PAPER, "&eAuswahl", Arrays.asList(
+                "&7Blöcke: &f{blocks}",
+                "&7Kosten: &f{price}",
+                "&7Aktion: &f{mode}"
+        ), "");
+        confirmAcceptButton = loadConfirmButton("worldedit-confirm.buttons.confirm.", true, 21, Material.LIME_CONCRETE, "&aBestätigen", Arrays.asList(
+                "&7Zieht &f{price} &7ab",
+                "&7und setzt &f{mode}&7."
+        ), "");
+        confirmCancelButton = loadConfirmButton("worldedit-confirm.buttons.cancel.", true, 23, Material.RED_CONCRETE, "&cAbbrechen", Arrays.asList(
+                "&7Bricht den Vorgang ab."
+        ), "");
+        for (final Map.Entry<String, WorldEditMode> entry : new ArrayList<>(modes.entrySet())) {
+            final String id = entry.getKey();
+            final WorldEditMode mode = entry.getValue();
+            final ConfirmButton button = loadConfirmButton(
+                    "worldedit-confirm.buttons." + id + ".",
+                    true,
+                    "water".equals(id) ? 13 : "lava".equals(id) ? 15 : 11,
+                    "water".equals(id) ? Material.WATER_BUCKET : "lava".equals(id) ? Material.LAVA_BUCKET : Material.WHITE_STAINED_GLASS,
+                    modeName(id),
+                    Arrays.asList("&7Status: {selected}", "&7Klick wählt diese Aktion."),
+                    ""
+            );
+            modes.put(id, mode.withButton(button));
+        }
+    }
+
+    private YamlConfiguration loadExtrasGuiConfig() {
+        final String language = languageManager.getDefaultLanguage();
+        final String menuFile = plugin.getConfig().getString("gui.extras-menu", "extras.yml");
+        final File localized = new File(plugin.getDataFolder(), "gui/" + language + "/" + menuFile);
+        if (localized.exists()) {
+            return YamlConfiguration.loadConfiguration(localized);
+        }
+        final File fallback = new File(plugin.getDataFolder(), "gui/de/" + menuFile);
+        if (fallback.exists()) {
+            return YamlConfiguration.loadConfiguration(fallback);
+        }
+        return new YamlConfiguration();
+    }
+
+    private ConfirmButton loadConfirmButton(
+            final String path,
+            final boolean fallbackEnabled,
+            final int fallbackSlot,
+            final Material fallbackMaterial,
+            final String fallbackName,
+            final List<String> fallbackLore,
+            final String fallbackPermission
+    ) {
+        final boolean buttonEnabled = guiConfig.getBoolean(path + "enabled", fallbackEnabled);
+        final int slot = guiConfig.getInt(path + "slot", fallbackSlot);
+        final Material buttonMaterial = material(guiConfig.getString(path + "material", fallbackMaterial.name()), fallbackMaterial);
+        final String buttonName = guiConfig.getString(path + "name", fallbackName);
+        final List<String> buttonLore = guiConfig.contains(path + "lore") ? guiConfig.getStringList(path + "lore") : fallbackLore;
+        final String buttonPermission = guiConfig.getString(path + "permission", fallbackPermission);
+        return new ConfirmButton(buttonEnabled, slot, buttonMaterial, buttonName, buttonLore, buttonPermission);
     }
 
     public void runCommand(final Player player, final String payload) {
@@ -196,6 +304,57 @@ public final class ExtrasService implements Listener {
     @EventHandler
     public void onQuit(final PlayerQuitEvent event) {
         selections.remove(event.getPlayer().getUniqueId());
+        pendingActions.remove(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onInventoryClick(final InventoryClickEvent event) {
+        if (!(event.getInventory().getHolder() instanceof WorldEditConfirmHolder)) {
+            return;
+        }
+        event.setCancelled(true);
+        if (!(event.getWhoClicked() instanceof Player)) {
+            return;
+        }
+        if (event.getRawSlot() < 0 || event.getRawSlot() >= event.getInventory().getSize()) {
+            return;
+        }
+        final Player player = (Player) event.getWhoClicked();
+        final PendingWorldEditAction action = pendingActions.get(player.getUniqueId());
+        if (action == null) {
+            player.closeInventory();
+            languageManager.send(player, "extras-worldedit-no-pending");
+            return;
+        }
+        final int slot = event.getSlot();
+        for (final WorldEditMode mode : modes.values()) {
+            if (!canUseMode(player, mode)) {
+                continue;
+            }
+            final ConfirmButton button = mode.getButton();
+            if (button != null && button.isEnabled() && button.getSlot() == slot) {
+                action.setModeId(mode.getId());
+                openConfirmation(player, action);
+                return;
+            }
+        }
+        if (isButtonClick(player, confirmAcceptButton, slot)) {
+            player.closeInventory();
+            confirmAction(player);
+            return;
+        }
+        if (isButtonClick(player, confirmCancelButton, slot)) {
+            pendingActions.remove(player.getUniqueId());
+            player.closeInventory();
+            languageManager.send(player, "extras-worldedit-cancelled");
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(final InventoryDragEvent event) {
+        if (event.getInventory().getHolder() instanceof WorldEditConfirmHolder) {
+            event.setCancelled(true);
+        }
     }
 
     private void processSelection(final Player player, final PlotContext context, final Selection selection) {
@@ -227,24 +386,215 @@ public final class ExtrasService implements Listener {
             return;
         }
 
-        final boolean onCooldown = isOnCooldown(player.getUniqueId());
-        final boolean free = player.hasPermission(freePermission);
-        final boolean usesIncludedPackage = !free && !onCooldown && includedBlocks > 0L;
-        final double price = free ? 0.0D : price(blocks, onCooldown);
-        final Map<String, String> placeholders = placeholders(player, blocks, price, onCooldown, cooldownRemaining(player.getUniqueId()));
-        if (!withdraw(player, price, placeholders)) {
+        final Optional<WorldEditMode> defaultMode = firstAvailableMode(player);
+        if (!defaultMode.isPresent()) {
+            languageManager.send(player, "extras-worldedit-mode-unavailable");
             return;
         }
 
-        new WorldEditSelectionAdapter().setSelection(player, first, second);
-        if (usesIncludedPackage) {
+        final PendingWorldEditAction action = new PendingWorldEditAction(
+                plotKey(context),
+                first.clone(),
+                second.clone(),
+                blocks,
+                defaultMode.get().getId()
+        );
+        pendingActions.put(player.getUniqueId(), action);
+        selections.remove(player.getUniqueId());
+        languageManager.send(player, "extras-worldedit-confirm-opened", confirmationPlaceholders(player, action, defaultMode.get(), currentPricing(player, blocks)));
+        openConfirmation(player, action);
+    }
+
+    private void openConfirmation(final Player player, final PendingWorldEditAction action) {
+        final WorldEditMode selectedMode = selectedMode(player, action);
+        if (selectedMode == null) {
+            pendingActions.remove(player.getUniqueId());
+            languageManager.send(player, "extras-worldedit-mode-unavailable");
+            return;
+        }
+        final Pricing pricing = currentPricing(player, action.getBlocks());
+        final Map<String, String> placeholders = confirmationPlaceholders(player, action, selectedMode, pricing);
+        final Inventory inventory = Bukkit.createInventory(
+                new WorldEditConfirmHolder(),
+                confirmSize,
+                Text.color(apply(confirmTitle, placeholders))
+        );
+        if (confirmFiller != null && confirmFiller.isEnabled()) {
+            final ItemStack fillerItem = createConfirmItem(confirmFiller, placeholders);
+            for (int slot = 0; slot < confirmSize; slot++) {
+                inventory.setItem(slot, fillerItem);
+            }
+        }
+        placeConfirmButton(player, inventory, confirmInfoButton, placeholders);
+        for (final WorldEditMode mode : modes.values()) {
+            if (!canUseMode(player, mode)) {
+                continue;
+            }
+            final Map<String, String> modePlaceholders = new HashMap<>(placeholders);
+            modePlaceholders.put("mode", modeName(mode.getId()));
+            modePlaceholders.put("target_material", mode.getTargetMaterial().name());
+            modePlaceholders.put("selected", mode.getId().equalsIgnoreCase(selectedMode.getId())
+                    ? confirmSelectedText
+                    : confirmNotSelectedText);
+            placeConfirmButton(player, inventory, mode.getButton(), modePlaceholders);
+        }
+        placeConfirmButton(player, inventory, confirmAcceptButton, placeholders);
+        placeConfirmButton(player, inventory, confirmCancelButton, placeholders);
+        player.openInventory(inventory);
+    }
+
+    private void placeConfirmButton(
+            final Player player,
+            final Inventory inventory,
+            final ConfirmButton button,
+            final Map<String, String> placeholders
+    ) {
+        if (button == null || !button.isEnabled() || !canSee(player, button)) {
+            return;
+        }
+        if (button.getSlot() < 0 || button.getSlot() >= inventory.getSize()) {
+            plugin.getLogger().warning("WorldEdit-Bestätigungsbutton hat einen ungültigen Slot: " + button.getSlot());
+            return;
+        }
+        inventory.setItem(button.getSlot(), createConfirmItem(button, placeholders));
+    }
+
+    private ItemStack createConfirmItem(final ConfirmButton button, final Map<String, String> placeholders) {
+        final Material itemMaterial = button.getMaterial() == Material.AIR ? Material.BARRIER : button.getMaterial();
+        final ItemStack item = new ItemStack(itemMaterial);
+        final ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(Text.color(apply(button.getName(), placeholders)));
+            meta.setLore(Text.color(apply(button.getLore(), placeholders)));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private void confirmAction(final Player player) {
+        final PendingWorldEditAction action = pendingActions.get(player.getUniqueId());
+        if (action == null) {
+            languageManager.send(player, "extras-worldedit-no-pending");
+            return;
+        }
+        final WorldEditMode mode = selectedMode(player, action);
+        if (mode == null) {
+            pendingActions.remove(player.getUniqueId());
+            languageManager.send(player, "extras-worldedit-mode-unavailable");
+            return;
+        }
+        final Optional<PlotContext> optionalContext = flagService.currentPlotContext(player);
+        if (!optionalContext.isPresent() || !optionalContext.get().isComplete()) {
+            pendingActions.remove(player.getUniqueId());
+            languageManager.send(player, "extras-worldedit-no-plot");
+            return;
+        }
+        final PlotContext context = optionalContext.get();
+        if (!action.getPlotKey().equals(plotKey(context))) {
+            pendingActions.remove(player.getUniqueId());
+            languageManager.send(player, "extras-worldedit-no-plot");
+            return;
+        }
+        if (requireOwnPlot && !player.hasPermission(bypassPlotPermission)
+                && (context.getOwnerUuid() == null || !context.getOwnerUuid().equals(player.getUniqueId()))) {
+            pendingActions.remove(player.getUniqueId());
+            languageManager.send(player, "extras-worldedit-not-owner", contextPlaceholders(context));
+            return;
+        }
+        final Location first = action.getFirst();
+        final Location second = action.getSecond();
+        if (first.getWorld() == null || second.getWorld() == null || !first.getWorld().equals(second.getWorld())) {
+            pendingActions.remove(player.getUniqueId());
+            languageManager.send(player, "extras-worldedit-different-world");
+            return;
+        }
+        if (!isAllowedPlotBlock(context, first) || !isAllowedPlotBlock(context, second)
+                || allowedSelectionBlocks(first, second, context) < 0L) {
+            pendingActions.remove(player.getUniqueId());
+            languageManager.send(player, "extras-worldedit-outside-plot", contextPlaceholders(context));
+            return;
+        }
+        if (!isWorldEditAvailable()) {
+            pendingActions.remove(player.getUniqueId());
+            languageManager.send(player, "extras-worldedit-worldedit-missing");
+            return;
+        }
+
+        final Pricing pricing = currentPricing(player, action.getBlocks());
+        final Map<String, String> placeholders = confirmationPlaceholders(player, action, mode, pricing);
+        if (!withdraw(player, pricing.getPrice(), placeholders)) {
+            return;
+        }
+
+        try {
+            final WorldEditSelectionAdapter adapter = new WorldEditSelectionAdapter();
+            adapter.setSelection(player, first, second);
+            adapter.setBlocks(first, second, mode.getTargetMaterial());
+        } catch (final Exception exception) {
+            plugin.getLogger().log(Level.WARNING, "WorldEdit-Service konnte die Auswahl nicht setzen.", exception);
+            languageManager.send(player, "extras-worldedit-failed", placeholders);
+            return;
+        }
+
+        if (pricing.isUsesIncludedPackage()) {
             setIncludedPackageCooldown(player.getUniqueId());
             placeholders.put("cooldown", "Ja");
             placeholders.put("cooldown_remaining", formatDuration(cooldownRemaining(player.getUniqueId())));
         }
         runSuccessCommands(player, first, second, placeholders);
-        selections.remove(player.getUniqueId());
-        languageManager.send(player, "extras-worldedit-paid", placeholders);
+        pendingActions.remove(player.getUniqueId());
+        languageManager.send(player, "extras-worldedit-applied", placeholders);
+    }
+
+    private boolean isButtonClick(final Player player, final ConfirmButton button, final int slot) {
+        return button != null && button.isEnabled() && button.getSlot() == slot && canSee(player, button);
+    }
+
+    private boolean canSee(final Player player, final ConfirmButton button) {
+        final String buttonPermission = button.getPermission();
+        return buttonPermission == null || buttonPermission.trim().isEmpty() || player.hasPermission(buttonPermission.trim());
+    }
+
+    private Optional<WorldEditMode> firstAvailableMode(final Player player) {
+        for (final WorldEditMode mode : modes.values()) {
+            if (canUseMode(player, mode)) {
+                return Optional.of(mode);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private WorldEditMode selectedMode(final Player player, final PendingWorldEditAction action) {
+        WorldEditMode mode = modes.get(action.getModeId());
+        if (canUseMode(player, mode)) {
+            return mode;
+        }
+        final Optional<WorldEditMode> fallback = firstAvailableMode(player);
+        if (!fallback.isPresent()) {
+            return null;
+        }
+        mode = fallback.get();
+        action.setModeId(mode.getId());
+        return mode;
+    }
+
+    private boolean canUseMode(final Player player, final WorldEditMode mode) {
+        if (mode == null || !mode.isEnabled() || mode.getButton() == null || !mode.getButton().isEnabled()) {
+            return false;
+        }
+        final String modePermission = mode.getPermission();
+        if (modePermission != null && !modePermission.trim().isEmpty() && !player.hasPermission(modePermission.trim())) {
+            return false;
+        }
+        return canSee(player, mode.getButton());
+    }
+
+    private Pricing currentPricing(final Player player, final long blocks) {
+        final boolean onCooldown = isOnCooldown(player.getUniqueId());
+        final boolean free = player.hasPermission(freePermission);
+        final boolean usesIncludedPackage = !free && !onCooldown && includedBlocks > 0L;
+        final double currentPrice = free ? 0.0D : price(blocks, onCooldown);
+        return new Pricing(currentPrice, onCooldown, cooldownRemaining(player.getUniqueId()), usesIncludedPackage);
     }
 
     private boolean withdraw(final Player player, final double price, final Map<String, String> placeholders) {
@@ -480,6 +830,32 @@ public final class ExtrasService implements Listener {
         return placeholders;
     }
 
+    private Map<String, String> confirmationPlaceholders(
+            final Player player,
+            final PendingWorldEditAction action,
+            final WorldEditMode mode,
+            final Pricing pricing
+    ) {
+        final Map<String, String> placeholders = placeholders(
+                player,
+                action.getBlocks(),
+                pricing.getPrice(),
+                pricing.isOnCooldown(),
+                pricing.getCooldownRemainingMillis()
+        );
+        placeholders.put("mode", modeName(mode.getId()));
+        placeholders.put("mode_id", mode.getId());
+        placeholders.put("target_material", mode.getTargetMaterial().name());
+        placeholders.put("x1", String.valueOf(action.getFirst().getBlockX()));
+        placeholders.put("y1", String.valueOf(action.getFirst().getBlockY()));
+        placeholders.put("z1", String.valueOf(action.getFirst().getBlockZ()));
+        placeholders.put("x2", String.valueOf(action.getSecond().getBlockX()));
+        placeholders.put("y2", String.valueOf(action.getSecond().getBlockY()));
+        placeholders.put("z2", String.valueOf(action.getSecond().getBlockZ()));
+        placeholders.put("world", action.getFirst().getWorld() == null ? "" : action.getFirst().getWorld().getName());
+        return placeholders;
+    }
+
     private Map<String, String> contextPlaceholders(final PlotContext context) {
         final Map<String, String> placeholders = new HashMap<>();
         placeholders.put("world", context.getWorldName());
@@ -531,6 +907,21 @@ public final class ExtrasService implements Listener {
             return hours + "h " + minutes + "m";
         }
         return Math.max(1L, minutes) + "m";
+    }
+
+    private int normalizeSize(final int configuredSize) {
+        final int clamped = Math.max(9, Math.min(54, configuredSize));
+        return ((clamped + 8) / 9) * 9;
+    }
+
+    private String modeName(final String id) {
+        if ("water".equalsIgnoreCase(id)) {
+            return guiConfig.getString("worldedit-confirm.mode-names.water", "&bWasser");
+        }
+        if ("lava".equalsIgnoreCase(id)) {
+            return guiConfig.getString("worldedit-confirm.mode-names.lava", "&6Lava");
+        }
+        return guiConfig.getString("worldedit-confirm.mode-names.air", "&fLuft");
     }
 
     private Material material(final String configured, final Material fallback) {
@@ -608,6 +999,203 @@ public final class ExtrasService implements Listener {
             this.plotKey = plotKey;
             first = null;
             second = null;
+        }
+    }
+
+    private static final class PendingWorldEditAction {
+
+        private final String plotKey;
+        private final Location first;
+        private final Location second;
+        private final long blocks;
+        private String modeId;
+
+        private PendingWorldEditAction(
+                final String plotKey,
+                final Location first,
+                final Location second,
+                final long blocks,
+                final String modeId
+        ) {
+            this.plotKey = plotKey;
+            this.first = first;
+            this.second = second;
+            this.blocks = blocks;
+            this.modeId = modeId;
+        }
+
+        private String getPlotKey() {
+            return plotKey;
+        }
+
+        private Location getFirst() {
+            return first;
+        }
+
+        private Location getSecond() {
+            return second;
+        }
+
+        private long getBlocks() {
+            return blocks;
+        }
+
+        private String getModeId() {
+            return modeId;
+        }
+
+        private void setModeId(final String modeId) {
+            this.modeId = modeId;
+        }
+    }
+
+    private static final class WorldEditMode {
+
+        private final String id;
+        private final boolean enabled;
+        private final Material targetMaterial;
+        private final String permission;
+        private final ConfirmButton button;
+
+        private WorldEditMode(
+                final String id,
+                final boolean enabled,
+                final Material targetMaterial,
+                final String permission
+        ) {
+            this(id, enabled, targetMaterial, permission, null);
+        }
+
+        private WorldEditMode(
+                final String id,
+                final boolean enabled,
+                final Material targetMaterial,
+                final String permission,
+                final ConfirmButton button
+        ) {
+            this.id = id;
+            this.enabled = enabled;
+            this.targetMaterial = targetMaterial;
+            this.permission = permission == null ? "" : permission;
+            this.button = button;
+        }
+
+        private String getId() {
+            return id;
+        }
+
+        private boolean isEnabled() {
+            return enabled;
+        }
+
+        private Material getTargetMaterial() {
+            return targetMaterial;
+        }
+
+        private String getPermission() {
+            return permission;
+        }
+
+        private ConfirmButton getButton() {
+            return button;
+        }
+
+        private WorldEditMode withButton(final ConfirmButton button) {
+            return new WorldEditMode(id, enabled, targetMaterial, permission, button);
+        }
+    }
+
+    private static final class ConfirmButton {
+
+        private final boolean enabled;
+        private final int slot;
+        private final Material material;
+        private final String name;
+        private final List<String> lore;
+        private final String permission;
+
+        private ConfirmButton(
+                final boolean enabled,
+                final int slot,
+                final Material material,
+                final String name,
+                final List<String> lore,
+                final String permission
+        ) {
+            this.enabled = enabled;
+            this.slot = slot;
+            this.material = material;
+            this.name = name;
+            this.lore = lore == null ? Collections.emptyList() : lore;
+            this.permission = permission == null ? "" : permission;
+        }
+
+        private boolean isEnabled() {
+            return enabled;
+        }
+
+        private int getSlot() {
+            return slot;
+        }
+
+        private Material getMaterial() {
+            return material;
+        }
+
+        private String getName() {
+            return name;
+        }
+
+        private List<String> getLore() {
+            return lore;
+        }
+
+        private String getPermission() {
+            return permission;
+        }
+    }
+
+    private static final class Pricing {
+
+        private final double price;
+        private final boolean onCooldown;
+        private final long cooldownRemainingMillis;
+        private final boolean usesIncludedPackage;
+
+        private Pricing(
+                final double price,
+                final boolean onCooldown,
+                final long cooldownRemainingMillis,
+                final boolean usesIncludedPackage
+        ) {
+            this.price = price;
+            this.onCooldown = onCooldown;
+            this.cooldownRemainingMillis = cooldownRemainingMillis;
+            this.usesIncludedPackage = usesIncludedPackage;
+        }
+
+        private double getPrice() {
+            return price;
+        }
+
+        private boolean isOnCooldown() {
+            return onCooldown;
+        }
+
+        private long getCooldownRemainingMillis() {
+            return cooldownRemainingMillis;
+        }
+
+        private boolean isUsesIncludedPackage() {
+            return usesIncludedPackage;
+        }
+    }
+
+    private static final class WorldEditConfirmHolder implements InventoryHolder {
+
+        @Override
+        public Inventory getInventory() {
+            return null;
         }
     }
 }

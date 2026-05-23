@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 16
+file-version: 17
 
 # Befehle dieses Plugins.
 command:
@@ -426,6 +426,28 @@ extras:
     free-permission: "craftplayplotextras.extras.worldedit.free"
     # Maximale Größe einer Auswahl in Blöcken.
     max-selection-blocks: 1000000
+    modes:
+      air:
+        # Wenn false, kann Luft nicht als WorldEdit-Service-Aktion ausgewählt werden.
+        enabled: true
+        # Optionales Zusatzrecht für diese Aktion. Leer bedeutet: die normale Service-Permission reicht.
+        permission: ""
+        # Blockmaterial, das nach der Bestätigung gesetzt wird.
+        target-material: AIR
+      water:
+        # Wenn false, kann Wasser nicht als WorldEdit-Service-Aktion ausgewählt werden.
+        enabled: true
+        # Optionales Zusatzrecht für Wasser setzen.
+        permission: ""
+        # Blockmaterial, das nach der Bestätigung gesetzt wird.
+        target-material: WATER
+      lava:
+        # Wenn false, kann Lava nicht als WorldEdit-Service-Aktion ausgewählt werden.
+        enabled: true
+        # Optionales Zusatzrecht für Lava setzen.
+        permission: ""
+        # Blockmaterial, das nach der Bestätigung gesetzt wird.
+        target-material: LAVA
     item:
       # Material des Auswahl-Items.
       material: GOLDEN_AXE
@@ -437,8 +459,8 @@ extras:
       lore:
         - "&7Linksklick: Ecke 1 setzen"
         - "&7Rechtsklick: Ecke 2 setzen"
-        - "&7Die Auswahl wird nach Zahlung"
-        - "&7als WorldEdit-Auswahl gesetzt."
+        - "&7Danach öffnet sich die"
+        - "&7Bestätigung mit Preis."
         - ""
         - "&7Paket: &f{included_blocks} Blöcke"
         - "&7Paketpreis: &f{included_price}"

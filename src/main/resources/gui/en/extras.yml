@@ -2,7 +2,7 @@
 # This file controls additional services that are not directly part of PlotSquared.
 # Each button can be disabled, moved, given its own permission, or extended with custom commands.
 
-file-version: 1
+file-version: 2
 
 title: "&8Extras"
 size: 27
@@ -26,8 +26,8 @@ buttons:
     lore:
       - "&7Gives you the selection item."
       - "&7Mark two corners on your plot."
-      - "&7Price and cooldown are checked"
-      - "&7automatically afterwards."
+      - "&7Then review cost and action"
+      - "&7in the confirmation window."
     commands:
       - "extras:worldedit-service"
     close: true
@@ -61,3 +61,67 @@ decorations:
     name: "&r"
     lore: []
     permission: ""
+
+worldedit-confirm:
+  # Confirmation inventory after both WorldEdit service corners were selected.
+  title: "&8WorldEdit Service"
+  size: 27
+  selected-text: "&aSelected"
+  not-selected-text: "&7Not selected"
+  mode-names:
+    air: "&fAir"
+    water: "&bWater"
+    lava: "&6Lava"
+  filler: {enabled: true, slot: 0, material: BLACK_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+  buttons:
+    info:
+      enabled: true
+      slot: 4
+      material: PAPER
+      name: "&eReview Selection"
+      lore:
+        - "&7Blocks: &f{blocks}"
+        - "&7Cost: &f{price}"
+        - "&7Action: &f{mode}"
+        - "&7Cooldown: &f{cooldown_remaining}"
+        - ""
+        - "&7From: &f{x1} {y1} {z1}"
+        - "&7To: &f{x2} {y2} {z2}"
+      permission: ""
+    air:
+      enabled: true
+      slot: 11
+      material: WHITE_STAINED_GLASS
+      name: "&fSet Air"
+      lore: ["&7Status: {selected}", "&7Removes the blocks in this area."]
+      permission: ""
+    water:
+      enabled: true
+      slot: 13
+      material: WATER_BUCKET
+      name: "&bSet Water"
+      lore: ["&7Status: {selected}", "&7Fills the area with water."]
+      permission: ""
+    lava:
+      enabled: true
+      slot: 15
+      material: LAVA_BUCKET
+      name: "&6Set Lava"
+      lore: ["&7Status: {selected}", "&7Fills the area with lava."]
+      permission: ""
+    confirm:
+      enabled: true
+      slot: 21
+      material: LIME_CONCRETE
+      name: "&aConfirm"
+      lore:
+        - "&7Withdraws &f{price}&7."
+        - "&7Then sets &f{mode}&7."
+      permission: ""
+    cancel:
+      enabled: true
+      slot: 23
+      material: RED_CONCRETE
+      name: "&cCancel"
+      lore: ["&7Cancels the action.", "&7No money is withdrawn."]
+      permission: ""

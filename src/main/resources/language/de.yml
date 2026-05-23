@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 14
+file-version: 15
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -262,10 +262,22 @@ extras-worldedit-too-large: "&cDiese Auswahl ist zu groß: &f{blocks} &cBlöcke.
 extras-worldedit-worldedit-missing: "&cWorldEdit oder FAWE wurde nicht gefunden."
 # Nachricht, wenn Vault/CMI-Economy nicht verfügbar ist.
 extras-worldedit-economy-missing: "&cDas Economy-System ist nicht verfügbar. Die Auswahl wurde nicht berechnet."
-# Nachricht, wenn der Spieler nicht genug Geld hat. Platzhalter: {price}, {blocks}
-extras-worldedit-no-money: "&cDu hast nicht genug Geld. Benötigt: &f{price} &7für &f{blocks} &7Blöcke."
+# Nachricht, wenn der Spieler nicht genug Taler hat. Platzhalter: {price}, {blocks}
+extras-worldedit-no-money: "&cDu hast nicht genug Taler. Benötigt: &f{price} &7für &f{blocks} &7Blöcke."
 # Nachricht nach erfolgreicher Zahlung. Platzhalter: {price}, {blocks}, {cooldown_remaining}
 extras-worldedit-paid: "&aWorldEdit-Auswahl gesetzt. &7Blöcke: &f{blocks}&7, Kosten: &f{price}&7. Paket-Cooldown: &f{cooldown_remaining}&7."
+# Nachricht, wenn die Auswahl berechnet wurde und das Bestätigungs-GUI geöffnet wird. Platzhalter: {price}, {blocks}, {mode}
+extras-worldedit-confirm-opened: "&eAuswahl berechnet: &f{blocks} &7Blöcke, Kosten: &f{price}&7. Bitte bestätige die Aktion im GUI."
+# Nachricht, wenn keine bestätigbare WorldEdit-Service-Aktion vorhanden ist.
+extras-worldedit-no-pending: "&cEs wartet keine WorldEdit-Service-Aktion auf Bestätigung."
+# Nachricht, wenn der Spieler den WorldEdit-Service abbricht.
+extras-worldedit-cancelled: "&cWorldEdit-Service abgebrochen. Es wurde nichts abgezogen."
+# Nachricht, wenn keine erlaubte Aktion wie Luft, Wasser oder Lava verfügbar ist.
+extras-worldedit-mode-unavailable: "&cFür dich ist keine WorldEdit-Service-Aktion verfügbar."
+# Nachricht, wenn WorldEdit das Setzen der Blöcke nicht durchführen konnte.
+extras-worldedit-failed: "&cDer WorldEdit-Service konnte die Blöcke nicht setzen. Bitte informiere ein Teammitglied."
+# Nachricht nach erfolgreicher Bestätigung. Platzhalter: {price}, {blocks}, {mode}, {cooldown_remaining}
+extras-worldedit-applied: "&aWorldEdit-Service ausgeführt. &7Aktion: &f{mode}&7, Blöcke: &f{blocks}&7, Kosten: &f{price}&7."
 
 # Nachricht, wenn ein Future-Feature deaktiviert ist.
 future-disabled: "&cDieses Zukunftsfeature ist aktuell deaktiviert."

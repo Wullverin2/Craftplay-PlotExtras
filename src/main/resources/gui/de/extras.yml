@@ -2,7 +2,7 @@
 # Diese Datei steuert zusätzliche Services, die nicht direkt zu PlotSquared gehören.
 # Jeder Button kann deaktiviert, verschoben, mit eigener Permission versehen oder mit eigenen Befehlen erweitert werden.
 
-file-version: 1
+file-version: 2
 
 title: "&8Extras"
 size: 27
@@ -26,8 +26,8 @@ buttons:
     lore:
       - "&7Gibt dir das Auswahl-Item."
       - "&7Markiere zwei Ecken auf deinem Plot."
-      - "&7Danach werden Preis und Cooldown"
-      - "&7automatisch geprüft."
+      - "&7Danach siehst du Preis und"
+      - "&7Aktion im Bestätigungsfenster."
     commands:
       - "extras:worldedit-service"
     close: true
@@ -61,3 +61,67 @@ decorations:
     name: "&r"
     lore: []
     permission: ""
+
+worldedit-confirm:
+  # Bestätigungsfenster nach dem Markieren beider WorldEdit-Service-Ecken.
+  title: "&8WorldEdit-Service"
+  size: 27
+  selected-text: "&aAusgewählt"
+  not-selected-text: "&7Nicht ausgewählt"
+  mode-names:
+    air: "&fLuft"
+    water: "&bWasser"
+    lava: "&6Lava"
+  filler: {enabled: true, slot: 0, material: BLACK_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+  buttons:
+    info:
+      enabled: true
+      slot: 4
+      material: PAPER
+      name: "&eAuswahl prüfen"
+      lore:
+        - "&7Blöcke: &f{blocks}"
+        - "&7Kosten: &f{price}"
+        - "&7Aktion: &f{mode}"
+        - "&7Cooldown: &f{cooldown_remaining}"
+        - ""
+        - "&7Von: &f{x1} {y1} {z1}"
+        - "&7Bis: &f{x2} {y2} {z2}"
+      permission: ""
+    air:
+      enabled: true
+      slot: 11
+      material: WHITE_STAINED_GLASS
+      name: "&fLuft setzen"
+      lore: ["&7Status: {selected}", "&7Entfernt die Blöcke im Bereich."]
+      permission: ""
+    water:
+      enabled: true
+      slot: 13
+      material: WATER_BUCKET
+      name: "&bWasser setzen"
+      lore: ["&7Status: {selected}", "&7Füllt den Bereich mit Wasser."]
+      permission: ""
+    lava:
+      enabled: true
+      slot: 15
+      material: LAVA_BUCKET
+      name: "&6Lava setzen"
+      lore: ["&7Status: {selected}", "&7Füllt den Bereich mit Lava."]
+      permission: ""
+    confirm:
+      enabled: true
+      slot: 21
+      material: LIME_CONCRETE
+      name: "&aBestätigen"
+      lore:
+        - "&7Zieht &f{price} &7ab."
+        - "&7Danach wird &f{mode} &7gesetzt."
+      permission: ""
+    cancel:
+      enabled: true
+      slot: 23
+      material: RED_CONCRETE
+      name: "&cAbbrechen"
+      lore: ["&7Bricht den Vorgang ab.", "&7Es wird nichts abgezogen."]
+      permission: ""

@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 14
+file-version: 15
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -266,6 +266,18 @@ extras-worldedit-economy-missing: "&cThe economy system is not available. The se
 extras-worldedit-no-money: "&cYou do not have enough money. Required: &f{price} &7for &f{blocks} &7blocks."
 # Message shown after successful payment. Placeholders: {price}, {blocks}, {cooldown_remaining}
 extras-worldedit-paid: "&aWorldEdit selection set. &7Blocks: &f{blocks}&7, cost: &f{price}&7. Package cooldown: &f{cooldown_remaining}&7."
+# Message shown after the selection was calculated and the confirmation GUI opens. Placeholders: {price}, {blocks}, {mode}
+extras-worldedit-confirm-opened: "&eSelection calculated: &f{blocks} &7blocks, cost: &f{price}&7. Please confirm the action in the GUI."
+# Message shown when no WorldEdit service action is waiting for confirmation.
+extras-worldedit-no-pending: "&cNo WorldEdit service action is waiting for confirmation."
+# Message shown when the player cancels the WorldEdit service.
+extras-worldedit-cancelled: "&cWorldEdit service cancelled. No money was withdrawn."
+# Message shown when no action such as air, water, or lava is available.
+extras-worldedit-mode-unavailable: "&cNo WorldEdit service action is available for you."
+# Message shown when WorldEdit could not set the blocks.
+extras-worldedit-failed: "&cThe WorldEdit service could not set the blocks. Please contact a staff member."
+# Message shown after successful confirmation. Placeholders: {price}, {blocks}, {mode}, {cooldown_remaining}
+extras-worldedit-applied: "&aWorldEdit service executed. &7Action: &f{mode}&7, blocks: &f{blocks}&7, cost: &f{price}&7."
 
 # Message shown when a future feature is disabled.
 future-disabled: "&cThis future feature is currently disabled."
