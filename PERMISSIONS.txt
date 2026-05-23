@@ -1,0 +1,443 @@
+CraftplayPlotExtras - Permissions
+Stand: 2026-05-23
+
+Pflegehinweis:
+Diese Datei muss jedes Mal aktualisiert werden, wenn im Plugin, in plugin.yml, in der config.yml
+oder in einer GUI-Datei eine neue Permission ergänzt wird.
+
+Hinweise:
+- Zielgruppe "Spieler" bedeutet: für normale Spieler oder Ränge gedacht.
+- Zielgruppe "Team" bedeutet: für Support, Moderation, Builder, Admins oder Leitung gedacht.
+- "Default" entspricht dem Eintrag in plugin.yml. true = normale Spieler, op = Operator/Team.
+- Leere GUI-Permissions wie permission: "" bedeuten: kein zusätzlicher Permission-Check.
+- PlotSquared-Permissions werden von PlotSquared selbst bereitgestellt und hier nur vom Menü geprüft.
+
+
+1. CraftplayPlotExtras-Permissions
+
+Permission: craftplayplotextras.use
+Zielgruppe: Spieler
+Default: true
+Gibt frei: Öffnen und Nutzen der normalen PlotExtras-Menüs.
+
+Permission: craftplayplotextras.myplots
+Zielgruppe: Spieler
+Default: true
+Gibt frei: Öffnen des Meine-Plots-Menüs.
+
+Permission: craftplayplotextras.create.premium
+Zielgruppe: Spieler / Rang
+Default: op
+Gibt frei: Nutzung des Premiumplot-Buttons im Plot-Erstellen-Menü.
+
+Permission: craftplayplotextras.admin
+Zielgruppe: Team
+Default: op
+Gibt frei: Administrative Basisbefehle wie /plotextras reload und Storage-Migrationen.
+
+Permission: craftplayplotextras.team
+Zielgruppe: Team
+Default: op
+Gibt frei: Öffnen des Team-Menüs und allgemeine Teamfunktionen.
+
+Permission: craftplayplotextras.team.reports
+Zielgruppe: Team
+Default: op
+Gibt frei: Teaminterne Report-Buttons und Reportfunktionen.
+
+Permission: craftplayplotextras.team.community
+Zielgruppe: Team
+Default: op
+Gibt frei: Teaminterne Community-Prüffunktionen im Team-Menü.
+
+Permission: craftplayplotextras.team.lock
+Zielgruppe: Team
+Default: op
+Gibt frei: Plots sperren und wieder entsperren.
+
+Permission: craftplayplotextras.team.freeze
+Zielgruppe: Team
+Default: op
+Gibt frei: Plots einfrieren und wieder auftauen.
+
+Permission: craftplayplotextras.team.audit
+Zielgruppe: Team
+Default: op
+Gibt frei: Anzeigen der Team-Auditlogs.
+
+Permission: craftplayplotextras.team.lagscan
+Zielgruppe: Team
+Default: op
+Gibt frei: Teaminterne Lag- und Redstone-Scans.
+
+Permission: craftplayplotextras.team.activity
+Zielgruppe: Team
+Default: op
+Gibt frei: Teaminterne Aktivitätsprüfungen.
+
+Permission: craftplayplotextras.team.analysis
+Zielgruppe: Team
+Default: op
+Gibt frei: Teaminterne Plotanalysen.
+
+Permission: craftplayplotextras.team.bypass-lock
+Zielgruppe: Team
+Default: op
+Gibt frei: Betreten gesperrter Plots.
+
+Permission: craftplayplotextras.team.bypass-freeze
+Zielgruppe: Team
+Default: op
+Gibt frei: Änderungen auf eingefrorenen Plots.
+
+Permission: craftplayplotextras.reports.create
+Zielgruppe: Spieler
+Default: true
+Gibt frei: Erstellen von Plotreports über das Menü.
+
+Permission: craftplayplotextras.reports.manage
+Zielgruppe: Team
+Default: op
+Gibt frei: Reports anzeigen, filtern, bearbeiten und schließen.
+
+Permission: craftplayplotextras.roles.manage
+Zielgruppe: Team / Plotverwaltung
+Default: op
+Gibt frei: Rollenverwaltung über Bukkit-Permission. Plotrollen können zusätzlich eigene Rechte vergeben.
+
+Permission: craftplayplotextras.flags.bypass
+Zielgruppe: Team
+Default: op
+Gibt frei: Plotflags über das Menü auch auf fremden Plots ändern.
+
+Permission: craftplayplotextras.future
+Zielgruppe: Team / optionale Ränge
+Default: op
+Gibt frei: Öffnen des Menüs für optionale Zukunfts- und Zusatzfunktionen.
+
+Permission: craftplayplotextras.future.heatmaps
+Zielgruppe: Team
+Default: op
+Gibt frei: Heatmap-Profile und Heatmap-Auswertungen.
+
+Permission: craftplayplotextras.future.visitors
+Zielgruppe: Team
+Default: op
+Gibt frei: Besucherstatistik-Profile.
+
+Permission: craftplayplotextras.future.ranking
+Zielgruppe: Team
+Default: op
+Gibt frei: Internes Plotranking.
+
+Permission: craftplayplotextras.future.ai
+Zielgruppe: Team
+Default: op
+Gibt frei: AI-Tagging-Profile.
+
+Permission: craftplayplotextras.future.gallery
+Zielgruppe: Spieler / Team
+Default: op
+Gibt frei: Interne Plot-Galerie.
+
+Permission: craftplayplotextras.future.templates
+Zielgruppe: Spieler / Team
+Default: op
+Gibt frei: Template-Profile.
+
+Permission: craftplayplotextras.future.backups
+Zielgruppe: Team
+Default: op
+Gibt frei: Future-Backup-Aktionen.
+
+Permission: craftplayplotextras.future.undo
+Zielgruppe: Team
+Default: op
+Gibt frei: Wiederherstellen des letzten Plotbackups.
+
+Permission: craftplayplotextras.future.redstone
+Zielgruppe: Team
+Default: op
+Gibt frei: Redstone-Analysen.
+
+Permission: craftplayplotextras.future.market
+Zielgruppe: Spieler / Team
+Default: op
+Gibt frei: Plotmarkt-Profile.
+
+Permission: craftplayplotextras.future.trading
+Zielgruppe: Spieler / Team
+Default: op
+Gibt frei: Plothandel-Profile.
+
+Permission: craftplayplotextras.future.auctions
+Zielgruppe: Spieler / Team
+Default: op
+Gibt frei: Plotauktions-Profile.
+
+Permission: craftplayplotextras.future.npcs
+Zielgruppe: Spieler / Team
+Default: op
+Gibt frei: Plot-NPC-Profile.
+
+Permission: craftplayplotextras.future.discord
+Zielgruppe: Team
+Default: op
+Gibt frei: Discord-Profile und Discord-Testaktionen.
+
+Permission: craftplayplotextras.future.web
+Zielgruppe: Team
+Default: op
+Gibt frei: Webübersicht-Profile und Exportfunktionen.
+
+Permission: craftplayplotextras.future.manage
+Zielgruppe: Team
+Default: op
+Gibt frei: Bearbeiten fremder Future-Plotdaten.
+
+Permission: craftplayplotextras.extras.worldedit
+Zielgruppe: Spieler
+Default: true
+Gibt frei: Nutzung des WorldEdit-Service im Extras-Menü.
+
+Permission: craftplayplotextras.extras.worldedit.bypass-plot
+Zielgruppe: Team
+Default: op
+Gibt frei: WorldEdit-Service ohne eigene-Plot-Prüfung nutzen.
+
+Permission: craftplayplotextras.extras.worldedit.free
+Zielgruppe: Spieler / Team
+Default: op
+Gibt frei: WorldEdit-Service kostenlos nutzen.
+
+Permission: craftplayplotextras.passivewither.buy
+Zielgruppe: Spieler
+Default: true
+Gibt frei: Kauf eines passiven Wither-Items im Extras-Menü.
+
+Permission: craftplayplotextras.passivewither.command
+Zielgruppe: Team
+Default: op
+Gibt frei: Administrative Passive-Wither-Befehle.
+
+Permission: craftplayplotextras.passivewither.sound
+Zielgruppe: Spieler
+Default: true
+Gibt frei: Passive-Wither-Sounds für sich selbst umschalten.
+
+Permission: craftplayplotextras.passivewither.free
+Zielgruppe: Spieler / Team
+Default: op
+Gibt frei: Passive Wither kostenlos kaufen.
+
+Permission: craftplayplotextras.backup.create
+Zielgruppe: Team
+Default: op
+Gibt frei: Manuelles Erstellen von Plotbackups.
+
+Permission: craftplayplotextras.backup.list
+Zielgruppe: Team
+Default: op
+Gibt frei: Anzeigen der Plotbackup-Liste.
+
+Permission: craftplayplotextras.backup.restore
+Zielgruppe: Team
+Default: op
+Gibt frei: Wiederherstellen von Plotbackups.
+
+
+2. PlotSquared-Permissions, die die Standard-GUIs verwenden
+
+Permission: plots.use
+Zielgruppe: Spieler
+Gibt frei: PlotSquared-Grundfunktionen und Hilfe-Buttons.
+
+Permission: plots.auto
+Zielgruppe: Spieler
+Gibt frei: Plot-Erstellung per /plot auto über das Erstellen-Menü.
+
+Permission: plots.visit
+Zielgruppe: Spieler
+Gibt frei: Plotbesuche und Suchbuttons, die /plot visit nutzen.
+
+Permission: plots.list
+Zielgruppe: Spieler / Team
+Gibt frei: Plotlisten wie Top, Neueste, Besuchte oder Suchlisten.
+
+Permission: plots.info
+Zielgruppe: Spieler / Team
+Gibt frei: Plotinformationen und Mitgliederlisten im GUI.
+
+Permission: plots.home
+Zielgruppe: Spieler
+Gibt frei: Plot-Home-Funktionen von PlotSquared.
+
+Permission: plots.set.home
+Zielgruppe: Spieler
+Gibt frei: Plot-Home setzen.
+
+Permission: plots.set.alias
+Zielgruppe: Spieler
+Gibt frei: Plotnamen/Alias ändern.
+
+Permission: plots.set.desc
+Zielgruppe: Spieler
+Gibt frei: Plotbeschreibung ändern.
+
+Permission: plots.set.biome
+Zielgruppe: Spieler
+Gibt frei: Plotbiom ändern.
+
+Permission: plots.set.flag.weather
+Zielgruppe: Spieler
+Gibt frei: Wetter-Flag über das Einstellungsmenü ändern.
+
+Permission: plots.set.flag.time
+Zielgruppe: Spieler
+Gibt frei: Zeit-Flag über das Einstellungsmenü ändern.
+
+Permission: plots.set.flag.music
+Zielgruppe: Spieler
+Gibt frei: Musik-Flag über das Einstellungsmenü ändern.
+
+Permission: plots.set.flag.untrusted-visit
+Zielgruppe: Spieler
+Gibt frei: Öffentliche/private Sichtbarkeit über untrusted-visit ändern.
+
+Permission: plots.flag
+Zielgruppe: Spieler / Team
+Gibt frei: Allgemeiner Zugriff auf PlotSquared-Flag-Funktionen.
+
+Permission: plots.set.flag
+Zielgruppe: Spieler / Team
+Gibt frei: Allgemeines Setzen von Plotflags.
+
+Permission: plots.flag.add
+Zielgruppe: Spieler / Team
+Gibt frei: Plotflags hinzufügen.
+
+Permission: plots.flag.remove
+Zielgruppe: Spieler / Team
+Gibt frei: Plotflags entfernen oder zurücksetzen.
+
+Permission: plots.set.flag.<flag>
+Zielgruppe: Spieler / Team
+Gibt frei: Eine konkrete Plotflag ändern, z. B. plots.set.flag.pvp.
+
+Permission: plots.set.flag.<flag>.*
+Zielgruppe: Spieler / Team
+Gibt frei: Alle Werte einer konkreten Plotflag ändern.
+
+Permission: plots.set.flag.<flag>.true
+Zielgruppe: Spieler / Team
+Gibt frei: Eine konkrete Boolean-Flag auf true setzen.
+
+Permission: plots.set.flag.<flag>.false
+Zielgruppe: Spieler / Team
+Gibt frei: Eine konkrete Boolean-Flag auf false setzen.
+
+Permission: plots.rate
+Zielgruppe: Spieler
+Gibt frei: Plot bewerten, liken und Bewertungsbuttons nutzen.
+
+Permission: plots.comment
+Zielgruppe: Spieler
+Gibt frei: Plotkommentare schreiben und Kommentarbuttons nutzen.
+
+Permission: plots.report
+Zielgruppe: Spieler
+Gibt frei: PlotSquared-Report-Funktionen bzw. Reportbuttons.
+
+Permission: plots.trust
+Zielgruppe: Spieler
+Gibt frei: Spieler trusten, untrusten, befördern und degradieren.
+
+Permission: plots.add
+Zielgruppe: Spieler
+Gibt frei: Spieler als Added hinzufügen.
+
+Permission: plots.deny
+Zielgruppe: Spieler
+Gibt frei: Spieler vom Plot ausschließen oder Deny entfernen.
+
+Permission: plots.remove
+Zielgruppe: Spieler
+Gibt frei: Added-Spieler vom Plot entfernen.
+
+Permission: plots.delete
+Zielgruppe: Spieler / Team
+Gibt frei: Plot löschen. Das Plugin erstellt vorher automatisch ein Backup und fragt eine Bestätigung ab.
+
+Permission: plots.clear
+Zielgruppe: Spieler / Team
+Gibt frei: Plot resetten/leeren. Das Plugin erstellt vorher automatisch ein Backup und fragt eine Bestätigung ab.
+
+Permission: plots.unmerge
+Zielgruppe: Spieler / Team
+Gibt frei: Plotmerge trennen. Das Plugin erstellt vorher automatisch ein Backup und fragt eine Bestätigung ab.
+
+Permission: plots.schematic.paste
+Zielgruppe: Spieler / Team
+Gibt frei: Schematic-/Template-Buttons im Plot-Erstellen-Menü.
+
+Permission: plots.admin
+Zielgruppe: Team
+Gibt frei: Allgemeine administrative PlotSquared-Funktionen in Team-Menüs.
+
+Permission: plots.admin.command.flag
+Zielgruppe: Team
+Gibt frei: Administrative Flag-Befehle über Teamfunktionen.
+
+Permission: plots.admin.command.set.flag
+Zielgruppe: Team
+Gibt frei: Administrative Flag-Änderungen; wird auch als Bypass für Flagrechte erkannt.
+
+Permission: plots.admin.command.setowner
+Zielgruppe: Team
+Gibt frei: Plotbesitzer ändern.
+
+Permission: plots.admin.command.list
+Zielgruppe: Team
+Gibt frei: Administrative Plotlisten, z. B. inaktive Plots finden.
+
+
+3. Interne Plotrollen-Rechte
+
+Diese Rechte sind keine Bukkit-/LuckPerms-Permissions. Sie werden pro Plotrolle im Plugin gespeichert
+und nur innerhalb der CraftplayPlotExtras-Rollenverwaltung geprüft.
+
+Rollenrecht: build
+Zielgruppe: Plotrollen
+Gibt frei: Rollenbasiertes Bauen, sofern die jeweilige Funktion im Plugin darauf prüft.
+
+Rollenrecht: interact
+Zielgruppe: Plotrollen
+Gibt frei: Rollenbasierte Interaktion mit Schaltern, Türen und ähnlichen Aktionen.
+
+Rollenrecht: container
+Zielgruppe: Plotrollen
+Gibt frei: Rollenbasierten Zugriff auf Kisten und Container.
+
+Rollenrecht: manage-members
+Zielgruppe: Plotrollen
+Gibt frei: Mitgliederverwaltung über Rollen.
+
+Rollenrecht: manage-roles
+Zielgruppe: Plotrollen
+Gibt frei: Rollenverwaltung über Rollen.
+
+Rollenrecht: flags.*
+Zielgruppe: Plotrollen
+Gibt frei: Alle Plotflags über die Rollenverwaltung ändern.
+
+Rollenrecht: flags.<flag>
+Zielgruppe: Plotrollen
+Gibt frei: Eine konkrete Plotflag ändern, z. B. flags.pvp.
+
+Rollenrecht: flag.<flag>
+Zielgruppe: Plotrollen
+Gibt frei: Alternative Schreibweise für eine konkrete Plotflag, z. B. flag.pvp.
+
+Rollenrecht: future
+Zielgruppe: Plotrollen
+Gibt frei: Interne Zusatzfunktionen, die auf das Rollenrecht future prüfen.
