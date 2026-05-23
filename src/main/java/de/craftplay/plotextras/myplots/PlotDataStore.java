@@ -3,8 +3,6 @@ package de.craftplay.plotextras.myplots;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -14,24 +12,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public final class PlotDataStore {
 
     private final JavaPlugin plugin;
-    private File file;
     private YamlConfiguration configuration;
+    private String dataFile;
 
     public PlotDataStore(final JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
     public void reload() {
-        file = new File(plugin.getDataFolder(), plugin.getConfig().getString("my-plots.data-file", "plotdata.yml"));
-        if (!file.exists()) {
-            createDefaultFile();
-        }
-        configuration = YamlConfiguration.loadConfiguration(file);
+        dataFile = plugin.getConfig().getString("my-plots.data-file", "plotdata.yml");
+        configuration = ((de.craftplay.plotextras.CraftplayPlotExtrasPlugin) plugin)
+                .getStorageService()
+                .load("plotdata", dataFile);
         if (configuration.getInt("file-version", 0) < 1) {
             configuration.set("file-version", 1);
             save();
@@ -163,27 +159,12 @@ public final class PlotDataStore {
                 .encodeToString(plotKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    private void createDefaultFile() {
-        final File parent = file.getParentFile();
-        if (parent != null && !parent.exists() && !parent.mkdirs()) {
-            plugin.getLogger().warning("Plotdaten-Ordner konnte nicht erstellt werden: " + parent.getPath());
-        }
-        configuration = new YamlConfiguration();
-        configuration.options().header("Daten für das Meine-Plots-Menü.\n"
-                + "Hier speichert das Plugin Favoriten, Tags, Kategorien, Sichtbarkeit und Aktivität.\n"
-                + "Diese Datei ist eine Datendatei und wird automatisch gepflegt.");
-        configuration.set("file-version", 1);
-        save();
-    }
-
     private void save() {
-        if (configuration == null || file == null) {
+        if (configuration == null || dataFile == null) {
             return;
         }
-        try {
-            configuration.save(file);
-        } catch (final IOException exception) {
-            plugin.getLogger().log(Level.WARNING, "Plotdaten konnten nicht gespeichert werden: " + file.getPath(), exception);
-        }
+        ((de.craftplay.plotextras.CraftplayPlotExtrasPlugin) plugin)
+                .getStorageService()
+                .save("plotdata", dataFile, configuration);
     }
 }

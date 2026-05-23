@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 12
+file-version: 13
 
 # Befehle dieses Plugins.
 command:
@@ -22,6 +22,75 @@ language:
   # Mitgeliefert werden de und en. Die Datei muss unter language/<code>.yml liegen.
   # Wenn hier z. B. en steht, wird gui/en/main.yml und language/en.yml genutzt.
   default: de
+
+# Speicher-System für interne Plugin-Daten.
+# Schematics bleiben immer normale .schem-Dateien im Plotbackup-Ordner.
+# Alle anderen Plugin-Daten können hiermit in YAML, SQLite, MySQL/MariaDB, PostgreSQL, Redis oder MongoDB gespeichert werden.
+storage:
+  # Aktiver Speichertyp. Erlaubt: yaml, sqlite, mysql, mariadb, postgresql, redis, mongodb.
+  type: yaml
+  # Tabellenpräfix für SQL-Datenbanken. Aus diesem Wert wird z. B. cpe_data.
+  table-prefix: cpe_
+  sqlite:
+    # SQLite-Datei relativ zum Pluginordner.
+    file: storage/database.db
+  mysql:
+    # Hostname oder IP des MySQL-Servers.
+    host: 127.0.0.1
+    # Port des MySQL-Servers.
+    port: 3306
+    # Datenbankname.
+    database: craftplay_plotextras
+    # Benutzername.
+    username: root
+    # Passwort.
+    password: ""
+    # Wenn true, wird SSL in der JDBC-URL aktiviert.
+    use-ssl: false
+  mariadb:
+    # Hostname oder IP des MariaDB-Servers.
+    host: 127.0.0.1
+    # Port des MariaDB-Servers.
+    port: 3306
+    # Datenbankname.
+    database: craftplay_plotextras
+    # Benutzername.
+    username: root
+    # Passwort.
+    password: ""
+    # Wenn true, wird SSL in der JDBC-URL aktiviert.
+    use-ssl: false
+  postgresql:
+    # Hostname oder IP des PostgreSQL-Servers.
+    host: 127.0.0.1
+    # Port des PostgreSQL-Servers.
+    port: 5432
+    # Datenbankname.
+    database: craftplay_plotextras
+    # Benutzername.
+    username: postgres
+    # Passwort.
+    password: ""
+  redis:
+    # Hostname oder IP des Redis-Servers.
+    host: 127.0.0.1
+    # Port des Redis-Servers.
+    port: 6379
+    # Redis-Datenbanknummer.
+    database: 0
+    # Passwort. Leer lassen, wenn Redis kein Passwort nutzt.
+    password: ""
+    # Timeout für Redis-Verbindungen in Millisekunden.
+    timeout-millis: 2000
+    # Schlüsselpräfix, damit mehrere Plugins dieselbe Redis-Instanz nutzen können.
+    key-prefix: "craftplayplotextras:"
+  mongodb:
+    # MongoDB-Verbindungs-URI.
+    uri: "mongodb://127.0.0.1:27017"
+    # Datenbankname.
+    database: craftplay_plotextras
+    # Collection, in der Plugin-Daten gespeichert werden.
+    collection: data
 
 # GUI-Grundeinstellungen.
 gui:
@@ -280,8 +349,11 @@ future:
 plot-backups:
   # Aktiviert oder deaktiviert das komplette Plotbackup-System.
   enabled: true
-  # Unterordner im Pluginordner, in dem .schem-Dateien und Metadaten gespeichert werden.
+  # Unterordner im Pluginordner, in dem .schem-Dateien gespeichert werden.
   folder: Plotbackups
+  # Speicherpfad für Backup-Metadaten, wenn storage.type yaml ist.
+  # Bei Datenbanken/Redis/MongoDB wird dieser Wert nur als Namespace-Fallback genutzt.
+  metadata-file: Plotbackups/metadata.yml
   # Wenn true, wird immer die komplette Bauhöhe der Welt gesichert.
   # Wenn false, werden die Höhen genutzt, die PlotSquared für die Plotregion liefert.
   full-world-height: true

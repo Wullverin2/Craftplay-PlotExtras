@@ -7,8 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,14 +17,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public final class ReportService {
 
     private final CraftplayPlotExtrasPlugin plugin;
     private final PlotSquaredFlagService flagService;
     private final Map<String, PlotReport> reports = new LinkedHashMap<>();
-    private File file;
+    private String dataFile;
     private boolean enabled;
     private boolean asyncSaves;
 
@@ -38,10 +35,7 @@ public final class ReportService {
     public void reload() {
         enabled = plugin.getConfig().getBoolean("reports.enabled", true);
         asyncSaves = plugin.getConfig().getBoolean("technical.async-yaml-saves", true);
-        file = new File(plugin.getDataFolder(), plugin.getConfig().getString("reports.data-file", "reports.yml"));
-        if (!file.exists()) {
-            createDefaultFile();
-        }
+        dataFile = plugin.getConfig().getString("reports.data-file", "reports.yml");
         load();
     }
 
@@ -200,7 +194,7 @@ public final class ReportService {
 
     private void load() {
         reports.clear();
-        final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        final YamlConfiguration configuration = plugin.getStorageService().load("reports", dataFile);
         if (configuration.getInt("file-version", 0) < 1) {
             configuration.set("file-version", 1);
             saveConfiguration(configuration);
@@ -268,37 +262,11 @@ public final class ReportService {
 
     private void saveConfiguration(final YamlConfiguration configuration) {
         if (asyncSaves) {
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-                try {
-                    configuration.save(file);
-                } catch (final IOException exception) {
-                    plugin.getLogger().log(Level.WARNING, "Reports konnten nicht gespeichert werden: " + file.getPath(), exception);
-                }
-            });
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin,
+                    () -> plugin.getStorageService().save("reports", dataFile, configuration));
             return;
         }
-        try {
-            configuration.save(file);
-        } catch (final IOException exception) {
-            plugin.getLogger().log(Level.WARNING, "Reports konnten nicht gespeichert werden: " + file.getPath(), exception);
-        }
-    }
-
-    private void createDefaultFile() {
-        final File parent = file.getParentFile();
-        if (parent != null && !parent.exists() && !parent.mkdirs()) {
-            plugin.getLogger().warning("Report-Ordner konnte nicht erstellt werden: " + parent.getPath());
-        }
-        final YamlConfiguration configuration = new YamlConfiguration();
-        configuration.options().header("Report-Datendatei von CraftplayPlotExtras.\n"
-                + "Reports werden über das GUI erstellt und von Teammitgliedern verwaltet.\n"
-                + "Diese Datei wird automatisch gepflegt.");
-        configuration.set("file-version", 1);
-        try {
-            configuration.save(file);
-        } catch (final IOException exception) {
-            plugin.getLogger().log(Level.WARNING, "Reports konnten nicht gespeichert werden: " + file.getPath(), exception);
-        }
+        plugin.getStorageService().save("reports", dataFile, configuration);
     }
 
     private void notifyTeam(final PlotReport report) {

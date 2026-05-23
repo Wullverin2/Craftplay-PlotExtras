@@ -87,35 +87,47 @@ public final class PlotBackupMetadata {
         final YamlConfiguration configuration = new YamlConfiguration();
         configuration.options().header("Metadaten zu einem Plotbackup.\n"
                 + "Die .schem-Datei enthält die Blöcke und Entities, diese Datei enthält die Informationen für GUI und Wiederherstellung.");
-        configuration.set("file-version", 1);
-        configuration.set("id", id);
-        configuration.set("schematic-file", schematicFileName);
-        configuration.set("created-at", createdAt);
-        configuration.set("action", action);
-        configuration.set("created-by.uuid", createdByUuid == null ? "" : createdByUuid.toString());
-        configuration.set("created-by.name", createdByName);
-        configuration.set("plot-owner.uuid", ownerUuid == null ? "" : ownerUuid.toString());
-        configuration.set("plot-owner.name", ownerName);
-        configuration.set("plot.world", worldName);
-        configuration.set("plot.id", plotId);
-        configuration.set("plot.ids", plotIds);
-        configuration.set("plot.merge-type", mergeType);
-        if (bounds != null) {
-            configuration.set("plot.bounds.min-x", bounds.getMinX());
-            configuration.set("plot.bounds.min-y", bounds.getMinY());
-            configuration.set("plot.bounds.min-z", bounds.getMinZ());
-            configuration.set("plot.bounds.max-x", bounds.getMaxX());
-            configuration.set("plot.bounds.max-y", bounds.getMaxY());
-            configuration.set("plot.bounds.max-z", bounds.getMaxZ());
-        }
+        writeTo(configuration, "");
         configuration.save(file);
     }
 
     public static PlotBackupMetadata load(final File file) {
         final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        final ConfigurationSection boundsSection = configuration.getConfigurationSection("plot.bounds");
+        return load(configuration, "", file.getName().replace(".yml", ""));
+    }
+
+    public void writeTo(final YamlConfiguration configuration, final String path) {
+        configuration.set(path + "file-version", 1);
+        configuration.set(path + "id", id);
+        configuration.set(path + "schematic-file", schematicFileName);
+        configuration.set(path + "created-at", createdAt);
+        configuration.set(path + "action", action);
+        configuration.set(path + "created-by.uuid", createdByUuid == null ? "" : createdByUuid.toString());
+        configuration.set(path + "created-by.name", createdByName);
+        configuration.set(path + "plot-owner.uuid", ownerUuid == null ? "" : ownerUuid.toString());
+        configuration.set(path + "plot-owner.name", ownerName);
+        configuration.set(path + "plot.world", worldName);
+        configuration.set(path + "plot.id", plotId);
+        configuration.set(path + "plot.ids", plotIds);
+        configuration.set(path + "plot.merge-type", mergeType);
+        if (bounds != null) {
+            configuration.set(path + "plot.bounds.min-x", bounds.getMinX());
+            configuration.set(path + "plot.bounds.min-y", bounds.getMinY());
+            configuration.set(path + "plot.bounds.min-z", bounds.getMinZ());
+            configuration.set(path + "plot.bounds.max-x", bounds.getMaxX());
+            configuration.set(path + "plot.bounds.max-y", bounds.getMaxY());
+            configuration.set(path + "plot.bounds.max-z", bounds.getMaxZ());
+        }
+    }
+
+    public static PlotBackupMetadata load(
+            final YamlConfiguration configuration,
+            final String path,
+            final String fallbackId
+    ) {
+        final ConfigurationSection boundsSection = configuration.getConfigurationSection(path + "plot.bounds");
         final PlotRegion bounds = boundsSection == null ? null : new PlotRegion(
-                configuration.getString("plot.world", ""),
+                configuration.getString(path + "plot.world", ""),
                 boundsSection.getInt("min-x"),
                 boundsSection.getInt("min-y"),
                 boundsSection.getInt("min-z"),
@@ -124,18 +136,18 @@ public final class PlotBackupMetadata {
                 boundsSection.getInt("max-z")
         );
         return new PlotBackupMetadata(
-                configuration.getString("id", file.getName().replace(".yml", "")),
-                configuration.getString("schematic-file", ""),
-                configuration.getString("created-at", ""),
-                configuration.getString("action", ""),
-                uuid(configuration.getString("created-by.uuid", "")),
-                configuration.getString("created-by.name", ""),
-                uuid(configuration.getString("plot-owner.uuid", "")),
-                configuration.getString("plot-owner.name", ""),
-                configuration.getString("plot.world", ""),
-                configuration.getString("plot.id", ""),
-                configuration.getStringList("plot.ids"),
-                configuration.getString("plot.merge-type", ""),
+                configuration.getString(path + "id", fallbackId),
+                configuration.getString(path + "schematic-file", ""),
+                configuration.getString(path + "created-at", ""),
+                configuration.getString(path + "action", ""),
+                uuid(configuration.getString(path + "created-by.uuid", "")),
+                configuration.getString(path + "created-by.name", ""),
+                uuid(configuration.getString(path + "plot-owner.uuid", "")),
+                configuration.getString(path + "plot-owner.name", ""),
+                configuration.getString(path + "plot.world", ""),
+                configuration.getString(path + "plot.id", ""),
+                configuration.getStringList(path + "plot.ids"),
+                configuration.getString(path + "plot.merge-type", ""),
                 bounds
         );
     }

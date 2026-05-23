@@ -15,6 +15,7 @@ import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
 import de.craftplay.plotextras.reports.ReportService;
 import de.craftplay.plotextras.roles.PlotRoleService;
+import de.craftplay.plotextras.storage.StorageService;
 import de.craftplay.plotextras.team.TeamFeatureService;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,6 +33,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     private PlotRoleService plotRoleService;
     private PlotFutureService plotFutureService;
     private TeamFeatureService teamFeatureService;
+    private StorageService storageService;
     private PlotExtrasCommand commandExecutor;
 
     @Override
@@ -41,6 +43,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         reloadConfig();
         languageManager = new LanguageManager(this);
         languageManager.reload();
+        storageService = new StorageService(this);
+        storageService.reload();
         plotSquaredFlagService = new PlotSquaredFlagService(this);
         plotSquaredPlotService = new PlotSquaredPlotService(this);
         plotDataStore = new PlotDataStore(this);
@@ -74,6 +78,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         if (plotFutureService != null) {
             plotFutureService.shutdown();
         }
+        if (storageService != null) {
+            storageService.close();
+        }
         getLogger().info("CraftplayPlotExtras Menü wurde beendet.");
     }
 
@@ -81,6 +88,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         configurationManager.installOrUpdateDefaults();
         reloadConfig();
         languageManager.reload();
+        storageService.reload();
         plotDataStore.reload();
         reportService.reload();
         plotRoleService.reload();
@@ -128,6 +136,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
 
     public TeamFeatureService getTeamFeatureService() {
         return teamFeatureService;
+    }
+
+    public StorageService getStorageService() {
+        return storageService;
     }
 
     public PlotExtrasCommand getCommandExecutor() {

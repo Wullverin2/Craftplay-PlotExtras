@@ -6,10 +6,11 @@ import de.craftplay.plotextras.plotsquared.PlotRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ public final class PlotBackupService {
     private int fallbackMinY;
     private long unlockDelayTicks;
     private File backupFolder;
+    private String metadataFile;
+    private YamlConfiguration metadataConfiguration;
 
     public PlotBackupService(final CraftplayPlotExtrasPlugin plugin) {
         this.plugin = plugin;
@@ -66,6 +69,13 @@ public final class PlotBackupService {
         if (!backupFolder.exists() && !backupFolder.mkdirs()) {
             plugin.getLogger().warning("Plotbackup-Ordner konnte nicht erstellt werden: " + backupFolder.getPath());
         }
+        metadataFile = plugin.getConfig().getString("plot-backups.metadata-file", "Plotbackups/metadata.yml");
+        metadataConfiguration = plugin.getStorageService().load("plotbackups", metadataFile);
+        metadataConfiguration = plugin.getStorageService().withLegacyBackupMetadata(metadataConfiguration);
+        if (metadataConfiguration.getInt("file-version", 0) < 1) {
+            metadataConfiguration.set("file-version", 1);
+        }
+        saveMetadata();
     }
 
     public boolean isEnabled() {
@@ -176,18 +186,18 @@ public final class PlotBackupService {
 
     public List<PlotBackupMetadata> listBackups() {
         final List<PlotBackupMetadata> backups = new ArrayList<>();
-        if (backupFolder == null || !backupFolder.exists()) {
+        if (metadataConfiguration == null) {
             return backups;
         }
-        final File[] files = backupFolder.listFiles((directory, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml"));
-        if (files == null) {
+        final ConfigurationSection section = metadataConfiguration.getConfigurationSection("backups");
+        if (section == null) {
             return backups;
         }
-        for (final File file : files) {
+        for (final String id : section.getKeys(false)) {
             try {
-                backups.add(PlotBackupMetadata.load(file));
+                backups.add(PlotBackupMetadata.load(metadataConfiguration, "backups." + id + ".", id));
             } catch (final RuntimeException exception) {
-                plugin.getLogger().log(Level.WARNING, "Plotbackup-Metadaten konnten nicht geladen werden: " + file.getPath(), exception);
+                plugin.getLogger().log(Level.WARNING, "Plotbackup-Metadaten konnten nicht geladen werden: " + id, exception);
             }
         }
         backups.sort(Comparator.comparing(PlotBackupMetadata::getCreatedAt, Comparator.nullsLast(String::compareTo)).reversed());
@@ -251,7 +261,8 @@ public final class PlotBackupService {
                             region
                     )
             );
-            metadata.save(new File(backupFolder, id + ".yml"));
+            metadata.writeTo(metadataConfiguration, "backups." + id + ".");
+            saveMetadata();
             return metadata;
         } catch (final Exception exception) {
             plugin.getLogger().log(Level.WARNING, "Plotbackup konnte nicht erstellt werden.", exception);
@@ -335,11 +346,18 @@ public final class PlotBackupService {
                 + "_" + actionName(action));
         String id = prefix;
         int counter = 2;
-        while (new File(backupFolder, id + ".yml").exists() || new File(backupFolder, id + ".schem").exists()) {
+        while (findBackup(id).isPresent() || new File(backupFolder, id + ".schem").exists()) {
             id = prefix + "_" + counter;
             counter++;
         }
         return id;
+    }
+
+    private void saveMetadata() {
+        if (metadataConfiguration == null || metadataFile == null) {
+            return;
+        }
+        plugin.getStorageService().save("plotbackups", metadataFile, metadataConfiguration);
     }
 
     private String sanitize(final String value) {

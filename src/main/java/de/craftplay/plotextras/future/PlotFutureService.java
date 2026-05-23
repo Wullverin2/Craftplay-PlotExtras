@@ -46,8 +46,8 @@ public final class PlotFutureService {
     private final PlotDataStore plotDataStore;
     private final Map<UUID, ActiveVisit> activeVisits = new HashMap<>();
 
-    private File file;
     private YamlConfiguration configuration;
+    private String dataFile;
     private boolean saveQueued;
 
     public PlotFutureService(final CraftplayPlotExtrasPlugin plugin, final PlotDataStore plotDataStore) {
@@ -56,11 +56,8 @@ public final class PlotFutureService {
     }
 
     public void reload() {
-        file = new File(plugin.getDataFolder(), plugin.getConfig().getString("future.data-file", "futurefeatures.yml"));
-        if (!file.exists()) {
-            createDefaultFile();
-        }
-        configuration = YamlConfiguration.loadConfiguration(file);
+        dataFile = plugin.getConfig().getString("future.data-file", "futurefeatures.yml");
+        configuration = plugin.getStorageService().load("futurefeatures", dataFile);
         if (configuration.getInt("file-version", 0) < 1) {
             configuration.set("file-version", 1);
             saveNow();
@@ -963,19 +960,6 @@ public final class PlotFutureService {
         player.performCommand(prepared);
     }
 
-    private void createDefaultFile() {
-        final File parent = file.getParentFile();
-        if (parent != null && !parent.exists() && !parent.mkdirs()) {
-            plugin.getLogger().warning("Future-Datenordner konnte nicht erstellt werden: " + parent.getPath());
-        }
-        configuration = new YamlConfiguration();
-        configuration.options().header("Daten für Zukunftsfeatures.\n"
-                + "Hier speichert das Plugin Heatmaps, Besucherstatistiken, Galerie-, Markt-, NPC- und Analysewerte.\n"
-                + "Diese Datei ist eine Datendatei und wird automatisch gepflegt.");
-        configuration.set("file-version", 1);
-        saveNow();
-    }
-
     private void saveSoon() {
         if (saveQueued) {
             return;
@@ -988,14 +972,10 @@ public final class PlotFutureService {
     }
 
     private void saveNow() {
-        if (configuration == null || file == null) {
+        if (configuration == null || dataFile == null) {
             return;
         }
-        try {
-            configuration.save(file);
-        } catch (final IOException exception) {
-            plugin.getLogger().log(Level.WARNING, "Future-Daten konnten nicht gespeichert werden: " + file.getPath(), exception);
-        }
+        plugin.getStorageService().save("futurefeatures", dataFile, configuration);
     }
 
     private static final class ActiveVisit {

@@ -9,8 +9,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -24,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public final class PlotRoleService {
 
@@ -34,7 +31,7 @@ public final class PlotRoleService {
     private final CraftplayPlotExtrasPlugin plugin;
     private final PlotSquaredFlagService flagService;
     private final Map<String, PlotRoleData> plots = new LinkedHashMap<>();
-    private File file;
+    private String dataFile;
     private boolean enabled;
     private boolean asyncSaves;
 
@@ -46,10 +43,7 @@ public final class PlotRoleService {
     public void reload() {
         enabled = plugin.getConfig().getBoolean("roles.enabled", true);
         asyncSaves = plugin.getConfig().getBoolean("technical.async-yaml-saves", true);
-        file = new File(plugin.getDataFolder(), plugin.getConfig().getString("roles.data-file", "plotroles.yml"));
-        if (!file.exists()) {
-            createDefaultFile();
-        }
+        dataFile = plugin.getConfig().getString("roles.data-file", "plotroles.yml");
         load();
     }
 
@@ -320,7 +314,7 @@ public final class PlotRoleService {
 
     private void load() {
         plots.clear();
-        final YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        final YamlConfiguration configuration = plugin.getStorageService().load("plotroles", dataFile);
         if (configuration.getInt("file-version", 0) < 1) {
             configuration.set("file-version", 1);
             saveConfiguration(configuration);
@@ -385,37 +379,11 @@ public final class PlotRoleService {
 
     private void saveConfiguration(final YamlConfiguration configuration) {
         if (asyncSaves) {
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-                try {
-                    configuration.save(file);
-                } catch (final IOException exception) {
-                    plugin.getLogger().log(Level.WARNING, "Plotrollen konnten nicht gespeichert werden: " + file.getPath(), exception);
-                }
-            });
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin,
+                    () -> plugin.getStorageService().save("plotroles", dataFile, configuration));
             return;
         }
-        try {
-            configuration.save(file);
-        } catch (final IOException exception) {
-            plugin.getLogger().log(Level.WARNING, "Plotrollen konnten nicht gespeichert werden: " + file.getPath(), exception);
-        }
-    }
-
-    private void createDefaultFile() {
-        final File parent = file.getParentFile();
-        if (parent != null && !parent.exists() && !parent.mkdirs()) {
-            plugin.getLogger().warning("Plotrollen-Ordner konnte nicht erstellt werden: " + parent.getPath());
-        }
-        final YamlConfiguration configuration = new YamlConfiguration();
-        configuration.options().header("Plotrollen-Datendatei von CraftplayPlotExtras.\n"
-                + "Hier werden eigene Rollen, Rollenrechte und Zuweisungen pro Plot gespeichert.\n"
-                + "Diese Datei wird automatisch gepflegt.");
-        configuration.set("file-version", 1);
-        try {
-            configuration.save(file);
-        } catch (final IOException exception) {
-            plugin.getLogger().log(Level.WARNING, "Plotrollen konnten nicht gespeichert werden: " + file.getPath(), exception);
-        }
+        plugin.getStorageService().save("plotroles", dataFile, configuration);
     }
 
     private String normalizeRoleName(final String roleName) {

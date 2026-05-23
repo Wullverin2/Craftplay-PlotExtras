@@ -34,6 +34,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             return reload(sender);
         }
+        if (args.length >= 1 && args[0].equalsIgnoreCase("storage")) {
+            return storage(sender, args);
+        }
 
         if (!(sender instanceof Player)) {
             plugin.getLanguageManager().send(sender, "only-players");
@@ -153,6 +156,20 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean storage(final CommandSender sender, final String[] args) {
+        if (!sender.hasPermission("craftplayplotextras.admin")) {
+            plugin.getLanguageManager().send(sender, "no-permission");
+            return true;
+        }
+        if (args.length == 4 && args[1].equalsIgnoreCase("migrate")) {
+            return plugin.getStorageService().migrate(sender, args[2], args[3]);
+        }
+        sender.sendMessage("§e/" + plugin.getConfig().getString("command.prefix", "plotextras")
+                + " storage migrate <quelle> <ziel>");
+        sender.sendMessage("§7Typen: yaml, sqlite, mysql, mariadb, postgresql, redis, mongodb");
+        return true;
+    }
+
     @Override
     public List<String> onTabComplete(
             final CommandSender sender,
@@ -160,6 +177,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             final String alias,
             final String[] args
     ) {
+        if (args.length >= 2 && args[0].equalsIgnoreCase("storage") && sender.hasPermission("craftplayplotextras.admin")) {
+            return storageCompletions(args);
+        }
         if (args.length != 1) {
             return Collections.emptyList();
         }
@@ -168,6 +188,9 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         final List<String> completions = new ArrayList<>();
         if (sender.hasPermission("craftplayplotextras.admin") && "reload".startsWith(input)) {
             completions.add("reload");
+        }
+        if (sender.hasPermission("craftplayplotextras.admin") && "storage".startsWith(input)) {
+            completions.add("storage");
         }
         if (sender.hasPermission("craftplayplotextras.team") && "team".startsWith(input)) {
             completions.add("team");
@@ -203,5 +226,24 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             completions.add("myplots");
         }
         return completions;
+    }
+
+    private List<String> storageCompletions(final String[] args) {
+        final String input = args[args.length - 1].toLowerCase(Locale.ROOT);
+        final List<String> values = new ArrayList<>();
+        if (args.length == 2) {
+            if ("migrate".startsWith(input)) {
+                values.add("migrate");
+            }
+            return values;
+        }
+        if (args.length == 3 || args.length == 4) {
+            for (final String type : new String[]{"yaml", "sqlite", "mysql", "mariadb", "postgresql", "redis", "mongodb"}) {
+                if (type.startsWith(input)) {
+                    values.add(type);
+                }
+            }
+        }
+        return values;
     }
 }
