@@ -98,7 +98,10 @@ public final class PlotSquaredPlotService {
         for (final Object plot : source) {
             final OwnedPlot converted = convert(plot, viewer);
             if (converted != null) {
-                target.put(converted.getKey(), converted);
+                final OwnedPlot existing = target.get(converted.getKey());
+                if (existing == null || (existing.getAlias().isEmpty() && !converted.getAlias().isEmpty())) {
+                    target.put(converted.getKey(), converted);
+                }
             }
         }
     }
@@ -109,21 +112,22 @@ public final class PlotSquaredPlotService {
         }
         final String worldName = string(invokeNoArgs(plot, "getWorldName"), viewer.getWorld().getName());
         final String plotId = string(invokeNoArgs(plot, "getId"), "unbekannt");
-        final String commandId = worldName + ";" + plotId;
         final String alias = alias(plot);
-        final String displayName = alias.isEmpty() ? plotId : alias;
         final UUID ownerUuid = ownerUuid(plot);
         final String ownerName = ownerName(ownerUuid);
         final List<String> plotIds = connectedPlotIds(plot);
+        final String primaryPlotId = plotIds.isEmpty() ? plotId : plotIds.get(0);
+        final String commandId = worldName + ";" + primaryPlotId;
+        final String displayName = alias.isEmpty() ? primaryPlotId : alias;
         final String mergeType = mergeType(plot, plotIds);
         final int size = Math.max(1, plotIds.size());
         final long createdAt = longValue(invokeNoArgs(plot, "getTimestamp"), 0L);
         final boolean publicByFlag = booleanFlag(plot, "untrusted-visit");
-        final String key = worldName + ";" + plotId;
+        final String key = worldName + ";" + String.join("+", plotIds);
         return new OwnedPlot(
                 key,
                 worldName,
-                plotId,
+                primaryPlotId,
                 commandId,
                 alias,
                 displayName,
@@ -171,8 +175,21 @@ public final class PlotSquaredPlotService {
         if (ids.isEmpty()) {
             ids.add(string(invokeNoArgs(plot, "getId"), "unbekannt"));
         }
-        ids.sort(Comparator.naturalOrder());
+        ids.sort(this::comparePlotIds);
         return ids;
+    }
+
+    private int comparePlotIds(final String first, final String second) {
+        final int[] firstCoordinates = plotIdCoordinates(first);
+        final int[] secondCoordinates = plotIdCoordinates(second);
+        if (firstCoordinates != null && secondCoordinates != null) {
+            final int xCompare = Integer.compare(firstCoordinates[0], secondCoordinates[0]);
+            if (xCompare != 0) {
+                return xCompare;
+            }
+            return Integer.compare(firstCoordinates[1], secondCoordinates[1]);
+        }
+        return first.compareToIgnoreCase(second);
     }
 
     private String mergeType(final Object plot, final List<String> plotIds) {
