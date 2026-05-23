@@ -381,6 +381,10 @@ public final class ExtrasService implements Listener {
             languageManager.send(player, "extras-worldedit-outside-plot", contextPlaceholders(context));
             return;
         }
+        if (blocks == 0L) {
+            languageManager.send(player, "extras-worldedit-no-editable-blocks", contextPlaceholders(context));
+            return;
+        }
         if (!isWorldEditAvailable()) {
             languageManager.send(player, "extras-worldedit-worldedit-missing");
             return;
@@ -508,12 +512,19 @@ public final class ExtrasService implements Listener {
             languageManager.send(player, "extras-worldedit-different-world");
             return;
         }
+        final long editableBlocks = allowedSelectionBlocks(first, second, context);
         if (!isAllowedPlotBlock(context, first) || !isAllowedPlotBlock(context, second)
-                || allowedSelectionBlocks(first, second, context) < 0L) {
+                || editableBlocks < 0L) {
             pendingActions.remove(player.getUniqueId());
             languageManager.send(player, "extras-worldedit-outside-plot", contextPlaceholders(context));
             return;
         }
+        if (editableBlocks == 0L) {
+            pendingActions.remove(player.getUniqueId());
+            languageManager.send(player, "extras-worldedit-no-editable-blocks", contextPlaceholders(context));
+            return;
+        }
+        action.setBlocks(editableBlocks);
         if (!isWorldEditAvailable()) {
             pendingActions.remove(player.getUniqueId());
             languageManager.send(player, "extras-worldedit-worldedit-missing");
@@ -711,7 +722,8 @@ public final class ExtrasService implements Listener {
         if (first.getWorld() == null) {
             return -1L;
         }
-        final String worldName = first.getWorld().getName();
+        final org.bukkit.World world = first.getWorld();
+        final String worldName = world.getName();
         final int minX = Math.min(first.getBlockX(), second.getBlockX());
         final int maxX = Math.max(first.getBlockX(), second.getBlockX());
         final int minY = Math.min(first.getBlockY(), second.getBlockY());
@@ -725,7 +737,9 @@ public final class ExtrasService implements Listener {
                     if (!isAllowedPlotBlock(context, worldName, x, y, z)) {
                         return -1L;
                     }
-                    blocks++;
+                    if (world.getBlockAt(x, y, z).getType() != Material.BEDROCK) {
+                        blocks++;
+                    }
                 }
             }
         }
@@ -1007,7 +1021,7 @@ public final class ExtrasService implements Listener {
         private final String plotKey;
         private final Location first;
         private final Location second;
-        private final long blocks;
+        private long blocks;
         private String modeId;
 
         private PendingWorldEditAction(
@@ -1038,6 +1052,10 @@ public final class ExtrasService implements Listener {
 
         private long getBlocks() {
             return blocks;
+        }
+
+        private void setBlocks(final long blocks) {
+            this.blocks = blocks;
         }
 
         private String getModeId() {

@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 16
+file-version: 17
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -258,6 +258,8 @@ extras-worldedit-not-owner: "&cYou can only use the WorldEdit service on your ow
 extras-worldedit-outside-plot: "&cBoth corners must be inside your current plot or plot merge."
 # Message shown when the selection is larger than the limit. Placeholders: {blocks}, {max_blocks}
 extras-worldedit-too-large: "&cThis selection is too large: &f{blocks} &cblocks. Maximum allowed: &f{max_blocks}&c."
+# Message shown when the selection only contains protected blocks such as bedrock.
+extras-worldedit-no-editable-blocks: "&cYour selection does not contain any editable block. Bedrock is never changed by the WorldEdit service."
 # Message shown when WorldEdit or FAWE is missing.
 extras-worldedit-worldedit-missing: "&cWorldEdit or FAWE was not found."
 # Message shown when Vault/CMI economy is unavailable.

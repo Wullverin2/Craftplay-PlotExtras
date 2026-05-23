@@ -10,6 +10,7 @@ import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.world.block.BlockType;
 import org.bukkit.Material;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public final class WorldEditSelectionAdapter {
@@ -27,6 +28,10 @@ public final class WorldEditSelectionAdapter {
     }
 
     public void setBlocks(final Location first, final Location second, final Material material) throws Exception {
+        final World bukkitWorld = first.getWorld();
+        if (bukkitWorld == null) {
+            throw new IllegalArgumentException("WorldEdit-Auswahl hat keine Welt.");
+        }
         final com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(first.getWorld());
         final BlockType blockType = BukkitAdapter.asBlockType(material);
         if (blockType == null) {
@@ -46,7 +51,12 @@ public final class WorldEditSelectionAdapter {
                 )
         );
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(world)) {
-            editSession.setBlocks(region, blockType.getDefaultState());
+            for (final BlockVector3 position : region) {
+                if (bukkitWorld.getBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ()).getType() == Material.BEDROCK) {
+                    continue;
+                }
+                editSession.setBlock(position, blockType.getDefaultState());
+            }
         }
     }
 
