@@ -140,11 +140,11 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
 
     private boolean version(final CommandSender sender) {
         final List<String> authors = plugin.getDescription().getAuthors();
-        final String developer = authors == null || authors.isEmpty() ? "Craftplay" : String.join(", ", authors);
+        final String developer = authors == null || authors.isEmpty() ? "Craftplay @ Wullverin" : String.join(", ", authors);
         final Map<String, String> placeholders = new HashMap<>();
         placeholders.put("plugin", plugin.getDescription().getName());
         placeholders.put("version", plugin.getDescription().getVersion());
-        placeholders.put("developer", developer == null || developer.trim().isEmpty() ? "Craftplay" : developer);
+        placeholders.put("developer", developer == null || developer.trim().isEmpty() ? "Craftplay @ Wullverin" : developer);
         plugin.getLanguageManager().send(sender, "plugin-version", placeholders);
         return true;
     }
