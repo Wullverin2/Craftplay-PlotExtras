@@ -71,11 +71,16 @@ public final class PlotBackupService {
         }
         metadataFile = plugin.getConfig().getString("plot-backups.metadata-file", "Plotbackups/metadata.yml");
         metadataConfiguration = plugin.getStorageService().load("plotbackups", metadataFile);
+        final boolean hadBackupSection = metadataConfiguration.getConfigurationSection("backups") != null;
         metadataConfiguration = plugin.getStorageService().withLegacyBackupMetadata(metadataConfiguration);
+        boolean changed = !hadBackupSection && metadataConfiguration.getConfigurationSection("backups") != null;
         if (metadataConfiguration.getInt("file-version", 0) < 1) {
             metadataConfiguration.set("file-version", 1);
+            changed = true;
         }
-        saveMetadata();
+        if (changed) {
+            saveMetadata();
+        }
     }
 
     public boolean isEnabled() {

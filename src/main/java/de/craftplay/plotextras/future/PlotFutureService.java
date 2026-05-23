@@ -49,6 +49,7 @@ public final class PlotFutureService {
     private YamlConfiguration configuration;
     private String dataFile;
     private boolean saveQueued;
+    private boolean dirty;
 
     public PlotFutureService(final CraftplayPlotExtrasPlugin plugin, final PlotDataStore plotDataStore) {
         this.plugin = plugin;
@@ -58,8 +59,10 @@ public final class PlotFutureService {
     public void reload() {
         dataFile = plugin.getConfig().getString("future.data-file", "futurefeatures.yml");
         configuration = plugin.getStorageService().load("futurefeatures", dataFile);
+        dirty = false;
         if (configuration.getInt("file-version", 0) < 1) {
             configuration.set("file-version", 1);
+            dirty = true;
             saveNow();
         }
     }
@@ -961,6 +964,7 @@ public final class PlotFutureService {
     }
 
     private void saveSoon() {
+        dirty = true;
         if (saveQueued) {
             return;
         }
@@ -975,7 +979,13 @@ public final class PlotFutureService {
         if (configuration == null || dataFile == null) {
             return;
         }
+        if (!dirty) {
+            saveQueued = false;
+            return;
+        }
         plugin.getStorageService().save("futurefeatures", dataFile, configuration);
+        dirty = false;
+        saveQueued = false;
     }
 
     private static final class ActiveVisit {

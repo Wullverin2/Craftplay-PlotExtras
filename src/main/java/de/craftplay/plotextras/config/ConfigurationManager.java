@@ -3,6 +3,7 @@ package de.craftplay.plotextras.config;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,6 +79,12 @@ public final class ConfigurationManager {
         final File target = new File(plugin.getDataFolder(), resourcePath);
         if (!target.exists()) {
             plugin.saveResource(resourcePath, false);
+            return;
+        }
+
+        final int defaultVersionHint = readResourceVersion(resourcePath, -1);
+        final int existingVersionHint = readFileVersion(target, -1);
+        if (defaultVersionHint > 0 && existingVersionHint >= defaultVersionHint) {
             return;
         }
 
@@ -300,6 +307,53 @@ public final class ConfigurationManager {
             plugin.getLogger().log(Level.WARNING, "Standarddatei konnte nicht gelesen werden: " + resourcePath, exception);
             return new YamlConfiguration();
         }
+    }
+
+    private int readResourceVersion(final String resourcePath, final int fallback) {
+        try (InputStream inputStream = plugin.getResource(resourcePath)) {
+            if (inputStream == null) {
+                return fallback;
+            }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                return readVersion(reader, fallback);
+            }
+        } catch (final IOException exception) {
+            plugin.getLogger().log(Level.FINE, "Dateiversion konnte nicht aus Standarddatei gelesen werden: " + resourcePath, exception);
+            return fallback;
+        }
+    }
+
+    private int readFileVersion(final File file, final int fallback) {
+        try (BufferedReader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
+            return readVersion(reader, fallback);
+        } catch (final IOException exception) {
+            plugin.getLogger().log(Level.FINE, "Dateiversion konnte nicht gelesen werden: " + file.getPath(), exception);
+            return fallback;
+        }
+    }
+
+    private int readVersion(final BufferedReader reader, final int fallback) throws IOException {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            final String trimmed = line.trim();
+            if (trimmed.startsWith("#") || trimmed.isEmpty()) {
+                continue;
+            }
+            if (!trimmed.startsWith("file-version:")) {
+                continue;
+            }
+            final String raw = trimmed.substring("file-version:".length())
+                    .split("#", 2)[0]
+                    .trim()
+                    .replace("\"", "")
+                    .replace("'", "");
+            try {
+                return Integer.parseInt(raw);
+            } catch (final NumberFormatException ignored) {
+                return fallback;
+            }
+        }
+        return fallback;
     }
 
     private boolean backup(final File source, final String resourcePath) {
