@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 12
+file-version: 13
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -237,6 +237,33 @@ community-liked-yes: "Ja"
 community-liked-no: "Nein"
 # Zurück-Text für Bedrock-Kommentarlisten.
 community-back: "&eZurück"
+
+# Nachricht, wenn der WorldEdit-Service deaktiviert ist.
+extras-worldedit-disabled: "&cDer WorldEdit-Service ist aktuell deaktiviert."
+# Nachricht, wenn das Auswahl-Item gegeben wurde.
+extras-worldedit-given: "&aDu hast das WorldEdit-Service-Item erhalten. &7Linksklick setzt Ecke 1, Rechtsklick setzt Ecke 2."
+# Nachricht, wenn Ecke 1 gesetzt wurde. Platzhalter: {world}, {x}, {y}, {z}
+extras-worldedit-pos1: "&aEcke 1 gesetzt: &f{x}&7, &f{y}&7, &f{z}"
+# Nachricht, wenn Ecke 2 gesetzt wurde. Platzhalter: {world}, {x}, {y}, {z}
+extras-worldedit-pos2: "&aEcke 2 gesetzt: &f{x}&7, &f{y}&7, &f{z}"
+# Nachricht, wenn beide Ecken nicht in derselben Welt liegen.
+extras-worldedit-different-world: "&cBeide Ecken müssen in derselben Welt liegen."
+# Nachricht, wenn kein Plot erkannt wurde.
+extras-worldedit-no-plot: "&cDu musst das Item auf deinem Plot oder Plotmerge benutzen."
+# Nachricht, wenn der Spieler nicht der Plotbesitzer ist.
+extras-worldedit-not-owner: "&cDu kannst den WorldEdit-Service nur auf deinem eigenen Plot nutzen."
+# Nachricht, wenn eine Ecke außerhalb des aktuellen Plots liegt.
+extras-worldedit-outside-plot: "&cBeide Ecken müssen innerhalb deines aktuellen Plots oder Plotmerges liegen."
+# Nachricht, wenn die Auswahl größer als das Limit ist. Platzhalter: {blocks}, {max_blocks}
+extras-worldedit-too-large: "&cDiese Auswahl ist zu groß: &f{blocks} &cBlöcke. Maximal erlaubt: &f{max_blocks}&c."
+# Nachricht, wenn WorldEdit oder FAWE fehlt.
+extras-worldedit-worldedit-missing: "&cWorldEdit oder FAWE wurde nicht gefunden."
+# Nachricht, wenn Vault/CMI-Economy nicht verfügbar ist.
+extras-worldedit-economy-missing: "&cDas Economy-System ist nicht verfügbar. Die Auswahl wurde nicht berechnet."
+# Nachricht, wenn der Spieler nicht genug Geld hat. Platzhalter: {price}, {blocks}
+extras-worldedit-no-money: "&cDu hast nicht genug Geld. Benötigt: &f{price} &7für &f{blocks} &7Blöcke."
+# Nachricht nach erfolgreicher Zahlung. Platzhalter: {price}, {blocks}, {cooldown_remaining}
+extras-worldedit-paid: "&aWorldEdit-Auswahl gesetzt. &7Blöcke: &f{blocks}&7, Kosten: &f{price}&7. Paket-Cooldown: &f{cooldown_remaining}&7."
 
 # Nachricht, wenn ein Future-Feature deaktiviert ist.
 future-disabled: "&cDieses Zukunftsfeature ist aktuell deaktiviert."

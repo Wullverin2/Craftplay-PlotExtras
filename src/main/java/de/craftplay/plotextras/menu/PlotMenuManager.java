@@ -3,6 +3,7 @@ package de.craftplay.plotextras.menu;
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
 import de.craftplay.plotextras.backup.PlotBackupMetadata;
 import de.craftplay.plotextras.backup.PlotBackupService;
+import de.craftplay.plotextras.extras.ExtrasService;
 import de.craftplay.plotextras.future.PlotFutureService;
 import de.craftplay.plotextras.hook.FloodgateHook;
 import de.craftplay.plotextras.hook.HeadDatabaseHook;
@@ -68,6 +69,7 @@ public final class PlotMenuManager implements Listener {
     private final PlotRoleService roleService;
     private final PlotFutureService futureService;
     private final TeamFeatureService teamFeatureService;
+    private final ExtrasService extrasService;
     private final HeadDatabaseHook headDatabaseHook;
     private final PlaceholderHook placeholderHook;
     private final FloodgateHook floodgateHook;
@@ -232,7 +234,8 @@ public final class PlotMenuManager implements Listener {
             final ReportService reportService,
             final PlotRoleService roleService,
             final PlotFutureService futureService,
-            final TeamFeatureService teamFeatureService
+            final TeamFeatureService teamFeatureService,
+            final ExtrasService extrasService
     ) {
         this.plugin = plugin;
         this.languageManager = languageManager;
@@ -244,6 +247,7 @@ public final class PlotMenuManager implements Listener {
         this.roleService = roleService;
         this.futureService = futureService;
         this.teamFeatureService = teamFeatureService;
+        this.extrasService = extrasService;
         this.headDatabaseHook = new HeadDatabaseHook(plugin);
         this.placeholderHook = new PlaceholderHook(plugin);
         this.floodgateHook = new FloodgateHook(plugin);
@@ -1681,6 +1685,7 @@ public final class PlotMenuManager implements Listener {
         loadActionMenu("danger", plugin.getConfig().getString("gui.danger-menu", "danger.yml"));
         loadActionMenu("help", plugin.getConfig().getString("gui.help-menu", "help.yml"));
         loadActionMenu("future", plugin.getConfig().getString("gui.future-menu", "future.yml"));
+        loadActionMenu("extras", plugin.getConfig().getString("gui.extras-menu", "extras.yml"));
         loadReportListMenu();
         loadCommunityCommentListMenu();
         loadRoleListMenu();
@@ -3744,6 +3749,11 @@ public final class PlotMenuManager implements Listener {
 
         if (command.toLowerCase(Locale.ROOT).startsWith("team:")) {
             teamFeatureService.runCommand(player, command.substring("team:".length()).trim());
+            return;
+        }
+
+        if (command.toLowerCase(Locale.ROOT).startsWith("extras:")) {
+            extrasService.runCommand(player, command.substring("extras:".length()).trim());
             return;
         }
 

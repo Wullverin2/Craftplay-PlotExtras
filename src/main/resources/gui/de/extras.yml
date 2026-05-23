@@ -1,0 +1,63 @@
+# Deutsches Extras-Menü.
+# Diese Datei steuert zusätzliche Services, die nicht direkt zu PlotSquared gehören.
+# Jeder Button kann deaktiviert, verschoben, mit eigener Permission versehen oder mit eigenen Befehlen erweitert werden.
+
+file-version: 1
+
+title: "&8Extras"
+size: 27
+require-plot: false
+permission: "craftplayplotextras.use"
+bedrock:
+  enabled: true
+  title: "Extras"
+  content: "Zusätzliche Services für deine Plots."
+filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+animation:
+  enabled: true
+  delay-ticks: 1
+  keep-filler-visible: true
+buttons:
+  worldedit-service:
+    enabled: true
+    slot: 11
+    material: GOLDEN_AXE
+    name: "&6WorldEdit-Service"
+    lore:
+      - "&7Gibt dir das Auswahl-Item."
+      - "&7Markiere zwei Ecken auf deinem Plot."
+      - "&7Danach werden Preis und Cooldown"
+      - "&7automatisch geprüft."
+    commands:
+      - "extras:worldedit-service"
+    close: true
+    permission: "craftplayplotextras.extras.worldedit"
+  back:
+    enabled: true
+    slot: 22
+    material: ARROW
+    name: "&eZurück"
+    lore:
+      - "&7Zurück zum Hauptmenü."
+    commands:
+      - "open-menu:main"
+    close: false
+    permission: ""
+  close:
+    enabled: true
+    slot: 26
+    material: BARRIER
+    name: "&cSchließen"
+    lore:
+      - "&7Schließt dieses Menü."
+    commands: []
+    close: true
+    permission: ""
+decorations:
+  frame:
+    enabled: true
+    slot: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 23, 24, 25]
+    material: GRAY_STAINED_GLASS_PANE
+    name: "&r"
+    lore: []
+    permission: ""

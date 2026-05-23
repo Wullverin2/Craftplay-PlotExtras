@@ -88,6 +88,7 @@ public final class StorageService {
         namespaces.add(new StorageNamespace("plotroles", plugin.getConfig().getString("roles.data-file", "plotroles.yml")));
         namespaces.add(new StorageNamespace("teamdata", plugin.getConfig().getString("team-features.data-file", "teamdata.yml")));
         namespaces.add(new StorageNamespace("futurefeatures", plugin.getConfig().getString("future.data-file", "futurefeatures.yml")));
+        namespaces.add(new StorageNamespace("extras", plugin.getConfig().getString("extras.data-file", "extras.yml")));
         namespaces.add(new StorageNamespace("plotbackups", plugin.getConfig().getString("plot-backups.metadata-file", "Plotbackups/metadata.yml")));
         return namespaces;
     }

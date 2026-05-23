@@ -6,7 +6,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 5
+file-version: 6
 
 # If false, this Bedrock menu is not loaded.
 enabled: true
@@ -143,6 +143,14 @@ buttons:
     label: "Delete & Reset"
     commands:
       - "open-menu:danger"
+    close: false
+    permission: ""
+  extras:
+    enabled: true
+    order: 127
+    label: "Extras"
+    commands:
+      - "open-menu:extras"
     close: false
     permission: ""
   future:

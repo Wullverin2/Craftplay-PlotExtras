@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 15
+file-version: 16
 
 # Befehle dieses Plugins.
 command:
@@ -25,7 +25,7 @@ language:
 
 # Speicher-System für interne Plugin-Daten.
 # Hier wird festgelegt, wo das Plugin seine eigenen Daten speichert:
-# Plotfavoriten, Tags, Kategorien, Reports, Rollen, Teamdaten, Zukunftsfeatures und Plotbackup-Metadaten.
+# Plotfavoriten, Tags, Kategorien, Reports, Rollen, Teamdaten, Extras, Zukunftsfeatures und Plotbackup-Metadaten.
 # Wichtig: Plot-Schematics bleiben immer normale .schem-Dateien im Plotbackup-Ordner.
 # Nur die Metadaten und sonstigen Plugin-Daten wechseln je nach storage.type den Speicherort.
 # Migration zwischen Speicherarten: /plotextras storage migrate <quelle> <ziel>
@@ -192,6 +192,9 @@ gui:
   # Datei des Zukunfts-/Premiumfeature-Menüs. Geladen wird gui/<sprache>/<future-menu>.
   # Dieses Menü enthält einzeln abschaltbare Featureprofile für spätere Systeme.
   future-menu: future.yml
+  # Datei des Extras-Menüs. Geladen wird gui/<sprache>/<extras-menu>.
+  # Dieses Menü enthält zusätzliche Services wie den WorldEdit-Service.
+  extras-menu: extras.yml
   # Button-IDs aus dem Hauptmenü, die nicht angezeigt werden sollen.
   # Damit können Standardbuttons entfernt werden, ohne bestehende GUI-Dateien zu überschreiben.
   hidden-main-buttons:
@@ -403,6 +406,60 @@ future:
     enabled: true
     # Unterordner im Pluginordner für den Webexport.
     folder: web
+
+# Extras-System.
+extras:
+  # Aktiviert oder deaktiviert alle Extras-Funktionen.
+  enabled: true
+  # Datendatei für Extras-Cooldowns und spätere Extras-Daten.
+  data-file: extras.yml
+  worldedit-service:
+    # Wenn false, ist der WorldEdit-Service komplett deaktiviert.
+    enabled: true
+    # Permission, die Spieler zum Nutzen des WorldEdit-Service brauchen.
+    permission: "craftplayplotextras.extras.worldedit"
+    # Wenn true, dürfen Spieler den Service nur auf eigenen Plots oder Plotmerges nutzen.
+    require-own-plot: true
+    # Permission, mit der Teammitglieder die eigene-Plot-Prüfung umgehen können.
+    bypass-plot-permission: "craftplayplotextras.extras.worldedit.bypass-plot"
+    # Permission, mit der der Service kostenlos genutzt werden kann.
+    free-permission: "craftplayplotextras.extras.worldedit.free"
+    # Maximale Größe einer Auswahl in Blöcken.
+    max-selection-blocks: 1000000
+    item:
+      # Material des Auswahl-Items.
+      material: GOLDEN_AXE
+      # Optionales CustomModelData für Resourcepacks. 0 bedeutet deaktiviert.
+      custom-model-data: 0
+      # Anzeigename des Auswahl-Items.
+      name: "&6WorldEdit-Service"
+      # Lore des Auswahl-Items. Links setzt Ecke 1, Rechts setzt Ecke 2.
+      lore:
+        - "&7Linksklick: Ecke 1 setzen"
+        - "&7Rechtsklick: Ecke 2 setzen"
+        - "&7Die Auswahl wird nach Zahlung"
+        - "&7als WorldEdit-Auswahl gesetzt."
+        - ""
+        - "&7Paket: &f{included_blocks} Blöcke"
+        - "&7Paketpreis: &f{included_price}"
+        - "&7Weitere Blöcke: &f{extra_price_per_block}/Block"
+        - "&7Cooldown: &f{cooldown_remaining}"
+    economy:
+      # Wenn true, wird über Vault Geld abgebucht. CMI-Economy stellt sich üblicherweise über Vault bereit.
+      enabled: true
+    pricing:
+      # Anzahl Blöcke, die im Paketpreis enthalten sind.
+      included-blocks: 200000
+      # Preis für das Paket bis included-blocks, wenn der Cooldown nicht aktiv ist.
+      included-price: 5000.0
+      # Preis pro zusätzlichem Block über included-blocks hinaus.
+      extra-price-per-block: 0.05
+      # Cooldown in Tagen für den Paketpreis. Während des Cooldowns wird jeder Block per extra-price-per-block berechnet.
+      cooldown-days: 3
+    # Befehle nach erfolgreicher Zahlung und gesetzter WorldEdit-Auswahl.
+    # Platzhalter: {player}, {blocks}, {price}, {world}, {x1}, {y1}, {z1}, {x2}, {y2}, {z2}
+    # Prefixe: console:, player:, op:
+    commands-after-payment: []
 
 # Plotbackup-System.
 plot-backups:

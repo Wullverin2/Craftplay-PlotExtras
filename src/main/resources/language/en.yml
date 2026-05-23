@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 12
+file-version: 13
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -237,6 +237,33 @@ community-liked-yes: "Yes"
 community-liked-no: "No"
 # Back label for Bedrock comment lists.
 community-back: "&eBack"
+
+# Message shown when the WorldEdit service is disabled.
+extras-worldedit-disabled: "&cThe WorldEdit service is currently disabled."
+# Message shown when the selection item was given.
+extras-worldedit-given: "&aYou received the WorldEdit service item. &7Left click sets corner 1, right click sets corner 2."
+# Message shown when corner 1 was set. Placeholders: {world}, {x}, {y}, {z}
+extras-worldedit-pos1: "&aCorner 1 set: &f{x}&7, &f{y}&7, &f{z}"
+# Message shown when corner 2 was set. Placeholders: {world}, {x}, {y}, {z}
+extras-worldedit-pos2: "&aCorner 2 set: &f{x}&7, &f{y}&7, &f{z}"
+# Message shown when both corners are not in the same world.
+extras-worldedit-different-world: "&cBoth corners must be in the same world."
+# Message shown when no plot was detected.
+extras-worldedit-no-plot: "&cYou must use this item on your plot or plot merge."
+# Message shown when the player is not the plot owner.
+extras-worldedit-not-owner: "&cYou can only use the WorldEdit service on your own plot."
+# Message shown when one corner is outside the current plot.
+extras-worldedit-outside-plot: "&cBoth corners must be inside your current plot or plot merge."
+# Message shown when the selection is larger than the limit. Placeholders: {blocks}, {max_blocks}
+extras-worldedit-too-large: "&cThis selection is too large: &f{blocks} &cblocks. Maximum allowed: &f{max_blocks}&c."
+# Message shown when WorldEdit or FAWE is missing.
+extras-worldedit-worldedit-missing: "&cWorldEdit or FAWE was not found."
+# Message shown when Vault/CMI economy is unavailable.
+extras-worldedit-economy-missing: "&cThe economy system is not available. The selection was not processed."
+# Message shown when the player does not have enough money. Placeholders: {price}, {blocks}
+extras-worldedit-no-money: "&cYou do not have enough money. Required: &f{price} &7for &f{blocks} &7blocks."
+# Message shown after successful payment. Placeholders: {price}, {blocks}, {cooldown_remaining}
+extras-worldedit-paid: "&aWorldEdit selection set. &7Blocks: &f{blocks}&7, cost: &f{price}&7. Package cooldown: &f{cooldown_remaining}&7."
 
 # Message shown when a future feature is disabled.
 future-disabled: "&cThis future feature is currently disabled."

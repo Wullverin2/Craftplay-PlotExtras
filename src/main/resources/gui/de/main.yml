@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 14
+file-version: 15
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
@@ -240,6 +240,18 @@ buttons:
       - "open-menu:future"
     close: false
     permission: "craftplayplotextras.future"
+  extras:
+    enabled: true
+    slot: 20
+    material: CHEST
+    name: "&aExtras"
+    lore:
+      - "&7Öffnet zusätzliche"
+      - "&7Services für dein Plot."
+    commands:
+      - "open-menu:extras"
+    close: false
+    permission: ""
   close:
     enabled: true
     slot: 22

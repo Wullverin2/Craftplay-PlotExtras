@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 11
+file-version: 12
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -167,6 +167,15 @@ permissions:
     default: op
   craftplayplotextras.future.manage:
     description: Erlaubt das Bearbeiten fremder Future-Plotdaten.
+    default: op
+  craftplayplotextras.extras.worldedit:
+    description: Erlaubt das Nutzen des WorldEdit-Service im Extras-Menü.
+    default: true
+  craftplayplotextras.extras.worldedit.bypass-plot:
+    description: Erlaubt das Nutzen des WorldEdit-Service ohne eigene-Plot-Prüfung.
+    default: op
+  craftplayplotextras.extras.worldedit.free:
+    description: Erlaubt das kostenlose Nutzen des WorldEdit-Service.
     default: op
   craftplayplotextras.backup.create:
     # Erlaubt das Erstellen von Plotbackups.

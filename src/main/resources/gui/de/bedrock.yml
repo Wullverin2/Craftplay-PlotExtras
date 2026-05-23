@@ -6,7 +6,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 5
+file-version: 6
 
 # Wenn false, wird dieses Bedrock-Menü nicht geladen.
 enabled: true
@@ -143,6 +143,14 @@ buttons:
     label: "Löschen & Reset"
     commands:
       - "open-menu:danger"
+    close: false
+    permission: ""
+  extras:
+    enabled: true
+    order: 127
+    label: "Extras"
+    commands:
+      - "open-menu:extras"
     close: false
     permission: ""
   future:
