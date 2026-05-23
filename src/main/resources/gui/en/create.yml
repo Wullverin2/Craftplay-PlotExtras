@@ -5,7 +5,7 @@
 
 # File version of this GUI file.
 # The plugin adds new defaults automatically without overwriting existing values.
-file-version: 1
+file-version: 2
 
 title: "&8Create Plot: {tab}"
 bedrock:
@@ -22,6 +22,7 @@ filler:
   name: "&r"
 buttons:
   back:
+    enabled: true
     slot: 49
     material: ARROW
     name: "&eBack"
@@ -30,6 +31,7 @@ buttons:
     close: false
     permission: ""
   close:
+    enabled: true
     slot: 53
     material: BARRIER
     name: "&cClose"
@@ -39,6 +41,7 @@ buttons:
     permission: ""
 decorations:
   border:
+    enabled: true
     slot: [0, 8, 45, 46, 47, 48, 50, 51, 52]
     material: GRAY_STAINED_GLASS_PANE
     name: "&r"
@@ -46,6 +49,7 @@ decorations:
     permission: ""
 tabs:
   types:
+    enabled: true
     slot: 10
     material: GRASS_BLOCK
     name: "&aPlot Types"
@@ -53,14 +57,15 @@ tabs:
     commands: ["open-menu:create:types"]
     permission: ""
     buttons:
-      standard: {slot: 19, material: GRASS_BLOCK, name: "&aStandard Plot", lore: ["&7Claims a normal free plot.", "&8Command: /plot auto"], commands: ["plot auto"], close: true, permission: "plots.auto"}
-      large: {slot: 20, material: EMERALD_BLOCK, name: "&aLarge Plot", lore: ["&7Default command is configurable.", "&7Adjust it to your plot world."], commands: ["plot auto"], close: true, permission: "plots.auto"}
-      merge: {slot: 21, material: MAP, name: "&aMerge Plot", lore: ["&7Creates a plot first.", "&7Merging depends on your server setup."], commands: ["plot auto"], close: true, permission: "plots.auto"}
-      farm: {slot: 22, material: WHEAT, name: "&aFarm Plot", lore: ["&7Creates a plot for farms.", "&7Command can be changed."], commands: ["plot auto"], close: true, permission: "plots.auto"}
-      pixelart: {slot: 23, material: WHITE_CONCRETE, name: "&aPixel Art Plot", lore: ["&7Creates a plot for pixel art.", "&7Command can be changed."], commands: ["plot auto"], close: true, permission: "plots.auto"}
-      redstone: {slot: 24, material: REDSTONE, name: "&aRedstone Plot", lore: ["&7Creates a plot for redstone.", "&7Command can be changed."], commands: ["plot auto"], close: true, permission: "plots.auto"}
-      premium: {slot: 25, material: GOLD_BLOCK, name: "&6Premium Plot", lore: ["&7Premium plot type with its own permission.", "&7Costs can be added through commands."], commands: ["plot auto"], close: true, permission: "craftplayplotextras.create.premium"}
+      standard: {enabled: true, slot: 19, material: GRASS_BLOCK, name: "&aStandard Plot", lore: ["&7Claims a normal free plot.", "&8Command: /plot auto"], commands: ["plot auto"], close: true, permission: "plots.auto"}
+      large: {enabled: true, slot: 20, material: EMERALD_BLOCK, name: "&aLarge Plot", lore: ["&7Default command is configurable.", "&7Adjust it to your plot world."], commands: ["plot auto"], close: true, permission: "plots.auto"}
+      merge: {enabled: true, slot: 21, material: MAP, name: "&aMerge Plot", lore: ["&7Creates a plot first.", "&7Merging depends on your server setup."], commands: ["plot auto"], close: true, permission: "plots.auto"}
+      farm: {enabled: true, slot: 22, material: WHEAT, name: "&aFarm Plot", lore: ["&7Creates a plot for farms.", "&7Command can be changed."], commands: ["plot auto"], close: true, permission: "plots.auto"}
+      pixelart: {enabled: true, slot: 23, material: WHITE_CONCRETE, name: "&aPixel Art Plot", lore: ["&7Creates a plot for pixel art.", "&7Command can be changed."], commands: ["plot auto"], close: true, permission: "plots.auto"}
+      redstone: {enabled: true, slot: 24, material: REDSTONE, name: "&aRedstone Plot", lore: ["&7Creates a plot for redstone.", "&7Command can be changed."], commands: ["plot auto"], close: true, permission: "plots.auto"}
+      premium: {enabled: true, slot: 25, material: GOLD_BLOCK, name: "&6Premium Plot", lore: ["&7Premium plot type with its own permission.", "&7Costs can be added through commands."], commands: ["plot auto"], close: true, permission: "craftplayplotextras.create.premium"}
   biome:
+    enabled: true
     slot: 12
     material: OAK_SAPLING
     name: "&aChoose Biome"
@@ -68,14 +73,15 @@ tabs:
     commands: ["open-menu:create:biome"]
     permission: ""
     buttons:
-      plains: {slot: 19, material: GRASS_BLOCK, name: "&aPlains", lore: ["&7Sets biome plains."], commands: ["plot biome plains"], close: false, permission: "plots.set.biome"}
-      forest: {slot: 20, material: OAK_LOG, name: "&aForest", lore: ["&7Sets biome forest."], commands: ["plot biome forest"], close: false, permission: "plots.set.biome"}
-      desert: {slot: 21, material: SAND, name: "&eDesert", lore: ["&7Sets biome desert."], commands: ["plot biome desert"], close: false, permission: "plots.set.biome"}
-      jungle: {slot: 22, material: JUNGLE_LOG, name: "&aJungle", lore: ["&7Sets biome jungle."], commands: ["plot biome jungle"], close: false, permission: "plots.set.biome"}
-      snow: {slot: 23, material: SNOW_BLOCK, name: "&bSnow", lore: ["&7Sets biome snow."], commands: ["plot biome snowy_plains"], close: false, permission: "plots.set.biome"}
-      swamp: {slot: 24, material: VINE, name: "&2Swamp", lore: ["&7Sets biome swamp."], commands: ["plot biome swamp"], close: false, permission: "plots.set.biome"}
-      nether: {slot: 25, material: NETHERRACK, name: "&cNether", lore: ["&7Sets biome nether."], commands: ["plot biome nether_wastes"], close: false, permission: "plots.set.biome"}
+      plains: {enabled: true, slot: 19, material: GRASS_BLOCK, name: "&aPlains", lore: ["&7Sets biome plains."], commands: ["plot biome plains"], close: false, permission: "plots.set.biome"}
+      forest: {enabled: true, slot: 20, material: OAK_LOG, name: "&aForest", lore: ["&7Sets biome forest."], commands: ["plot biome forest"], close: false, permission: "plots.set.biome"}
+      desert: {enabled: true, slot: 21, material: SAND, name: "&eDesert", lore: ["&7Sets biome desert."], commands: ["plot biome desert"], close: false, permission: "plots.set.biome"}
+      jungle: {enabled: true, slot: 22, material: JUNGLE_LOG, name: "&aJungle", lore: ["&7Sets biome jungle."], commands: ["plot biome jungle"], close: false, permission: "plots.set.biome"}
+      snow: {enabled: true, slot: 23, material: SNOW_BLOCK, name: "&bSnow", lore: ["&7Sets biome snow."], commands: ["plot biome snowy_plains"], close: false, permission: "plots.set.biome"}
+      swamp: {enabled: true, slot: 24, material: VINE, name: "&2Swamp", lore: ["&7Sets biome swamp."], commands: ["plot biome swamp"], close: false, permission: "plots.set.biome"}
+      nether: {enabled: true, slot: 25, material: NETHERRACK, name: "&cNether", lore: ["&7Sets biome nether."], commands: ["plot biome nether_wastes"], close: false, permission: "plots.set.biome"}
   data:
+    enabled: true
     slot: 14
     material: NAME_TAG
     name: "&aName & Description"
@@ -83,10 +89,11 @@ tabs:
     commands: ["open-menu:create:data"]
     permission: ""
     buttons:
-      name: {slot: 21, material: NAME_TAG, name: "&aSet Plot Name", lore: ["&7Asks for the name privately in chat."], commands: ["chat-input:chat-plot-name:plot alias set {input}"], close: true, permission: "plots.set.alias"}
-      description: {slot: 22, material: WRITABLE_BOOK, name: "&aSet Description", lore: ["&7Asks for the description privately in chat."], commands: ["chat-input:chat-plot-description:plot desc {input}"], close: true, permission: "plots.set.desc"}
-      home: {slot: 23, material: LODESTONE, name: "&aSet Start Position", lore: ["&7Sets your plot home to your position."], commands: ["plot sethome"], close: false, permission: "plots.set.home"}
+      name: {enabled: true, slot: 21, material: NAME_TAG, name: "&aSet Plot Name", lore: ["&7Asks for the name privately in chat."], commands: ["chat-input:chat-plot-name:plot alias set {input}"], close: true, permission: "plots.set.alias"}
+      description: {enabled: true, slot: 22, material: WRITABLE_BOOK, name: "&aSet Description", lore: ["&7Asks for the description privately in chat."], commands: ["chat-input:chat-plot-description:plot desc {input}"], close: true, permission: "plots.set.desc"}
+      home: {enabled: true, slot: 23, material: LODESTONE, name: "&aSet Start Position", lore: ["&7Sets your plot home to your position."], commands: ["plot sethome"], close: false, permission: "plots.set.home"}
   templates:
+    enabled: true
     slot: 16
     material: FILLED_MAP
     name: "&aTemplates"
@@ -94,6 +101,6 @@ tabs:
     commands: ["open-menu:create:templates"]
     permission: ""
     buttons:
-      basic: {slot: 20, material: PAPER, name: "&aBasic Template", lore: ["&7Example template button.", "&7Adjust the command to your setup."], commands: ["plot schematic paste basic"], close: true, permission: "plots.schematic.paste"}
-      garden: {slot: 22, material: OAK_LEAVES, name: "&aGarden Theme", lore: ["&7Example theme button."], commands: ["plot schematic paste garden"], close: true, permission: "plots.schematic.paste"}
-      city: {slot: 24, material: STONE_BRICKS, name: "&aCity Theme", lore: ["&7Example theme button."], commands: ["plot schematic paste city"], close: true, permission: "plots.schematic.paste"}
+      basic: {enabled: true, slot: 20, material: PAPER, name: "&aBasic Template", lore: ["&7Example template button.", "&7Adjust the command to your setup."], commands: ["plot schematic paste basic"], close: true, permission: "plots.schematic.paste"}
+      garden: {enabled: true, slot: 22, material: OAK_LEAVES, name: "&aGarden Theme", lore: ["&7Example theme button."], commands: ["plot schematic paste garden"], close: true, permission: "plots.schematic.paste"}
+      city: {enabled: true, slot: 24, material: STONE_BRICKS, name: "&aCity Theme", lore: ["&7Example theme button."], commands: ["plot schematic paste city"], close: true, permission: "plots.schematic.paste"}

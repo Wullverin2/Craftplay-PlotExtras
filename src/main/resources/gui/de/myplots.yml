@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Optionen automatisch zu ergänzen.
-file-version: 3
+file-version: 4
 
 # Titel des Inventars. Platzhalter: {page}, {max_page}, {sort_name}, {filter_name}, {amount}
 title: "&8Meine Plots &7- Seite {page}/{max_page}"
@@ -70,6 +70,7 @@ plot-item:
 # Buttons der Listenansicht.
 buttons:
   previous-page:
+    enabled: true
     # Vorherige Seite öffnen.
     slot: 45
     material: ARROW
@@ -81,6 +82,7 @@ buttons:
     close: false
     permission: ""
   sort-name:
+    enabled: true
     # Sortiert nach Plotname beziehungsweise Alias.
     slot: 46
     material: NAME_TAG
@@ -92,6 +94,7 @@ buttons:
     close: false
     permission: ""
   sort-size:
+    enabled: true
     # Sortiert nach Merge-Größe.
     slot: 47
     material: CHEST
@@ -103,6 +106,7 @@ buttons:
     close: false
     permission: ""
   sort-activity:
+    enabled: true
     # Sortiert nach letzter Nutzung über dieses Menü.
     slot: 48
     material: CLOCK
@@ -114,6 +118,7 @@ buttons:
     close: false
     permission: ""
   filter-all:
+    enabled: true
     # Zeigt alle eigenen Plots.
     slot: 49
     material: COMPASS
@@ -126,6 +131,7 @@ buttons:
     close: false
     permission: ""
   filter-favorites:
+    enabled: true
     # Zeigt nur favorisierte Plots.
     slot: 50
     material: NETHER_STAR
@@ -138,6 +144,7 @@ buttons:
     close: false
     permission: ""
   filter-public:
+    enabled: true
     # Zeigt nur öffentliche Plots.
     slot: 51
     material: LIME_DYE
@@ -150,6 +157,7 @@ buttons:
     close: false
     permission: ""
   filter-private:
+    enabled: true
     # Zeigt nur private Plots.
     slot: 52
     material: GRAY_DYE
@@ -162,6 +170,7 @@ buttons:
     close: false
     permission: ""
   next-page:
+    enabled: true
     # Nächste Seite öffnen.
     slot: 53
     material: ARROW
@@ -173,6 +182,7 @@ buttons:
     close: false
     permission: ""
   sort-category:
+    enabled: true
     # Sortiert nach der gespeicherten Plot-Kategorie.
     slot: 3
     material: BOOK
@@ -184,6 +194,7 @@ buttons:
     close: false
     permission: ""
   sort-rating:
+    enabled: true
     # Sortiert nach gespeicherter Bewertung. Der Wert kann später von Community-Funktionen genutzt werden.
     slot: 5
     material: GOLD_INGOT
@@ -195,6 +206,7 @@ buttons:
     close: false
     permission: ""
   back:
+    enabled: true
     # Zurück ins Hauptmenü.
     slot: 7
     material: OAK_DOOR
@@ -206,6 +218,7 @@ buttons:
     close: false
     permission: ""
   close:
+    enabled: true
     # Schließt das Menü.
     slot: 8
     material: BARRIER
@@ -219,6 +232,7 @@ buttons:
 # Deko-Items sind reine Anzeigeelemente ohne Aktion.
 decorations:
   top-border:
+    enabled: true
     # Oberer Rahmen.
     slot: [0, 1, 2, 4, 6]
     material: GRAY_STAINED_GLASS_PANE
@@ -227,6 +241,7 @@ decorations:
     lore: []
     permission: ""
   side-border:
+    enabled: true
     # Seitlicher Rahmen.
     slot: [9, 17, 18, 26, 27, 35, 36, 44]
     material: GRAY_STAINED_GLASS_PANE
@@ -288,6 +303,7 @@ detail:
   # Buttons der Detailansicht.
   buttons:
     teleport:
+      enabled: true
       # Teleportiert direkt zum Plot.
       slot: 20
       material: ENDER_PEARL
@@ -298,6 +314,7 @@ detail:
       close: true
       permission: ""
     favorite:
+      enabled: true
       # Schaltet Favorit an oder aus.
       slot: 21
       material: NETHER_STAR
@@ -308,6 +325,7 @@ detail:
       close: false
       permission: ""
     visibility:
+      enabled: true
       # Wechselt zwischen automatisch, öffentlich und privat.
       slot: 22
       material: OAK_DOOR
@@ -319,6 +337,7 @@ detail:
       close: false
       permission: ""
     category:
+      enabled: true
       # Wechselt die Plot-Kategorie in der Reihenfolge oben.
       slot: 23
       material: BOOK
@@ -329,6 +348,7 @@ detail:
       close: false
       permission: ""
     note:
+      enabled: true
       # Speichert eine private Notiz zu diesem Plot.
       slot: 24
       material: PAPER
@@ -342,6 +362,7 @@ detail:
       close: true
       permission: ""
     back:
+      enabled: true
       # Zurück zur Listenansicht.
       slot: 49
       material: ARROW
@@ -353,6 +374,7 @@ detail:
       close: false
       permission: ""
     close:
+      enabled: true
       # Schließt die Detailansicht.
       slot: 53
       material: BARRIER
@@ -365,6 +387,7 @@ detail:
   # Deko-Items der Detailansicht.
   decorations:
     top-border:
+      enabled: true
       slot: [0, 1, 2, 3, 4, 5, 6, 7, 8]
       material: GRAY_STAINED_GLASS_PANE
       head-database-id: ""
@@ -372,6 +395,7 @@ detail:
       lore: []
       permission: ""
     bottom-border:
+      enabled: true
       slot: [45, 46, 47, 48, 50, 51, 52]
       material: GRAY_STAINED_GLASS_PANE
       head-database-id: ""

@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 13
+file-version: 14
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
@@ -52,6 +52,7 @@ animation:
 # Alle Buttons des Menüs.
 buttons:
   my-plots:
+    enabled: true
     # Slot im Inventar. 0 ist oben links.
     slot: 1
     # Item, das für diesen Button angezeigt wird.
@@ -71,6 +72,7 @@ buttons:
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
     permission: ""
   search:
+    enabled: true
     slot: 2
     material: COMPASS
     name: "&aPlot suchen"
@@ -82,6 +84,7 @@ buttons:
     close: false
     permission: ""
   create:
+    enabled: true
     slot: 3
     material: EMERALD_BLOCK
     name: "&aPlot erstellen"
@@ -93,6 +96,7 @@ buttons:
     close: false
     permission: "plots.auto"
   favorites:
+    enabled: true
     slot: 4
     material: NETHER_STAR
     name: "&aFavoriten"
@@ -104,6 +108,7 @@ buttons:
     close: false
     permission: ""
   community:
+    enabled: true
     slot: 5
     material: SUNFLOWER
     name: "&aCommunity"
@@ -115,6 +120,7 @@ buttons:
     close: false
     permission: ""
   members:
+    enabled: true
     slot: 12
     material: PLAYER_HEAD
     name: "&aMitglieder"
@@ -126,6 +132,7 @@ buttons:
     close: false
     permission: ""
   roles:
+    enabled: true
     slot: 7
     material: WRITABLE_BOOK
     name: "&aRechte & Rollen"
@@ -137,6 +144,7 @@ buttons:
     close: false
     permission: ""
   flags:
+    enabled: true
     slot: 14
     material: REDSTONE_TORCH
     name: "&aFlags"
@@ -148,6 +156,7 @@ buttons:
     close: false
     permission: ""
   settings:
+    enabled: true
     slot: 15
     material: REPEATER
     name: "&aEinstellungen"
@@ -159,6 +168,7 @@ buttons:
     close: false
     permission: ""
   reports:
+    enabled: true
     slot: 10
     material: BELL
     name: "&eReports"
@@ -170,6 +180,7 @@ buttons:
     close: false
     permission: ""
   history:
+    enabled: true
     slot: 11
     material: CLOCK
     name: "&aVerlauf"
@@ -181,6 +192,7 @@ buttons:
     close: false
     permission: ""
   help:
+    enabled: true
     slot: 16
     material: BOOK
     name: "&bHilfe"
@@ -192,6 +204,7 @@ buttons:
     close: false
     permission: ""
   team:
+    enabled: true
     slot: 13
     material: COMMAND_BLOCK
     name: "&cTeam"
@@ -203,6 +216,7 @@ buttons:
     close: false
     permission: "craftplayplotextras.team"
   danger:
+    enabled: true
     slot: 6
     material: TNT
     name: "&cLöschen & Reset"
@@ -214,6 +228,7 @@ buttons:
     close: false
     permission: ""
   future:
+    enabled: true
     slot: 21
     material: BEACON
     name: "&dZukunft"
@@ -225,6 +240,7 @@ buttons:
     close: false
     permission: "craftplayplotextras.future"
   close:
+    enabled: true
     slot: 22
     material: BARRIER
     head-database-id: ""
@@ -238,6 +254,7 @@ buttons:
 # Sie können ebenfalls Material, HeadDatabase-ID, Name, Lore, Slot und Permission nutzen.
 decorations:
   top-border:
+    enabled: true
     # Slots im Inventar.
     slot: [0, 8]
     # Material-Fallback.
@@ -251,6 +268,7 @@ decorations:
     # Optional: Permission, damit diese Deko sichtbar ist.
     permission: ""
   side-border:
+    enabled: true
     slot: [9, 17]
     material: GRAY_STAINED_GLASS_PANE
     head-database-id: ""
@@ -258,6 +276,7 @@ decorations:
     lore: []
     permission: ""
   bottom-border:
+    enabled: true
     slot: [18, 19, 20, 21, 23, 24, 25, 26]
     material: GRAY_STAINED_GLASS_PANE
     head-database-id: ""

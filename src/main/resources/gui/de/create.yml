@@ -5,7 +5,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin ergänzt neue Standardwerte automatisch, ohne vorhandene Werte zu überschreiben.
-file-version: 1
+file-version: 2
 
 # Titel des Java-Inventars. Platzhalter: {tab}
 title: "&8Plot erstellen: {tab}"
@@ -28,6 +28,7 @@ filler:
   name: "&r"
 buttons:
   back:
+    enabled: true
     slot: 49
     material: ARROW
     name: "&eZurück"
@@ -36,6 +37,7 @@ buttons:
     close: false
     permission: ""
   close:
+    enabled: true
     slot: 53
     material: BARRIER
     name: "&cSchließen"
@@ -45,6 +47,7 @@ buttons:
     permission: ""
 decorations:
   border:
+    enabled: true
     slot: [0, 8, 45, 46, 47, 48, 50, 51, 52]
     material: GRAY_STAINED_GLASS_PANE
     name: "&r"
@@ -52,6 +55,7 @@ decorations:
     permission: ""
 tabs:
   types:
+    enabled: true
     slot: 10
     material: GRASS_BLOCK
     name: "&aPlottypen"
@@ -60,6 +64,7 @@ tabs:
     permission: ""
     buttons:
       standard:
+        enabled: true
         slot: 19
         material: GRASS_BLOCK
         name: "&aStandardplot"
@@ -68,6 +73,7 @@ tabs:
         close: true
         permission: "plots.auto"
       large:
+        enabled: true
         slot: 20
         material: EMERALD_BLOCK
         name: "&aGroßplot"
@@ -76,6 +82,7 @@ tabs:
         close: true
         permission: "plots.auto"
       merge:
+        enabled: true
         slot: 21
         material: MAP
         name: "&aMergeplot"
@@ -84,6 +91,7 @@ tabs:
         close: true
         permission: "plots.auto"
       farm:
+        enabled: true
         slot: 22
         material: WHEAT
         name: "&aFarmplot"
@@ -92,6 +100,7 @@ tabs:
         close: true
         permission: "plots.auto"
       pixelart:
+        enabled: true
         slot: 23
         material: WHITE_CONCRETE
         name: "&aPixelartplot"
@@ -100,6 +109,7 @@ tabs:
         close: true
         permission: "plots.auto"
       redstone:
+        enabled: true
         slot: 24
         material: REDSTONE
         name: "&aRedstoneplot"
@@ -108,6 +118,7 @@ tabs:
         close: true
         permission: "plots.auto"
       premium:
+        enabled: true
         slot: 25
         material: GOLD_BLOCK
         name: "&6Premiumplot"
@@ -116,6 +127,7 @@ tabs:
         close: true
         permission: "craftplayplotextras.create.premium"
   biome:
+    enabled: true
     slot: 12
     material: OAK_SAPLING
     name: "&aBiom wählen"
@@ -123,14 +135,15 @@ tabs:
     commands: ["open-menu:create:biome"]
     permission: ""
     buttons:
-      plains: {slot: 19, material: GRASS_BLOCK, name: "&aEbene", lore: ["&7Setzt Biom Ebene."], commands: ["plot biome plains"], close: false, permission: "plots.set.biome"}
-      forest: {slot: 20, material: OAK_LOG, name: "&aWald", lore: ["&7Setzt Biom Wald."], commands: ["plot biome forest"], close: false, permission: "plots.set.biome"}
-      desert: {slot: 21, material: SAND, name: "&eWüste", lore: ["&7Setzt Biom Wüste."], commands: ["plot biome desert"], close: false, permission: "plots.set.biome"}
-      jungle: {slot: 22, material: JUNGLE_LOG, name: "&aDschungel", lore: ["&7Setzt Biom Dschungel."], commands: ["plot biome jungle"], close: false, permission: "plots.set.biome"}
-      snow: {slot: 23, material: SNOW_BLOCK, name: "&bSchnee", lore: ["&7Setzt Biom Schnee."], commands: ["plot biome snowy_plains"], close: false, permission: "plots.set.biome"}
-      swamp: {slot: 24, material: VINE, name: "&2Sumpf", lore: ["&7Setzt Biom Sumpf."], commands: ["plot biome swamp"], close: false, permission: "plots.set.biome"}
-      nether: {slot: 25, material: NETHERRACK, name: "&cNether", lore: ["&7Setzt Biom Nether."], commands: ["plot biome nether_wastes"], close: false, permission: "plots.set.biome"}
+      plains: {enabled: true, slot: 19, material: GRASS_BLOCK, name: "&aEbene", lore: ["&7Setzt Biom Ebene."], commands: ["plot biome plains"], close: false, permission: "plots.set.biome"}
+      forest: {enabled: true, slot: 20, material: OAK_LOG, name: "&aWald", lore: ["&7Setzt Biom Wald."], commands: ["plot biome forest"], close: false, permission: "plots.set.biome"}
+      desert: {enabled: true, slot: 21, material: SAND, name: "&eWüste", lore: ["&7Setzt Biom Wüste."], commands: ["plot biome desert"], close: false, permission: "plots.set.biome"}
+      jungle: {enabled: true, slot: 22, material: JUNGLE_LOG, name: "&aDschungel", lore: ["&7Setzt Biom Dschungel."], commands: ["plot biome jungle"], close: false, permission: "plots.set.biome"}
+      snow: {enabled: true, slot: 23, material: SNOW_BLOCK, name: "&bSchnee", lore: ["&7Setzt Biom Schnee."], commands: ["plot biome snowy_plains"], close: false, permission: "plots.set.biome"}
+      swamp: {enabled: true, slot: 24, material: VINE, name: "&2Sumpf", lore: ["&7Setzt Biom Sumpf."], commands: ["plot biome swamp"], close: false, permission: "plots.set.biome"}
+      nether: {enabled: true, slot: 25, material: NETHERRACK, name: "&cNether", lore: ["&7Setzt Biom Nether."], commands: ["plot biome nether_wastes"], close: false, permission: "plots.set.biome"}
   data:
+    enabled: true
     slot: 14
     material: NAME_TAG
     name: "&aName & Beschreibung"
@@ -139,6 +152,7 @@ tabs:
     permission: ""
     buttons:
       name:
+        enabled: true
         slot: 21
         material: NAME_TAG
         name: "&aPlotname setzen"
@@ -147,6 +161,7 @@ tabs:
         close: true
         permission: "plots.set.alias"
       description:
+        enabled: true
         slot: 22
         material: WRITABLE_BOOK
         name: "&aBeschreibung setzen"
@@ -155,6 +170,7 @@ tabs:
         close: true
         permission: "plots.set.desc"
       home:
+        enabled: true
         slot: 23
         material: LODESTONE
         name: "&aStartposition setzen"
@@ -163,6 +179,7 @@ tabs:
         close: false
         permission: "plots.set.home"
   templates:
+    enabled: true
     slot: 16
     material: FILLED_MAP
     name: "&aVorlagen"
@@ -171,6 +188,7 @@ tabs:
     permission: ""
     buttons:
       basic:
+        enabled: true
         slot: 20
         material: PAPER
         name: "&aBasisvorlage"
@@ -179,6 +197,7 @@ tabs:
         close: true
         permission: "plots.schematic.paste"
       garden:
+        enabled: true
         slot: 22
         material: OAK_LEAVES
         name: "&aGarten-Theme"
@@ -187,6 +206,7 @@ tabs:
         close: true
         permission: "plots.schematic.paste"
       city:
+        enabled: true
         slot: 24
         material: STONE_BRICKS
         name: "&aStadt-Theme"

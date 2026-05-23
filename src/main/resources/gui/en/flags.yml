@@ -8,7 +8,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 7
+file-version: 8
 
 # Inventory title.
 title: "&8Plot Flags"
@@ -33,6 +33,7 @@ filler:
 # Static buttons in this menu.
 buttons:
   back:
+    enabled: true
     # Inventory slot. 0 is the top-left slot.
     slot: 49
     # Item shown for this button.
@@ -52,6 +53,7 @@ buttons:
     # Optional permission required to see the button.
     permission: ""
   previous-page:
+    enabled: true
     # Inventory slot. This button is visible on every page.
     slot: 50
     # Item shown for this button.
@@ -71,6 +73,7 @@ buttons:
     # Optional permission required to see the button.
     permission: ""
   next-page:
+    enabled: true
     # Inventory slot. This button is visible on every page.
     slot: 51
     # Item shown for this button.
@@ -90,6 +93,7 @@ buttons:
     # Optional permission required to see the button.
     permission: ""
   close:
+    enabled: true
     # Inventory slot.
     slot: 53
     # Material fallback when no HeadDatabase ID is set.
@@ -108,6 +112,7 @@ buttons:
     # Optional permission required to see the button.
     permission: ""
   category-general:
+    enabled: true
     # Category button for general flags.
     slot: 45
     material: BOOK
@@ -120,6 +125,7 @@ buttons:
     close: false
     permission: ""
   category-technical:
+    enabled: true
     # Category button for technical flags.
     slot: 46
     material: REDSTONE
@@ -132,6 +138,7 @@ buttons:
     close: false
     permission: ""
   search:
+    enabled: true
     # Search button for servers using PlotSquared flag lists.
     slot: 47
     material: COMPASS
@@ -144,6 +151,7 @@ buttons:
     close: true
     permission: "plots.flag"
   favorites:
+    enabled: true
     # Favorite view. By default it opens the first flag page and can be freely changed.
     slot: 48
     material: NETHER_STAR
@@ -159,6 +167,7 @@ buttons:
 # They can use material, HeadDatabase ID, name, lore, slot, and permission.
 decorations:
   control-spacer:
+    enabled: true
     # Inventory slot.
     slot: 52
     # Material fallback.
@@ -177,6 +186,7 @@ decorations:
 # Placeholders in name and lore: {flag}, {status}, {next_status}
 flags:
   pvp:
+    enabled: true
     slot: 0
     enabled-material: DIAMOND_SWORD
     disabled-material: WOODEN_SWORD
@@ -189,6 +199,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   pve:
+    enabled: true
     slot: 1
     enabled-material: IRON_SWORD
     disabled-material: STONE_SWORD
@@ -201,6 +212,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   fly:
+    enabled: true
     slot: 2
     enabled-material: FEATHER
     disabled-material: GRAY_DYE
@@ -213,6 +225,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   redstone:
+    enabled: true
     slot: 3
     enabled-material: REDSTONE_TORCH
     disabled-material: LEVER
@@ -225,6 +238,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   explosion:
+    enabled: true
     slot: 4
     enabled-material: TNT
     disabled-material: GUNPOWDER
@@ -237,6 +251,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   titles:
+    enabled: true
     slot: 5
     enabled-material: NAME_TAG
     disabled-material: PAPER
@@ -249,6 +264,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   notify-enter:
+    enabled: true
     slot: 6
     enabled-material: OAK_DOOR
     disabled-material: DARK_OAK_DOOR
@@ -261,6 +277,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   notify-leave:
+    enabled: true
     slot: 7
     enabled-material: SPRUCE_DOOR
     disabled-material: DARK_OAK_DOOR
@@ -273,6 +290,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   invincible:
+    enabled: true
     slot: 8
     enabled-material: SHIELD
     disabled-material: GRAY_DYE
@@ -285,6 +303,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   deny-exit:
+    enabled: true
     slot: 10
     enabled-material: IRON_DOOR
     disabled-material: OAK_DOOR
@@ -297,6 +316,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   forcefield:
+    enabled: true
     slot: 11
     enabled-material: ENDER_PEARL
     disabled-material: GRAY_DYE
@@ -309,6 +329,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   item-drop:
+    enabled: true
     slot: 12
     enabled-material: HOPPER
     disabled-material: GRAY_DYE
@@ -321,6 +342,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   instabreak:
+    enabled: true
     slot: 13
     enabled-material: GOLDEN_PICKAXE
     disabled-material: STONE_PICKAXE
@@ -333,6 +355,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   drop-protection:
+    enabled: true
     slot: 14
     enabled-material: CHEST
     disabled-material: GRAY_DYE
@@ -345,6 +368,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   grass-grow:
+    enabled: true
     slot: 15
     enabled-material: GRASS_BLOCK
     disabled-material: DIRT
@@ -357,6 +381,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   vine-grow:
+    enabled: true
     slot: 16
     enabled-material: VINE
     disabled-material: DEAD_BUSH
@@ -369,6 +394,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   mycel-grow:
+    enabled: true
     slot: 17
     enabled-material: MYCELIUM
     disabled-material: DIRT
@@ -381,6 +407,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   soil-dry:
+    enabled: true
     slot: 18
     enabled-material: FARMLAND
     disabled-material: DIRT
@@ -393,6 +420,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   snow-form:
+    enabled: true
     slot: 19
     enabled-material: SNOW_BLOCK
     disabled-material: SNOWBALL
@@ -405,6 +433,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   snow-melt:
+    enabled: true
     slot: 20
     enabled-material: SNOWBALL
     disabled-material: SNOW_BLOCK
@@ -417,6 +446,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   ice-form:
+    enabled: true
     slot: 21
     enabled-material: ICE
     disabled-material: WATER_BUCKET
@@ -429,6 +459,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   ice-melt:
+    enabled: true
     slot: 22
     enabled-material: BLUE_ICE
     disabled-material: ICE
@@ -441,6 +472,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   block-burn:
+    enabled: true
     slot: 24
     enabled-material: CAMPFIRE
     disabled-material: CHARCOAL
@@ -453,6 +485,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   block-ignition:
+    enabled: true
     slot: 25
     enabled-material: FIRE_CHARGE
     disabled-material: CHARCOAL
@@ -465,6 +498,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   liquid-flow:
+    enabled: true
     slot: 26
     enabled-material: WATER_BUCKET
     disabled-material: BUCKET
@@ -477,6 +511,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   disable-physics:
+    enabled: true
     slot: 27
     enabled-material: ANVIL
     disabled-material: GRAY_DYE
@@ -489,6 +524,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   device-interact:
+    enabled: true
     slot: 28
     enabled-material: STONE_BUTTON
     disabled-material: GRAY_DYE
@@ -501,6 +537,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   player-interact:
+    enabled: true
     slot: 29
     enabled-material: PLAYER_HEAD
     disabled-material: GRAY_DYE
@@ -513,6 +550,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   villager-interact:
+    enabled: true
     slot: 30
     enabled-material: EMERALD
     disabled-material: GRAY_DYE
@@ -525,6 +563,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   animal-interact:
+    enabled: true
     slot: 31
     enabled-material: WHEAT
     disabled-material: GRAY_DYE
@@ -537,6 +576,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   animal-attack:
+    enabled: true
     slot: 32
     enabled-material: BONE
     disabled-material: GRAY_DYE
@@ -549,6 +589,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   hostile-interact:
+    enabled: true
     slot: 33
     enabled-material: ROTTEN_FLESH
     disabled-material: GRAY_DYE
@@ -561,6 +602,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   hostile-attack:
+    enabled: true
     slot: 34
     enabled-material: IRON_AXE
     disabled-material: GRAY_DYE
@@ -573,6 +615,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   tamed-interact:
+    enabled: true
     slot: 35
     enabled-material: LEAD
     disabled-material: GRAY_DYE
@@ -585,6 +628,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   tamed-attack:
+    enabled: true
     slot: 36
     enabled-material: BONE
     disabled-material: GRAY_DYE
@@ -597,6 +641,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   mob-place:
+    enabled: true
     slot: 37
     enabled-material: SPAWNER
     disabled-material: GRAY_DYE
@@ -609,6 +654,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   mob-break:
+    enabled: true
     slot: 38
     enabled-material: COBWEB
     disabled-material: GRAY_DYE
@@ -621,6 +667,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   vehicle-use:
+    enabled: true
     slot: 39
     enabled-material: MINECART
     disabled-material: GRAY_DYE
@@ -633,6 +680,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   vehicle-place:
+    enabled: true
     slot: 40
     enabled-material: OAK_BOAT
     disabled-material: GRAY_DYE
@@ -645,6 +693,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   vehicle-break:
+    enabled: true
     slot: 41
     enabled-material: RAIL
     disabled-material: GRAY_DYE
@@ -657,6 +706,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   hanging-place:
+    enabled: true
     slot: 43
     enabled-material: ITEM_FRAME
     disabled-material: GRAY_DYE
@@ -669,6 +719,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   hanging-break:
+    enabled: true
     slot: 44
     enabled-material: SHEARS
     disabled-material: GRAY_DYE
@@ -681,6 +732,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   misc-interact:
+    enabled: true
     slot: 45
     enabled-material: ARMOR_STAND
     disabled-material: GRAY_DYE
@@ -693,6 +745,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   misc-place:
+    enabled: true
     slot: 46
     enabled-material: EGG
     disabled-material: GRAY_DYE
@@ -705,6 +758,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   misc-break:
+    enabled: true
     slot: 47
     enabled-material: STONE_AXE
     disabled-material: GRAY_DYE
@@ -717,6 +771,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   no-worldedit:
+    enabled: true
     slot: 48
     enabled-material: WOODEN_AXE
     disabled-material: GRAY_DYE
@@ -729,6 +784,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   hide-info:
+    enabled: true
     page: 2
     slot: 22
     enabled-material: BOOK
@@ -742,6 +798,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   server-plot:
+    enabled: true
     page: 2
     slot: 23
     enabled-material: COMMAND_BLOCK
@@ -755,6 +812,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   chat:
+    enabled: true
     page: 2
     slot: 0
     enabled-material: WRITABLE_BOOK
@@ -768,6 +826,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   beacon-effects:
+    enabled: true
     page: 2
     slot: 1
     enabled-material: BEACON
@@ -781,6 +840,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   concrete-harden:
+    enabled: true
     page: 2
     slot: 2
     enabled-material: WHITE_CONCRETE
@@ -794,6 +854,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   coral-dry:
+    enabled: true
     page: 2
     slot: 3
     enabled-material: DEAD_BRAIN_CORAL
@@ -807,6 +868,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   crop-grow:
+    enabled: true
     page: 2
     slot: 4
     enabled-material: WHEAT
@@ -820,6 +882,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   copper-oxide:
+    enabled: true
     page: 2
     slot: 5
     enabled-material: OXIDIZED_COPPER
@@ -833,6 +896,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   deny-portal-travel:
+    enabled: true
     page: 2
     slot: 6
     enabled-material: CRYING_OBSIDIAN
@@ -846,6 +910,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   deny-portals:
+    enabled: true
     page: 2
     slot: 7
     enabled-material: OBSIDIAN
@@ -859,6 +924,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   edit-sign:
+    enabled: true
     page: 2
     slot: 8
     enabled-material: OAK_SIGN
@@ -872,6 +938,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   entity-change-block:
+    enabled: true
     page: 2
     slot: 9
     enabled-material: ENDERMAN_SPAWN_EGG
@@ -885,6 +952,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   fishing:
+    enabled: true
     page: 2
     slot: 10
     enabled-material: FISHING_ROD
@@ -898,6 +966,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   keep-inventory:
+    enabled: true
     page: 2
     slot: 11
     enabled-material: ENDER_CHEST
@@ -911,6 +980,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   kelp-grow:
+    enabled: true
     page: 2
     slot: 12
     enabled-material: KELP
@@ -924,6 +994,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   leaf-decay:
+    enabled: true
     page: 2
     slot: 13
     enabled-material: OAK_LEAVES
@@ -937,6 +1008,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   lectern-read-book:
+    enabled: true
     page: 2
     slot: 14
     enabled-material: LECTERN
@@ -950,6 +1022,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   prevent-creative-copy:
+    enabled: true
     page: 2
     slot: 15
     enabled-material: WRITABLE_BOOK
@@ -963,6 +1036,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   projectiles:
+    enabled: true
     page: 2
     slot: 16
     enabled-material: ARROW
@@ -976,6 +1050,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   projectile-change-block:
+    enabled: true
     page: 2
     slot: 17
     enabled-material: FIRE_CHARGE
@@ -989,6 +1064,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   sculk-sensor-interact:
+    enabled: true
     page: 2
     slot: 18
     enabled-material: SCULK_SENSOR
@@ -1002,6 +1078,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   tile-drop:
+    enabled: true
     page: 2
     slot: 19
     enabled-material: DROPPER
@@ -1015,6 +1092,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   untrusted-visit:
+    enabled: true
     page: 2
     slot: 20
     enabled-material: OAK_DOOR
@@ -1028,6 +1106,7 @@ flags:
       - "&eClick to toggle."
     permission: ""
   weaving-death-place:
+    enabled: true
     page: 2
     slot: 21
     enabled-material: COBWEB

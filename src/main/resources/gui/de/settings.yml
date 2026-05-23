@@ -10,7 +10,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 7
+file-version: 8
 
 # Titel des Inventars. Platzhalter: {tab}
 title: "&8Plot-Einstellungen: {tab}"
@@ -29,6 +29,7 @@ filler:
 # Deko-Items, die in jedem Tab angezeigt werden.
 decorations:
   bottom-spacer:
+    enabled: true
     # Slot im Inventar.
     slot: 52
     # Material-Fallback.
@@ -45,6 +46,7 @@ decorations:
 # Jeder Tab hat einen eigenen Button oben im Menü und darunter eigene Aktionsbuttons.
 tabs:
   homes:
+    enabled: true
     # Slot des Tab-Buttons.
     slot: 10
     # Item des Tab-Buttons.
@@ -63,6 +65,7 @@ tabs:
     # Buttons innerhalb dieses Tabs.
     buttons:
       open-home:
+        enabled: true
         # Slot im Inventar.
         slot: 22
         # Item dieses Buttons.
@@ -81,6 +84,7 @@ tabs:
         # Optional: Permission, damit der Button sichtbar ist.
         permission: "plots.home"
       set-home:
+        enabled: true
         slot: 23
         material: LODESTONE
         name: "&aPlot-Home setzen"
@@ -92,6 +96,7 @@ tabs:
         close: false
         permission: "plots.set.home"
       reset-home:
+        enabled: true
         slot: 24
         material: BARRIER
         name: "&cPlot-Home entfernen"
@@ -103,6 +108,7 @@ tabs:
         close: false
         permission: "plots.set.home"
       back:
+        enabled: true
         slot: 49
         material: ARROW
         name: "&cZurück"
@@ -113,6 +119,7 @@ tabs:
         close: false
         permission: ""
       close:
+        enabled: true
         slot: 53
         material: BARRIER
         name: "&cSchließen"
@@ -122,6 +129,7 @@ tabs:
         close: true
         permission: ""
   info:
+    enabled: true
     slot: 28
     material: NAME_TAG
     name: "&aPlotdaten"
@@ -132,14 +140,15 @@ tabs:
       - "open-menu:settings:info"
     permission: ""
     buttons:
-      name: {slot: 20, material: NAME_TAG, name: "&aPlotname ändern", lore: ["&7Fragt den neuen Namen im Chat ab."], commands: ["chat-input:chat-plot-name:plot alias set {input}"], close: true, permission: "plots.set.alias"}
-      description: {slot: 21, material: WRITABLE_BOOK, name: "&aBeschreibung ändern", lore: ["&7Fragt die neue Beschreibung im Chat ab."], commands: ["chat-input:chat-plot-description:plot desc {input}"], close: true, permission: "plots.set.desc"}
-      public: {slot: 22, material: OAK_DOOR, name: "&aÖffentlich sichtbar", lore: ["&7Erlaubt Besuchern das Betreten."], commands: ["plot flag set untrusted-visit true"], close: false, permission: "plots.set.flag.untrusted-visit"}
-      private: {slot: 23, material: IRON_DOOR, name: "&7Privat", lore: ["&7Entfernt öffentliche Besucherrechte."], commands: ["plot flag set untrusted-visit false"], close: false, permission: "plots.set.flag.untrusted-visit"}
-      info: {slot: 24, material: COMPASS, name: "&aPlotinfo anzeigen", lore: ["&7Zeigt Besitzer, Größe und Status."], commands: ["plot info"], close: true, permission: "plots.info"}
-      back: {slot: 49, material: ARROW, name: "&cZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
-      close: {slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+      name: {enabled: true, slot: 20, material: NAME_TAG, name: "&aPlotname ändern", lore: ["&7Fragt den neuen Namen im Chat ab."], commands: ["chat-input:chat-plot-name:plot alias set {input}"], close: true, permission: "plots.set.alias"}
+      description: {enabled: true, slot: 21, material: WRITABLE_BOOK, name: "&aBeschreibung ändern", lore: ["&7Fragt die neue Beschreibung im Chat ab."], commands: ["chat-input:chat-plot-description:plot desc {input}"], close: true, permission: "plots.set.desc"}
+      public: {enabled: true, slot: 22, material: OAK_DOOR, name: "&aÖffentlich sichtbar", lore: ["&7Erlaubt Besuchern das Betreten."], commands: ["plot flag set untrusted-visit true"], close: false, permission: "plots.set.flag.untrusted-visit"}
+      private: {enabled: true, slot: 23, material: IRON_DOOR, name: "&7Privat", lore: ["&7Entfernt öffentliche Besucherrechte."], commands: ["plot flag set untrusted-visit false"], close: false, permission: "plots.set.flag.untrusted-visit"}
+      info: {enabled: true, slot: 24, material: COMPASS, name: "&aPlotinfo anzeigen", lore: ["&7Zeigt Besitzer, Größe und Status."], commands: ["plot info"], close: true, permission: "plots.info"}
+      back: {enabled: true, slot: 49, material: ARROW, name: "&cZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+      close: {enabled: true, slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
   music:
+    enabled: true
     slot: 30
     material: JUKEBOX
     name: "&aMusik"
@@ -150,13 +159,14 @@ tabs:
       - "open-menu:settings:music"
     permission: ""
     buttons:
-      record-13: {slot: 20, material: MUSIC_DISC_13, name: "&aMusik: 13", lore: ["&7Setzt die Plot-Musik."], commands: ["plot flag set music 13"], close: false, permission: "plots.set.flag.music"}
-      record-cat: {slot: 21, material: MUSIC_DISC_CAT, name: "&aMusik: Cat", lore: ["&7Setzt die Plot-Musik."], commands: ["plot flag set music cat"], close: false, permission: "plots.set.flag.music"}
-      record-blocks: {slot: 22, material: MUSIC_DISC_BLOCKS, name: "&aMusik: Blocks", lore: ["&7Setzt die Plot-Musik."], commands: ["plot flag set music blocks"], close: false, permission: "plots.set.flag.music"}
-      reset: {slot: 24, material: BARRIER, name: "&eMusik zurücksetzen", lore: ["&7Entfernt die Musik-Flag."], commands: ["plot flag remove music"], close: false, permission: "plots.flag.remove"}
-      back: {slot: 49, material: ARROW, name: "&cZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
-      close: {slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+      record-13: {enabled: true, slot: 20, material: MUSIC_DISC_13, name: "&aMusik: 13", lore: ["&7Setzt die Plot-Musik."], commands: ["plot flag set music 13"], close: false, permission: "plots.set.flag.music"}
+      record-cat: {enabled: true, slot: 21, material: MUSIC_DISC_CAT, name: "&aMusik: Cat", lore: ["&7Setzt die Plot-Musik."], commands: ["plot flag set music cat"], close: false, permission: "plots.set.flag.music"}
+      record-blocks: {enabled: true, slot: 22, material: MUSIC_DISC_BLOCKS, name: "&aMusik: Blocks", lore: ["&7Setzt die Plot-Musik."], commands: ["plot flag set music blocks"], close: false, permission: "plots.set.flag.music"}
+      reset: {enabled: true, slot: 24, material: BARRIER, name: "&eMusik zurücksetzen", lore: ["&7Entfernt die Musik-Flag."], commands: ["plot flag remove music"], close: false, permission: "plots.flag.remove"}
+      back: {enabled: true, slot: 49, material: ARROW, name: "&cZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+      close: {enabled: true, slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
   stats:
+    enabled: true
     slot: 32
     material: FILLED_MAP
     name: "&aStatistiken"
@@ -167,13 +177,14 @@ tabs:
       - "open-menu:settings:stats"
     permission: ""
     buttons:
-      info: {slot: 20, material: COMPASS, name: "&aPlotstatistiken", lore: ["&7Öffnet PlotSquared-Infos."], commands: ["plot info"], close: true, permission: "plots.info"}
-      visit-list: {slot: 21, material: CLOCK, name: "&aBesucher/Verlauf", lore: ["&7Öffnet besuchte Plotlisten."], commands: ["plot list visited"], close: true, permission: "plots.list"}
-      banner: {slot: 22, material: WHITE_BANNER, name: "&aPlotbanner", lore: ["&7Beispielbutton für externe Systeme."], commands: ["plot info"], close: true, permission: "plots.info"}
-      featured: {slot: 24, material: NETHER_STAR, name: "&eFeatured Plot", lore: ["&7Beispielbutton für Team-/Community-Systeme."], commands: ["plot rate"], close: true, permission: "plots.rate"}
-      back: {slot: 49, material: ARROW, name: "&cZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
-      close: {slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+      info: {enabled: true, slot: 20, material: COMPASS, name: "&aPlotstatistiken", lore: ["&7Öffnet PlotSquared-Infos."], commands: ["plot info"], close: true, permission: "plots.info"}
+      visit-list: {enabled: true, slot: 21, material: CLOCK, name: "&aBesucher/Verlauf", lore: ["&7Öffnet besuchte Plotlisten."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+      banner: {enabled: true, slot: 22, material: WHITE_BANNER, name: "&aPlotbanner", lore: ["&7Beispielbutton für externe Systeme."], commands: ["plot info"], close: true, permission: "plots.info"}
+      featured: {enabled: true, slot: 24, material: NETHER_STAR, name: "&eFeatured Plot", lore: ["&7Beispielbutton für Team-/Community-Systeme."], commands: ["plot rate"], close: true, permission: "plots.rate"}
+      back: {enabled: true, slot: 49, material: ARROW, name: "&cZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
+      close: {enabled: true, slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
   weather:
+    enabled: true
     slot: 12
     material: SUNFLOWER
     name: "&aWetter"
@@ -185,6 +196,7 @@ tabs:
     permission: ""
     buttons:
       clear:
+        enabled: true
         slot: 21
         material: SUNFLOWER
         name: "&aKlar"
@@ -196,6 +208,7 @@ tabs:
         close: false
         permission: "plots.set.flag.weather"
       rain:
+        enabled: true
         slot: 23
         material: WATER_BUCKET
         name: "&bRegen"
@@ -207,6 +220,7 @@ tabs:
         close: false
         permission: "plots.set.flag.weather"
       reset:
+        enabled: true
         slot: 25
         material: CAULDRON
         name: "&eWetter zurücksetzen"
@@ -218,6 +232,7 @@ tabs:
         close: false
         permission: "plots.set.flag.weather"
       back:
+        enabled: true
         slot: 49
         material: ARROW
         name: "&cZurück"
@@ -228,6 +243,7 @@ tabs:
         close: false
         permission: ""
       close:
+        enabled: true
         slot: 53
         material: BARRIER
         name: "&cSchließen"
@@ -237,6 +253,7 @@ tabs:
         close: true
         permission: ""
   biome:
+    enabled: true
     slot: 14
     material: GRASS_BLOCK
     name: "&aBiom"
@@ -248,6 +265,7 @@ tabs:
     permission: ""
     buttons:
       plains:
+        enabled: true
         slot: 19
         material: GRASS_BLOCK
         name: "&aEbene"
@@ -259,6 +277,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       forest:
+        enabled: true
         slot: 20
         material: OAK_LOG
         name: "&aWald"
@@ -270,6 +289,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       desert:
+        enabled: true
         slot: 21
         material: SAND
         name: "&eWüste"
@@ -281,6 +301,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       jungle:
+        enabled: true
         slot: 22
         material: JUNGLE_LOG
         name: "&aDschungel"
@@ -292,6 +313,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       swamp:
+        enabled: true
         slot: 23
         material: VINE
         name: "&2Sumpf"
@@ -303,6 +325,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       taiga:
+        enabled: true
         slot: 24
         material: SPRUCE_LOG
         name: "&aTaiga"
@@ -314,6 +337,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       savanna:
+        enabled: true
         slot: 28
         material: ACACIA_LOG
         name: "&6Savanne"
@@ -325,6 +349,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       snow:
+        enabled: true
         slot: 29
         material: SNOW_BLOCK
         name: "&fSchnee"
@@ -336,6 +361,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       beach:
+        enabled: true
         slot: 30
         material: SANDSTONE
         name: "&eStrand"
@@ -347,6 +373,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       mushroom:
+        enabled: true
         slot: 31
         material: RED_MUSHROOM_BLOCK
         name: "&dPilzinsel"
@@ -358,6 +385,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       nether:
+        enabled: true
         slot: 32
         material: NETHERRACK
         name: "&cNether"
@@ -369,6 +397,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       end:
+        enabled: true
         slot: 33
         material: END_STONE
         name: "&5Ende"
@@ -380,6 +409,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       ocean:
+        enabled: true
         slot: 34
         material: WATER_BUCKET
         name: "&bOzean"
@@ -391,6 +421,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       custom:
+        enabled: true
         slot: 37
         material: COMMAND_BLOCK
         name: "&dEigenes Biom"
@@ -402,6 +433,7 @@ tabs:
         close: true
         permission: "plots.set.biome"
       packages:
+        enabled: true
         slot: 38
         material: CHEST
         name: "&aBiom-Pakete"
@@ -413,6 +445,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       reset:
+        enabled: true
         slot: 43
         material: COMPASS
         name: "&eBiom zurücksetzen"
@@ -425,6 +458,7 @@ tabs:
         close: false
         permission: "plots.set.biome"
       back:
+        enabled: true
         slot: 49
         material: ARROW
         name: "&cZurück"
@@ -435,6 +469,7 @@ tabs:
         close: false
         permission: ""
       close:
+        enabled: true
         slot: 53
         material: BARRIER
         name: "&cSchließen"
@@ -444,6 +479,7 @@ tabs:
         close: true
         permission: ""
   time:
+    enabled: true
     slot: 16
     material: CLOCK
     name: "&aZeit"
@@ -455,6 +491,7 @@ tabs:
     permission: ""
     buttons:
       sunrise:
+        enabled: true
         slot: 20
         material: ORANGE_DYE
         name: "&6Sonnenaufgang"
@@ -466,6 +503,7 @@ tabs:
         close: false
         permission: "plots.set.flag.time"
       day:
+        enabled: true
         slot: 21
         material: SUNFLOWER
         name: "&eTag"
@@ -477,6 +515,7 @@ tabs:
         close: false
         permission: "plots.set.flag.time"
       evening:
+        enabled: true
         slot: 22
         material: RED_BED
         name: "&6Abend"
@@ -488,6 +527,7 @@ tabs:
         close: false
         permission: "plots.set.flag.time"
       night:
+        enabled: true
         slot: 23
         material: BLACK_CONCRETE
         name: "&9Nacht"
@@ -499,6 +539,7 @@ tabs:
         close: false
         permission: "plots.set.flag.time"
       reset:
+        enabled: true
         slot: 24
         material: CLOCK
         name: "&eZeit zurücksetzen"
@@ -510,6 +551,7 @@ tabs:
         close: false
         permission: "plots.flag.remove"
       back:
+        enabled: true
         slot: 49
         material: ARROW
         name: "&cZurück"
@@ -520,6 +562,7 @@ tabs:
         close: false
         permission: ""
       close:
+        enabled: true
         slot: 53
         material: BARRIER
         name: "&cSchließen"

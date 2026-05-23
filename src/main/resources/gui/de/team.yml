@@ -5,7 +5,7 @@
 # Buttons und Deko-Items können slot: 13, slot: [13, 14, 15] oder slots: [13, 14, 15] nutzen.
 # Bedrock-Spieler erhalten aus diesen Buttons automatisch eine Floodgate-Form.
 
-file-version: 6
+file-version: 7
 
 title: "&8Team-Menü"
 size: 54
@@ -15,6 +15,7 @@ filler:
   name: "&r"
 buttons:
   create-backup:
+    enabled: true
     slot: 10
     material: WRITABLE_BOOK
     name: "&aPlot sichern"
@@ -24,6 +25,7 @@ buttons:
     permission: "craftplayplotextras.backup.create"
     bedrock-label: "Plot sichern"
   list-backups:
+    enabled: true
     slot: 11
     material: CHEST
     name: "&ePlotbackups"
@@ -33,6 +35,7 @@ buttons:
     permission: "craftplayplotextras.backup.list"
     bedrock-label: "Plotbackups"
   teleport-plot:
+    enabled: true
     slot: 12
     material: ENDER_PEARL
     name: "&aPlot teleportieren"
@@ -42,6 +45,7 @@ buttons:
     permission: "plots.visit"
     bedrock-label: "Plot teleportieren"
   change-owner:
+    enabled: true
     slot: 13
     material: PLAYER_HEAD
     name: "&eBesitzer ändern"
@@ -51,6 +55,7 @@ buttons:
     permission: "plots.admin.command.setowner"
     bedrock-label: "Besitzer ändern"
   lock-plot:
+    enabled: true
     slot: 14
     material: IRON_DOOR
     name: "&cPlot sperren"
@@ -60,6 +65,7 @@ buttons:
     permission: "craftplayplotextras.team.lock"
     bedrock-label: "Plot sperren"
   freeze-plot:
+    enabled: true
     slot: 15
     material: BLUE_ICE
     name: "&bPlot einfrieren"
@@ -69,6 +75,7 @@ buttons:
     permission: "craftplayplotextras.team.freeze"
     bedrock-label: "Plot einfrieren"
   force-flags:
+    enabled: true
     slot: 16
     material: REDSTONE_TORCH
     name: "&cFlags erzwingen"
@@ -78,6 +85,7 @@ buttons:
     permission: "plots.admin.command.flag"
     bedrock-label: "Flags erzwingen"
   merge-repair:
+    enabled: true
     slot: 19
     material: MAP
     name: "&aMerge reparieren"
@@ -87,6 +95,7 @@ buttons:
     permission: "plots.admin"
     bedrock-label: "Merge reparieren"
   database-tools:
+    enabled: true
     slot: 20
     material: COMMAND_BLOCK
     name: "&dDatenbanktools"
@@ -96,6 +105,7 @@ buttons:
     permission: "plots.admin"
     bedrock-label: "Datenbanktools"
   inactive-plots:
+    enabled: true
     slot: 21
     material: CLOCK
     name: "&eInaktive Plots"
@@ -105,6 +115,7 @@ buttons:
     permission: "plots.admin.command.list"
     bedrock-label: "Inaktive Plots"
   reports:
+    enabled: true
     slot: 22
     material: REDSTONE_TORCH
     name: "&cReports verwalten"
@@ -114,6 +125,7 @@ buttons:
     permission: "craftplayplotextras.reports.manage"
     bedrock-label: "Reports verwalten"
   audit-logs:
+    enabled: true
     slot: 23
     material: WRITABLE_BOOK
     name: "&bAudit Logs"
@@ -123,6 +135,7 @@ buttons:
     permission: "craftplayplotextras.team.audit"
     bedrock-label: "Audit Logs"
   lagscanner:
+    enabled: true
     slot: 24
     material: REDSTONE
     name: "&cLagscanner"
@@ -132,6 +145,7 @@ buttons:
     permission: "craftplayplotextras.team.lagscan"
     bedrock-label: "Lagscanner"
   plot-analysis:
+    enabled: true
     slot: 25
     material: COMPASS
     name: "&aPlotanalyse"
@@ -141,6 +155,7 @@ buttons:
     permission: "craftplayplotextras.team.analysis"
     bedrock-label: "Plotanalyse"
   heatmaps:
+    enabled: true
     slot: 28
     material: MAGMA_BLOCK
     name: "&6Heatmaps"
@@ -150,6 +165,7 @@ buttons:
     permission: "craftplayplotextras.future.heatmaps"
     bedrock-label: "Heatmaps"
   activity-check:
+    enabled: true
     slot: 29
     material: FILLED_MAP
     name: "&aAktivitätsprüfung"
@@ -159,6 +175,7 @@ buttons:
     permission: "craftplayplotextras.team.activity"
     bedrock-label: "Aktivitätsprüfung"
   restore-backups:
+    enabled: true
     slot: 30
     material: ENDER_CHEST
     name: "&eBackup wiederherstellen"
@@ -168,6 +185,7 @@ buttons:
     permission: "craftplayplotextras.backup.restore"
     bedrock-label: "Backup wiederherstellen"
   danger:
+    enabled: true
     slot: 31
     material: TNT
     name: "&cLöschen / Reset"
@@ -177,6 +195,7 @@ buttons:
     permission: "craftplayplotextras.use"
     bedrock-label: "Löschen / Reset"
   community:
+    enabled: true
     slot: 32
     material: HEART_OF_THE_SEA
     name: "&bCommunity prüfen"
@@ -186,6 +205,7 @@ buttons:
     permission: "craftplayplotextras.team.community"
     bedrock-label: "Community prüfen"
   help:
+    enabled: true
     slot: 33
     material: BOOK
     name: "&aTeam-Hilfe"
@@ -195,6 +215,7 @@ buttons:
     permission: "craftplayplotextras.team"
     bedrock-label: "Team-Hilfe"
   future:
+    enabled: true
     slot: 34
     material: BEACON
     name: "&dZukunftsfeatures"
@@ -204,6 +225,7 @@ buttons:
     permission: "craftplayplotextras.future"
     bedrock-label: "Zukunftsfeatures"
   back:
+    enabled: true
     slot: 45
     material: ARROW
     name: "&eZurück"
@@ -213,6 +235,7 @@ buttons:
     permission: ""
     bedrock-label: "Zurück"
   close:
+    enabled: true
     slot: 53
     material: BARRIER
     name: "&cSchließen"
@@ -223,6 +246,7 @@ buttons:
     bedrock-label: "Schließen"
 decorations:
   frame:
+    enabled: true
     slot: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 46, 47, 48, 49, 50, 51, 52]
     material: RED_STAINED_GLASS_PANE
     head-database-id: ""
@@ -266,11 +290,11 @@ backup-list:
       - "&7auf dem Plot, auf dem du stehst."
   # Buttons in der Backupliste.
   buttons:
-    previous: {slot: 45, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:team-backups:{previous_page}"], close: false, permission: "craftplayplotextras.backup.list"}
-    next: {slot: 53, material: ARROW, name: "&eNächste Seite", lore: ["&7Öffnet Seite {next_page}."], commands: ["open-menu:team-backups:{next_page}"], close: false, permission: "craftplayplotextras.backup.list"}
-    back: {slot: 49, material: OAK_DOOR, name: "&eZurück", lore: ["&7Zurück zum Team-Menü."], commands: ["open-menu:team"], close: false, permission: "craftplayplotextras.team"}
-    close: {slot: 50, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+    previous: {enabled: true, slot: 45, material: ARROW, name: "&eVorherige Seite", lore: ["&7Öffnet Seite {previous_page}."], commands: ["open-menu:team-backups:{previous_page}"], close: false, permission: "craftplayplotextras.backup.list"}
+    next: {enabled: true, slot: 53, material: ARROW, name: "&eNächste Seite", lore: ["&7Öffnet Seite {next_page}."], commands: ["open-menu:team-backups:{next_page}"], close: false, permission: "craftplayplotextras.backup.list"}
+    back: {enabled: true, slot: 49, material: OAK_DOOR, name: "&eZurück", lore: ["&7Zurück zum Team-Menü."], commands: ["open-menu:team"], close: false, permission: "craftplayplotextras.team"}
+    close: {enabled: true, slot: 50, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
   # Deko-Items in der Backupliste.
   decorations:
-    top-left: {slot: 0, material: RED_STAINED_GLASS_PANE, head-database-id: "", name: "&r", lore: [], permission: ""}
-    top-right: {slot: 8, material: RED_STAINED_GLASS_PANE, head-database-id: "", name: "&r", lore: [], permission: ""}
+    top-left: {enabled: true, slot: 0, material: RED_STAINED_GLASS_PANE, head-database-id: "", name: "&r", lore: [], permission: ""}
+    top-right: {enabled: true, slot: 8, material: RED_STAINED_GLASS_PANE, head-database-id: "", name: "&r", lore: [], permission: ""}

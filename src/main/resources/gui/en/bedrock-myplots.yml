@@ -5,7 +5,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new options automatically.
-file-version: 3
+file-version: 4
 
 # If false, this Bedrock form is not loaded.
 enabled: true

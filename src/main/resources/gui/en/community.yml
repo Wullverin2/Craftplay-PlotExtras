@@ -2,7 +2,7 @@
 # This file controls ratings, comments, top lists, recommendations, sharing,
 # invites, and fully configurable event/contest buttons.
 
-file-version: 2
+file-version: 3
 
 title: "&8Community: {tab}"
 size: 54
@@ -15,12 +15,13 @@ bedrock:
   content: "Rate, discover, share, and join events."
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
 buttons:
-  back: {slot: 49, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
-  close: {slot: 53, material: BARRIER, name: "&cClose", lore: ["&7Closes this menu."], commands: [], close: true, permission: ""}
+  back: {enabled: true, slot: 49, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+  close: {enabled: true, slot: 53, material: BARRIER, name: "&cClose", lore: ["&7Closes this menu."], commands: [], close: true, permission: ""}
 decorations:
-  frame: {slot: [0, 8, 45, 46, 47, 48, 50, 51, 52], material: BLUE_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+  frame: {enabled: true, slot: [0, 8, 45, 46, 47, 48, 50, 51, 52], material: BLUE_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
 tabs:
   rating:
+    enabled: true
     slot: 10
     material: GOLD_INGOT
     name: "&6Rating"
@@ -28,14 +29,15 @@ tabs:
     commands: ["open-menu:community:rating"]
     permission: ""
     buttons:
-      rate: {slot: 19, material: GOLD_INGOT, name: "&6Rate Plot", lore: ["&7Opens PlotSquared rating", "&7for the plot you stand on."], commands: ["plot rate"], close: true, permission: "plots.rate"}
-      comments: {slot: 20, material: WRITABLE_BOOK, name: "&aComments", lore: ["&7Opens PlotSquared comments", "&7or a custom comment system."], commands: ["plot comment"], close: true, permission: "plots.comment"}
-      like: {slot: 21, material: LIME_DYE, name: "&aGive Like", lore: ["&7Default: rating command.", "&7Can point to your own like system."], commands: ["plot rate"], close: true, permission: "plots.rate"}
-      stars: {slot: 22, material: NETHER_STAR, name: "&eStar System", lore: ["&7Rating profile for stars.", "&7Command is configurable."], commands: ["plot rate"], close: true, permission: "plots.rate"}
-      report: {slot: 23, material: REDSTONE_TORCH, name: "&cReport Plot", lore: ["&7Switches to the reports menu."], commands: ["open-menu:reports"], close: false, permission: "plots.report"}
-      share: {slot: 24, material: MAP, name: "&bShare Plot", lore: ["&7Shows plot information", "&7for sharing in chat."], commands: ["plot info"], close: true, permission: "plots.info"}
-      invite: {slot: 25, material: PLAYER_HEAD, skull-owner: "%player_name%", name: "&aInvite Friend", lore: ["&7Asks for a name", "&7and trusts the player."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
+      rate: {enabled: true, slot: 19, material: GOLD_INGOT, name: "&6Rate Plot", lore: ["&7Opens PlotSquared rating", "&7for the plot you stand on."], commands: ["plot rate"], close: true, permission: "plots.rate"}
+      comments: {enabled: true, slot: 20, material: WRITABLE_BOOK, name: "&aComments", lore: ["&7Opens PlotSquared comments", "&7or a custom comment system."], commands: ["plot comment"], close: true, permission: "plots.comment"}
+      like: {enabled: true, slot: 21, material: LIME_DYE, name: "&aGive Like", lore: ["&7Default: rating command.", "&7Can point to your own like system."], commands: ["plot rate"], close: true, permission: "plots.rate"}
+      stars: {enabled: true, slot: 22, material: NETHER_STAR, name: "&eStar System", lore: ["&7Rating profile for stars.", "&7Command is configurable."], commands: ["plot rate"], close: true, permission: "plots.rate"}
+      report: {enabled: true, slot: 23, material: REDSTONE_TORCH, name: "&cReport Plot", lore: ["&7Switches to the reports menu."], commands: ["open-menu:reports"], close: false, permission: "plots.report"}
+      share: {enabled: true, slot: 24, material: MAP, name: "&bShare Plot", lore: ["&7Shows plot information", "&7for sharing in chat."], commands: ["plot info"], close: true, permission: "plots.info"}
+      invite: {enabled: true, slot: 25, material: PLAYER_HEAD, skull-owner: "%player_name%", name: "&aInvite Friend", lore: ["&7Asks for a name", "&7and trusts the player."], commands: ["chat-input:chat-member-player:plot trust {input}"], close: true, permission: "plots.trust"}
   discover:
+    enabled: true
     slot: 12
     material: COMPASS
     name: "&bDiscover"
@@ -43,14 +45,15 @@ tabs:
     commands: ["open-menu:community:discover"]
     permission: ""
     buttons:
-      top: {slot: 19, material: DIAMOND, name: "&bTop Plots", lore: ["&7Opens the top list."], commands: ["plot list top"], close: true, permission: "plots.list"}
-      newest: {slot: 20, material: FILLED_MAP, name: "&aNewest Plots", lore: ["&7Opens newest plots."], commands: ["plot list latest"], close: true, permission: "plots.list"}
-      visited: {slot: 21, material: CLOCK, name: "&eMost Visited Plots", lore: ["&7Default: visited plot list.", "&7Can point to custom stats."], commands: ["plot list visited"], close: true, permission: "plots.list"}
-      recommendations: {slot: 22, material: ENDER_EYE, name: "&dRecommendations", lore: ["&7Recommendation profile for", "&7custom ranking or web systems."], commands: ["plot list top"], close: true, permission: "plots.list"}
-      search: {slot: 23, material: COMPASS, name: "&aSearch Plot", lore: ["&7Opens the search menu."], commands: ["open-menu:search"], close: false, permission: ""}
-      favorites: {slot: 24, material: NETHER_STAR, name: "&eFavorites", lore: ["&7Opens your favorites."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
-      history: {slot: 25, material: BOOK, name: "&aRecently Visited", lore: ["&7Opens the history menu."], commands: ["open-menu:history"], close: false, permission: ""}
+      top: {enabled: true, slot: 19, material: DIAMOND, name: "&bTop Plots", lore: ["&7Opens the top list."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      newest: {enabled: true, slot: 20, material: FILLED_MAP, name: "&aNewest Plots", lore: ["&7Opens newest plots."], commands: ["plot list latest"], close: true, permission: "plots.list"}
+      visited: {enabled: true, slot: 21, material: CLOCK, name: "&eMost Visited Plots", lore: ["&7Default: visited plot list.", "&7Can point to custom stats."], commands: ["plot list visited"], close: true, permission: "plots.list"}
+      recommendations: {enabled: true, slot: 22, material: ENDER_EYE, name: "&dRecommendations", lore: ["&7Recommendation profile for", "&7custom ranking or web systems."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      search: {enabled: true, slot: 23, material: COMPASS, name: "&aSearch Plot", lore: ["&7Opens the search menu."], commands: ["open-menu:search"], close: false, permission: ""}
+      favorites: {enabled: true, slot: 24, material: NETHER_STAR, name: "&eFavorites", lore: ["&7Opens your favorites."], commands: ["open-menu:myplots:1:name:favorites"], close: false, permission: ""}
+      history: {enabled: true, slot: 25, material: BOOK, name: "&aRecently Visited", lore: ["&7Opens the history menu."], commands: ["open-menu:history"], close: false, permission: ""}
   events:
+    enabled: true
     slot: 14
     material: FIREWORK_ROCKET
     name: "&dEvents"
@@ -58,10 +61,10 @@ tabs:
     commands: ["open-menu:community:events"]
     permission: ""
     buttons:
-      featured-builder: {slot: 19, material: PLAYER_HEAD, name: "&6Featured Builder", lore: ["&7Profile button for builders", "&7or external halls of fame."], commands: ["plot list top"], close: true, permission: "plots.list"}
-      contests: {slot: 20, material: TARGET, name: "&dContests", lore: ["&7Opens contest info.", "&7Command can be changed."], commands: ["plot list top"], close: true, permission: ""}
-      events: {slot: 21, material: BELL, name: "&bEvents", lore: ["&7Opens event info", "&7or a server command."], commands: ["plot list latest"], close: true, permission: ""}
-      community-builds: {slot: 22, material: BRICKS, name: "&aCommunity Builds", lore: ["&7Profile for project lists", "&7or showcase systems."], commands: ["plot list top"], close: true, permission: "plots.list"}
-      market: {slot: 23, material: EMERALD, name: "&aPlot Market", lore: ["&7Placeholder for market,", "&7trade, or auction systems."], commands: ["plot list all"], close: true, permission: "plots.list"}
-      gallery: {slot: 24, material: PAINTING, name: "&ePlot Gallery", lore: ["&7Placeholder for galleries", "&7or web overviews."], commands: ["plot list top"], close: true, permission: "plots.list"}
-      help: {slot: 25, material: BOOK, name: "&aCommunity Help", lore: ["&7Opens help."], commands: ["open-menu:help"], close: false, permission: ""}
+      featured-builder: {enabled: true, slot: 19, material: PLAYER_HEAD, name: "&6Featured Builder", lore: ["&7Profile button for builders", "&7or external halls of fame."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      contests: {enabled: true, slot: 20, material: TARGET, name: "&dContests", lore: ["&7Opens contest info.", "&7Command can be changed."], commands: ["plot list top"], close: true, permission: ""}
+      events: {enabled: true, slot: 21, material: BELL, name: "&bEvents", lore: ["&7Opens event info", "&7or a server command."], commands: ["plot list latest"], close: true, permission: ""}
+      community-builds: {enabled: true, slot: 22, material: BRICKS, name: "&aCommunity Builds", lore: ["&7Profile for project lists", "&7or showcase systems."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      market: {enabled: true, slot: 23, material: EMERALD, name: "&aPlot Market", lore: ["&7Placeholder for market,", "&7trade, or auction systems."], commands: ["plot list all"], close: true, permission: "plots.list"}
+      gallery: {enabled: true, slot: 24, material: PAINTING, name: "&ePlot Gallery", lore: ["&7Placeholder for galleries", "&7or web overviews."], commands: ["plot list top"], close: true, permission: "plots.list"}
+      help: {enabled: true, slot: 25, material: BOOK, name: "&aCommunity Help", lore: ["&7Opens help."], commands: ["open-menu:help"], close: false, permission: ""}

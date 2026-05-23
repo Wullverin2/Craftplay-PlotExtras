@@ -6,7 +6,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 4
+file-version: 5
 
 # If false, this Bedrock menu is not loaded.
 enabled: true
@@ -29,6 +29,7 @@ hidden-buttons: []
 # All buttons in the Bedrock form.
 buttons:
   my-plots:
+    enabled: true
     # Order in the form. Smaller numbers are shown first.
     order: 10
     # Text shown on the Bedrock button.
@@ -41,6 +42,7 @@ buttons:
     # Optional permission required to see the button.
     permission: ""
   search:
+    enabled: true
     order: 20
     label: "Search Plot"
     commands:
@@ -48,6 +50,7 @@ buttons:
     close: false
     permission: ""
   create:
+    enabled: true
     order: 30
     label: "Create Plot"
     commands:
@@ -55,6 +58,7 @@ buttons:
     close: false
     permission: "plots.auto"
   favorites:
+    enabled: true
     order: 40
     label: "Favorites"
     commands:
@@ -62,6 +66,7 @@ buttons:
     close: false
     permission: ""
   community:
+    enabled: true
     order: 50
     label: "Community"
     commands:
@@ -69,6 +74,7 @@ buttons:
     close: false
     permission: ""
   members:
+    enabled: true
     order: 60
     label: "Members"
     commands:
@@ -76,6 +82,7 @@ buttons:
     close: false
     permission: ""
   roles:
+    enabled: true
     order: 70
     label: "Rights & Roles"
     commands:
@@ -83,6 +90,7 @@ buttons:
     close: false
     permission: ""
   flags:
+    enabled: true
     order: 80
     label: "Flags"
     commands:
@@ -90,6 +98,7 @@ buttons:
     close: true
     permission: ""
   settings:
+    enabled: true
     order: 90
     label: "Settings"
     commands:
@@ -97,6 +106,7 @@ buttons:
     close: true
     permission: ""
   reports:
+    enabled: true
     order: 100
     label: "Reports"
     commands:
@@ -104,6 +114,7 @@ buttons:
     close: false
     permission: ""
   history:
+    enabled: true
     order: 110
     label: "History"
     commands:
@@ -111,6 +122,7 @@ buttons:
     close: false
     permission: ""
   help:
+    enabled: true
     order: 120
     label: "Help"
     commands:
@@ -118,6 +130,7 @@ buttons:
     close: false
     permission: ""
   team:
+    enabled: true
     order: 130
     label: "Staff"
     commands:
@@ -125,6 +138,7 @@ buttons:
     close: true
     permission: "craftplayplotextras.team"
   danger:
+    enabled: true
     order: 125
     label: "Delete & Reset"
     commands:
@@ -132,6 +146,7 @@ buttons:
     close: false
     permission: ""
   future:
+    enabled: true
     order: 135
     label: "Future"
     commands:

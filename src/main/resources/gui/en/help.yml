@@ -1,7 +1,7 @@
 # English help menu.
 # This file bundles help, commands, and shortcuts for PlotSquared features.
 # All entries are button profiles and can be adjusted to your server.
-file-version: 1
+file-version: 2
 title: "&8Plot Help"
 bedrock: {enabled: true, title: "Plot Help", content: "Help and shortcuts for plot features."}
 size: 27
@@ -9,12 +9,12 @@ require-plot: false
 permission: "craftplayplotextras.use"
 filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
 buttons:
-  plotsquared-help: {slot: 10, material: BOOK, name: "&aPlotSquared Help", lore: ["&7Opens /plot help."], commands: ["plot help"], close: true, permission: "plots.use"}
-  commands: {slot: 11, material: PAPER, name: "&aCommands", lore: ["&7Shows PlotSquared commands."], commands: ["plot help"], close: true, permission: "plots.use"}
-  myplots: {slot: 12, material: MAP, name: "&aMy Plots", lore: ["&7Opens your plot list."], commands: ["open-menu:myplots"], close: false, permission: ""}
-  flags: {slot: 13, material: REDSTONE_TORCH, name: "&aFlags", lore: ["&7To the flag GUI."], commands: ["open-menu:flags"], close: false, permission: ""}
-  settings: {slot: 14, material: REPEATER, name: "&aSettings", lore: ["&7To the settings GUI."], commands: ["open-menu:settings:homes"], close: false, permission: ""}
-  support: {slot: 16, material: BELL, name: "&eSupport", lore: ["&7Report your current plot."], commands: ["open-menu:reports"], close: false, permission: ""}
-  back: {slot: 22, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
+  plotsquared-help: {enabled: true, slot: 10, material: BOOK, name: "&aPlotSquared Help", lore: ["&7Opens /plot help."], commands: ["plot help"], close: true, permission: "plots.use"}
+  commands: {enabled: true, slot: 11, material: PAPER, name: "&aCommands", lore: ["&7Shows PlotSquared commands."], commands: ["plot help"], close: true, permission: "plots.use"}
+  myplots: {enabled: true, slot: 12, material: MAP, name: "&aMy Plots", lore: ["&7Opens your plot list."], commands: ["open-menu:myplots"], close: false, permission: ""}
+  flags: {enabled: true, slot: 13, material: REDSTONE_TORCH, name: "&aFlags", lore: ["&7To the flag GUI."], commands: ["open-menu:flags"], close: false, permission: ""}
+  settings: {enabled: true, slot: 14, material: REPEATER, name: "&aSettings", lore: ["&7To the settings GUI."], commands: ["open-menu:settings:homes"], close: false, permission: ""}
+  support: {enabled: true, slot: 16, material: BELL, name: "&eSupport", lore: ["&7Report your current plot."], commands: ["open-menu:reports"], close: false, permission: ""}
+  back: {enabled: true, slot: 22, material: ARROW, name: "&eBack", lore: ["&7Back to the main menu."], commands: ["open-menu:main"], close: false, permission: ""}
 decorations:
-  border: {slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+  border: {enabled: true, slot: [0, 8, 18, 26], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
