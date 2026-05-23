@@ -95,6 +95,17 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
             plugin.getPlotFutureService().runCommand(player, payload.toString());
             return true;
         }
+        if (args.length >= 1 && args[0].equalsIgnoreCase("passivewither")) {
+            final String[] passiveWitherArgs = new String[Math.max(0, args.length - 1)];
+            if (passiveWitherArgs.length > 0) {
+                System.arraycopy(args, 1, passiveWitherArgs, 0, passiveWitherArgs.length);
+            }
+            return plugin.getPassiveWitherService().handleCommand(
+                    player,
+                    plugin.getConfig().getString("command.prefix", "plotextras"),
+                    passiveWitherArgs
+            );
+        }
 
         if (!player.hasPermission("craftplayplotextras.use")) {
             plugin.getLanguageManager().send(player, "no-permission");
@@ -215,6 +226,11 @@ public final class PlotExtrasCommand implements CommandExecutor, TabCompleter {
         }
         if (sender.hasPermission("craftplayplotextras.future") && "future".startsWith(input)) {
             completions.add("future");
+        }
+        if ((sender.hasPermission("craftplayplotextras.passivewither.command")
+                || sender.hasPermission("craftplayplotextras.passivewither.sound"))
+                && "passivewither".startsWith(input)) {
+            completions.add("passivewither");
         }
         if (sender.hasPermission("craftplayplotextras.use") && "gui".startsWith(input)) {
             completions.add("gui");

@@ -2,7 +2,7 @@
 # Diese Datei steuert zusätzliche Services, die nicht direkt zu PlotSquared gehören.
 # Jeder Button kann deaktiviert, verschoben, mit eigener Permission versehen oder mit eigenen Befehlen erweitert werden.
 
-file-version: 2
+file-version: 3
 
 title: "&8Extras"
 size: 27
@@ -32,6 +32,32 @@ buttons:
       - "extras:worldedit-service"
     close: true
     permission: "craftplayplotextras.extras.worldedit"
+  passive-wither:
+    enabled: true
+    slot: 13
+    material: WITHER_SKELETON_SKULL
+    name: "&5Passiver Wither"
+    lore:
+      - "&7Kauft ein passives Wither-Spawnei."
+      - "&7Preis: &f{passive_wither_price}"
+      - "&7Der Wither greift niemanden an"
+      - "&7und kann wieder eingesammelt werden."
+    commands:
+      - "passive-wither:buy"
+    close: true
+    permission: "craftplayplotextras.passivewither.buy"
+  passive-wither-sound:
+    enabled: true
+    slot: 15
+    material: NOTE_BLOCK
+    name: "&dWither-Sounds"
+    lore:
+      - "&7Schaltet passive Wither-Sounds"
+      - "&7für dich an oder aus."
+    commands:
+      - "passive-wither:sound-toggle"
+    close: true
+    permission: "craftplayplotextras.passivewither.sound"
   back:
     enabled: true
     slot: 22

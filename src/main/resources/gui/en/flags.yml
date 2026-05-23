@@ -9,7 +9,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 9
+file-version: 10
 
 # Inventory title.
 title: "&8Plot Flags"
@@ -1039,6 +1039,18 @@ flags:
     lore:
       - "&7Controls whether cobwebs spawn"
       - "&7from the Weaving death effect."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  passive-wither-spawn:
+    enabled: true
+    enabled-material: WITHER_SKELETON_SKULL
+    disabled-material: GRAY_DYE
+    name: "&aPassive Wither Spawn"
+    lore:
+      - "&7Controls whether passive Withers"
+      - "&7may be spawned on this plot."
       - ""
       - "&7Status: {status}"
       - "&eClick to toggle."

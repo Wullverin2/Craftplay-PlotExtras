@@ -12,6 +12,8 @@ import de.craftplay.plotextras.listener.PlotFutureListener;
 import de.craftplay.plotextras.listener.TeamFeatureProtectionListener;
 import de.craftplay.plotextras.menu.PlotMenuManager;
 import de.craftplay.plotextras.myplots.PlotDataStore;
+import de.craftplay.plotextras.passivewither.PassiveWitherCommand;
+import de.craftplay.plotextras.passivewither.PassiveWitherService;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
 import de.craftplay.plotextras.reports.ReportService;
@@ -35,6 +37,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     private PlotFutureService plotFutureService;
     private TeamFeatureService teamFeatureService;
     private ExtrasService extrasService;
+    private PassiveWitherService passiveWitherService;
     private StorageService storageService;
     private PlotExtrasCommand commandExecutor;
 
@@ -61,6 +64,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         plotFutureService.reload();
         teamFeatureService = new TeamFeatureService(this);
         teamFeatureService.reload();
+        passiveWitherService = new PassiveWitherService(this);
+        passiveWitherService.reload();
         extrasService = new ExtrasService(this, languageManager, plotSquaredFlagService);
         extrasService.reload();
         plotMenuManager = new PlotMenuManager(this, languageManager, plotSquaredFlagService, plotSquaredPlotService,
@@ -73,6 +78,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlotBackupProtectionListener(plotBackupService), this);
         getServer().getPluginManager().registerEvents(new PlotFutureListener(plotFutureService), this);
         getServer().getPluginManager().registerEvents(new TeamFeatureProtectionListener(teamFeatureService), this);
+        getServer().getPluginManager().registerEvents(passiveWitherService, this);
         getServer().getPluginManager().registerEvents(extrasService, this);
         registerCommands();
 
@@ -83,6 +89,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     public void onDisable() {
         if (plotFutureService != null) {
             plotFutureService.shutdown();
+        }
+        if (passiveWitherService != null) {
+            passiveWitherService.shutdown();
         }
         if (storageService != null) {
             storageService.close();
@@ -101,6 +110,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         plotBackupService.reload();
         plotFutureService.reload();
         teamFeatureService.reload();
+        passiveWitherService.reload();
         extrasService.reload();
         plotMenuManager.reload();
     }
@@ -149,6 +159,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         return extrasService;
     }
 
+    public PassiveWitherService getPassiveWitherService() {
+        return passiveWitherService;
+    }
+
     public StorageService getStorageService() {
         return storageService;
     }
@@ -167,5 +181,12 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         commandExecutor = new PlotExtrasCommand(this);
         command.setExecutor(commandExecutor);
         command.setTabCompleter(commandExecutor);
+
+        final PluginCommand passiveWitherCommand = getCommand("passivewither");
+        if (passiveWitherCommand != null) {
+            final PassiveWitherCommand passiveWitherExecutor = new PassiveWitherCommand(this);
+            passiveWitherCommand.setExecutor(passiveWitherExecutor);
+            passiveWitherCommand.setTabCompleter(passiveWitherExecutor);
+        }
     }
 }

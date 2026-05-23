@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 9
+file-version: 10
 
 # Titel des Inventars.
 title: "&8Plot-Flags"
@@ -1039,6 +1039,18 @@ flags:
     lore:
       - "&7Legt fest, ob beim Tod durch"
       - "&7den Weaving-Effekt Netze entstehen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  passive-wither-spawn:
+    enabled: true
+    enabled-material: WITHER_SKELETON_SKULL
+    disabled-material: GRAY_DYE
+    name: "&aPassiver Wither-Spawn"
+    lore:
+      - "&7Legt fest, ob passive Wither"
+      - "&7auf diesem Plot gespawnt werden dürfen."
       - ""
       - "&7Status: {status}"
       - "&eKlicken zum Umschalten."

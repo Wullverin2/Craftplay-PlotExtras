@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 15
+file-version: 16
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -278,6 +278,28 @@ extras-worldedit-mode-unavailable: "&cFür dich ist keine WorldEdit-Service-Akti
 extras-worldedit-failed: "&cDer WorldEdit-Service konnte die Blöcke nicht setzen. Bitte informiere ein Teammitglied."
 # Nachricht nach erfolgreicher Bestätigung. Platzhalter: {price}, {blocks}, {mode}, {cooldown_remaining}
 extras-worldedit-applied: "&aWorldEdit-Service ausgeführt. &7Aktion: &f{mode}&7, Blöcke: &f{blocks}&7, Kosten: &f{price}&7."
+
+# Passiver-Wither-System.
+passive-wither-disabled: "&cPassive Wither sind aktuell deaktiviert."
+passive-wither-purchased: "&aDu hast ein passives Wither-Spawnei gekauft. &7Kosten: &f{price}&7."
+passive-wither-no-money: "&cDu hast nicht genug Taler. Benötigt: &f{price}&c."
+passive-wither-economy-missing: "&cDas Economy-System ist nicht verfügbar. Der Kauf wurde abgebrochen."
+passive-wither-egg-given: "&aPassives Wither-Spawnei gegeben."
+passive-wither-reloaded: "&aPassive-Wither-System wurde neu geladen."
+passive-wither-player-not-found: "&cSpieler nicht gefunden."
+passive-wither-invalid-amount: "&cDie Anzahl muss eine Zahl zwischen 1 und 64 sein."
+passive-wither-command-usage: "&cBenutzung: /{label} egg [spieler] [anzahl], /{label} reload oder /{label} sound <on|off|toggle>"
+passive-wither-sound-usage: "&cBenutzung: /{label} sound <on|off|toggle>"
+passive-wither-sound-enabled: "&aPassive-Wither-Sounds sind für dich wieder aktiviert."
+passive-wither-sound-disabled: "&aPassive-Wither-Sounds sind für dich deaktiviert."
+passive-wither-sound-status-enabled: "&7Passive-Wither-Sounds sind aktuell &aaktiviert&7."
+passive-wither-sound-status-disabled: "&7Passive-Wither-Sounds sind aktuell &cdeaktiviert&7."
+passive-wither-pickup-success: "&aPassiver Wither eingesammelt."
+passive-wither-pickup-not-owner: "&cNur der Spieler, der diesen passiven Wither gespawnt hat, kann ihn einsammeln."
+passive-wither-pickup-unknown-owner: "&cDieser passive Wither hat keinen gespeicherten Besitzer."
+passive-wither-deny-plotsquared: "&cAuf diesem Plot ist passiver Wither-Spawn nicht erlaubt."
+passive-wither-protection-check-failed: "&cPassive-Wither-Spawn wurde blockiert, weil {plugin} nicht geprüft werden konnte."
+passive-wither-flag-description: "Erlaubt das Spawnen passiver Wither mit dem Passive-Wither-Spawnei."
 
 # Nachricht, wenn ein Future-Feature deaktiviert ist.
 future-disabled: "&cDieses Zukunftsfeature ist aktuell deaktiviert."

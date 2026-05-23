@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 13
+file-version: 14
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -26,6 +26,7 @@ depend:
 # HeadDatabase liefert Köpfe für GUI-Buttons per head-database-id.
 # Floodgate erkennt Bedrock-Spieler und öffnet für sie Forms statt Inventar-Menüs.
 # WorldEdit oder FAWE wird für Plotbackups als .schem genutzt.
+# ProtocolLib filtert passive Wither-Sounds, wenn Spieler sie deaktivieren.
 softdepend:
   - HeadDatabase
   - PlaceholderAPI
@@ -38,6 +39,7 @@ softdepend:
   - Floodgate
   - WorldEdit
   - FastAsyncWorldEdit
+  - ProtocolLib
 # Befehle, die dieses Plugin registriert.
 commands:
   plotextras:
@@ -48,6 +50,14 @@ commands:
     # Zusätzliche Kurzbefehle.
     aliases:
       - cpe
+  passivewither:
+    # Beschreibung des Passive-Wither-Befehls.
+    description: Verwaltet passive Wither-Spawneier und Sounds.
+    # Nutzungshinweis, falls der Befehl falsch verwendet wird.
+    usage: /passivewither
+    # Zusätzliche Kurzbefehle.
+    aliases:
+      - pwither
 # Permissions, die dieses Plugin nutzt.
 permissions:
   craftplayplotextras.use:
@@ -180,6 +190,18 @@ permissions:
     default: op
   craftplayplotextras.extras.worldedit.free:
     description: Erlaubt das kostenlose Nutzen des WorldEdit-Service.
+    default: op
+  craftplayplotextras.passivewither.buy:
+    description: Erlaubt den Kauf eines passiven Wither-Spawneis im Extras-Menü.
+    default: true
+  craftplayplotextras.passivewither.command:
+    description: Erlaubt administrative Passive-Wither-Befehle.
+    default: op
+  craftplayplotextras.passivewither.sound:
+    description: Erlaubt das Umschalten passiver Wither-Sounds.
+    default: true
+  craftplayplotextras.passivewither.free:
+    description: Erlaubt den kostenlosen Kauf passiver Wither-Spawneier.
     default: op
   craftplayplotextras.backup.create:
     # Erlaubt das Erstellen von Plotbackups.

@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 17
+file-version: 18
 
 # Befehle dieses Plugins.
 command:
@@ -482,6 +482,45 @@ extras:
     # Platzhalter: {player}, {blocks}, {price}, {world}, {x1}, {y1}, {z1}, {x2}, {y2}, {z2}
     # Prefixe: console:, player:, op:
     commands-after-payment: []
+
+# Passiver-Wither-System.
+passive-wither:
+  # Wenn false, sind Kauf, Spawnen und Schutzlogik für passive Wither deaktiviert.
+  enabled: true
+  # Datendatei für passive Wither, Besitzer und Spieler mit deaktivierten Sounds.
+  data-file: passivewither.yml
+  # Preis für ein passives Wither-Spawnei im Extras-Menü.
+  price: 25000.0
+  # Permission, die Spieler zum Kaufen im Menü benötigen.
+  buy-permission: "craftplayplotextras.passivewither.buy"
+  # Permission für Adminbefehle wie /passivewither egg oder /passivewither reload.
+  command-permission: "craftplayplotextras.passivewither.command"
+  # Permission, mit der Spieler ihre passiven Wither-Sounds umschalten dürfen.
+  sound-permission: "craftplayplotextras.passivewither.sound"
+  # Permission, mit der das Spawnei kostenlos gekauft werden kann.
+  free-permission: "craftplayplotextras.passivewither.free"
+  # Globaler Cooldown zwischen passiven Wither-Explosionen, die Blöcke zerstören dürfen.
+  # Explosionen und Effekte bleiben sichtbar, aber Blöcke werden nur nach diesem Cooldown zerstört.
+  explosion-cooldown-seconds: 5.0
+  economy:
+    # Wenn true, wird der Kaufpreis über Vault/CMI-Economy abgebucht.
+    enabled: true
+  egg:
+    # Material des Passive-Wither-Items. Auf 1.16 gibt es kein WITHER_SPAWN_EGG, daher ist der Default ein Schädel.
+    material: WITHER_SKELETON_SKULL
+    # Anzeigename des gekauften Spawneis.
+    name: "&5Passiver Wither"
+    # Lore des Spawneis. Platzhalter: {price}
+    lore:
+      - "&7Greift keine Kreaturen an."
+      - "&7Explosionen bleiben normal."
+      - "&7Blöcke nur nach Cooldown."
+      - "&7Sneak-Rechtsklick zum Einsammeln."
+      - ""
+      - "&7Preis: &f{price}"
+  wither:
+    # Anzeigename des gespawnten passiven Withers.
+    name: "&5Passiver Wither"
 
 # Plotbackup-System.
 plot-backups:

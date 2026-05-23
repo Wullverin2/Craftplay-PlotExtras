@@ -2175,18 +2175,28 @@ public final class PlotMenuManager implements Listener {
             final MenuButton button,
             final Map<String, String> replacements
     ) {
+        final Map<String, String> allReplacements = globalButtonPlaceholders();
+        allReplacements.putAll(replacements);
         ItemStack item = headDatabaseHook.getHead(button.getHeadDatabaseId());
         if (item == null) {
             item = new ItemStack(button.getMaterial());
         }
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            applySkullOwner(player, meta, button.getSkullOwner(), replacements);
-            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(button.getName(), replacements))));
-            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(button.getLore(), replacements))));
+            applySkullOwner(player, meta, button.getSkullOwner(), allReplacements);
+            meta.setDisplayName(Text.color(placeholderHook.apply(player, applyPlaceholders(button.getName(), allReplacements))));
+            meta.setLore(Text.color(placeholderHook.apply(player, applyPlaceholders(button.getLore(), allReplacements))));
             item.setItemMeta(meta);
         }
         return item;
+    }
+
+    private Map<String, String> globalButtonPlaceholders() {
+        final Map<String, String> placeholders = new HashMap<>();
+        if (plugin.getPassiveWitherService() != null) {
+            placeholders.put("passive_wither_price", plugin.getPassiveWitherService().getPurchasePriceText());
+        }
+        return placeholders;
     }
 
     private ItemStack createFlagItem(final Player player, final FlagMenuEntry flagEntry) {
@@ -3785,6 +3795,11 @@ public final class PlotMenuManager implements Listener {
 
         if (command.toLowerCase(Locale.ROOT).startsWith("extras:")) {
             extrasService.runCommand(player, command.substring("extras:".length()).trim());
+            return;
+        }
+
+        if (command.toLowerCase(Locale.ROOT).startsWith("passive-wither:")) {
+            plugin.getPassiveWitherService().runMenuCommand(player, command.substring("passive-wither:".length()).trim());
             return;
         }
 
