@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 25
+file-version: 26
 
 # Befehle dieses Plugins.
 command:
@@ -540,6 +540,9 @@ passive-wither:
     # Intervall in Ticks für vollständige Entity-Scans aller Welten.
     # Diese Scans sind teurer und müssen normalerweise nicht jede Sekunde laufen.
     full-scan-interval-ticks: 200
+    # Verzögerung in Ticks, bevor beim Start oder Reload der erste vollständige Passive-Wither-Scan läuft.
+    # Höhere Werte verteilen die Startlast, bestehende Wither aus der Datendatei werden trotzdem über ihre UUID geprüft.
+    initial-scan-delay-ticks: 20
     # Intervall in Ticks für die Sound-Unterdrückung bei Spielern, die Passive-Wither-Sounds deaktiviert haben.
     sound-suppression-interval-ticks: 5
   economy:

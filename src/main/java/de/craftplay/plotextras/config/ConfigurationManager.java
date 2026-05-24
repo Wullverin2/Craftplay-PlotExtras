@@ -515,10 +515,40 @@ public final class ConfigurationManager {
     }
 
     private boolean hasMissingGuiAnimation(final File target) {
-        final YamlConfiguration existing = YamlConfiguration.loadConfiguration(target);
-        return !existing.contains("animation.enabled")
-                || !existing.contains("animation.delay-ticks")
-                || !existing.contains("animation.keep-filler-visible");
+        boolean inAnimationSection = false;
+        boolean enabled = false;
+        boolean delayTicks = false;
+        boolean keepFillerVisible = false;
+        try (BufferedReader reader = Files.newBufferedReader(target.toPath(), StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                final String trimmed = line.trim();
+                if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                    continue;
+                }
+                if (!line.startsWith(" ") && !line.startsWith("\t")) {
+                    if (inAnimationSection) {
+                        break;
+                    }
+                    inAnimationSection = trimmed.equals("animation:");
+                    continue;
+                }
+                if (!inAnimationSection) {
+                    continue;
+                }
+                if (trimmed.startsWith("enabled:")) {
+                    enabled = true;
+                } else if (trimmed.startsWith("delay-ticks:")) {
+                    delayTicks = true;
+                } else if (trimmed.startsWith("keep-filler-visible:")) {
+                    keepFillerVisible = true;
+                }
+            }
+            return !enabled || !delayTicks || !keepFillerVisible;
+        } catch (final IOException exception) {
+            plugin.getLogger().log(Level.FINE, "GUI-Animationsschluessel konnten nicht schnell gelesen werden: " + target.getPath(), exception);
+            return true;
+        }
     }
 
     private boolean applyGuiAnimationDefaults(final YamlConfiguration existing, final String resourcePath) {

@@ -127,10 +127,12 @@ public final class PassiveWitherService implements Listener {
     private long globalSoundSuppressionUntilMillis;
     private int passiveWitherMaintenanceIntervalTicks = 5;
     private int passiveWitherFullScanIntervalTicks = 200;
+    private int passiveWitherInitialScanDelayTicks = 20;
     private int passiveWitherSoundSuppressionIntervalTicks = 5;
     private int passiveWitherMaintenanceTicks;
     private BukkitTask soundSuppressTask;
     private BukkitTask passiveWitherMaintenanceTask;
+    private BukkitTask passiveWitherInitialScanTask;
     private PassiveWitherSoundPacketHook soundPacketHook;
     private Object economy;
     private Method economyHasMethod;
@@ -160,6 +162,8 @@ public final class PassiveWitherService implements Listener {
                 .getInt("passive-wither.performance.maintenance-interval-ticks", 5));
         passiveWitherFullScanIntervalTicks = Math.max(passiveWitherMaintenanceIntervalTicks, plugin.getConfig()
                 .getInt("passive-wither.performance.full-scan-interval-ticks", 200));
+        passiveWitherInitialScanDelayTicks = Math.max(0, plugin.getConfig()
+                .getInt("passive-wither.performance.initial-scan-delay-ticks", 20));
         passiveWitherSoundSuppressionIntervalTicks = Math.max(1, plugin.getConfig()
                 .getInt("passive-wither.performance.sound-suppression-interval-ticks", 5));
         passiveWitherDataDirty = false;
@@ -188,8 +192,8 @@ public final class PassiveWitherService implements Listener {
         loadSoundDisabledPlayers();
         setupEconomy();
         registerPlotSquaredFlag();
-        refreshPassiveWitherEntityIds();
         restartTasks();
+        scheduleInitialPassiveWitherScan();
         restartSoundPacketHook();
     }
 
@@ -201,6 +205,10 @@ public final class PassiveWitherService implements Listener {
         if (passiveWitherMaintenanceTask != null) {
             passiveWitherMaintenanceTask.cancel();
             passiveWitherMaintenanceTask = null;
+        }
+        if (passiveWitherInitialScanTask != null) {
+            passiveWitherInitialScanTask.cancel();
+            passiveWitherInitialScanTask = null;
         }
         if (soundPacketHook != null) {
             soundPacketHook.disable();
@@ -1489,6 +1497,10 @@ public final class PassiveWitherService implements Listener {
             passiveWitherMaintenanceTask.cancel();
             passiveWitherMaintenanceTask = null;
         }
+        if (passiveWitherInitialScanTask != null) {
+            passiveWitherInitialScanTask.cancel();
+            passiveWitherInitialScanTask = null;
+        }
         if (!enabled) {
             return;
         }
@@ -1496,6 +1508,20 @@ public final class PassiveWitherService implements Listener {
                 this::runSoundSuppressionTick, 1L, passiveWitherSoundSuppressionIntervalTicks);
         passiveWitherMaintenanceTask = plugin.getServer().getScheduler().runTaskTimer(plugin,
                 this::runPassiveWitherMaintenanceTick, 1L, passiveWitherMaintenanceIntervalTicks);
+    }
+
+    private void scheduleInitialPassiveWitherScan() {
+        if (!enabled) {
+            return;
+        }
+        if (passiveWitherInitialScanDelayTicks <= 0) {
+            refreshPassiveWitherEntityIds();
+            return;
+        }
+        passiveWitherInitialScanTask = plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            passiveWitherInitialScanTask = null;
+            refreshPassiveWitherEntityIds();
+        }, passiveWitherInitialScanDelayTicks);
     }
 
     private void runPassiveWitherMaintenanceTick() {

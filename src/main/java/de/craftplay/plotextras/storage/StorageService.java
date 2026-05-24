@@ -2,6 +2,7 @@ package de.craftplay.plotextras.storage;
 
 import de.craftplay.plotextras.backup.PlotBackupMetadata;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -9,21 +10,30 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 public final class StorageService {
 
     private final JavaPlugin plugin;
     private StorageBackend activeBackend;
+    private String activeStorageFingerprint;
 
     public StorageService(final JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public void reload() {
+    public synchronized void reload() {
+        final StorageType type = currentType();
+        final String fingerprint = storageFingerprint(type);
+        if (activeBackend != null && activeBackend.getType() == type && fingerprint.equals(activeStorageFingerprint)) {
+            return;
+        }
         close();
-        activeBackend = createBackend(currentType());
+        activeBackend = createBackend(type);
         activeBackend.initialize();
+        activeStorageFingerprint = fingerprint;
         plugin.getLogger().info("Storage-Backend aktiv: " + activeBackend.getType().name().toLowerCase(Locale.ROOT));
     }
 
@@ -79,6 +89,7 @@ public final class StorageService {
             activeBackend.close();
             activeBackend = null;
         }
+        activeStorageFingerprint = null;
     }
 
     public List<StorageNamespace> namespaces() {
@@ -116,6 +127,21 @@ public final class StorageService {
 
     private StorageType currentType() {
         return StorageType.parse(plugin.getConfig().getString("storage.type", "yaml"));
+    }
+
+    private String storageFingerprint(final StorageType type) {
+        final StringBuilder builder = new StringBuilder(type.name());
+        builder.append("|table-prefix=").append(plugin.getConfig().getString("storage.table-prefix", "cpe_"));
+        final ConfigurationSection section = plugin.getConfig().getConfigurationSection("storage."
+                + type.name().toLowerCase(Locale.ROOT));
+        if (section == null) {
+            return builder.toString();
+        }
+        final Map<String, Object> values = new TreeMap<>(section.getValues(true));
+        for (final Map.Entry<String, Object> entry : values.entrySet()) {
+            builder.append('|').append(entry.getKey()).append('=').append(String.valueOf(entry.getValue()));
+        }
+        return builder.toString();
     }
 
     private StorageBackend createBackend(final StorageType type) {
