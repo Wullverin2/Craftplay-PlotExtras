@@ -6,11 +6,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 
 public final class HeadDatabaseHook {
 
     private final JavaPlugin plugin;
+    private final Map<String, ItemStack> cache = new HashMap<>();
 
     private Object api;
     private Method getItemHeadMethod;
@@ -25,6 +29,11 @@ public final class HeadDatabaseHook {
         if (id == null || id.trim().isEmpty()) {
             return null;
         }
+        final String normalizedId = id.trim().toLowerCase(Locale.ROOT);
+        final ItemStack cached = cache.get(normalizedId);
+        if (cached != null) {
+            return cached.clone();
+        }
         if (!Bukkit.getPluginManager().isPluginEnabled("HeadDatabase")) {
             warnMissing();
             return null;
@@ -35,7 +44,9 @@ public final class HeadDatabaseHook {
         try {
             final Object item = getItemHeadMethod.invoke(api, id.trim());
             if (item instanceof ItemStack) {
-                return ((ItemStack) item).clone();
+                final ItemStack head = ((ItemStack) item).clone();
+                cache.put(normalizedId, head.clone());
+                return head;
             }
         } catch (final IllegalAccessException | InvocationTargetException exception) {
             warnError("HeadDatabase-Kopf konnte nicht geladen werden: " + id, exception);

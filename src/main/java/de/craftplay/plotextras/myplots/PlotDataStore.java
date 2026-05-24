@@ -3,6 +3,7 @@ package de.craftplay.plotextras.myplots;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -21,20 +22,29 @@ public final class PlotDataStore {
     private final JavaPlugin plugin;
     private YamlConfiguration configuration;
     private String dataFile;
+    private BukkitTask saveTask;
+    private boolean dirty;
 
     public PlotDataStore(final JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
     public void reload() {
+        flushSave();
         dataFile = plugin.getConfig().getString("my-plots.data-file", "plotdata.yml");
         configuration = ((de.craftplay.plotextras.CraftplayPlotExtrasPlugin) plugin)
                 .getStorageService()
                 .load("plotdata", dataFile);
+        dirty = false;
         if (configuration.getInt("file-version", 0) < 1) {
             configuration.set("file-version", 1);
-            save();
+            dirty = true;
+            saveNow();
         }
+    }
+
+    public void shutdown() {
+        flushSave();
     }
 
     public PlotMetadata metadata(final String plotKey) {
@@ -303,11 +313,33 @@ public final class PlotDataStore {
     }
 
     private void save() {
+        dirty = true;
+        if (saveTask != null) {
+            return;
+        }
+        final long delay = Math.max(1L, plugin.getConfig().getLong("my-plots.save-delay-ticks", 40L));
+        saveTask = plugin.getServer().getScheduler().runTaskLater(plugin, this::saveNow, delay);
+    }
+
+    private void flushSave() {
+        if (saveTask != null) {
+            saveTask.cancel();
+            saveTask = null;
+        }
+        saveNow();
+    }
+
+    private void saveNow() {
         if (configuration == null || dataFile == null) {
+            return;
+        }
+        if (!dirty && saveTask == null) {
             return;
         }
         ((de.craftplay.plotextras.CraftplayPlotExtrasPlugin) plugin)
                 .getStorageService()
                 .save("plotdata", dataFile, configuration);
+        dirty = false;
+        saveTask = null;
     }
 }

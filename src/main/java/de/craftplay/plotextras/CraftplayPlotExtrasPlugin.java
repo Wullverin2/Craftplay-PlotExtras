@@ -90,6 +90,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         if (plotFutureService != null) {
             plotFutureService.shutdown();
         }
+        if (plotDataStore != null) {
+            plotDataStore.shutdown();
+        }
         if (passiveWitherService != null) {
             passiveWitherService.shutdown();
         }

@@ -722,28 +722,81 @@ public final class ExtrasService implements Listener {
         if (first.getWorld() == null) {
             return -1L;
         }
-        final org.bukkit.World world = first.getWorld();
-        final String worldName = world.getName();
+        final String worldName = first.getWorld().getName();
         final int minX = Math.min(first.getBlockX(), second.getBlockX());
         final int maxX = Math.max(first.getBlockX(), second.getBlockX());
         final int minY = Math.min(first.getBlockY(), second.getBlockY());
         final int maxY = Math.max(first.getBlockY(), second.getBlockY());
         final int minZ = Math.min(first.getBlockZ(), second.getBlockZ());
         final int maxZ = Math.max(first.getBlockZ(), second.getBlockZ());
-        long blocks = 0L;
-        for (int x = minX; x <= maxX; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    if (!isAllowedPlotBlock(context, worldName, x, y, z)) {
+
+        final List<Long> xBounds = new ArrayList<>(Arrays.asList((long) minX, (long) maxX + 1L));
+        final List<Long> yBounds = new ArrayList<>(Arrays.asList((long) minY, (long) maxY + 1L));
+        final List<Long> zBounds = new ArrayList<>(Arrays.asList((long) minZ, (long) maxZ + 1L));
+        boolean hasIntersectingRegion = false;
+        for (final PlotRegion region : context.getRegions()) {
+            if (!region.getWorldName().equalsIgnoreCase(worldName)) {
+                continue;
+            }
+            final int regionMinX = Math.max(minX, region.getMinX());
+            final int regionMaxX = Math.min(maxX, region.getMaxX());
+            final int regionMinY = Math.max(minY, region.getMinY());
+            final int regionMaxY = Math.min(maxY, region.getMaxY());
+            final int regionMinZ = Math.max(minZ, region.getMinZ());
+            final int regionMaxZ = Math.min(maxZ, region.getMaxZ());
+            if (regionMinX > regionMaxX || regionMinY > regionMaxY || regionMinZ > regionMaxZ) {
+                continue;
+            }
+            hasIntersectingRegion = true;
+            addBounds(xBounds, regionMinX, regionMaxX);
+            addBounds(yBounds, regionMinY, regionMaxY);
+            addBounds(zBounds, regionMinZ, regionMaxZ);
+        }
+        if (!hasIntersectingRegion) {
+            return -1L;
+        }
+
+        Collections.sort(xBounds);
+        Collections.sort(yBounds);
+        Collections.sort(zBounds);
+        long covered = 0L;
+        for (int xi = 0; xi < xBounds.size() - 1; xi++) {
+            final long xStart = xBounds.get(xi);
+            final long xEnd = xBounds.get(xi + 1);
+            if (xStart >= xEnd) {
+                continue;
+            }
+            for (int yi = 0; yi < yBounds.size() - 1; yi++) {
+                final long yStart = yBounds.get(yi);
+                final long yEnd = yBounds.get(yi + 1);
+                if (yStart >= yEnd) {
+                    continue;
+                }
+                for (int zi = 0; zi < zBounds.size() - 1; zi++) {
+                    final long zStart = zBounds.get(zi);
+                    final long zEnd = zBounds.get(zi + 1);
+                    if (zStart >= zEnd) {
+                        continue;
+                    }
+                    if (!isAllowedPlotBlock(context, worldName, (int) xStart, (int) yStart, (int) zStart)) {
                         return -1L;
                     }
-                    if (world.getBlockAt(x, y, z).getType() != Material.BEDROCK) {
-                        blocks++;
-                    }
+                    covered += (xEnd - xStart) * (yEnd - yStart) * (zEnd - zStart);
                 }
             }
         }
-        return blocks;
+        return covered == volume(first, second) ? covered : -1L;
+    }
+
+    private void addBounds(final List<Long> bounds, final int min, final int max) {
+        addUniqueBound(bounds, min);
+        addUniqueBound(bounds, (long) max + 1L);
+    }
+
+    private void addUniqueBound(final List<Long> bounds, final long value) {
+        if (!bounds.contains(value)) {
+            bounds.add(value);
+        }
     }
 
     private boolean isAllowedPlotBlock(final PlotContext context, final Location location) {

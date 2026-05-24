@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
+import java.util.logging.Level;
 
 public final class JdbcStorageBackend implements StorageBackend {
 
@@ -21,6 +22,7 @@ public final class JdbcStorageBackend implements StorageBackend {
     private String jdbcUrl;
     private String username;
     private String password;
+    private Connection connection;
 
     public JdbcStorageBackend(final JavaPlugin plugin, final StorageType type) {
         this.plugin = plugin;
@@ -36,7 +38,7 @@ public final class JdbcStorageBackend implements StorageBackend {
     @Override
     public void initialize() {
         configure();
-        try (Connection connection = connection(); Statement statement = connection.createStatement()) {
+        try (Statement statement = connection().createStatement()) {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + table
                     + " (namespace VARCHAR(128) PRIMARY KEY, payload " + payloadType()
                     + " NOT NULL, updated_at BIGINT NOT NULL)");
@@ -47,8 +49,7 @@ public final class JdbcStorageBackend implements StorageBackend {
 
     @Override
     public YamlConfiguration load(final String namespace, final String yamlFile) {
-        try (Connection connection = connection();
-             PreparedStatement statement = connection.prepareStatement("SELECT payload FROM " + table + " WHERE namespace = ?")) {
+        try (PreparedStatement statement = connection().prepareStatement("SELECT payload FROM " + table + " WHERE namespace = ?")) {
             statement.setString(1, namespace);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (!resultSet.next()) {
@@ -73,7 +74,7 @@ public final class JdbcStorageBackend implements StorageBackend {
             sql = "INSERT INTO " + table + " (namespace, payload, updated_at) VALUES (?, ?, ?) "
                     + "ON DUPLICATE KEY UPDATE payload = VALUES(payload), updated_at = VALUES(updated_at)";
         }
-        try (Connection connection = connection(); PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection().prepareStatement(sql)) {
             statement.setString(1, namespace);
             statement.setString(2, configuration.saveToString());
             statement.setLong(3, System.currentTimeMillis());
@@ -85,7 +86,16 @@ public final class JdbcStorageBackend implements StorageBackend {
 
     @Override
     public void close() {
-        // JDBC nutzt kurzlebige Verbindungen.
+        if (connection == null) {
+            return;
+        }
+        try {
+            connection.close();
+        } catch (final SQLException exception) {
+            plugin.getLogger().log(Level.WARNING, "Datenbankverbindung konnte nicht sauber geschlossen werden.", exception);
+        } finally {
+            connection = null;
+        }
     }
 
     private void configure() {
@@ -128,10 +138,22 @@ public final class JdbcStorageBackend implements StorageBackend {
     }
 
     private Connection connection() throws SQLException {
-        if (username == null || username.isEmpty()) {
-            return DriverManager.getConnection(jdbcUrl);
+        if (connection != null && !connection.isClosed()) {
+            try {
+                if (connection.isValid(2)) {
+                    return connection;
+                }
+            } catch (final SQLException ignored) {
+                return connection;
+            }
         }
-        return DriverManager.getConnection(jdbcUrl, username, password == null ? "" : password);
+        close();
+        if (username == null || username.isEmpty()) {
+            connection = DriverManager.getConnection(jdbcUrl);
+            return connection;
+        }
+        connection = DriverManager.getConnection(jdbcUrl, username, password == null ? "" : password);
+        return connection;
     }
 
     private int defaultPort() {

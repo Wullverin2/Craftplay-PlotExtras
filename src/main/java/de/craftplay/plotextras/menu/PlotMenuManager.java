@@ -41,6 +41,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -567,20 +568,30 @@ public final class PlotMenuManager implements Listener {
         player.openInventory(inventory);
         playSound(player, openSound);
 
-        long delay = 0L;
-        for (final AnimatedInventorySlot animatedSlot : animatedSlots) {
-            final long scheduledDelay = delay;
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (!player.isOnline()) {
-                    return;
-                }
-                if (player.getOpenInventory().getTopInventory() != inventory) {
-                    return;
-                }
-                inventory.setItem(animatedSlot.getSlot(), animatedSlot.getItem());
-            }, scheduledDelay);
-            delay += inventoryAnimationDelayTicks;
+        if (animatedSlots.isEmpty()) {
+            return;
         }
+        if (inventoryAnimationDelayTicks <= 0L) {
+            for (final AnimatedInventorySlot animatedSlot : animatedSlots) {
+                inventory.setItem(animatedSlot.getSlot(), animatedSlot.getItem());
+            }
+            return;
+        }
+
+        final int[] index = {0};
+        final BukkitTask[] task = new BukkitTask[1];
+        task[0] = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (!player.isOnline() || player.getOpenInventory().getTopInventory() != inventory) {
+                task[0].cancel();
+                return;
+            }
+            final AnimatedInventorySlot animatedSlot = animatedSlots.get(index[0]);
+            inventory.setItem(animatedSlot.getSlot(), animatedSlot.getItem());
+            index[0]++;
+            if (index[0] >= animatedSlots.size()) {
+                task[0].cancel();
+            }
+        }, 0L, inventoryAnimationDelayTicks);
     }
 
     public void openMyPlotsMenu(final Player player) {

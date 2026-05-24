@@ -1088,12 +1088,16 @@ public final class PassiveWitherService implements Listener {
         if (world == null || direction.lengthSquared() <= 0.0D) {
             return blocks;
         }
+        final MiningContext miningContext = miningContext(anchor);
+        if (!miningContext.canMine()) {
+            return blocks;
+        }
         final Set<String> visited = new HashSet<>();
         final Location origin = anchor.clone().add(0.0D, 1.5D, 0.0D).add(direction.clone().normalize());
         final BlockIterator iterator = new BlockIterator(world, origin.toVector(), direction.clone().normalize(), 0.0D, miningRange);
         while (iterator.hasNext()) {
             final Block block = iterator.next();
-            if (!visited.add(blockKey(block)) || !isMineableBlock(anchor, block)) {
+            if (!visited.add(blockKey(block)) || !isMineableBlock(miningContext, block)) {
                 continue;
             }
             blocks.add(block);
@@ -1102,11 +1106,93 @@ public final class PassiveWitherService implements Listener {
     }
 
     private boolean isMineableBlock(final Location anchor, final Block block) {
+        return isMineableBlock(miningContext(anchor), block);
+    }
+
+    private boolean isMineableBlock(final MiningContext miningContext, final Block block) {
         final Material type = block.getType();
         if (type.isAir() || protectedMiningMaterials.contains(type)) {
             return false;
         }
-        return isAllowedMiningBlock(anchor, block);
+        return isAllowedMiningBlock(miningContext, block);
+    }
+
+    private MiningContext miningContext(final Location anchor) {
+        if (anchor == null || anchor.getWorld() == null) {
+            return MiningContext.denied();
+        }
+        if (!plugin.getServer().getPluginManager().isPluginEnabled("PlotSquared")) {
+            return MiningContext.unrestricted(anchor.getWorld().getUID());
+        }
+        try {
+            final com.plotsquared.core.location.Location anchorPlotLocation = com.plotsquared.core.location.Location.at(
+                    anchor.getWorld().getName(),
+                    anchor.getBlockX(),
+                    anchor.getBlockY(),
+                    anchor.getBlockZ()
+            );
+            if (!anchorPlotLocation.isPlotArea()) {
+                return MiningContext.unrestricted(anchor.getWorld().getUID());
+            }
+            final Plot anchorPlot = anchorPlotLocation.getPlot();
+            if (anchorPlot == null) {
+                return MiningContext.denied();
+            }
+            return MiningContext.restricted(anchor.getWorld().getUID(), anchorPlot, connectedPlots(anchorPlot));
+        } catch (final Throwable throwable) {
+            plugin.getLogger().log(Level.WARNING, "Passive-Wither-Plotbereich konnte nicht geprueft werden.", throwable);
+            return MiningContext.denied();
+        }
+    }
+
+    private boolean isAllowedMiningBlock(final MiningContext miningContext, final Block block) {
+        if (block == null || block.getWorld() == null || !miningContext.canMine()) {
+            return false;
+        }
+        if (!miningContext.getWorldId().equals(block.getWorld().getUID())) {
+            return false;
+        }
+        if (miningContext.isUnrestricted()) {
+            return true;
+        }
+        try {
+            final com.plotsquared.core.location.Location blockPlotLocation = com.plotsquared.core.location.Location.at(
+                    block.getWorld().getName(),
+                    block.getX(),
+                    block.getY(),
+                    block.getZ()
+            );
+            final Plot blockPlot = blockPlotLocation.getPlot();
+            return blockPlot != null
+                    && (miningContext.getAnchorPlot().equals(blockPlot)
+                    || miningContext.getConnectedPlots().contains(blockPlot));
+        } catch (final Throwable throwable) {
+            plugin.getLogger().log(Level.WARNING, "Passive-Wither-Plotbereich konnte nicht geprueft werden.", throwable);
+            return false;
+        }
+    }
+
+    private Set<Plot> connectedPlots(final Plot anchorPlot) {
+        final Set<Plot> plots = new HashSet<>();
+        final Object connected = invokeNoArgs(anchorPlot, "getConnectedPlots");
+        if (connected instanceof Iterable) {
+            for (final Object connectedPlot : (Iterable<?>) connected) {
+                if (connectedPlot instanceof Plot) {
+                    plots.add((Plot) connectedPlot);
+                }
+            }
+            return plots;
+        }
+        if (connected != null && connected.getClass().isArray()) {
+            final int length = Array.getLength(connected);
+            for (int index = 0; index < length; index++) {
+                final Object connectedPlot = Array.get(connected, index);
+                if (connectedPlot instanceof Plot) {
+                    plots.add((Plot) connectedPlot);
+                }
+            }
+        }
+        return plots;
     }
 
     private boolean isAllowedMiningBlock(final Location anchor, final Block block) {
@@ -1844,6 +1930,64 @@ public final class PassiveWitherService implements Listener {
         return sound == Sound.ENTITY_GENERIC_EXPLODE
                 || name.startsWith("ENTITY_WITHER_")
                 || (name.startsWith("BLOCK_") && name.endsWith("_BREAK"));
+    }
+
+    private static final class MiningContext {
+        private final UUID worldId;
+        private final Plot anchorPlot;
+        private final Set<Plot> connectedPlots;
+        private final boolean unrestricted;
+        private final boolean canMine;
+
+        private MiningContext(
+                final UUID worldId,
+                final Plot anchorPlot,
+                final Set<Plot> connectedPlots,
+                final boolean unrestricted,
+                final boolean canMine
+        ) {
+            this.worldId = worldId;
+            this.anchorPlot = anchorPlot;
+            this.connectedPlots = connectedPlots == null ? Collections.emptySet() : connectedPlots;
+            this.unrestricted = unrestricted;
+            this.canMine = canMine;
+        }
+
+        private static MiningContext denied() {
+            return new MiningContext(null, null, Collections.emptySet(), false, false);
+        }
+
+        private static MiningContext unrestricted(final UUID worldId) {
+            return new MiningContext(worldId, null, Collections.emptySet(), true, worldId != null);
+        }
+
+        private static MiningContext restricted(
+                final UUID worldId,
+                final Plot anchorPlot,
+                final Set<Plot> connectedPlots
+        ) {
+            return new MiningContext(worldId, anchorPlot, connectedPlots, false, worldId != null && anchorPlot != null);
+        }
+
+        private UUID getWorldId() {
+            return worldId;
+        }
+
+        private Plot getAnchorPlot() {
+            return anchorPlot;
+        }
+
+        private Set<Plot> getConnectedPlots() {
+            return connectedPlots;
+        }
+
+        private boolean isUnrestricted() {
+            return unrestricted;
+        }
+
+        private boolean canMine() {
+            return canMine;
+        }
     }
 
     private static final class ProtectedExplosion {

@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 24
+file-version: 25
 
 # Befehle dieses Plugins.
 command:
@@ -223,6 +223,10 @@ bedrock:
 my-plots:
   # Datendatei, in der Favoriten, Tags, Kategorien, Sichtbarkeit und Aktivität gespeichert werden.
   data-file: plotdata.yml
+  # Verzögerung in Ticks, mit der Änderungen an Favoriten, Bewertungen, Kommentaren und Aktivität gesammelt gespeichert werden.
+  save-delay-ticks: 40
+  # Dauer in Millisekunden, in der die Plotliste eines Spielers gecacht wird.
+  cache-millis: 5000
 
 # Report-System.
 reports:
@@ -301,6 +305,9 @@ future:
   enabled: true
   # Datendatei für Heatmaps, Besucherstatistiken, Galerie, Markt, NPCs und Analysen.
   data-file: futurefeatures.yml
+  performance:
+    # Dauer in Sekunden, in der teure Redstone- und Materialscans pro Plot wiederverwendet werden.
+    scan-cache-seconds: 60.0
   heatmaps:
     # Wenn false, werden Heatmap-Aktionen komplett deaktiviert.
     enabled: true

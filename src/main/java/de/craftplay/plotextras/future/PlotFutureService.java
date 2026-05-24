@@ -45,11 +45,14 @@ public final class PlotFutureService {
     private final CraftplayPlotExtrasPlugin plugin;
     private final PlotDataStore plotDataStore;
     private final Map<UUID, ActiveVisit> activeVisits = new HashMap<>();
+    private final Map<String, CachedValue<RedstoneScan>> redstoneScanCache = new HashMap<>();
+    private final Map<String, CachedValue<MaterialStats>> materialStatsCache = new HashMap<>();
 
     private YamlConfiguration configuration;
     private String dataFile;
     private boolean saveQueued;
     private boolean dirty;
+    private long scanCacheMillis;
 
     public PlotFutureService(final CraftplayPlotExtrasPlugin plugin, final PlotDataStore plotDataStore) {
         this.plugin = plugin;
@@ -59,6 +62,10 @@ public final class PlotFutureService {
     public void reload() {
         dataFile = plugin.getConfig().getString("future.data-file", "futurefeatures.yml");
         configuration = plugin.getStorageService().load("futurefeatures", dataFile);
+        scanCacheMillis = Math.max(0L, Math.round(plugin.getConfig()
+                .getDouble("future.performance.scan-cache-seconds", 60.0D) * 1000.0D));
+        redstoneScanCache.clear();
+        materialStatsCache.clear();
         dirty = false;
         if (configuration.getInt("file-version", 0) < 1) {
             configuration.set("file-version", 1);
@@ -200,6 +207,8 @@ public final class PlotFutureService {
             if (isRedstoneMaterial(block.getType())) {
                 increment(path(key, "activity.redstone-changes"), 1);
             }
+            redstoneScanCache.remove(key);
+            materialStatsCache.remove(key);
         }
         saveSoon();
     }
@@ -385,7 +394,7 @@ public final class PlotFutureService {
             return;
         }
         final PlotContext plot = context.get();
-        final RedstoneScan scan = scanRedstone(plot);
+        final RedstoneScan scan = cachedRedstoneScan(plot);
         final String key = plotKey(plot);
         ensurePlotIdentity(key, plot);
         configuration.set(path(key, "analysis.redstone-score"), scan.getScore());
@@ -640,11 +649,11 @@ public final class PlotFutureService {
 
     private Set<String> detectTags(final PlotContext context) {
         final Set<String> tags = new LinkedHashSet<>();
-        final RedstoneScan redstone = scanRedstone(context);
+        final RedstoneScan redstone = cachedRedstoneScan(context);
         if (redstone.getComponents() >= plugin.getConfig().getInt("future.ai-tagging.redstone-threshold", 12)) {
             tags.add("Redstone");
         }
-        final MaterialStats stats = scanMaterials(context);
+        final MaterialStats stats = cachedMaterialStats(context);
         if (stats.getCropBlocks() >= plugin.getConfig().getInt("future.ai-tagging.farm-threshold", 20)) {
             tags.add("Farm");
         }
@@ -658,6 +667,34 @@ public final class PlotFutureService {
             tags.add("Bauprojekt");
         }
         return tags;
+    }
+
+    private RedstoneScan cachedRedstoneScan(final PlotContext context) {
+        final String key = plotKey(context);
+        final long now = System.currentTimeMillis();
+        final CachedValue<RedstoneScan> cached = redstoneScanCache.get(key);
+        if (cached != null && cached.isFresh(now, scanCacheMillis)) {
+            return cached.getValue();
+        }
+        final RedstoneScan scan = scanRedstone(context);
+        if (scanCacheMillis > 0L) {
+            redstoneScanCache.put(key, new CachedValue<>(scan, now));
+        }
+        return scan;
+    }
+
+    private MaterialStats cachedMaterialStats(final PlotContext context) {
+        final String key = plotKey(context);
+        final long now = System.currentTimeMillis();
+        final CachedValue<MaterialStats> cached = materialStatsCache.get(key);
+        if (cached != null && cached.isFresh(now, scanCacheMillis)) {
+            return cached.getValue();
+        }
+        final MaterialStats stats = scanMaterials(context);
+        if (scanCacheMillis > 0L) {
+            materialStatsCache.put(key, new CachedValue<>(stats, now));
+        }
+        return stats;
     }
 
     private RedstoneScan scanRedstone(final PlotContext context) {
@@ -986,6 +1023,25 @@ public final class PlotFutureService {
         plugin.getStorageService().save("futurefeatures", dataFile, configuration);
         dirty = false;
         saveQueued = false;
+    }
+
+    private static final class CachedValue<T> {
+
+        private final T value;
+        private final long createdAt;
+
+        private CachedValue(final T value, final long createdAt) {
+            this.value = value;
+            this.createdAt = createdAt;
+        }
+
+        private T getValue() {
+            return value;
+        }
+
+        private boolean isFresh(final long now, final long maxAgeMillis) {
+            return maxAgeMillis > 0L && now - createdAt <= maxAgeMillis;
+        }
     }
 
     private static final class ActiveVisit {

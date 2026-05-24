@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.logging.Level;
 public final class PlotSquaredPlotService {
 
     private final JavaPlugin plugin;
+    private final Map<UUID, CachedOwnedPlots> ownedPlotCache = new HashMap<>();
     private boolean warned;
 
     public PlotSquaredPlotService(final JavaPlugin plugin) {
@@ -31,11 +33,20 @@ public final class PlotSquaredPlotService {
     }
 
     public List<OwnedPlot> ownedPlots(final Player player) {
+        final long now = System.currentTimeMillis();
+        final long cacheMillis = Math.max(0L, plugin.getConfig().getLong("my-plots.cache-millis", 5000L));
+        final CachedOwnedPlots cached = ownedPlotCache.get(player.getUniqueId());
+        if (cached != null && cached.isFresh(now, cacheMillis)) {
+            return cached.copy();
+        }
         final Map<String, OwnedPlot> plots = new LinkedHashMap<>();
         addPlots(plots, plotsFromPlotPlayer(player), player);
         addPlots(plots, plotsFromPlotApi(player), player);
         final List<OwnedPlot> result = new ArrayList<>(plots.values());
         result.sort(Comparator.comparing(OwnedPlot::getWorldName).thenComparing(OwnedPlot::getPlotId));
+        if (cacheMillis > 0L) {
+            ownedPlotCache.put(player.getUniqueId(), new CachedOwnedPlots(result, now));
+        }
         return result;
     }
 
@@ -470,5 +481,24 @@ public final class PlotSquaredPlotService {
         }
         warned = true;
         plugin.getLogger().log(Level.WARNING, message, exception);
+    }
+
+    private static final class CachedOwnedPlots {
+
+        private final List<OwnedPlot> plots;
+        private final long createdAt;
+
+        private CachedOwnedPlots(final List<OwnedPlot> plots, final long createdAt) {
+            this.plots = new ArrayList<>(plots);
+            this.createdAt = createdAt;
+        }
+
+        private boolean isFresh(final long now, final long maxAgeMillis) {
+            return maxAgeMillis > 0L && now - createdAt <= maxAgeMillis;
+        }
+
+        private List<OwnedPlot> copy() {
+            return new ArrayList<>(plots);
+        }
     }
 }

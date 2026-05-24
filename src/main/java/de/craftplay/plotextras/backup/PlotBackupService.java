@@ -34,6 +34,8 @@ public final class PlotBackupService {
     private final Map<UUID, PendingOperation> pendingOperations = new HashMap<>();
     private final Set<UUID> bypassNextPlotCommand = new HashSet<>();
     private final List<PlotRegion> lockedRegions = new ArrayList<>();
+    private final List<PlotBackupMetadata> backupCache = new ArrayList<>();
+    private final Map<String, PlotBackupMetadata> backupIndex = new HashMap<>();
 
     private boolean enabled;
     private boolean includeEntities;
@@ -81,6 +83,7 @@ public final class PlotBackupService {
         if (changed) {
             saveMetadata();
         }
+        rebuildBackupCache();
     }
 
     public boolean isEnabled() {
@@ -190,35 +193,14 @@ public final class PlotBackupService {
     }
 
     public List<PlotBackupMetadata> listBackups() {
-        final List<PlotBackupMetadata> backups = new ArrayList<>();
-        if (metadataConfiguration == null) {
-            return backups;
-        }
-        final ConfigurationSection section = metadataConfiguration.getConfigurationSection("backups");
-        if (section == null) {
-            return backups;
-        }
-        for (final String id : section.getKeys(false)) {
-            try {
-                backups.add(PlotBackupMetadata.load(metadataConfiguration, "backups." + id + ".", id));
-            } catch (final RuntimeException exception) {
-                plugin.getLogger().log(Level.WARNING, "Plotbackup-Metadaten konnten nicht geladen werden: " + id, exception);
-            }
-        }
-        backups.sort(Comparator.comparing(PlotBackupMetadata::getCreatedAt, Comparator.nullsLast(String::compareTo)).reversed());
-        return backups;
+        return new ArrayList<>(backupCache);
     }
 
     public Optional<PlotBackupMetadata> findBackup(final String backupId) {
         if (backupId == null || backupId.trim().isEmpty()) {
             return Optional.empty();
         }
-        for (final PlotBackupMetadata metadata : listBackups()) {
-            if (backupId.equalsIgnoreCase(metadata.getId())) {
-                return Optional.of(metadata);
-            }
-        }
-        return Optional.empty();
+        return Optional.ofNullable(backupIndex.get(backupId.toLowerCase(Locale.ROOT)));
     }
 
     private PlotBackupMetadata createBackup(final Player player, final String action) {
@@ -268,6 +250,7 @@ public final class PlotBackupService {
             );
             metadata.writeTo(metadataConfiguration, "backups." + id + ".");
             saveMetadata();
+            addBackupToCache(metadata);
             return metadata;
         } catch (final Exception exception) {
             plugin.getLogger().log(Level.WARNING, "Plotbackup konnte nicht erstellt werden.", exception);
@@ -363,6 +346,38 @@ public final class PlotBackupService {
             return;
         }
         plugin.getStorageService().save("plotbackups", metadataFile, metadataConfiguration);
+    }
+
+    private void rebuildBackupCache() {
+        backupCache.clear();
+        backupIndex.clear();
+        if (metadataConfiguration == null) {
+            return;
+        }
+        final ConfigurationSection section = metadataConfiguration.getConfigurationSection("backups");
+        if (section == null) {
+            return;
+        }
+        for (final String id : section.getKeys(false)) {
+            try {
+                addBackupToCache(PlotBackupMetadata.load(metadataConfiguration, "backups." + id + ".", id));
+            } catch (final RuntimeException exception) {
+                plugin.getLogger().log(Level.WARNING, "Plotbackup-Metadaten konnten nicht geladen werden: " + id, exception);
+            }
+        }
+    }
+
+    private void addBackupToCache(final PlotBackupMetadata metadata) {
+        if (metadata == null || metadata.getId() == null) {
+            return;
+        }
+        final String key = metadata.getId().toLowerCase(Locale.ROOT);
+        final PlotBackupMetadata previous = backupIndex.put(key, metadata);
+        if (previous != null) {
+            backupCache.removeIf(existing -> existing.getId().equalsIgnoreCase(metadata.getId()));
+        }
+        backupCache.add(metadata);
+        backupCache.sort(Comparator.comparing(PlotBackupMetadata::getCreatedAt, Comparator.nullsLast(String::compareTo)).reversed());
     }
 
     private String sanitize(final String value) {
