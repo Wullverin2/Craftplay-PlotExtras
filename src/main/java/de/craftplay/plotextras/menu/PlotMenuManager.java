@@ -1895,32 +1895,7 @@ public final class PlotMenuManager implements Listener {
     }
 
     private void loadButtons(final YamlConfiguration menuConfig, final Map<Integer, MenuButton> target, final int menuSize) {
-        final ConfigurationSection section = menuConfig.getConfigurationSection("buttons");
-        if (section == null) {
-            return;
-        }
-
-        for (final String id : section.getKeys(false)) {
-            final String path = "buttons." + id + ".";
-            if (!menuConfig.getBoolean(path + "enabled", true)) {
-                continue;
-            }
-            final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.STONE_BUTTON);
-            final Material material = materialDefinition.getMaterial();
-            final String headDatabaseId = headDatabaseId(menuConfig, path);
-            final String skullOwner = skullOwner(menuConfig, path, materialDefinition.getSkullOwner());
-            final String name = menuConfig.getString(path + "name", "&a" + id);
-            final List<String> lore = menuConfig.getStringList(path + "lore");
-            final List<String> commands = configuredCommands(menuConfig, path);
-            final boolean close = menuConfig.getBoolean(path + "close", true);
-            final String permission = menuConfig.getString(path + "permission", "");
-            final MenuSound clickSound = loadButtonSound(menuConfig, path);
-            final String bedrockLabel = menuConfig.getString(path + "bedrock-label", "");
-
-            for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menübutton", id)) {
-                target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, commands, close, permission, clickSound, bedrockLabel));
-            }
-        }
+        loadButtonsFromSection(menuConfig, "buttons", target, menuSize);
     }
 
     private void loadBedrockButtons(final YamlConfiguration menuConfig) {
@@ -2434,6 +2409,23 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
+        final List<Integer> automaticSlots = configuredSectionSlots(menuConfig, sectionPath, menuSize, "Button-Slotbereich", sectionPath);
+        final Map<String, List<Integer>> explicitSlotsById = new HashMap<>();
+        final Set<Integer> reservedSlots = new LinkedHashSet<>(target.keySet());
+        for (final String id : section.getKeys(false)) {
+            final String path = sectionPath + "." + id + ".";
+            if (!menuConfig.getBoolean(path + "enabled", true)) {
+                continue;
+            }
+            if (!hasConfiguredSlots(menuConfig, path)) {
+                continue;
+            }
+            final List<Integer> explicitSlots = configuredSlots(menuConfig, path, menuSize, "Menuebutton", id);
+            explicitSlotsById.put(id, explicitSlots);
+            reservedSlots.addAll(explicitSlots);
+        }
+
+        int automaticSlotIndex = 0;
         for (final String id : section.getKeys(false)) {
             final String path = sectionPath + "." + id + ".";
             if (!menuConfig.getBoolean(path + "enabled", true)) {
@@ -2451,7 +2443,31 @@ public final class PlotMenuManager implements Listener {
             final MenuSound clickSound = loadButtonSound(menuConfig, path);
             final String bedrockLabel = menuConfig.getString(path + "bedrock-label", "");
 
-            for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menübutton", id)) {
+            List<Integer> slots = explicitSlotsById.get(id);
+            if (slots == null) {
+                if (automaticSlots.isEmpty()) {
+                    slots = configuredSlots(menuConfig, path, menuSize, "Menuebutton", id);
+                } else {
+                    int automaticSlot = -1;
+                    while (automaticSlotIndex < automaticSlots.size()) {
+                        final int candidate = automaticSlots.get(automaticSlotIndex++);
+                        if (reservedSlots.contains(candidate)) {
+                            continue;
+                        }
+                        automaticSlot = candidate;
+                        reservedSlots.add(candidate);
+                        break;
+                    }
+                    if (automaticSlot < 0) {
+                        plugin.getLogger().warning("Menuebutton '" + id + "' hat keinen freien automatischen Slot in '" + sectionPath + "'.");
+                        slots = Collections.emptyList();
+                    } else {
+                        slots = Collections.singletonList(automaticSlot);
+                    }
+                }
+            }
+
+            for (final int slot : slots) {
                 target.put(slot, new MenuButton(id, slot, material, headDatabaseId, skullOwner, name, lore, commands, close, permission, clickSound, bedrockLabel));
             }
         }
@@ -4899,6 +4915,47 @@ public final class PlotMenuManager implements Listener {
             }
         }
         return valid;
+    }
+
+    private boolean hasConfiguredSlots(final YamlConfiguration menuConfig, final String path) {
+        return menuConfig.contains(path + "slots") || menuConfig.contains(path + "slot");
+    }
+
+    private List<Integer> configuredSectionSlots(
+            final YamlConfiguration menuConfig,
+            final String sectionPath,
+            final int menuSize,
+            final String type,
+            final String id
+    ) {
+        final String parentPath = parentPathForSectionSlots(sectionPath);
+        final List<Integer> configured = new ArrayList<>();
+        configured.addAll(configuredSlotValues(menuConfig, parentPath + "button-slots", type, id));
+        configured.addAll(configuredSlotValues(menuConfig, parentPath + "block-slots", type, id));
+        configured.addAll(configuredSlotValues(menuConfig, parentPath + "content-slots", type, id));
+
+        final List<Integer> valid = new ArrayList<>();
+        for (final int slot : configured) {
+            if (slot < 0 || slot >= menuSize) {
+                plugin.getLogger().warning(type + " '" + id + "' hat einen ungueltigen Slot: " + slot);
+                continue;
+            }
+            if (!valid.contains(slot)) {
+                valid.add(slot);
+            }
+        }
+        return valid;
+    }
+
+    private String parentPathForSectionSlots(final String sectionPath) {
+        if (sectionPath == null || sectionPath.trim().isEmpty()) {
+            return "";
+        }
+        if (sectionPath.endsWith(".buttons")) {
+            return sectionPath.substring(0, sectionPath.length() - "buttons".length());
+        }
+        final int dot = sectionPath.lastIndexOf('.');
+        return dot < 0 ? "" : sectionPath.substring(0, dot + 1);
     }
 
     private List<Integer> configuredSlotValues(
