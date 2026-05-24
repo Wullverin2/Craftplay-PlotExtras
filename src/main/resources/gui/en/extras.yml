@@ -2,7 +2,7 @@
 # This file controls additional services that are not directly part of PlotSquared.
 # Each button can be disabled, moved, given its own permission, or extended with custom commands.
 
-file-version: 4
+file-version: 5
 
 title: "&8Extras"
 size: 27
@@ -42,6 +42,7 @@ buttons:
       - "&7Price: &f{passive_wither_price}"
       - "&7Stays at its spawn point"
       - "&7and fires no skulls."
+      - "&7Mines in its look direction."
       - "&7Drops go into a chest."
     commands:
       - "passive-wither:buy"

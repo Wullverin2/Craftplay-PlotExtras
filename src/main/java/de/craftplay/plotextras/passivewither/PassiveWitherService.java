@@ -52,8 +52,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.Duration;
@@ -93,6 +95,7 @@ public final class PassiveWitherService implements Listener {
     private final Map<UUID, UUID> passiveWitherOwners = new HashMap<>();
     private final Map<UUID, Location> passiveWitherAnchors = new HashMap<>();
     private final Map<UUID, Long> passiveWitherNextExplosions = new HashMap<>();
+    private final Set<Material> protectedMiningMaterials = new HashSet<>();
     private final Set<Integer> passiveWitherEntityIds = ConcurrentHashMap.newKeySet();
     private final Set<UUID> soundDisabledPlayers = ConcurrentHashMap.newKeySet();
     private final List<Sound> mutedFallbackSounds = new ArrayList<>();
@@ -109,8 +112,7 @@ public final class PassiveWitherService implements Listener {
     private String chestPermission;
     private double price;
     private Material eggMaterial;
-    private float explosionPower;
-    private boolean explosionSetFire;
+    private int miningRange;
     private int nearestInventoryRadius;
     private boolean dropOverflow;
     private Location configuredDropInventoryLocation;
@@ -160,8 +162,8 @@ public final class PassiveWitherService implements Listener {
         economyEnabled = plugin.getConfig().getBoolean("passive-wither.economy.enabled", true);
         explosionCooldownMillis = Math.max(0L, Math.round(plugin.getConfig()
                 .getDouble("passive-wither.explosion-cooldown-seconds", 5.0D) * 1000.0D));
-        explosionPower = (float) Math.max(0.0D, plugin.getConfig().getDouble("passive-wither.explosion.power", 4.0D));
-        explosionSetFire = plugin.getConfig().getBoolean("passive-wither.explosion.set-fire", false);
+        miningRange = Math.max(1, plugin.getConfig().getInt("passive-wither.mining.range-blocks", 32));
+        loadProtectedMiningMaterials();
         nearestInventoryRadius = Math.max(1, plugin.getConfig().getInt("passive-wither.drops.nearest-inventory-radius", 16));
         dropOverflow = plugin.getConfig().getBoolean("passive-wither.drops.drop-overflow", true);
 
@@ -451,6 +453,7 @@ public final class PassiveWitherService implements Listener {
         }
         final Location spawnLocation = clickedBlock.getRelative(event.getBlockFace()).getLocation().add(0.5D, 0.0D, 0.5D);
         spawnLocation.setYaw(event.getPlayer().getLocation().getYaw());
+        spawnLocation.setPitch(event.getPlayer().getLocation().getPitch());
         if (!canSpawnPassiveWither(event.getPlayer(), spawnLocation)) {
             return;
         }
@@ -756,6 +759,17 @@ public final class PassiveWitherService implements Listener {
         }
     }
 
+    private void loadProtectedMiningMaterials() {
+        protectedMiningMaterials.clear();
+        for (final String configured : plugin.getConfig().getStringList("passive-wither.mining.protected-materials")) {
+            final Material material = material(configured, null);
+            if (material != null) {
+                protectedMiningMaterials.add(material);
+            }
+        }
+        protectedMiningMaterials.add(Material.BEDROCK);
+    }
+
     private void loadSoundDisabledPlayers() {
         soundDisabledPlayers.clear();
         for (final String uuidText : data.getStringList("sound-disabled")) {
@@ -916,13 +930,114 @@ public final class PassiveWitherService implements Listener {
         return null;
     }
 
+    private List<Block> collectMiningBlocks(final Location anchor) {
+        final List<Block> blocks = new ArrayList<>();
+        final World world = anchor.getWorld();
+        final Vector direction = anchor.getDirection();
+        if (world == null || direction.lengthSquared() <= 0.0D) {
+            return blocks;
+        }
+        final Set<String> visited = new HashSet<>();
+        final Location origin = anchor.clone().add(0.0D, 1.5D, 0.0D).add(direction.clone().normalize());
+        final BlockIterator iterator = new BlockIterator(world, origin.toVector(), direction.clone().normalize(), 0.0D, miningRange);
+        while (iterator.hasNext()) {
+            final Block block = iterator.next();
+            if (!visited.add(blockKey(block)) || !isMineableBlock(anchor, block)) {
+                continue;
+            }
+            blocks.add(block);
+        }
+        return blocks;
+    }
+
+    private boolean isMineableBlock(final Location anchor, final Block block) {
+        final Material type = block.getType();
+        if (type.isAir() || protectedMiningMaterials.contains(type)) {
+            return false;
+        }
+        return isAllowedMiningBlock(anchor, block);
+    }
+
+    private boolean isAllowedMiningBlock(final Location anchor, final Block block) {
+        if (anchor.getWorld() == null || block.getWorld() == null
+                || !anchor.getWorld().getUID().equals(block.getWorld().getUID())) {
+            return false;
+        }
+        if (!plugin.getServer().getPluginManager().isPluginEnabled("PlotSquared")) {
+            return true;
+        }
+        try {
+            final com.plotsquared.core.location.Location anchorPlotLocation = com.plotsquared.core.location.Location.at(
+                    anchor.getWorld().getName(),
+                    anchor.getBlockX(),
+                    anchor.getBlockY(),
+                    anchor.getBlockZ()
+            );
+            if (!anchorPlotLocation.isPlotArea()) {
+                return true;
+            }
+            final Plot anchorPlot = anchorPlotLocation.getPlot();
+            if (anchorPlot == null) {
+                return false;
+            }
+            final com.plotsquared.core.location.Location blockPlotLocation = com.plotsquared.core.location.Location.at(
+                    block.getWorld().getName(),
+                    block.getX(),
+                    block.getY(),
+                    block.getZ()
+            );
+            final Plot blockPlot = blockPlotLocation.getPlot();
+            return blockPlot != null && (anchorPlot.equals(blockPlot) || isConnectedPlot(anchorPlot, blockPlot));
+        } catch (final Throwable throwable) {
+            plugin.getLogger().log(Level.WARNING, "Passive-Wither-Plotbereich konnte nicht geprüft werden.", throwable);
+            return false;
+        }
+    }
+
+    private boolean isConnectedPlot(final Plot anchorPlot, final Plot blockPlot) {
+        final Object connected = invokeNoArgs(anchorPlot, "getConnectedPlots");
+        if (connected instanceof Iterable) {
+            for (final Object connectedPlot : (Iterable<?>) connected) {
+                if (blockPlot.equals(connectedPlot)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (connected != null && connected.getClass().isArray()) {
+            final int length = Array.getLength(connected);
+            for (int index = 0; index < length; index++) {
+                if (blockPlot.equals(Array.get(connected, index))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void routePassiveExplosionDrops(final EntityExplodeEvent event) {
         final List<Block> blocks = event.blockList();
         final DropTarget dropTarget = findDropTarget(event.getLocation(), blocks);
         if (dropTarget != null) {
             blocks.removeIf(block -> isSameBlock(block, dropTarget.block));
         }
+        event.setYield(0.0F);
+        depositDrops(event.getLocation(), dropTarget, collectDrops(blocks));
+    }
 
+    private void routePassiveBlockDrops(final Location location, final List<Block> blocks) {
+        final DropTarget dropTarget = findDropTarget(location, blocks);
+        if (dropTarget != null) {
+            blocks.removeIf(block -> isSameBlock(block, dropTarget.block));
+        }
+        final List<ItemStack> drops = collectDrops(blocks);
+        for (final Block block : blocks) {
+            block.setType(Material.AIR, false);
+        }
+        depositDrops(location, dropTarget, drops);
+    }
+
+    private List<ItemStack> collectDrops(final List<Block> blocks) {
         final List<ItemStack> drops = new ArrayList<>();
         for (final Block block : blocks) {
             final BlockState state = block.getState();
@@ -939,19 +1054,19 @@ public final class PassiveWitherService implements Listener {
                 }
             }
         }
+        return drops;
+    }
 
-        event.setYield(0.0F);
+    private void depositDrops(final Location location, final DropTarget dropTarget, final List<ItemStack> drops) {
         if (drops.isEmpty()) {
             return;
         }
-
         if (dropTarget == null) {
             if (dropOverflow) {
-                dropItems(event.getLocation(), drops);
+                dropItems(location, drops);
             }
             return;
         }
-
         for (final ItemStack drop : drops) {
             final Map<Integer, ItemStack> leftovers = dropTarget.inventory.addItem(drop);
             if (dropOverflow) {
@@ -1196,7 +1311,7 @@ public final class PassiveWitherService implements Listener {
                 savePassiveWitherNextExplosion(witherId, nextExplosionAt);
             }
             if (now >= nextExplosionAt) {
-                triggerPassiveWitherExplosion(wither, now);
+                triggerPassiveWitherMining(wither, now);
             }
         }
     }
@@ -1212,8 +1327,6 @@ public final class PassiveWitherService implements Listener {
 
     private void setPassiveWitherAnchor(final Wither wither, final Location location) {
         final Location anchor = location.clone();
-        anchor.setYaw(0.0F);
-        anchor.setPitch(0.0F);
         passiveWitherAnchors.put(wither.getUniqueId(), anchor);
         wither.teleport(anchor);
     }
@@ -1222,8 +1335,6 @@ public final class PassiveWitherService implements Listener {
         Location anchor = passiveWitherAnchors.get(entity.getUniqueId());
         if (anchor == null || anchor.getWorld() == null) {
             anchor = entity.getLocation().clone();
-            anchor.setYaw(0.0F);
-            anchor.setPitch(0.0F);
             passiveWitherAnchors.put(entity.getUniqueId(), anchor);
         }
         return anchor.clone();
@@ -1243,7 +1354,7 @@ public final class PassiveWitherService implements Listener {
         wither.setVelocity(new Vector(0.0D, 0.0D, 0.0D));
     }
 
-    private void triggerPassiveWitherExplosion(final Wither wither, final long now) {
+    private void triggerPassiveWitherMining(final Wither wither, final long now) {
         final Location anchor = getPassiveWitherAnchor(wither);
         final World world = anchor.getWorld();
         if (world == null) {
@@ -1251,38 +1362,13 @@ public final class PassiveWitherService implements Listener {
         }
         final long nextExplosionAt = now + explosionCooldownMillis;
         savePassiveWitherNextExplosion(wither.getUniqueId(), nextExplosionAt);
-        scheduledExplosions.add(new ScheduledExplosionMarker(
-                wither.getUniqueId(),
-                anchor,
-                Math.max(MIN_EXPLOSION_PROTECTION_RADIUS, explosionPower + 2.0D),
-                now + EXPLOSION_PROTECTION_MILLIS
-        ));
-        rememberExplosion(anchor, Math.max(MIN_EXPLOSION_PROTECTION_RADIUS, explosionPower));
-        triggerPassiveWitherSoundSuppression(anchor);
-        createPassiveWitherExplosion(world, anchor, wither);
-        keepPassiveWitherStationary(wither);
-    }
-
-    private void createPassiveWitherExplosion(final World world, final Location location, final Wither source) {
-        try {
-            final Method method = world.getClass().getMethod(
-                    "createExplosion",
-                    double.class,
-                    double.class,
-                    double.class,
-                    float.class,
-                    boolean.class,
-                    boolean.class,
-                    Entity.class
-            );
-            method.invoke(world, location.getX(), location.getY(), location.getZ(), explosionPower, explosionSetFire, true, source);
-            return;
-        } catch (final NoSuchMethodException ignored) {
-            // Spigot 1.16 exposes both variants depending on the server implementation.
-        } catch (final IllegalAccessException | InvocationTargetException exception) {
-            plugin.getLogger().log(Level.WARNING, "Passive-Wither-Explosion konnte nicht mit Quelle erstellt werden.", exception);
+        final List<Block> blocks = collectMiningBlocks(anchor);
+        routePassiveBlockDrops(anchor, blocks);
+        for (final Block block : blocks) {
+            rememberPassiveBlockBreakSound(block.getLocation());
         }
-        world.createExplosion(location.getX(), location.getY(), location.getZ(), explosionPower, explosionSetFire, true);
+        triggerPassiveWitherSoundSuppression(anchor);
+        keepPassiveWitherStationary(wither);
     }
 
     private void hidePassiveWitherBossBar(final Wither wither) {
@@ -1511,6 +1597,18 @@ public final class PassiveWitherService implements Listener {
         }
         final Material material = Material.matchMaterial(configured.trim().toUpperCase(Locale.ROOT));
         return material == null ? fallback : material;
+    }
+
+    private Object invokeNoArgs(final Object target, final String methodName) {
+        if (target == null) {
+            return null;
+        }
+        try {
+            final Method method = target.getClass().getMethod(methodName);
+            return method.invoke(target);
+        } catch (final ReflectiveOperationException exception) {
+            return null;
+        }
     }
 
     private List<String> apply(final List<String> lines, final Map<String, String> placeholders) {

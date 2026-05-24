@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 19
+file-version: 20
 
 # Befehle dieses Plugins.
 command:
@@ -501,13 +501,26 @@ passive-wither:
   free-permission: "craftplayplotextras.passivewither.free"
   # Permission, mit der Teammitglieder die globale Zieltruhe für Passive-Wither-Drops setzen dürfen.
   chest-permission: "craftplayplotextras.passivewither.chest"
-  # Cooldown pro passivem Wither. Erst nach diesem Zeitraum löst er seine Block-Explosion aus.
+  # Cooldown pro passivem Wither. Erst nach diesem Zeitraum baut er die Blöcke vor sich ab.
+  # Der Schlüsselname bleibt aus Kompatibilität zu älteren Versionen erhalten.
   explosion-cooldown-seconds: 5.0
-  explosion:
-    # Stärke der geplanten Explosion. 4.0 entspricht ungefähr einer normalen Wither-Explosion.
-    power: 4.0
-    # Wenn true, kann die geplante Explosion Feuer setzen.
-    set-fire: false
+  mining:
+    # Reichweite in Blöcken ab dem Blickpunkt des passiven Withers.
+    range-blocks: 32
+    # Diese Materialien werden vom passiven Wither niemals abgebaut.
+    # BEDROCK wird zusätzlich immer geschützt, auch wenn es hier entfernt wird.
+    protected-materials:
+      - BEDROCK
+      - BARRIER
+      - COMMAND_BLOCK
+      - CHAIN_COMMAND_BLOCK
+      - REPEATING_COMMAND_BLOCK
+      - STRUCTURE_BLOCK
+      - STRUCTURE_VOID
+      - JIGSAW
+      - END_PORTAL
+      - END_PORTAL_FRAME
+      - NETHER_PORTAL
   drops:
     # Suchradius für die nächste Truhe bzw. das nächste Inventar, wenn keine feste Zieltruhe gesetzt ist.
     nearest-inventory-radius: 16
@@ -527,7 +540,7 @@ passive-wither:
     lore:
       - "&7Bleibt stationär am Spawnpunkt."
       - "&7Schießt keine Witherköpfe."
-      - "&7Explosion nach Cooldown."
+      - "&7Baut Blöcke in Blickrichtung ab."
       - "&7Drops gehen in die nächste Truhe."
       - "&7Sneak-Rechtsklick zum Einsammeln."
       - ""
