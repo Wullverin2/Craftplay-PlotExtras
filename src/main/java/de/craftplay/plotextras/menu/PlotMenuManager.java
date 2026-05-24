@@ -2820,6 +2820,19 @@ public final class PlotMenuManager implements Listener {
         return flagService.hasAnyFlagPermission(player, flagEntry.getFlag());
     }
 
+    private boolean hasFlagTogglePermission(
+            final Player player,
+            final FlagMenuEntry flagEntry,
+            final boolean target
+    ) {
+        if (flagEntry.getPermission() != null
+                && !flagEntry.getPermission().trim().isEmpty()
+                && hasConfiguredPermission(player, flagEntry.getPermission().trim())) {
+            return true;
+        }
+        return flagService.hasTogglePermission(player, flagEntry.getFlag(), target);
+    }
+
     private Map<Integer, FlagMenuEntry> flagsForPage(final Player player, final int page) {
         final int normalizedPage = Math.max(1, page);
         if (!automaticFlagLayout) {
@@ -3094,7 +3107,7 @@ public final class PlotMenuManager implements Listener {
         if (!canModifyCurrentPlotFlag(player, flagEntry.getFlag())) {
             return;
         }
-        if (!flagService.hasTogglePermission(player, flagEntry.getFlag(), target)) {
+        if (!hasFlagTogglePermission(player, flagEntry, target)) {
             languageManager.send(player, "flag-no-permission");
             return;
         }

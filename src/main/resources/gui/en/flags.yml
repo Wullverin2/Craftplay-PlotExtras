@@ -9,7 +9,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 10
+file-version: 11
 
 # Inventory title.
 title: "&8Plot Flags"
@@ -1054,4 +1054,4 @@ flags:
       - ""
       - "&7Status: {status}"
       - "&eClick to toggle."
-    permission: ""
+    permission: "craftplayplotextras.passivewither"

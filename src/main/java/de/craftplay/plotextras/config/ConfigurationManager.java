@@ -468,6 +468,10 @@ public final class ConfigurationManager {
             existing.set("bedrock.content", defaults.getString("bedrock.content", existing.getString("bedrock.content")));
             changed = true;
         }
+        if (resourcePath.replace('\\', '/').endsWith("/flags.yml") && existingVersion < 11) {
+            existing.set("flags.passive-wither-spawn.permission", "craftplayplotextras.passivewither");
+            changed = true;
+        }
         if (resourcePath.replace('\\', '/').endsWith("/main.yml") && existingVersion < 18) {
             existing.set("buttons.deco.commands", Arrays.asList("open-menu:deco:wall:basic"));
             existing.set("buttons.deco.close", false);

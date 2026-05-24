@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 21
+file-version: 22
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -230,6 +230,9 @@ permissions:
   craftplayplotextras.extras.worldedit.free:
     description: Erlaubt das kostenlose Nutzen des WorldEdit-Service.
     default: op
+  craftplayplotextras.passivewither:
+    description: Erlaubt das Anzeigen und Umschalten der Passive-Wither-Spawn-Flag im Flag-Menü.
+    default: false
   craftplayplotextras.passivewither.buy:
     description: Erlaubt den Kauf eines passiven Wither-Spawneis im Extras-Menü.
     default: true

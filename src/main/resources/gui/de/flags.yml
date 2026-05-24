@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 10
+file-version: 11
 
 # Titel des Inventars.
 title: "&8Plot-Flags"
@@ -1054,4 +1054,4 @@ flags:
       - ""
       - "&7Status: {status}"
       - "&eKlicken zum Umschalten."
-    permission: ""
+    permission: "craftplayplotextras.passivewither"

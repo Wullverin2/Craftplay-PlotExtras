@@ -85,7 +85,47 @@ public final class PlotSquaredFlagService {
     public void toggleBooleanFlag(final Player player, final String flagName) {
         final boolean current = isFlagEnabled(player, flagName);
         final boolean target = !current;
-        player.performCommand("plot flag set " + flagName + " " + target);
+        if (!setBooleanFlag(player, flagName, target)) {
+            player.performCommand("plot flag set " + flagName + " " + target);
+        }
+    }
+
+    public boolean setBooleanFlag(final Player player, final String flagName, final boolean value) {
+        final Object plot = currentPlot(player);
+        final Object flag = flag(flagName);
+        if (plot == null || flag == null) {
+            return false;
+        }
+
+        try {
+            final Method typedMethod = plot.getClass().getMethod("setFlag", Class.class, String.class);
+            final Object result = typedMethod.invoke(plot, flag.getClass(), String.valueOf(value));
+            return !(result instanceof Boolean) || (Boolean) result;
+        } catch (final NoSuchMethodException ignored) {
+            return setParsedFlag(plot, flag, String.valueOf(value));
+        } catch (final IllegalAccessException | InvocationTargetException exception) {
+            warn("PlotSquared-Flag konnte nicht gesetzt werden.", exception);
+            return false;
+        }
+    }
+
+    private boolean setParsedFlag(final Object plot, final Object flag, final String value) {
+        final Object parsedFlag = parseFlag(flag, value);
+        if (parsedFlag == null) {
+            return false;
+        }
+        final Class<?> flagClass = findFlagBaseClass(parsedFlag);
+        if (flagClass == null) {
+            return false;
+        }
+        try {
+            final Method method = plot.getClass().getMethod("setFlag", flagClass);
+            final Object result = method.invoke(plot, parsedFlag);
+            return !(result instanceof Boolean) || (Boolean) result;
+        } catch (final ReflectiveOperationException exception) {
+            warn("PlotSquared-Flag konnte nicht gesetzt werden.", exception);
+            return false;
+        }
     }
 
     public Optional<PlotContext> currentPlotContext(final Player player) {

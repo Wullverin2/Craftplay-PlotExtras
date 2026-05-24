@@ -1,5 +1,5 @@
 CraftplayPlotExtras - Permissions
-Stand: 2026-05-24
+Stand: 2026-05-25
 
 Pflegehinweis:
 Diese Datei muss jedes Mal aktualisiert werden, wenn im Plugin, in plugin.yml, in der config.yml
@@ -274,6 +274,11 @@ Permission: craftplayplotextras.extras.worldedit.free
 Zielgruppe: Spieler / Team
 Default: op
 Gibt frei: WorldEdit-Service kostenlos nutzen.
+
+Permission: craftplayplotextras.passivewither
+Zielgruppe: Spieler / Rang
+Default: false
+Gibt frei: Anzeigen und Umschalten der PlotSquared-Flag passive-wither-spawn im Flag-Menü. Damit können Spieler auf eigenen Plots erlauben, dass passive Wither gespawnt werden.
 
 Permission: craftplayplotextras.passivewither.buy
 Zielgruppe: Spieler
