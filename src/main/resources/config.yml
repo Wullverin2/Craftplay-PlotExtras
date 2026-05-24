@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 29
+file-version: 30
 
 # Befehle dieses Plugins.
 command:
@@ -257,18 +257,27 @@ plot-purchase:
   economy:
     # Wenn true, wird der Kaufpreis über Vault/CMI-Economy abgebucht.
     enabled: true
-  # Gratisplots werden über eigene Rang-Permissions vergeben. Das höchste passende Limit gewinnt.
+  # Gratisplots werden über Rang-Permissions oder LuckPerms-Gruppen vergeben.
+  # Hat ein Spieler mehrere passende Ränge, gewinnt die höchste Gewichtung.
   free-plot-permissions:
     default:
       # Beispiel-Permission für den Standardrang.
       permission: "craftplayplotextras.plots.free.default"
+      # LuckPerms-Gruppenname dieses Rangs. Leer lassen, wenn nur die Permission geprüft werden soll.
+      group-name: "default"
+      # Ranggewichtung. -1 bedeutet: Gewicht automatisch aus LuckPerms lesen. Höhere Werte gewinnen.
+      weight: -1
       # Anzahl kostenloser Plots für diesen Rang.
       plots: 1
     premium:
       permission: "craftplayplotextras.plots.free.premium"
+      group-name: "premium"
+      weight: -1
       plots: 4
     elite:
       permission: "craftplayplotextras.plots.free.elite"
+      group-name: "elite"
+      weight: -1
       plots: 8
   # Rabatte aus LostPlots, erweitert um sichere Preisgrenzen.
   discounts:

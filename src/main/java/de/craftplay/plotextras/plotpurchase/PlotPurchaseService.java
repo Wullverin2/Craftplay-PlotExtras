@@ -12,7 +12,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,10 +20,12 @@ import java.util.logging.Level;
 
 public final class PlotPurchaseService {
 
+    private static final int NO_WEIGHT = Integer.MIN_VALUE;
+
     private final CraftplayPlotExtrasPlugin plugin;
     private final PlotSquaredPlotService plotService;
     private final Map<UUID, Integer> selectedAmounts = new HashMap<>();
-    private final Map<String, Integer> freePermissionLimits = new LinkedHashMap<>();
+    private final List<FreePlotRule> freePlotRules = new ArrayList<>();
 
     private boolean enabled;
     private boolean logging;
@@ -47,6 +48,8 @@ public final class PlotPurchaseService {
     private Method permissionPlayerAddMethod;
     private Method permissionPlayerRemoveMethod;
 
+    private Object luckPermsGroupManager;
+
     public PlotPurchaseService(final CraftplayPlotExtrasPlugin plugin, final PlotSquaredPlotService plotService) {
         this.plugin = plugin;
         this.plotService = plotService;
@@ -54,7 +57,7 @@ public final class PlotPurchaseService {
 
     public void reload() {
         selectedAmounts.clear();
-        freePermissionLimits.clear();
+        freePlotRules.clear();
 
         enabled = plugin.getConfig().getBoolean("plot-purchase.enabled", true);
         logging = plugin.getConfig().getBoolean("plot-purchase.logging", true);
@@ -70,6 +73,7 @@ public final class PlotPurchaseService {
         loadFreePermissions();
         setupEconomy();
         setupPermissions();
+        setupLuckPerms();
     }
 
     public void shutdown() {
@@ -201,22 +205,69 @@ public final class PlotPurchaseService {
         for (final String id : section.getKeys(false)) {
             final String path = "plot-purchase.free-plot-permissions." + id + ".";
             final String permission = plugin.getConfig().getString(path + "permission", "");
+            final String groupName = plugin.getConfig().getString(path + "group-name", "");
+            final int weight = plugin.getConfig().contains(path + "weight")
+                    ? plugin.getConfig().getInt(path + "weight", -1)
+                    : -1;
             final int plots = Math.max(0, plugin.getConfig().getInt(path + "plots", 0));
-            if (permission == null || permission.trim().isEmpty() || plots <= 0) {
+            if (plots <= 0) {
                 continue;
             }
-            freePermissionLimits.put(permission.trim(), plots);
+            freePlotRules.add(new FreePlotRule(
+                    permission == null ? "" : permission.trim(),
+                    groupName == null ? "" : groupName.trim(),
+                    weight,
+                    plots,
+                    freePlotRules.size()
+            ));
         }
     }
 
     private int freePlots(final Player player) {
         int plots = baseFreePlots;
-        for (final Map.Entry<String, Integer> entry : freePermissionLimits.entrySet()) {
-            if (player.hasPermission(entry.getKey())) {
-                plots = Math.max(plots, entry.getValue());
+        FreePlotRule bestRule = null;
+        for (final FreePlotRule rule : freePlotRules) {
+            if (!matchesFreePlotRule(player, rule)) {
+                continue;
+            }
+            if (bestRule == null || compareFreePlotRules(rule, bestRule) > 0) {
+                bestRule = rule;
             }
         }
+        if (bestRule != null) {
+            plots = Math.max(plots, bestRule.plots);
+        }
         return plots;
+    }
+
+    private boolean matchesFreePlotRule(final Player player, final FreePlotRule rule) {
+        if (!rule.permission.isEmpty() && player.hasPermission(rule.permission)) {
+            return true;
+        }
+        return !rule.groupName.isEmpty() && playerInGroup(player, rule.groupName);
+    }
+
+    private int compareFreePlotRules(final FreePlotRule left, final FreePlotRule right) {
+        final int leftWeight = effectiveWeight(left);
+        final int rightWeight = effectiveWeight(right);
+        if (leftWeight != rightWeight) {
+            return Integer.compare(leftWeight, rightWeight);
+        }
+        if (left.plots != right.plots) {
+            return Integer.compare(left.plots, right.plots);
+        }
+        return Integer.compare(left.order, right.order);
+    }
+
+    private int effectiveWeight(final FreePlotRule rule) {
+        if (rule.weight >= 0) {
+            return rule.weight;
+        }
+        final int luckPermsWeight = luckPermsGroupWeight(rule.groupName);
+        if (luckPermsWeight != NO_WEIGHT) {
+            return luckPermsWeight;
+        }
+        return rule.plots;
     }
 
     private boolean applyPlotPermissionLimit(final Player player, final int targetLimit) {
@@ -367,6 +418,36 @@ public final class PlotPurchaseService {
         }
     }
 
+    private int luckPermsGroupWeight(final String groupName) {
+        if (groupName == null || groupName.trim().isEmpty() || luckPermsGroupManager == null) {
+            return NO_WEIGHT;
+        }
+        try {
+            final Method getGroupMethod = luckPermsGroupManager.getClass().getMethod("getGroup", String.class);
+            final Object group = getGroupMethod.invoke(luckPermsGroupManager, groupName.trim());
+            if (group == null) {
+                return NO_WEIGHT;
+            }
+            final Method getWeightMethod = group.getClass().getMethod("getWeight");
+            final Object optionalWeight = getWeightMethod.invoke(group);
+            if (optionalWeight == null) {
+                return NO_WEIGHT;
+            }
+            final Method isPresentMethod = optionalWeight.getClass().getMethod("isPresent");
+            final Object present = isPresentMethod.invoke(optionalWeight);
+            if (!(present instanceof Boolean) || !(Boolean) present) {
+                return NO_WEIGHT;
+            }
+            final Method getAsIntMethod = optionalWeight.getClass().getMethod("getAsInt");
+            final Object weight = getAsIntMethod.invoke(optionalWeight);
+            return weight instanceof Number ? ((Number) weight).intValue() : NO_WEIGHT;
+        } catch (final ReflectiveOperationException exception) {
+            plugin.getLogger().fine("LuckPerms-Gewichtung fuer Gruppe '" + groupName + "' konnte nicht gelesen werden: "
+                    + exception.getMessage());
+            return NO_WEIGHT;
+        }
+    }
+
     private boolean hasPurchasePermission(final Player player) {
         return purchasePermission == null || purchasePermission.trim().isEmpty() || player.hasPermission(purchasePermission.trim());
     }
@@ -431,6 +512,47 @@ public final class PlotPurchaseService {
             permissionPlayerRemoveMethod = permissionClass.getMethod("playerRemove", String.class, OfflinePlayer.class, String.class);
         } catch (final ClassNotFoundException | NoSuchMethodException exception) {
             plugin.getLogger().fine("Vault-Permissions sind fuer Plotkaeufe nicht verfuegbar: " + exception.getMessage());
+        }
+    }
+
+    private void setupLuckPerms() {
+        luckPermsGroupManager = null;
+        try {
+            final Class<?> luckPermsClass = Class.forName("net.luckperms.api.LuckPerms");
+            @SuppressWarnings({"rawtypes", "unchecked"})
+            final RegisteredServiceProvider<?> registration = Bukkit.getServicesManager().getRegistration((Class) luckPermsClass);
+            if (registration == null) {
+                return;
+            }
+            final Object luckPerms = registration.getProvider();
+            final Method getGroupManagerMethod = luckPermsClass.getMethod("getGroupManager");
+            luckPermsGroupManager = getGroupManagerMethod.invoke(luckPerms);
+        } catch (final ReflectiveOperationException exception) {
+            plugin.getLogger().fine("LuckPerms-Gruppengewichtungen sind fuer Plotkaeufe nicht verfuegbar: "
+                    + exception.getMessage());
+        }
+    }
+
+    private static final class FreePlotRule {
+
+        private final String permission;
+        private final String groupName;
+        private final int weight;
+        private final int plots;
+        private final int order;
+
+        private FreePlotRule(
+                final String permission,
+                final String groupName,
+                final int weight,
+                final int plots,
+                final int order
+        ) {
+            this.permission = permission;
+            this.groupName = groupName;
+            this.weight = weight;
+            this.plots = plots;
+            this.order = order;
         }
     }
 
