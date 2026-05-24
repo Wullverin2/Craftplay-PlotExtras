@@ -5,7 +5,7 @@
 # Der Befehl plot-deco:<befehl> prüft zuerst, ob der Spieler auf seinem eigenen Plot steht
 # oder über eine passende Plotrolle/Rechte verfügt, und führt danach den PlotSquared-Befehl aus.
 
-file-version: 2
+file-version: 3
 
 title: "&8Deko: {tab} - {subtab}"
 size: 54
@@ -38,6 +38,8 @@ tabs:
     lore: ["&7Wähle Kategorien", "&7für die Plotwand."]
     permission: "craftplayplotextras.deco"
     default-subtab: basic
+    buttons:
+      reset: {enabled: true, slot: 8, material: CAULDRON, name: "&eWand zurücksetzen", lore: ["&7Setzt die Plotwand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:wall"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
     subtabs:
       basic:
         enabled: true
@@ -108,6 +110,8 @@ tabs:
     lore: ["&7Wähle Kategorien", "&7für den Plotrand."]
     permission: "craftplayplotextras.deco"
     default-subtab: basic
+    buttons:
+      reset: {enabled: true, slot: 8, material: STONE_SLAB, name: "&eRand zurücksetzen", lore: ["&7Setzt den Plotrand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:border"], close: false, permission: "craftplayplotextras.deco.border.basic"}
     subtabs:
       basic:
         enabled: true
@@ -139,6 +143,35 @@ tabs:
           moss: {enabled: true, slot: 23, material: MOSS_BLOCK, name: "&aMoosrand", lore: ["&7Setzt den Plotrand auf Moos."], commands: ["plot-deco:plot set border moss_block"], close: false, permission: "craftplayplotextras.deco.border.natural"}
           grass: {enabled: true, slot: 24, material: GRASS_BLOCK, name: "&aGrasrand", lore: ["&7Setzt den Plotrand auf Grasblöcke."], commands: ["plot-deco:plot set border grass_block"], close: false, permission: "craftplayplotextras.deco.border.natural"}
           leaves: {enabled: true, slot: 25, material: OAK_LEAVES, name: "&aLaubrand", lore: ["&7Setzt den Plotrand auf Eichenlaub."], commands: ["plot-deco:plot set border oak_leaves"], close: false, permission: "craftplayplotextras.deco.border.natural"}
+      slabs:
+        enabled: true
+        slot: 14
+        material: SMOOTH_STONE_SLAB
+        name: "&aHalbstufen"
+        lore: ["&7Viele unterschiedliche", "&7Halbstufen für den Plotrand."]
+        permission: "craftplayplotextras.deco.border.basic"
+        buttons:
+          stone-slab: {enabled: true, slot: 19, material: STONE_SLAB, name: "&fSteinstufe", lore: ["&7Setzt den Plotrand auf Steinstufen."], commands: ["plot-deco:plot set border stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          smooth-stone-slab: {enabled: true, slot: 20, material: SMOOTH_STONE_SLAB, name: "&fGlatte Steinstufe", lore: ["&7Setzt den Plotrand auf glatte Steinstufen."], commands: ["plot-deco:plot set border smooth_stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          cobblestone-slab: {enabled: true, slot: 21, material: COBBLESTONE_SLAB, name: "&7Bruchsteinstufe", lore: ["&7Setzt den Plotrand auf Bruchsteinstufen."], commands: ["plot-deco:plot set border cobblestone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          mossy-cobblestone-slab: {enabled: true, slot: 22, material: MOSSY_COBBLESTONE_SLAB, name: "&2Moosbruchsteinstufe", lore: ["&7Setzt den Plotrand auf Moosbruchsteinstufen."], commands: ["plot-deco:plot set border mossy_cobblestone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          stone-brick-slab: {enabled: true, slot: 23, material: STONE_BRICK_SLAB, name: "&fSteinziegelstufe", lore: ["&7Setzt den Plotrand auf Steinziegelstufen."], commands: ["plot-deco:plot set border stone_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          mossy-stone-brick-slab: {enabled: true, slot: 24, material: MOSSY_STONE_BRICK_SLAB, name: "&2Moossteinziegelstufe", lore: ["&7Setzt den Plotrand auf Moossteinziegelstufen."], commands: ["plot-deco:plot set border mossy_stone_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          brick-slab: {enabled: true, slot: 25, material: BRICK_SLAB, name: "&cZiegelstufe", lore: ["&7Setzt den Plotrand auf Ziegelstufen."], commands: ["plot-deco:plot set border brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          andesite-slab: {enabled: true, slot: 28, material: ANDESITE_SLAB, name: "&7Andesitstufe", lore: ["&7Setzt den Plotrand auf Andesitstufen."], commands: ["plot-deco:plot set border andesite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          polished-andesite-slab: {enabled: true, slot: 29, material: POLISHED_ANDESITE_SLAB, name: "&7Polierte Andesitstufe", lore: ["&7Setzt den Plotrand auf polierte Andesitstufen."], commands: ["plot-deco:plot set border polished_andesite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          granite-slab: {enabled: true, slot: 30, material: GRANITE_SLAB, name: "&cGranitstufe", lore: ["&7Setzt den Plotrand auf Granitstufen."], commands: ["plot-deco:plot set border granite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          polished-granite-slab: {enabled: true, slot: 31, material: POLISHED_GRANITE_SLAB, name: "&cPolierte Granitstufe", lore: ["&7Setzt den Plotrand auf polierte Granitstufen."], commands: ["plot-deco:plot set border polished_granite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          diorite-slab: {enabled: true, slot: 32, material: DIORITE_SLAB, name: "&fDioritstufe", lore: ["&7Setzt den Plotrand auf Dioritstufen."], commands: ["plot-deco:plot set border diorite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          polished-diorite-slab: {enabled: true, slot: 33, material: POLISHED_DIORITE_SLAB, name: "&fPolierte Dioritstufe", lore: ["&7Setzt den Plotrand auf polierte Dioritstufen."], commands: ["plot-deco:plot set border polished_diorite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          sandstone-slab: {enabled: true, slot: 34, material: SANDSTONE_SLAB, name: "&eSandsteinstufe", lore: ["&7Setzt den Plotrand auf Sandsteinstufen."], commands: ["plot-deco:plot set border sandstone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          red-sandstone-slab: {enabled: true, slot: 37, material: RED_SANDSTONE_SLAB, name: "&6Rote Sandsteinstufe", lore: ["&7Setzt den Plotrand auf rote Sandsteinstufen."], commands: ["plot-deco:plot set border red_sandstone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          cut-sandstone-slab: {enabled: true, slot: 38, material: CUT_SANDSTONE_SLAB, name: "&eGeschnittene Sandsteinstufe", lore: ["&7Setzt den Plotrand auf geschnittene Sandsteinstufen."], commands: ["plot-deco:plot set border cut_sandstone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          cut-red-sandstone-slab: {enabled: true, slot: 39, material: CUT_RED_SANDSTONE_SLAB, name: "&6Geschnittene rote Sandsteinstufe", lore: ["&7Setzt den Plotrand auf geschnittene rote Sandsteinstufen."], commands: ["plot-deco:plot set border cut_red_sandstone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          nether-brick-slab: {enabled: true, slot: 40, material: NETHER_BRICK_SLAB, name: "&4Netherziegelstufe", lore: ["&7Setzt den Plotrand auf Netherziegelstufen."], commands: ["plot-deco:plot set border nether_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          red-nether-brick-slab: {enabled: true, slot: 41, material: RED_NETHER_BRICK_SLAB, name: "&4Rote Netherziegelstufe", lore: ["&7Setzt den Plotrand auf rote Netherziegelstufen."], commands: ["plot-deco:plot set border red_nether_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          blackstone-slab: {enabled: true, slot: 42, material: BLACKSTONE_SLAB, name: "&8Schwarzsteinstufe", lore: ["&7Setzt den Plotrand auf Schwarzsteinstufen."], commands: ["plot-deco:plot set border blackstone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          polished-blackstone-brick-slab: {enabled: true, slot: 43, material: POLISHED_BLACKSTONE_BRICK_SLAB, name: "&8Polierte Schwarzsteinziegelstufe", lore: ["&7Setzt den Plotrand auf polierte Schwarzsteinziegelstufen."], commands: ["plot-deco:plot set border polished_blackstone_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
       valuable:
         enabled: true
         slot: 12

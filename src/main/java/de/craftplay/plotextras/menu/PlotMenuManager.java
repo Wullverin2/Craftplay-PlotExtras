@@ -4380,6 +4380,11 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
+        if (command.toLowerCase(Locale.ROOT).startsWith("plot-deco-reset:")) {
+            runPlotDecoResetCommand(player, command.substring("plot-deco-reset:".length()).trim());
+            return;
+        }
+
         if (command.toLowerCase(Locale.ROOT).startsWith("plot-purchase:")) {
             runPlotPurchaseCommand(player, command.substring("plot-purchase:".length()).trim());
             return;
@@ -4449,10 +4454,38 @@ public final class PlotMenuManager implements Listener {
             languageManager.send(player, "chat-input-invalid");
             return;
         }
+        if (!canModifyCurrentPlotDeco(player)) {
+            return;
+        }
+        player.performCommand(command);
+    }
+
+    private void runPlotDecoResetCommand(final Player player, final String payload) {
+        final String component = payload == null ? "" : payload.trim().toLowerCase(Locale.ROOT);
+        if (!"wall".equals(component) && !"border".equals(component)) {
+            languageManager.send(player, "chat-input-invalid");
+            return;
+        }
+        if (!canModifyCurrentPlotDeco(player)) {
+            return;
+        }
+        final Optional<String> defaultComponent = flagService.defaultPlotComponent(player, component);
+        if (!defaultComponent.isPresent()) {
+            languageManager.send(player, "plot-deco-reset-failed");
+            return;
+        }
+        player.performCommand("plot set " + component + " " + defaultComponent.get());
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("component", languageManager.getMessage("plot-deco-component-" + component));
+        placeholders.put("value", defaultComponent.get());
+        languageManager.send(player, "plot-deco-reset-done", placeholders);
+    }
+
+    private boolean canModifyCurrentPlotDeco(final Player player) {
         final Optional<PlotContext> context = flagService.currentPlotContext(player);
         if (!context.isPresent() || !context.get().isComplete()) {
             languageManager.send(player, "no-plot");
-            return;
+            return false;
         }
         final UUID ownerUuid = context.get().getOwnerUuid();
         if (ownerUuid != null && ownerUuid.equals(player.getUniqueId())
@@ -4461,10 +4494,10 @@ public final class PlotMenuManager implements Listener {
                 || roleService.hasRolePermission(player, "deco")
                 || roleService.hasRolePermission(player, "plot-deco")
                 || roleService.hasRolePermission(player, "change-deco")) {
-            player.performCommand(command);
-            return;
+            return true;
         }
         languageManager.send(player, "no-permission");
+        return false;
     }
 
     private void runPlotDangerCommand(final Player player, final String payload) {

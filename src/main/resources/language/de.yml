@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 24
+file-version: 26
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -47,6 +47,14 @@ flag-no-permission: "&cDu darfst diese Plot-Flag nicht ändern."
 flag-no-plot-right: "&cDu darfst Flags nur auf deinem eigenen Plot ändern oder wenn dir eine Plotrolle dieses Recht gibt."
 # Nachricht nach dem Umschalten einer Flag. Platzhalter: {flag}, {status}
 flag-toggled: "&a{flag} &7ist jetzt {status}&7."
+# Nachricht, wenn Wand oder Rand auf den PlotSquared-Standard zurückgesetzt wurde. Platzhalter: {component}, {value}
+plot-deco-reset-done: "&aDeko zurückgesetzt: &f{component} &7auf &f{value}&7."
+# Nachricht, wenn der Standardwert für Wand oder Rand nicht aus PlotSquared gelesen werden konnte.
+plot-deco-reset-failed: "&cDer Standardwert konnte nicht aus PlotSquared gelesen werden."
+# Anzeigename für den Wand-Reset im Deko-Menü.
+plot-deco-component-wall: "Wand"
+# Anzeigename für den Rand-Reset im Deko-Menü.
+plot-deco-component-border: "Rand"
 # Nachricht, wenn Plotbackups deaktiviert sind.
 backup-disabled: "&cPlotbackups sind aktuell deaktiviert."
 # Nachricht, wenn WorldEdit oder FAWE fehlt.

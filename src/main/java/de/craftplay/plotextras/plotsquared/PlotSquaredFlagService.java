@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -135,6 +136,33 @@ public final class PlotSquaredFlagService {
         }
 
         return plotContext(plot, player.getWorld());
+    }
+
+    public Optional<String> defaultPlotComponent(final Player player, final String component) {
+        final Object plot = currentPlot(player);
+        final Object area = invokeNoArgs(plot, "getArea");
+        if (area == null) {
+            return Optional.empty();
+        }
+
+        final String normalized = component == null ? "" : component.trim().toLowerCase(Locale.ROOT);
+        final String fieldName;
+        final String fallbackFieldName;
+        if ("wall".equals(normalized)) {
+            fieldName = "WALL_FILLING";
+            fallbackFieldName = null;
+        } else if ("border".equals(normalized)) {
+            fieldName = "CLAIMED_WALL_BLOCK";
+            fallbackFieldName = "WALL_BLOCK";
+        } else {
+            return Optional.empty();
+        }
+
+        String value = defaultComponentValue(area, fieldName);
+        if ((value == null || value.trim().isEmpty()) && fallbackFieldName != null) {
+            value = defaultComponentValue(area, fallbackFieldName);
+        }
+        return value == null || value.trim().isEmpty() ? Optional.empty() : Optional.of(value.trim());
     }
 
     public Optional<PlotContext> plotContextAt(final Location location) {
@@ -546,6 +574,23 @@ public final class PlotSquaredFlagService {
             final Method method = target.getClass().getMethod(methodName);
             return method.invoke(target);
         } catch (final ReflectiveOperationException ignored) {
+            return null;
+        }
+    }
+
+    private String defaultComponentValue(final Object area, final String fieldName) {
+        final Object value = fieldValue(area, fieldName);
+        return value == null ? "" : value.toString();
+    }
+
+    private Object fieldValue(final Object target, final String fieldName) {
+        if (target == null || fieldName == null || fieldName.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            final Field field = target.getClass().getField(fieldName);
+            return field.get(target);
+        } catch (final NoSuchFieldException | IllegalAccessException ignored) {
             return null;
         }
     }
