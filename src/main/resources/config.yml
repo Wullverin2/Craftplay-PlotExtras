@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 21
+file-version: 22
 
 # Befehle dieses Plugins.
 command:
@@ -527,6 +527,18 @@ passive-wither:
     # Wenn true, werden Items, die nicht mehr in die Truhe passen, neben der Truhe gedroppt.
     # Wenn false, gehen überzählige Items verloren.
     drop-overflow: true
+  performance:
+    # Intervall in Sekunden, in dem laufende Passive-Wither-Cooldowns gesammelt gespeichert werden.
+    # Höhere Werte senken Plattenzugriffe, können nach einem Servercrash aber wenige Sekunden Fortschritt verlieren.
+    data-flush-interval-seconds: 30.0
+    # Intervall in Ticks, in dem Passive Wither geprüft und stationär gehalten werden.
+    # Niedrigere Werte reagieren schneller, höhere Werte sparen Tickzeit bei vielen Withern.
+    maintenance-interval-ticks: 5
+    # Intervall in Ticks für vollständige Entity-Scans aller Welten.
+    # Diese Scans sind teurer und müssen normalerweise nicht jede Sekunde laufen.
+    full-scan-interval-ticks: 200
+    # Intervall in Ticks für die Sound-Unterdrückung bei Spielern, die Passive-Wither-Sounds deaktiviert haben.
+    sound-suppression-interval-ticks: 5
   economy:
     # Wenn true, wird der Kaufpreis über Vault/CMI-Economy abgebucht.
     enabled: true

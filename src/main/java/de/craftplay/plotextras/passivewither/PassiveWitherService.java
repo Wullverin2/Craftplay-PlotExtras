@@ -5,6 +5,7 @@ import com.plotsquared.core.plot.flag.GlobalFlagContainer;
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
 import de.craftplay.plotextras.util.Text;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -121,11 +122,16 @@ public final class PassiveWitherService implements Listener {
     private boolean dropOverflow;
     private Location configuredDropInventoryLocation;
     private long explosionCooldownMillis;
+    private boolean passiveWitherDataDirty;
+    private long nextPassiveWitherDataFlushAtMillis;
+    private long passiveWitherDataFlushIntervalMillis = 30000L;
     private long nextBlockDestructionAllowedAtMillis;
     private long blockDestructionBatchUntilMillis;
     private UUID activeBlockDestructionSourceId;
     private long globalSoundSuppressionUntilMillis;
-    private int soundSuppressTicks;
+    private int passiveWitherMaintenanceIntervalTicks = 5;
+    private int passiveWitherFullScanIntervalTicks = 200;
+    private int passiveWitherSoundSuppressionIntervalTicks = 5;
     private int passiveWitherMaintenanceTicks;
     private BukkitTask soundSuppressTask;
     private BukkitTask passiveWitherMaintenanceTask;
@@ -149,8 +155,20 @@ public final class PassiveWitherService implements Listener {
     }
 
     public void reload() {
+        flushPassiveWitherData(true);
         enabled = plugin.getConfig().getBoolean("passive-wither.enabled", true);
         dataFile = plugin.getConfig().getString("passive-wither.data-file", "passivewither.yml");
+        passiveWitherDataFlushIntervalMillis = Math.max(1000L, Math.round(plugin.getConfig()
+                .getDouble("passive-wither.performance.data-flush-interval-seconds", 30.0D) * 1000.0D));
+        passiveWitherMaintenanceIntervalTicks = Math.max(1, plugin.getConfig()
+                .getInt("passive-wither.performance.maintenance-interval-ticks", 5));
+        passiveWitherFullScanIntervalTicks = Math.max(passiveWitherMaintenanceIntervalTicks, plugin.getConfig()
+                .getInt("passive-wither.performance.full-scan-interval-ticks", 200));
+        passiveWitherSoundSuppressionIntervalTicks = Math.max(1, plugin.getConfig()
+                .getInt("passive-wither.performance.sound-suppression-interval-ticks", 5));
+        passiveWitherDataDirty = false;
+        nextPassiveWitherDataFlushAtMillis = System.currentTimeMillis() + passiveWitherDataFlushIntervalMillis;
+        passiveWitherMaintenanceTicks = 0;
         data = plugin.getStorageService().load("passivewither", dataFile);
         if (data.getInt("file-version", 0) < 3) {
             data.set("file-version", 3);
@@ -194,6 +212,7 @@ public final class PassiveWitherService implements Listener {
             soundPacketHook.disable();
             soundPacketHook = null;
         }
+        flushPassiveWitherData(true);
         passiveWitherEntityIds.clear();
         scheduledExplosions.clear();
         pendingChestLinks.clear();
@@ -1018,7 +1037,7 @@ public final class PassiveWitherService implements Listener {
         passiveWitherNextExplosions.put(witherId, nextExplosionAt);
         if (data != null) {
             data.set("withers." + witherId + ".next-explosion-at", nextExplosionAt);
-            saveData();
+            markPassiveWitherDataDirty();
         }
     }
 
@@ -1315,17 +1334,33 @@ public final class PassiveWitherService implements Listener {
         final int centerX = location.getBlockX();
         final int centerY = location.getBlockY();
         final int centerZ = location.getBlockZ();
+        final int minX = centerX - nearestInventoryRadius;
+        final int maxX = centerX + nearestInventoryRadius;
         final int minY = Math.max(0, centerY - nearestInventoryRadius);
         final int maxY = Math.min(world.getMaxHeight() - 1, centerY + nearestInventoryRadius);
-        for (int x = centerX - nearestInventoryRadius; x <= centerX + nearestInventoryRadius; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                for (int z = centerZ - nearestInventoryRadius; z <= centerZ + nearestInventoryRadius; z++) {
-                    final Block block = world.getBlockAt(x, y, z);
-                    if (ignoredBlocks.contains(blockKey(block))) {
+        final int minZ = centerZ - nearestInventoryRadius;
+        final int maxZ = centerZ + nearestInventoryRadius;
+        final int minChunkX = Math.floorDiv(minX, 16);
+        final int maxChunkX = Math.floorDiv(maxX, 16);
+        final int minChunkZ = Math.floorDiv(minZ, 16);
+        final int maxChunkZ = Math.floorDiv(maxZ, 16);
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                if (!world.isChunkLoaded(chunkX, chunkZ)) {
+                    continue;
+                }
+                final Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+                for (final BlockState state : chunk.getTileEntities()) {
+                    if (!(state instanceof InventoryHolder)) {
                         continue;
                     }
-                    final BlockState state = block.getState();
-                    if (!(state instanceof InventoryHolder)) {
+                    final Block block = state.getBlock();
+                    if (block.getX() < minX || block.getX() > maxX
+                            || block.getY() < minY || block.getY() > maxY
+                            || block.getZ() < minZ || block.getZ() > maxZ) {
+                        continue;
+                    }
+                    if (ignoredBlocks.contains(blockKey(block))) {
                         continue;
                     }
                     final double distance = block.getLocation().add(0.5D, 0.5D, 0.5D).distanceSquared(location);
@@ -1529,18 +1564,21 @@ public final class PassiveWitherService implements Listener {
         if (!enabled) {
             return;
         }
-        soundSuppressTask = plugin.getServer().getScheduler().runTaskTimer(plugin, this::runSoundSuppressionTick, 1L, 1L);
-        passiveWitherMaintenanceTask = plugin.getServer().getScheduler().runTaskTimer(plugin, this::runPassiveWitherMaintenanceTick, 1L, 1L);
+        soundSuppressTask = plugin.getServer().getScheduler().runTaskTimer(plugin,
+                this::runSoundSuppressionTick, 1L, passiveWitherSoundSuppressionIntervalTicks);
+        passiveWitherMaintenanceTask = plugin.getServer().getScheduler().runTaskTimer(plugin,
+                this::runPassiveWitherMaintenanceTick, 1L, passiveWitherMaintenanceIntervalTicks);
     }
 
     private void runPassiveWitherMaintenanceTick() {
-        passiveWitherMaintenanceTicks++;
-        if (passiveWitherMaintenanceTicks >= 20) {
+        passiveWitherMaintenanceTicks += passiveWitherMaintenanceIntervalTicks;
+        if (passiveWitherMaintenanceTicks >= passiveWitherFullScanIntervalTicks) {
             passiveWitherMaintenanceTicks = 0;
             refreshPassiveWitherEntityIds();
         }
 
         final long now = System.currentTimeMillis();
+        flushPassiveWitherDataIfDue(now);
         scheduledExplosions.removeIf(marker -> marker.expiresAtMillis < now);
         for (final UUID witherId : new HashSet<>(passiveWitherOwners.keySet())) {
             final Entity entity = Bukkit.getEntity(witherId);
@@ -1659,11 +1697,6 @@ public final class PassiveWitherService implements Listener {
             return;
         }
         final long now = System.currentTimeMillis();
-        soundSuppressTicks++;
-        if (soundSuppressTicks >= 20) {
-            soundSuppressTicks = 0;
-            refreshPassiveWitherEntityIds();
-        }
         final boolean suppressGlobally = now <= globalSoundSuppressionUntilMillis;
         activeSoundSuppressions.removeIf(area -> area.expiresAtMillis < now);
         activeBlockBreakSoundSuppressions.removeIf(area -> area.expiresAtMillis < now);
@@ -1676,8 +1709,19 @@ public final class PassiveWitherService implements Listener {
     }
 
     private boolean isNearPassiveWither(final Player player) {
-        for (final Entity entity : player.getNearbyEntities(PASSIVE_WITHER_SOUND_RADIUS, PASSIVE_WITHER_SOUND_RADIUS, PASSIVE_WITHER_SOUND_RADIUS)) {
-            if (isPassiveWither(entity)) {
+        final Location playerLocation = player.getLocation();
+        final World world = playerLocation.getWorld();
+        if (world == null) {
+            return false;
+        }
+        final double radiusSquared = PASSIVE_WITHER_SOUND_RADIUS * PASSIVE_WITHER_SOUND_RADIUS;
+        for (final UUID witherId : passiveWitherOwners.keySet()) {
+            final Entity entity = Bukkit.getEntity(witherId);
+            if (entity != null
+                    && entity.isValid()
+                    && isPassiveWither(entity)
+                    && entity.getWorld().getUID().equals(world.getUID())
+                    && entity.getLocation().distanceSquared(playerLocation) <= radiusSquared) {
                 return true;
             }
         }
@@ -1927,8 +1971,36 @@ public final class PassiveWitherService implements Listener {
         plugin.getLanguageManager().send(sender, "passive-wither-chest-usage", placeholders);
     }
 
+    private void markPassiveWitherDataDirty() {
+        passiveWitherDataDirty = true;
+        if (nextPassiveWitherDataFlushAtMillis <= 0L) {
+            nextPassiveWitherDataFlushAtMillis = System.currentTimeMillis() + passiveWitherDataFlushIntervalMillis;
+        }
+    }
+
+    private void flushPassiveWitherDataIfDue(final long now) {
+        if (passiveWitherDataDirty && now >= nextPassiveWitherDataFlushAtMillis) {
+            saveData();
+        }
+    }
+
+    private void flushPassiveWitherData(final boolean force) {
+        if (!passiveWitherDataDirty || data == null) {
+            return;
+        }
+        final long now = System.currentTimeMillis();
+        if (force || now >= nextPassiveWitherDataFlushAtMillis) {
+            saveData();
+        }
+    }
+
     private void saveData() {
+        if (data == null) {
+            return;
+        }
         plugin.getStorageService().save("passivewither", dataFile, data);
+        passiveWitherDataDirty = false;
+        nextPassiveWitherDataFlushAtMillis = System.currentTimeMillis() + passiveWitherDataFlushIntervalMillis;
     }
 
     private static boolean isPassiveWitherFallbackMutedSound(final Sound sound) {
