@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 28
+file-version: 29
 
 # Befehle dieses Plugins.
 command:
@@ -238,15 +238,11 @@ my-plots:
 plot-purchase:
   # Wenn false, ist das komplette Plotkauf-Menü deaktiviert.
   enabled: true
-  # Datendatei für die pro Spieler gekaufte Plotanzahl. Je nach storage.type wird diese Datei in YAML, SQL, Redis oder MongoDB gespiegelt.
-  data-file: plotpurchase.yml
-  # Verzögerung in Ticks, mit der Änderungen gesammelt gespeichert werden.
-  save-delay-ticks: 40
   # Wenn true, wird ein erfolgreicher Kauf in die Konsole geschrieben.
   logging: true
   # Permission, die Spieler brauchen, damit der Button im Hauptmenü und das Kaufmenü sichtbar/nutzbar sind.
   purchase-permission: "craftplayplotextras.plotbuy"
-  # PlotSquared-Permission-Präfix. Das Plugin setzt daraus z. B. plots.plot.10.
+  # PlotSquared-Permission-Präfix. Das Plugin setzt gekaufte Limits wie LostPlots direkt als Spielerpermission, z. B. plots.plot.10.
   plot-permission-prefix: "plots.plot."
   # Anzahl kostenloser Plots, die jeder Spieler mindestens bekommt, auch ohne Gratis-Permission.
   base-free-plots: 0

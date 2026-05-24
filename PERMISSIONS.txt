@@ -28,7 +28,7 @@ Gibt frei: Öffnen des Meine-Plots-Menüs.
 Permission: craftplayplotextras.plotbuy
 Zielgruppe: Spieler / Rang
 Default: false
-Gibt frei: Sichtbarkeit und Nutzung des Plotlimit-Kaufmenüs.
+Gibt frei: Sichtbarkeit und Nutzung des Plotlimit-Kaufmenüs. Beim Kauf wird das neue Limit wie bei LostPlots als Spielerpermission plots.plot.<anzahl> beim kaufenden Spieler gesetzt.
 
 Permission: craftplayplotextras.plots.free.<rang>
 Zielgruppe: Spieler / Rang

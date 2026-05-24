@@ -5,11 +5,9 @@ import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -23,17 +21,10 @@ import java.util.logging.Level;
 
 public final class PlotPurchaseService {
 
-    private static final String NAMESPACE = "plotpurchase";
-
     private final CraftplayPlotExtrasPlugin plugin;
     private final PlotSquaredPlotService plotService;
     private final Map<UUID, Integer> selectedAmounts = new HashMap<>();
     private final Map<String, Integer> freePermissionLimits = new LinkedHashMap<>();
-
-    private YamlConfiguration data;
-    private String dataFile;
-    private BukkitTask saveTask;
-    private boolean dirty;
 
     private boolean enabled;
     private boolean logging;
@@ -44,7 +35,6 @@ public final class PlotPurchaseService {
     private int baseFreePlots;
     private int defaultSelection;
     private int maximumSelection;
-    private long saveDelayTicks;
     private double pricePerPlot;
 
     private Object economy;
@@ -63,7 +53,6 @@ public final class PlotPurchaseService {
     }
 
     public void reload() {
-        flushSave();
         selectedAmounts.clear();
         freePermissionLimits.clear();
 
@@ -76,24 +65,15 @@ public final class PlotPurchaseService {
         baseFreePlots = Math.max(0, plugin.getConfig().getInt("plot-purchase.base-free-plots", 0));
         defaultSelection = Math.max(1, plugin.getConfig().getInt("plot-purchase.default-selection", 1));
         maximumSelection = Math.max(defaultSelection, plugin.getConfig().getInt("plot-purchase.maximum-selection", 100));
-        saveDelayTicks = Math.max(1L, plugin.getConfig().getLong("plot-purchase.save-delay-ticks", 40L));
         pricePerPlot = Math.max(0.0D, plugin.getConfig().getDouble("plot-purchase.plot-price", 50000.0D));
-        dataFile = plugin.getConfig().getString("plot-purchase.data-file", "plotpurchase.yml");
 
         loadFreePermissions();
-        data = plugin.getStorageService().load(NAMESPACE, dataFile);
-        dirty = false;
-        if (data.getInt("file-version", 0) < 1) {
-            data.set("file-version", 1);
-            dirty = true;
-            saveNow();
-        }
         setupEconomy();
         setupPermissions();
     }
 
     public void shutdown() {
-        flushSave();
+        selectedAmounts.clear();
     }
 
     public boolean isEnabled() {
@@ -120,14 +100,12 @@ public final class PlotPurchaseService {
     }
 
     public PurchaseSnapshot snapshot(final Player player) {
-        importLegacyPurchaseIfNeeded(player);
-        synchronizeLimit(player);
         final int selected = selectedAmount(player);
         final int freePlots = freePlots(player);
-        final int purchasedPlots = purchasedPlots(player.getUniqueId());
-        final int allowedPlots = freePlots + purchasedPlots;
         final int permissionLimit = highestPlotPermissionLimit(player);
         final int claimedPlots = plotService.ownedPlots(player).size();
+        final int allowedPlots = Math.max(Math.max(freePlots, permissionLimit), claimedPlots);
+        final int purchasedPlots = Math.max(0, allowedPlots - freePlots);
         final double singlePrice = discountedPricePerPlot(player);
         final double totalPrice = Math.max(0.0D, singlePrice * selected);
         return new PurchaseSnapshot(
@@ -167,15 +145,13 @@ public final class PlotPurchaseService {
             return false;
         }
 
-        final int newPurchasedPlots = before.getPurchasedPlots() + amount;
-        final int newAllowedPlots = before.getFreePlots() + newPurchasedPlots;
+        final int newAllowedPlots = before.getAllowedPlots() + amount;
         if (!applyPlotPermissionLimit(player, newAllowedPlots)) {
             refund(player, before.getTotalPrice());
             plugin.getLanguageManager().send(player, "plotbuy-permission-update-failed", placeholders);
             return false;
         }
 
-        setPurchasedPlots(player.getUniqueId(), player.getName(), newPurchasedPlots);
         selectedAmounts.put(player.getUniqueId(), clampSelection(defaultSelection));
         final PurchaseSnapshot after = snapshot(player);
         final Map<String, String> successPlaceholders = placeholders(player, after);
@@ -241,43 +217,6 @@ public final class PlotPurchaseService {
             }
         }
         return plots;
-    }
-
-    private int purchasedPlots(final UUID uuid) {
-        return Math.max(0, data.getInt(userPath(uuid) + ".purchased-plots", 0));
-    }
-
-    private void setPurchasedPlots(final UUID uuid, final String playerName, final int purchasedPlots) {
-        final String path = userPath(uuid);
-        data.set(path + ".name", playerName);
-        data.set(path + ".purchased-plots", Math.max(0, purchasedPlots));
-        data.set(path + ".updated", System.currentTimeMillis());
-        save();
-    }
-
-    private void importLegacyPurchaseIfNeeded(final Player player) {
-        final String path = userPath(player.getUniqueId());
-        if (data.contains(path + ".purchased-plots")) {
-            return;
-        }
-        final int currentLimit = highestPlotPermissionLimit(player);
-        final int freePlots = freePlots(player);
-        final int purchasedPlots = Math.max(0, currentLimit - freePlots);
-        data.set(path + ".name", player.getName());
-        data.set(path + ".purchased-plots", purchasedPlots);
-        data.set(path + ".legacy-imported", true);
-        data.set(path + ".legacy-permission-limit", currentLimit);
-        data.set(path + ".updated", System.currentTimeMillis());
-        save();
-    }
-
-    private boolean synchronizeLimit(final Player player) {
-        final int targetLimit = freePlots(player) + purchasedPlots(player.getUniqueId());
-        final int currentLimit = highestPlotPermissionLimit(player);
-        if (currentLimit == targetLimit && player.hasPermission(plotPermissionPrefix + targetLimit)) {
-            return true;
-        }
-        return applyPlotPermissionLimit(player, targetLimit);
     }
 
     private boolean applyPlotPermissionLimit(final Player player, final int targetLimit) {
@@ -492,33 +431,6 @@ public final class PlotPurchaseService {
             permissionPlayerRemoveMethod = permissionClass.getMethod("playerRemove", String.class, OfflinePlayer.class, String.class);
         } catch (final ClassNotFoundException | NoSuchMethodException exception) {
             plugin.getLogger().fine("Vault-Permissions sind fuer Plotkaeufe nicht verfuegbar: " + exception.getMessage());
-        }
-    }
-
-    private String userPath(final UUID uuid) {
-        return "players." + uuid.toString();
-    }
-
-    private void save() {
-        dirty = true;
-        if (saveTask != null) {
-            return;
-        }
-        saveTask = Bukkit.getScheduler().runTaskLater(plugin, this::flushSave, saveDelayTicks);
-    }
-
-    private void saveNow() {
-        plugin.getStorageService().save(NAMESPACE, dataFile, data);
-        dirty = false;
-    }
-
-    private void flushSave() {
-        if (saveTask != null) {
-            saveTask.cancel();
-            saveTask = null;
-        }
-        if (dirty && data != null) {
-            saveNow();
         }
     }
 

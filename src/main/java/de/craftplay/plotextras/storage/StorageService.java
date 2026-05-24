@@ -95,7 +95,6 @@ public final class StorageService {
     public List<StorageNamespace> namespaces() {
         final List<StorageNamespace> namespaces = new ArrayList<>();
         namespaces.add(new StorageNamespace("plotdata", plugin.getConfig().getString("my-plots.data-file", "plotdata.yml")));
-        namespaces.add(new StorageNamespace("plotpurchase", plugin.getConfig().getString("plot-purchase.data-file", "plotpurchase.yml")));
         namespaces.add(new StorageNamespace("reports", plugin.getConfig().getString("reports.data-file", "reports.yml")));
         namespaces.add(new StorageNamespace("plotroles", plugin.getConfig().getString("roles.data-file", "plotroles.yml")));
         namespaces.add(new StorageNamespace("teamdata", plugin.getConfig().getString("team-features.data-file", "teamdata.yml")));
