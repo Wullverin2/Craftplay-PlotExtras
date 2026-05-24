@@ -6,7 +6,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 7
+file-version: 8
 
 # Wenn false, wird dieses Bedrock-Menü nicht geladen.
 enabled: true
@@ -161,6 +161,14 @@ buttons:
       - "open-menu:extras"
     close: false
     permission: ""
+  plot-purchase:
+    enabled: true
+    order: 128
+    label: "Plotlimit kaufen"
+    commands:
+      - "open-menu:plot-purchase"
+    close: false
+    permission: "craftplayplotextras.plotbuy"
   future:
     enabled: true
     order: 135

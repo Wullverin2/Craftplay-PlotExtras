@@ -12,6 +12,7 @@ import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.myplots.PlotComment;
 import de.craftplay.plotextras.myplots.PlotDataStore;
 import de.craftplay.plotextras.myplots.PlotMetadata;
+import de.craftplay.plotextras.plotpurchase.PlotPurchaseService;
 import de.craftplay.plotextras.plotsquared.OwnedPlot;
 import de.craftplay.plotextras.plotsquared.PlotContext;
 import de.craftplay.plotextras.plotsquared.PlotMemberEntry;
@@ -72,6 +73,7 @@ public final class PlotMenuManager implements Listener {
     private final PlotFutureService futureService;
     private final TeamFeatureService teamFeatureService;
     private final ExtrasService extrasService;
+    private final PlotPurchaseService plotPurchaseService;
     private final HeadDatabaseHook headDatabaseHook;
     private final PlaceholderHook placeholderHook;
     private final FloodgateHook floodgateHook;
@@ -107,6 +109,10 @@ public final class PlotMenuManager implements Listener {
     private final Map<Integer, MenuButton> rolePermissionListButtonsBySlot = new HashMap<>();
     private final Map<Integer, MenuButton> rolePermissionListDecorationsBySlot = new HashMap<>();
     private final List<RolePermissionTemplate> rolePermissionTemplates = new ArrayList<>();
+    private final Map<Integer, MenuButton> plotPurchaseButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> plotPurchaseDecorationsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> plotPurchaseConfirmButtonsBySlot = new HashMap<>();
+    private final Map<Integer, MenuButton> plotPurchaseConfirmDecorationsBySlot = new HashMap<>();
 
     private String mainTitle;
     private int mainSize;
@@ -225,6 +231,16 @@ public final class PlotMenuManager implements Listener {
     private int rolePermissionListSize;
     private ItemStack rolePermissionListFiller;
     private List<Integer> rolePermissionListSlots;
+    private String plotPurchaseTitle;
+    private int plotPurchaseSize;
+    private ItemStack plotPurchaseFiller;
+    private boolean plotPurchaseLoaded;
+    private String plotPurchaseConfirmTitle;
+    private int plotPurchaseConfirmSize;
+    private ItemStack plotPurchaseConfirmFiller;
+    private boolean plotPurchaseBedrockEnabled;
+    private String plotPurchaseBedrockTitle;
+    private String plotPurchaseBedrockContent;
 
     public PlotMenuManager(
             final CraftplayPlotExtrasPlugin plugin,
@@ -237,7 +253,8 @@ public final class PlotMenuManager implements Listener {
             final PlotRoleService roleService,
             final PlotFutureService futureService,
             final TeamFeatureService teamFeatureService,
-            final ExtrasService extrasService
+            final ExtrasService extrasService,
+            final PlotPurchaseService plotPurchaseService
     ) {
         this.plugin = plugin;
         this.languageManager = languageManager;
@@ -250,6 +267,7 @@ public final class PlotMenuManager implements Listener {
         this.futureService = futureService;
         this.teamFeatureService = teamFeatureService;
         this.extrasService = extrasService;
+        this.plotPurchaseService = plotPurchaseService;
         this.headDatabaseHook = new HeadDatabaseHook(plugin);
         this.placeholderHook = new PlaceholderHook(plugin);
         this.floodgateHook = new FloodgateHook(plugin);
@@ -287,6 +305,10 @@ public final class PlotMenuManager implements Listener {
         rolePermissionListButtonsBySlot.clear();
         rolePermissionListDecorationsBySlot.clear();
         rolePermissionTemplates.clear();
+        plotPurchaseButtonsBySlot.clear();
+        plotPurchaseDecorationsBySlot.clear();
+        plotPurchaseConfirmButtonsBySlot.clear();
+        plotPurchaseConfirmDecorationsBySlot.clear();
         mainLoaded = false;
         bedrockMainLoaded = false;
         myPlotsLoaded = false;
@@ -297,6 +319,7 @@ public final class PlotMenuManager implements Listener {
         settingsLoaded = false;
         teamLoaded = false;
         backupListLoaded = false;
+        plotPurchaseLoaded = false;
 
         final YamlConfiguration menuConfig = loadMenuConfig(plugin.getConfig().getString("gui.main-menu", "main.yml"));
         if (menuConfig == null) {
@@ -333,6 +356,7 @@ public final class PlotMenuManager implements Listener {
 
         loadMyPlotsMenus();
         loadActionMenus();
+        loadPlotPurchaseMenu();
 
         final YamlConfiguration flagsConfig = loadMenuConfig(plugin.getConfig().getString("gui.flags-menu", "flags.yml"));
         if (flagsConfig == null) {
@@ -701,6 +725,143 @@ public final class PlotMenuManager implements Listener {
         }
         final String title = Text.color(placeholderHook.apply(player, applyPlaceholders(menu.getBedrockTitle(), placeholders)));
         final String content = Text.color(placeholderHook.apply(player, applyPlaceholders(menu.getBedrockContent(), placeholders)));
+        return floodgateHook.sendSimpleForm(player, title, content, labels, clickedButton -> {
+            if (clickedButton < 0 || clickedButton >= actions.size()) {
+                return;
+            }
+            Bukkit.getScheduler().runTask(plugin, actions.get(clickedButton));
+        });
+    }
+
+    public void openPlotPurchaseMenu(final Player player) {
+        if (!plotPurchaseService.canUse(player)) {
+            languageManager.send(player, plotPurchaseService.isEnabled() ? "no-permission" : "plotbuy-disabled");
+            return;
+        }
+        if (!plotPurchaseLoaded) {
+            languageManager.send(player, "menu-missing");
+            return;
+        }
+        if (floodgateHook.isBedrockPlayer(player) && plotPurchaseBedrockEnabled) {
+            if (openBedrockPlotPurchaseMenu(player)) {
+                return;
+            }
+        }
+        final Map<String, String> placeholders = plotPurchaseService.placeholders(player);
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("plot-purchase"),
+                plotPurchaseSize,
+                Text.color(placeholderHook.apply(player, applyPlaceholders(plotPurchaseTitle, placeholders)))
+        );
+        if (plotPurchaseFiller != null) {
+            for (int slot = 0; slot < plotPurchaseSize; slot++) {
+                inventory.setItem(slot, plotPurchaseFiller);
+            }
+        }
+        for (final MenuButton decoration : plotPurchaseDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
+            }
+        }
+        for (final MenuButton button : plotPurchaseButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, placeholders));
+            }
+        }
+        openAnimatedInventory(player, inventory, plotPurchaseFiller);
+    }
+
+    public void openPlotPurchaseConfirmMenu(final Player player) {
+        if (!plotPurchaseService.canUse(player)) {
+            languageManager.send(player, plotPurchaseService.isEnabled() ? "no-permission" : "plotbuy-disabled");
+            return;
+        }
+        if (!plotPurchaseLoaded) {
+            languageManager.send(player, "menu-missing");
+            return;
+        }
+        if (floodgateHook.isBedrockPlayer(player) && plotPurchaseBedrockEnabled) {
+            if (openBedrockPlotPurchaseConfirmMenu(player)) {
+                return;
+            }
+        }
+        final Map<String, String> placeholders = plotPurchaseService.placeholders(player);
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("plot-purchase-confirm"),
+                plotPurchaseConfirmSize,
+                Text.color(placeholderHook.apply(player, applyPlaceholders(plotPurchaseConfirmTitle, placeholders)))
+        );
+        if (plotPurchaseConfirmFiller != null) {
+            for (int slot = 0; slot < plotPurchaseConfirmSize; slot++) {
+                inventory.setItem(slot, plotPurchaseConfirmFiller);
+            }
+        }
+        for (final MenuButton decoration : plotPurchaseConfirmDecorationsBySlot.values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
+            }
+        }
+        for (final MenuButton button : plotPurchaseConfirmButtonsBySlot.values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, placeholders));
+            }
+        }
+        openAnimatedInventory(player, inventory, plotPurchaseConfirmFiller);
+    }
+
+    private boolean openBedrockPlotPurchaseMenu(final Player player) {
+        final Map<String, String> placeholders = plotPurchaseService.placeholders(player);
+        final List<String> labels = new ArrayList<>();
+        final List<Runnable> actions = new ArrayList<>();
+        labels.add(Text.color("&a+1"));
+        actions.add(() -> {
+            plotPurchaseService.adjustSelection(player, 1);
+            openPlotPurchaseMenu(player);
+        });
+        labels.add(Text.color("&a+10"));
+        actions.add(() -> {
+            plotPurchaseService.adjustSelection(player, 10);
+            openPlotPurchaseMenu(player);
+        });
+        labels.add(Text.color("&c-1"));
+        actions.add(() -> {
+            plotPurchaseService.adjustSelection(player, -1);
+            openPlotPurchaseMenu(player);
+        });
+        labels.add(Text.color("&c-10"));
+        actions.add(() -> {
+            plotPurchaseService.adjustSelection(player, -10);
+            openPlotPurchaseMenu(player);
+        });
+        labels.add(Text.color(text("plotbuy-bedrock-confirm", "&aKaufen")));
+        actions.add(() -> openPlotPurchaseConfirmMenu(player));
+        labels.add(Text.color(text("community-back", "&eZurück")));
+        actions.add(() -> openMenu(player));
+        final String title = Text.color(placeholderHook.apply(player, applyPlaceholders(plotPurchaseBedrockTitle, placeholders)));
+        final String content = Text.color(placeholderHook.apply(player, applyPlaceholders(plotPurchaseBedrockContent, placeholders)));
+        return floodgateHook.sendSimpleForm(player, title, content, labels, clickedButton -> {
+            if (clickedButton < 0 || clickedButton >= actions.size()) {
+                return;
+            }
+            Bukkit.getScheduler().runTask(plugin, actions.get(clickedButton));
+        });
+    }
+
+    private boolean openBedrockPlotPurchaseConfirmMenu(final Player player) {
+        final Map<String, String> placeholders = plotPurchaseService.placeholders(player);
+        final List<String> labels = new ArrayList<>();
+        final List<Runnable> actions = new ArrayList<>();
+        labels.add(Text.color(text("plotbuy-bedrock-confirm", "&aKaufen")));
+        actions.add(() -> {
+            player.closeInventory();
+            plotPurchaseService.purchase(player);
+        });
+        labels.add(Text.color(text("plotbuy-bedrock-cancel", "&cAbbrechen")));
+        actions.add(() -> openPlotPurchaseMenu(player));
+        final String title = Text.color(placeholderHook.apply(player, applyPlaceholders(plotPurchaseConfirmTitle, placeholders)));
+        final String content = Text.color(placeholderHook.apply(player,
+                applyPlaceholders(text("plotbuy-confirm-summary",
+                        "&7Vorher: &f{allowed_plots}\n&7Kauf: &f{selected_plots}\n&7Danach: &f{after_allowed_plots}\n&7Preis: &f{price}"), placeholders)));
         return floodgateHook.sendSimpleForm(player, title, content, labels, clickedButton -> {
             if (clickedButton < 0 || clickedButton >= actions.size()) {
                 return;
@@ -1517,6 +1678,14 @@ public final class PlotMenuManager implements Listener {
             handleMyPlotDetailClick(player, holder.getPage(), holder.getTabId(), event.getSlot());
             return;
         }
+        if ("plot-purchase".equalsIgnoreCase(holder.getMenuId())) {
+            handlePlotPurchaseClick(player, event.getSlot(), event.getClick());
+            return;
+        }
+        if ("plot-purchase-confirm".equalsIgnoreCase(holder.getMenuId())) {
+            handlePlotPurchaseConfirmClick(player, event.getSlot());
+            return;
+        }
         if (holder.getMenuId().toLowerCase(Locale.ROOT).startsWith("action-")) {
             handleActionMenuClick(player, holder.getMenuId().substring("action-".length()), holder.getTabId(), event.getSlot());
             return;
@@ -1702,6 +1871,28 @@ public final class PlotMenuManager implements Listener {
         loadReportListMenu();
         loadCommunityCommentListMenu();
         loadRoleListMenu();
+    }
+
+    private void loadPlotPurchaseMenu() {
+        final YamlConfiguration purchaseConfig = loadMenuConfig(plugin.getConfig().getString("gui.plot-purchase-menu", "plot-purchase.yml"));
+        if (purchaseConfig == null) {
+            return;
+        }
+        plotPurchaseTitle = purchaseConfig.getString("title", "&8Plotlimit kaufen");
+        plotPurchaseSize = normalizeSize(purchaseConfig.getInt("size", 54));
+        plotPurchaseFiller = createFiller(purchaseConfig);
+        plotPurchaseBedrockEnabled = purchaseConfig.getBoolean("bedrock.enabled", true);
+        plotPurchaseBedrockTitle = purchaseConfig.getString("bedrock.title", plotPurchaseTitle);
+        plotPurchaseBedrockContent = purchaseConfig.getString("bedrock.content", "");
+        loadButtonsFromSection(purchaseConfig, "buttons", plotPurchaseButtonsBySlot, plotPurchaseSize);
+        loadDecorationsFromSection(purchaseConfig, "decorations", plotPurchaseDecorationsBySlot, plotPurchaseSize);
+
+        plotPurchaseConfirmTitle = purchaseConfig.getString("confirm.title", "&8Kauf bestätigen");
+        plotPurchaseConfirmSize = normalizeSize(purchaseConfig.getInt("confirm.size", 27));
+        plotPurchaseConfirmFiller = createFiller(purchaseConfig, "confirm.filler");
+        loadButtonsFromSection(purchaseConfig, "confirm.buttons", plotPurchaseConfirmButtonsBySlot, plotPurchaseConfirmSize);
+        loadDecorationsFromSection(purchaseConfig, "confirm.decorations", plotPurchaseConfirmDecorationsBySlot, plotPurchaseConfirmSize);
+        plotPurchaseLoaded = true;
     }
 
     private void loadReportListMenu() {
@@ -2595,6 +2786,37 @@ public final class PlotMenuManager implements Listener {
             return;
         }
         executeCommands(player, button.isCloseInventory(), detailButtonCommands(player, button, plot, page, sort, filter));
+    }
+
+    private void handlePlotPurchaseClick(final Player player, final int slot, final ClickType clickType) {
+        final MenuButton button = plotPurchaseButtonsBySlot.get(slot);
+        if (button == null || !canSee(player, button)) {
+            return;
+        }
+        if ("amount".equalsIgnoreCase(button.getId()) || "selection".equalsIgnoreCase(button.getId())) {
+            final int delta;
+            if (clickType == ClickType.SHIFT_LEFT) {
+                delta = 10;
+            } else if (clickType == ClickType.SHIFT_RIGHT) {
+                delta = -10;
+            } else if (clickType.isRightClick()) {
+                delta = -1;
+            } else {
+                delta = 1;
+            }
+            plotPurchaseService.adjustSelection(player, delta);
+            openPlotPurchaseMenu(player);
+            return;
+        }
+        executeCommands(player, button.isCloseInventory(), button.getCommands());
+    }
+
+    private void handlePlotPurchaseConfirmClick(final Player player, final int slot) {
+        final MenuButton button = plotPurchaseConfirmButtonsBySlot.get(slot);
+        if (button == null || !canSee(player, button)) {
+            return;
+        }
+        executeCommands(player, button.isCloseInventory(), button.getCommands());
     }
 
     private void handleActionMenuClick(final Player player, final String menuId, final String tabId, final int slot) {
@@ -3727,6 +3949,11 @@ public final class PlotMenuManager implements Listener {
                 openFlagsMenu(player, menuPage(menuId));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("myplots")) {
                 openMyPlotsMenu(player, menuPage(menuId), menuArgument(menuId, 2, "name"), menuArgument(menuId, 3, "all"));
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("plot-purchase-confirm")) {
+                openPlotPurchaseConfirmMenu(player);
+            } else if (menuId.toLowerCase(Locale.ROOT).startsWith("plot-purchase")
+                    || menuId.toLowerCase(Locale.ROOT).startsWith("plotbuy")) {
+                openPlotPurchaseMenu(player);
             } else if (actionMenus.containsKey(menuRoot(menuId))) {
                 openActionMenu(player, menuRoot(menuId), menuArgument(menuId, 1, ""));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("settings")) {
@@ -3820,6 +4047,11 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
+        if (command.toLowerCase(Locale.ROOT).startsWith("plot-purchase:")) {
+            runPlotPurchaseCommand(player, command.substring("plot-purchase:".length()).trim());
+            return;
+        }
+
         if (command.toLowerCase(Locale.ROOT).startsWith("plot-danger:")) {
             runPlotDangerCommand(player, command.substring("plot-danger:".length()).trim());
             return;
@@ -3844,6 +4076,38 @@ public final class PlotMenuManager implements Listener {
         }
 
         player.performCommand(command);
+    }
+
+    private void runPlotPurchaseCommand(final Player player, final String payload) {
+        final String action = payload == null ? "" : payload.trim().toLowerCase(Locale.ROOT);
+        if ("open".equals(action) || "menu".equals(action)) {
+            openPlotPurchaseMenu(player);
+            return;
+        }
+        if ("confirm".equals(action) || "open-confirm".equals(action)) {
+            openPlotPurchaseConfirmMenu(player);
+            return;
+        }
+        if ("buy".equals(action) || "purchase".equals(action)) {
+            player.closeInventory();
+            plotPurchaseService.purchase(player);
+            return;
+        }
+        if ("cancel".equals(action)) {
+            openPlotPurchaseMenu(player);
+            return;
+        }
+        if (action.startsWith("add:")) {
+            plotPurchaseService.adjustSelection(player, parseInteger(action.substring("add:".length()), 1));
+            openPlotPurchaseMenu(player);
+            return;
+        }
+        if (action.startsWith("remove:")) {
+            plotPurchaseService.adjustSelection(player, -parseInteger(action.substring("remove:".length()), 1));
+            openPlotPurchaseMenu(player);
+            return;
+        }
+        languageManager.send(player, "chat-input-invalid");
     }
 
     private void runPlotDecoCommand(final Player player, final String payload) {
@@ -4197,6 +4461,14 @@ public final class PlotMenuManager implements Listener {
             return fallback;
         }
         return parts[index].trim();
+    }
+
+    private int parseInteger(final String value, final int fallback) {
+        try {
+            return Integer.parseInt(value == null ? "" : value.trim());
+        } catch (final NumberFormatException exception) {
+            return fallback;
+        }
     }
 
     private String backupIdAt(final int page, final int slot) {

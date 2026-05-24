@@ -15,6 +15,7 @@ import de.craftplay.plotextras.menu.PlotMenuManager;
 import de.craftplay.plotextras.myplots.PlotDataStore;
 import de.craftplay.plotextras.passivewither.PassiveWitherCommand;
 import de.craftplay.plotextras.passivewither.PassiveWitherService;
+import de.craftplay.plotextras.plotpurchase.PlotPurchaseService;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
 import de.craftplay.plotextras.reports.ReportService;
@@ -40,6 +41,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     private ExtrasService extrasService;
     private PassiveWitherService passiveWitherService;
     private EntityLimitService entityLimitService;
+    private PlotPurchaseService plotPurchaseService;
     private StorageService storageService;
     private PlotExtrasCommand commandExecutor;
 
@@ -54,6 +56,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         storageService.reload();
         plotSquaredFlagService = new PlotSquaredFlagService(this);
         plotSquaredPlotService = new PlotSquaredPlotService(this);
+        plotPurchaseService = new PlotPurchaseService(this, plotSquaredPlotService);
+        plotPurchaseService.reload();
         plotDataStore = new PlotDataStore(this);
         plotDataStore.reload();
         reportService = new ReportService(this, plotSquaredFlagService);
@@ -74,7 +78,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         extrasService.reload();
         plotMenuManager = new PlotMenuManager(this, languageManager, plotSquaredFlagService, plotSquaredPlotService,
                 plotDataStore, plotBackupService, reportService, plotRoleService, plotFutureService, teamFeatureService,
-                extrasService);
+                extrasService, plotPurchaseService);
         plotMenuManager.reload();
 
         getServer().getPluginManager().registerEvents(plotMenuManager, this);
@@ -101,6 +105,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         if (passiveWitherService != null) {
             passiveWitherService.shutdown();
         }
+        if (plotPurchaseService != null) {
+            plotPurchaseService.shutdown();
+        }
         if (storageService != null) {
             storageService.close();
         }
@@ -112,6 +119,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         reloadConfig();
         languageManager.reload();
         storageService.reload();
+        plotPurchaseService.reload();
         plotDataStore.reload();
         reportService.reload();
         plotRoleService.reload();
@@ -174,6 +182,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
 
     public EntityLimitService getEntityLimitService() {
         return entityLimitService;
+    }
+
+    public PlotPurchaseService getPlotPurchaseService() {
+        return plotPurchaseService;
     }
 
     public StorageService getStorageService() {

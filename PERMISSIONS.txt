@@ -25,6 +25,16 @@ Zielgruppe: Spieler
 Default: true
 Gibt frei: Öffnen des Meine-Plots-Menüs.
 
+Permission: craftplayplotextras.plotbuy
+Zielgruppe: Spieler / Rang
+Default: false
+Gibt frei: Sichtbarkeit und Nutzung des Plotlimit-Kaufmenüs.
+
+Permission: craftplayplotextras.plots.free.<rang>
+Zielgruppe: Spieler / Rang
+Default: nicht in plugin.yml registriert, über config.yml frei definierbar
+Gibt frei: Kostenlose Plotanzahl durch Rang. Die konkreten Permission-Namen und Werte stehen unter plot-purchase.free-plot-permissions in config.yml.
+
 Permission: craftplayplotextras.create.premium
 Zielgruppe: Spieler / Rang
 Default: op

@@ -1,0 +1,149 @@
+# Deutsches Plotkauf-Menü.
+# Diese Datei steuert das GUI, mit dem Spieler zusätzliche PlotSquared-Plotlimits kaufen.
+# Alle Buttons können Slot, Material, Name, Lore, Commands, Permission, Sounds und HeadDatabase-Köpfe nutzen.
+# Platzhalter: {free_plots}, {purchased_plots}, {allowed_plots}, {permission_plots}, {claimed_plots},
+# {selected_plots}, {after_allowed_plots}, {price_each}, {price}, {currency}, {plot_permission}, {after_plot_permission}
+
+# Dateiversion dieser GUI-Datei.
+file-version: 1
+
+title: "&8Plotlimit kaufen"
+size: 54
+filler:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: "&r"
+
+bedrock:
+  enabled: true
+  title: "Plotlimit kaufen"
+  content: |-
+    Erlaubt: {allowed_plots}
+    Geclaimt: {claimed_plots}
+    Auswahl: {selected_plots}
+    Danach: {after_allowed_plots}
+    Preis: {price}
+
+buttons:
+  amount:
+    enabled: true
+    slot: 20
+    material: OAK_SIGN
+    name: "&eAnzahl auswählen: &f{selected_plots}"
+    lore:
+      - "&7Linksklick: &a+1"
+      - "&7Shift + Linksklick: &a+10"
+      - "&7Rechtsklick: &c-1"
+      - "&7Shift + Rechtsklick: &c-10"
+      - ""
+      - "&7Preis pro Plot: &f{price_each}"
+    commands: []
+    close: false
+    permission: ""
+  info:
+    enabled: true
+    slot: 22
+    material: BOOK
+    name: "&aDein Plotlimit"
+    lore:
+      - "&7Gratis durch Rang: &f{free_plots}"
+      - "&7Gekauft: &f{purchased_plots}"
+      - "&7Erlaubt laut Plugin: &f{allowed_plots}"
+      - "&7Erkannt laut Permission: &f{permission_plots}"
+      - "&7Geclaimt: &f{claimed_plots}"
+      - ""
+      - "&7Ausgewählt: &f{selected_plots}"
+      - "&7Neues Limit danach: &f{after_allowed_plots}"
+      - "&7Gesamtpreis: &f{price}"
+    commands: []
+    close: false
+    permission: ""
+  buy:
+    enabled: true
+    slot: 24
+    material: EMERALD_BLOCK
+    name: "&aKaufen"
+    lore:
+      - "&7Kauft &f{selected_plots} &7zusätzliche Plots."
+      - "&7Preis: &f{price}"
+      - ""
+      - "&eÖffnet die Bestätigung."
+    commands:
+      - "plot-purchase:confirm"
+    close: false
+    permission: ""
+  back:
+    enabled: true
+    slot: 49
+    material: ARROW
+    name: "&eZurück"
+    lore:
+      - "&7Zurück zum Hauptmenü."
+    commands:
+      - "open-menu:main"
+    close: false
+    permission: ""
+
+decorations:
+  border:
+    enabled: true
+    slot: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 50, 51, 52, 53]
+    material: GRAY_STAINED_GLASS_PANE
+    name: "&r"
+    lore: []
+    permission: ""
+
+confirm:
+  title: "&8Kauf bestätigen"
+  size: 27
+  filler:
+    enabled: true
+    material: BLACK_STAINED_GLASS_PANE
+    name: "&r"
+  buttons:
+    confirm:
+      enabled: true
+      slot: 11
+      material: LIME_CONCRETE
+      name: "&aBestätigen"
+      lore:
+        - "&7Kauft &f{selected_plots} &7zusätzliche Plots."
+        - "&7Preis: &f{price}"
+      commands:
+        - "plot-purchase:buy"
+      close: true
+      permission: ""
+    summary:
+      enabled: true
+      slot: 13
+      material: PAPER
+      name: "&eZusammenfassung"
+      lore:
+        - "&7Aktuelles Limit: &f{allowed_plots}"
+        - "&7Gekauft werden: &f{selected_plots}"
+        - "&7Neues Limit: &f{after_allowed_plots}"
+        - "&7Geclaimt: &f{claimed_plots}"
+        - ""
+        - "&7Preis: &f{price}"
+      commands: []
+      close: false
+      permission: ""
+    cancel:
+      enabled: true
+      slot: 15
+      material: RED_CONCRETE
+      name: "&cAblehnen"
+      lore:
+        - "&7Bricht den Kauf ab."
+      commands:
+        - "plot-purchase:cancel"
+      close: false
+      permission: ""
+  decorations:
+    border:
+      enabled: true
+      slot: [0, 1, 2, 3, 4, 5, 6, 7, 8, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+      material: GRAY_STAINED_GLASS_PANE
+      name: "&r"
+      lore: []
+      permission: ""

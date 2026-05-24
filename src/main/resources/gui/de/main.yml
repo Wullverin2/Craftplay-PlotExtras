@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 16
+file-version: 17
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
@@ -267,6 +267,21 @@ buttons:
       - "open-menu:deco:wall-basic"
     close: false
     permission: "craftplayplotextras.deco"
+  plot-purchase:
+    enabled: true
+    slot: 24
+    material: GOLD_INGOT
+    head-database-id: ""
+    name: "&6Plotlimit kaufen"
+    lore:
+      - "&7Kaufe zusätzliche Plots"
+      - "&7über dein Plotlimit."
+      - "&7Rang-Gratisplots bleiben"
+      - "&7dabei erhalten."
+    commands:
+      - "open-menu:plot-purchase"
+    close: false
+    permission: "craftplayplotextras.plotbuy"
   close:
     enabled: true
     slot: 22

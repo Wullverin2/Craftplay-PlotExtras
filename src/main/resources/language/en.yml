@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 23
+file-version: 24
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -24,6 +24,23 @@ bedrock-form-failed: "&cThe Bedrock menu could not be opened."
 no-plot: "&cYou are not standing on a plot."
 # Message shown when an entity was blocked by the plot or merge limit. Placeholders: {entity}, {type}, {current}, {limit}, {plot}, {world}, {merge}
 entity-limit-reached: "&cThis plot already has &f{current}/{limit} &centities of type &f{entity}&c."
+# Message shown when plot purchases are disabled.
+plotbuy-disabled: "&cPlot purchases are currently disabled."
+# Message shown when the selected purchase amount is invalid.
+plotbuy-invalid-amount: "&cPlease select at least one plot to buy."
+# Message shown when Vault/CMI economy is unavailable for plot purchases.
+plotbuy-economy-missing: "&cThe economy system is not available. The plot purchase was cancelled."
+# Message shown when the player does not have enough money. Placeholders: {price}, {selected_plots}, {currency}
+plotbuy-not-enough-money: "&cYou do not have enough money. Required: &f{price}&c."
+# Message shown when the PlotSquared permission could not be updated.
+plotbuy-permission-update-failed: "&cYour plot limit could not be updated. Your money was refunded."
+# Message shown after a successful plot purchase. Placeholders: {amount}, {price}, {before_allowed_plots}, {after_allowed_plots}
+plotbuy-success: "&aYou bought &f{amount} &aadditional plot limits for &f{price}&a. New limit: &f{after_allowed_plots}&a."
+# Bedrock confirmation button labels.
+plotbuy-bedrock-confirm: "&aBuy"
+plotbuy-bedrock-cancel: "&cCancel"
+# Summary for Bedrock confirmation forms.
+plotbuy-confirm-summary: "&7Current limit: &f{allowed_plots}\n&7Buying: &f{selected_plots}\n&7New limit: &f{after_allowed_plots}\n&7Price: &f{price}"
 # Message shown when a player may not toggle a flag.
 flag-no-permission: "&cYou may not change this plot flag."
 # Message shown when a player may not change flags on this plot.

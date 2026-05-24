@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 23
+file-version: 24
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -24,6 +24,23 @@ bedrock-form-failed: "&cDas Bedrock-Menü konnte nicht geöffnet werden."
 no-plot: "&cDu stehst auf keinem Plot."
 # Nachricht, wenn ein Entity wegen des Plot- oder Merge-Limits blockiert wurde. Platzhalter: {entity}, {type}, {current}, {limit}, {plot}, {world}, {merge}
 entity-limit-reached: "&cAuf diesem Plot sind bereits &f{current}/{limit} &cEntities vom Typ &f{entity} &cvorhanden."
+# Nachricht, wenn das Plotkauf-System deaktiviert ist.
+plotbuy-disabled: "&cDer Plotkauf ist aktuell deaktiviert."
+# Nachricht, wenn die ausgewählte Kaufmenge ungültig ist.
+plotbuy-invalid-amount: "&cBitte wähle mindestens ein Plot zum Kaufen aus."
+# Nachricht, wenn Vault/CMI-Economy für den Plotkauf nicht verfügbar ist.
+plotbuy-economy-missing: "&cDas Economy-System ist nicht verfügbar. Der Plotkauf wurde abgebrochen."
+# Nachricht, wenn der Spieler nicht genug Taler hat. Platzhalter: {price}, {selected_plots}, {currency}
+plotbuy-not-enough-money: "&cDu hast nicht genug Taler. Benötigt: &f{price}&c."
+# Nachricht, wenn die PlotSquared-Permission nicht gesetzt werden konnte.
+plotbuy-permission-update-failed: "&cDein Plotlimit konnte nicht aktualisiert werden. Dein Geld wurde zurückgezahlt."
+# Nachricht nach erfolgreichem Plotkauf. Platzhalter: {amount}, {price}, {before_allowed_plots}, {after_allowed_plots}
+plotbuy-success: "&aDu hast &f{amount} &azusätzliche Plotlimits für &f{price} &agekauft. Neues Limit: &f{after_allowed_plots}&a."
+# Text für Bedrock-Bestätigungsbuttons.
+plotbuy-bedrock-confirm: "&aKaufen"
+plotbuy-bedrock-cancel: "&cAbbrechen"
+# Zusammenfassung für Bedrock-Bestätigungsformulare.
+plotbuy-confirm-summary: "&7Aktuelles Limit: &f{allowed_plots}\n&7Gekauft werden: &f{selected_plots}\n&7Neues Limit: &f{after_allowed_plots}\n&7Preis: &f{price}"
 # Nachricht, wenn ein Spieler eine Flag nicht umschalten darf.
 flag-no-permission: "&cDu darfst diese Plot-Flag nicht ändern."
 # Nachricht, wenn ein Spieler die Flag auf diesem Plot nicht ändern darf.

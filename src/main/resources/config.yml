@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 27
+file-version: 28
 
 # Befehle dieses Plugins.
 command:
@@ -198,6 +198,9 @@ gui:
   # Datei des Extras-Menüs. Geladen wird gui/<sprache>/<extras-menu>.
   # Dieses Menü enthält zusätzliche Services wie den WorldEdit-Service.
   extras-menu: extras.yml
+  # Datei des Plotkauf-Menüs. Geladen wird gui/<sprache>/<plot-purchase-menu>.
+  # Dieses Menü verkauft zusätzliche PlotSquared-Plotlimits nach LostPlots-Logik.
+  plot-purchase-menu: plot-purchase.yml
   # Button-IDs aus dem Hauptmenü, die nicht angezeigt werden sollen.
   # Damit können Standardbuttons entfernt werden, ohne bestehende GUI-Dateien zu überschreiben.
   hidden-main-buttons:
@@ -230,6 +233,92 @@ my-plots:
   save-delay-ticks: 40
   # Dauer in Millisekunden, in der die Plotliste eines Spielers gecacht wird.
   cache-millis: 5000
+
+# Plotkauf-System nach LostPlots-Logik.
+plot-purchase:
+  # Wenn false, ist das komplette Plotkauf-Menü deaktiviert.
+  enabled: true
+  # Datendatei für die pro Spieler gekaufte Plotanzahl. Je nach storage.type wird diese Datei in YAML, SQL, Redis oder MongoDB gespiegelt.
+  data-file: plotpurchase.yml
+  # Verzögerung in Ticks, mit der Änderungen gesammelt gespeichert werden.
+  save-delay-ticks: 40
+  # Wenn true, wird ein erfolgreicher Kauf in die Konsole geschrieben.
+  logging: true
+  # Permission, die Spieler brauchen, damit der Button im Hauptmenü und das Kaufmenü sichtbar/nutzbar sind.
+  purchase-permission: "craftplayplotextras.plotbuy"
+  # PlotSquared-Permission-Präfix. Das Plugin setzt daraus z. B. plots.plot.10.
+  plot-permission-prefix: "plots.plot."
+  # Anzahl kostenloser Plots, die jeder Spieler mindestens bekommt, auch ohne Gratis-Permission.
+  base-free-plots: 0
+  # Standardauswahl beim Öffnen des Kaufmenüs.
+  default-selection: 1
+  # Maximale Anzahl, die ein Spieler in einem Kaufvorgang auswählen kann.
+  maximum-selection: 100
+  # Anzeigename der Währung, falls Vault keinen eigenen formatierten Text liefert.
+  currency-name: "Taler"
+  # Preis pro zusätzlichem Plot vor Rabatten.
+  plot-price: 50000.0
+  economy:
+    # Wenn true, wird der Kaufpreis über Vault/CMI-Economy abgebucht.
+    enabled: true
+  # Gratisplots werden über eigene Rang-Permissions vergeben. Das höchste passende Limit gewinnt.
+  free-plot-permissions:
+    default:
+      # Beispiel-Permission für den Standardrang.
+      permission: "craftplayplotextras.plots.free.default"
+      # Anzahl kostenloser Plots für diesen Rang.
+      plots: 1
+    premium:
+      permission: "craftplayplotextras.plots.free.premium"
+      plots: 4
+    elite:
+      permission: "craftplayplotextras.plots.free.elite"
+      plots: 8
+  # Rabatte aus LostPlots, erweitert um sichere Preisgrenzen.
+  discounts:
+    global:
+      # Aktiviert einen globalen Rabatt für alle Spieler.
+      active: false
+      # Rabatt in Prozent. 10 bedeutet 10 Prozent weniger.
+      value-percent: 0.0
+    group:
+      # Aktiviert Gruppenrabatte über Vault-Permissions.
+      active: false
+      # Anzahl der unten konfigurierten Gruppen. Im Gegensatz zu LostPlots wird die letzte Gruppe hier mit geprüft.
+      number-groups: 10
+      groups:
+        group1:
+          # Vault-Gruppenname.
+          group-name: "default"
+          # Rabatt in Prozent für diese Gruppe.
+          value-percent: 0.0
+        group2:
+          group-name: ""
+          value-percent: 0.0
+        group3:
+          group-name: ""
+          value-percent: 0.0
+        group4:
+          group-name: ""
+          value-percent: 0.0
+        group5:
+          group-name: ""
+          value-percent: 0.0
+        group6:
+          group-name: ""
+          value-percent: 0.0
+        group7:
+          group-name: ""
+          value-percent: 0.0
+        group8:
+          group-name: ""
+          value-percent: 0.0
+        group9:
+          group-name: ""
+          value-percent: 0.0
+        group10:
+          group-name: ""
+          value-percent: 0.0
 
 # Report-System.
 reports:
