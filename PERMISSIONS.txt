@@ -1,5 +1,5 @@
 CraftplayPlotExtras - Permissions
-Stand: 2026-05-23
+Stand: 2026-05-24
 
 Pflegehinweis:
 Diese Datei muss jedes Mal aktualisiert werden, wenn im Plugin, in plugin.yml, in der config.yml
@@ -109,6 +109,56 @@ Permission: craftplayplotextras.flags.bypass
 Zielgruppe: Team
 Default: op
 Gibt frei: Plotflags über das Menü auch auf fremden Plots ändern.
+
+Permission: craftplayplotextras.deco
+Zielgruppe: Spieler
+Default: true
+Gibt frei: Öffnen des Deko-Menüs für Plotwand und Plotrand.
+
+Permission: craftplayplotextras.deco.admin
+Zielgruppe: Team
+Default: op
+Gibt frei: Deko-Änderungen auf fremden Plots über das Menü.
+
+Permission: craftplayplotextras.deco.wall.basic
+Zielgruppe: Spieler / Rang
+Default: true
+Gibt frei: Basis-Wände im Deko-Menü.
+
+Permission: craftplayplotextras.deco.wall.natural
+Zielgruppe: Spieler / Rang
+Default: true
+Gibt frei: Natur-Wände im Deko-Menü.
+
+Permission: craftplayplotextras.deco.wall.valuable
+Zielgruppe: Spieler / Rang
+Default: op
+Gibt frei: Wertvolle Wände im Deko-Menü.
+
+Permission: craftplayplotextras.deco.wall.premium
+Zielgruppe: Spieler / Rang
+Default: op
+Gibt frei: Premium-Wände im Deko-Menü.
+
+Permission: craftplayplotextras.deco.border.basic
+Zielgruppe: Spieler / Rang
+Default: true
+Gibt frei: Basis-Ränder im Deko-Menü inklusive Rand entfernen.
+
+Permission: craftplayplotextras.deco.border.natural
+Zielgruppe: Spieler / Rang
+Default: true
+Gibt frei: Natur-Ränder im Deko-Menü.
+
+Permission: craftplayplotextras.deco.border.valuable
+Zielgruppe: Spieler / Rang
+Default: op
+Gibt frei: Wertvolle Ränder im Deko-Menü.
+
+Permission: craftplayplotextras.deco.border.special
+Zielgruppe: Spieler / Rang
+Default: op
+Gibt frei: Spezial-Ränder im Deko-Menü.
 
 Permission: craftplayplotextras.future
 Zielgruppe: Team / optionale Ränge

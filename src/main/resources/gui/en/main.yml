@@ -9,7 +9,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 15
+file-version: 16
 
 # Inventory title.
 title: "&8Plot Menu"
@@ -252,6 +252,21 @@ buttons:
       - "open-menu:extras"
     close: false
     permission: ""
+  deco:
+    enabled: true
+    slot: 23
+    material: BRICKS
+    head-database-id: ""
+    name: "&aDeco"
+    lore:
+      - "&7Change wall and border"
+      - "&7of your current plot."
+      - "&7Works only on your plot"
+      - "&7or with a matching plot role."
+    commands:
+      - "open-menu:deco:wall-basic"
+    close: false
+    permission: "craftplayplotextras.deco"
   close:
     enabled: true
     slot: 22

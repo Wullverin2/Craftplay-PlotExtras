@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 16
+file-version: 17
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -129,6 +129,36 @@ permissions:
   craftplayplotextras.flags.bypass:
     # Erlaubt das Ändern von Plotflags auf fremden Plots über das Menü.
     description: Erlaubt das Ändern von Plotflags auf fremden Plots über das Menü.
+    default: op
+  craftplayplotextras.deco:
+    description: Erlaubt das Öffnen des Deko-Menüs für Plotwand und Plotrand.
+    default: true
+  craftplayplotextras.deco.admin:
+    description: Erlaubt Deko-Änderungen auf fremden Plots über das Menü.
+    default: op
+  craftplayplotextras.deco.wall.basic:
+    description: Erlaubt Basis-Wände im Deko-Menü.
+    default: true
+  craftplayplotextras.deco.wall.natural:
+    description: Erlaubt Natur-Wände im Deko-Menü.
+    default: true
+  craftplayplotextras.deco.wall.valuable:
+    description: Erlaubt wertvolle Wände im Deko-Menü.
+    default: op
+  craftplayplotextras.deco.wall.premium:
+    description: Erlaubt Premium-Wände im Deko-Menü.
+    default: op
+  craftplayplotextras.deco.border.basic:
+    description: Erlaubt Basis-Ränder im Deko-Menü.
+    default: true
+  craftplayplotextras.deco.border.natural:
+    description: Erlaubt Natur-Ränder im Deko-Menü.
+    default: true
+  craftplayplotextras.deco.border.valuable:
+    description: Erlaubt wertvolle Ränder im Deko-Menü.
+    default: op
+  craftplayplotextras.deco.border.special:
+    description: Erlaubt Spezial-Ränder im Deko-Menü.
     default: op
   craftplayplotextras.future:
     # Erlaubt das Öffnen des Zukunftsfeature-Menüs.

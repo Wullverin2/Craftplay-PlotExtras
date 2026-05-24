@@ -1692,6 +1692,7 @@ public final class PlotMenuManager implements Listener {
         loadActionMenu("members", plugin.getConfig().getString("gui.members-menu", "members.yml"));
         loadActionMenu("search", plugin.getConfig().getString("gui.search-menu", "search.yml"));
         loadActionMenu("community", plugin.getConfig().getString("gui.community-menu", "community.yml"));
+        loadActionMenu("deco", plugin.getConfig().getString("gui.deco-menu", "deco.yml"));
         loadActionMenu("reports", plugin.getConfig().getString("gui.reports-menu", "reports.yml"));
         loadActionMenu("history", plugin.getConfig().getString("gui.history-menu", "history.yml"));
         loadActionMenu("danger", plugin.getConfig().getString("gui.danger-menu", "danger.yml"));
@@ -3814,6 +3815,11 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
+        if (command.toLowerCase(Locale.ROOT).startsWith("plot-deco:")) {
+            runPlotDecoCommand(player, command.substring("plot-deco:".length()).trim());
+            return;
+        }
+
         if (command.toLowerCase(Locale.ROOT).startsWith("plot-danger:")) {
             runPlotDangerCommand(player, command.substring("plot-danger:".length()).trim());
             return;
@@ -3838,6 +3844,30 @@ public final class PlotMenuManager implements Listener {
         }
 
         player.performCommand(command);
+    }
+
+    private void runPlotDecoCommand(final Player player, final String payload) {
+        final String command = stripCommandPrefix(payload);
+        if (command.isEmpty()) {
+            languageManager.send(player, "chat-input-invalid");
+            return;
+        }
+        final Optional<PlotContext> context = flagService.currentPlotContext(player);
+        if (!context.isPresent() || !context.get().isComplete()) {
+            languageManager.send(player, "no-plot");
+            return;
+        }
+        final UUID ownerUuid = context.get().getOwnerUuid();
+        if (ownerUuid != null && ownerUuid.equals(player.getUniqueId())
+                || player.hasPermission("craftplayplotextras.admin")
+                || player.hasPermission("craftplayplotextras.deco.admin")
+                || roleService.hasRolePermission(player, "deco")
+                || roleService.hasRolePermission(player, "plot-deco")
+                || roleService.hasRolePermission(player, "change-deco")) {
+            player.performCommand(command);
+            return;
+        }
+        languageManager.send(player, "no-permission");
     }
 
     private void runPlotDangerCommand(final Player player, final String payload) {

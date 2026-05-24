@@ -39,6 +39,8 @@ public final class ConfigurationManager {
             "gui/en/search.yml",
             "gui/de/community.yml",
             "gui/en/community.yml",
+            "gui/de/deco.yml",
+            "gui/en/deco.yml",
             "gui/de/extras.yml",
             "gui/en/extras.yml",
             "gui/de/reports.yml",

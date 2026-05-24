@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 26
+file-version: 27
 
 # Befehle dieses Plugins.
 command:
@@ -168,6 +168,9 @@ gui:
   # Datei des Community-Menüs. Geladen wird gui/<sprache>/<community-menu>.
   # Dieses Menü enthält öffentliche Listen, Top-Plots, neue Plots und Teilen/Freunde-Buttons.
   community-menu: community.yml
+  # Datei des Deko-Menüs. Geladen wird gui/<sprache>/<deco-menu>.
+  # Dieses Menü enthält PlotSquared-Komponenten für Plotwand und Plotrand.
+  deco-menu: deco.yml
   # Datei des Report-Menüs. Geladen wird gui/<sprache>/<reports-menu>.
   # Dieses Menü enthält Report-Kategorien und eigene Report-Eingaben.
   reports-menu: reports.yml

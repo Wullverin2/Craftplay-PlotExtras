@@ -6,7 +6,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 6
+file-version: 7
 
 # If false, this Bedrock menu is not loaded.
 enabled: true
@@ -105,6 +105,14 @@ buttons:
       - "open-menu:settings:homes"
     close: true
     permission: ""
+  deco:
+    enabled: true
+    order: 95
+    label: "Deco"
+    commands:
+      - "open-menu:deco:wall-basic"
+    close: false
+    permission: "craftplayplotextras.deco"
   reports:
     enabled: true
     order: 100
