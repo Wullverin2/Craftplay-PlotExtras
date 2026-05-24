@@ -10,6 +10,7 @@ import de.craftplay.plotextras.listener.CommandListener;
 import de.craftplay.plotextras.listener.PlotBackupProtectionListener;
 import de.craftplay.plotextras.listener.PlotFutureListener;
 import de.craftplay.plotextras.listener.TeamFeatureProtectionListener;
+import de.craftplay.plotextras.limits.EntityLimitService;
 import de.craftplay.plotextras.menu.PlotMenuManager;
 import de.craftplay.plotextras.myplots.PlotDataStore;
 import de.craftplay.plotextras.passivewither.PassiveWitherCommand;
@@ -38,6 +39,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     private TeamFeatureService teamFeatureService;
     private ExtrasService extrasService;
     private PassiveWitherService passiveWitherService;
+    private EntityLimitService entityLimitService;
     private StorageService storageService;
     private PlotExtrasCommand commandExecutor;
 
@@ -66,6 +68,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         teamFeatureService.reload();
         passiveWitherService = new PassiveWitherService(this);
         passiveWitherService.reload();
+        entityLimitService = new EntityLimitService(this, plotSquaredFlagService);
+        entityLimitService.reload();
         extrasService = new ExtrasService(this, languageManager, plotSquaredFlagService);
         extrasService.reload();
         plotMenuManager = new PlotMenuManager(this, languageManager, plotSquaredFlagService, plotSquaredPlotService,
@@ -79,6 +83,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlotFutureListener(plotFutureService), this);
         getServer().getPluginManager().registerEvents(new TeamFeatureProtectionListener(teamFeatureService), this);
         getServer().getPluginManager().registerEvents(passiveWitherService, this);
+        getServer().getPluginManager().registerEvents(entityLimitService, this);
         getServer().getPluginManager().registerEvents(extrasService, this);
         registerCommands();
 
@@ -114,6 +119,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         plotFutureService.reload();
         teamFeatureService.reload();
         passiveWitherService.reload();
+        entityLimitService.reload();
         extrasService.reload();
         plotMenuManager.reload();
     }
@@ -164,6 +170,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
 
     public PassiveWitherService getPassiveWitherService() {
         return passiveWitherService;
+    }
+
+    public EntityLimitService getEntityLimitService() {
+        return entityLimitService;
     }
 
     public StorageService getStorageService() {

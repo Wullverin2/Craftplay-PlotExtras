@@ -1,0 +1,185 @@
+# CraftplayPlotExtras Entity-Limits.
+# In dieser Datei stellst du ein, wie viele Entities pro Plot oder Plotmerge erlaubt sind.
+# Ein ungemergtes Plot wird einzeln gezählt, ein Merge wird als gemeinsamer Bereich gezählt.
+
+# Dateiversion dieser Datei. Das Plugin nutzt diesen Wert, um neue Einstellungen automatisch zu ergänzen.
+file-version: 1
+
+# Aktiviert oder deaktiviert das komplette Entity-Limit-System.
+enabled: true
+
+# Sendet Spielern eine Nachricht, wenn ein Entity wegen eines Limits blockiert wurde.
+notify-player: true
+
+# Spieler mit dieser Permission umgehen alle Entity-Limits.
+bypass-permission: "craftplayplotextras.entitylimits.bypass"
+
+# Zeit in Sekunden, wie lange gezählte Entity-Mengen zwischengespeichert werden.
+# Kleine Werte sind genauer, größere Werte sparen Leistung bei vielen Spawn-Versuchen.
+cache-seconds: 1.0
+
+# Fügt beim Laden automatisch alle Entity-Arten hinzu, die auf der Serverversion existieren,
+# aber noch nicht in dieser Datei stehen. Die Werte kommen aus defaults.missing-entities.
+auto-add-missing-entities: true
+
+# Spawn-Gründe, die nie limitiert werden sollen. Beispiele: CUSTOM, COMMAND, SPAWNER_EGG.
+ignored-spawn-reasons: []
+
+defaults:
+  missing-entities:
+    # Standard-Aktivierung für automatisch ergänzte Entity-Arten.
+    enabled: false
+    # Standard-Limit für automatisch ergänzte Entity-Arten. -1 bedeutet unbegrenzt.
+    limit: 100
+
+# Jede Entity-Art kann einzeln aktiviert, limitiert und mit höheren Permission-Limits versehen werden.
+# limit: -1 bedeutet unbegrenzt, limit: 0 blockiert diese Entity-Art komplett auf Plots.
+# permission-limits nutzt "Permission: Limit". Das höchste passende Limit gewinnt, -1 bedeutet unbegrenzt.
+entities:
+  VILLAGER:
+    enabled: true
+    limit: 12
+    permission-limits:
+      craftplayplotextras.entitylimits.villager.vip: 20
+      craftplayplotextras.entitylimits.villager.premium: 35
+  WANDERING_TRADER:
+    enabled: true
+    limit: 2
+    permission-limits: {}
+  TRADER_LLAMA:
+    enabled: true
+    limit: 4
+    permission-limits: {}
+  IRON_GOLEM:
+    enabled: true
+    limit: 10
+    permission-limits: {}
+  WITHER:
+    enabled: true
+    limit: 1
+    permission-limits: {}
+  ENDER_DRAGON:
+    enabled: true
+    limit: 0
+    permission-limits: {}
+  ARMOR_STAND:
+    enabled: true
+    limit: 80
+    permission-limits:
+      craftplayplotextras.entitylimits.armorstand.vip: 120
+  ITEM_FRAME:
+    enabled: true
+    limit: 100
+    permission-limits: {}
+  GLOW_ITEM_FRAME:
+    enabled: true
+    limit: 100
+    permission-limits: {}
+  PAINTING:
+    enabled: true
+    limit: 80
+    permission-limits: {}
+  MINECART:
+    enabled: true
+    limit: 20
+    permission-limits: {}
+  MINECART_CHEST:
+    enabled: true
+    limit: 10
+    permission-limits: {}
+  MINECART_HOPPER:
+    enabled: true
+    limit: 6
+    permission-limits: {}
+  MINECART_TNT:
+    enabled: true
+    limit: 3
+    permission-limits: {}
+  BOAT:
+    enabled: true
+    limit: 25
+    permission-limits: {}
+  DROPPED_ITEM:
+    enabled: true
+    limit: 200
+    permission-limits: {}
+  ITEM:
+    enabled: true
+    limit: 200
+    permission-limits: {}
+  EXPERIENCE_ORB:
+    enabled: true
+    limit: 80
+    permission-limits: {}
+  PRIMED_TNT:
+    enabled: true
+    limit: 20
+    permission-limits: {}
+  TNT:
+    enabled: true
+    limit: 20
+    permission-limits: {}
+  FALLING_BLOCK:
+    enabled: true
+    limit: 40
+    permission-limits: {}
+  BEE:
+    enabled: true
+    limit: 30
+    permission-limits: {}
+  COW:
+    enabled: true
+    limit: 50
+    permission-limits: {}
+  SHEEP:
+    enabled: true
+    limit: 50
+    permission-limits: {}
+  PIG:
+    enabled: true
+    limit: 50
+    permission-limits: {}
+  CHICKEN:
+    enabled: true
+    limit: 50
+    permission-limits: {}
+  RABBIT:
+    enabled: true
+    limit: 40
+    permission-limits: {}
+  HORSE:
+    enabled: true
+    limit: 20
+    permission-limits: {}
+  DONKEY:
+    enabled: true
+    limit: 15
+    permission-limits: {}
+  MULE:
+    enabled: true
+    limit: 15
+    permission-limits: {}
+  LLAMA:
+    enabled: true
+    limit: 15
+    permission-limits: {}
+  WOLF:
+    enabled: true
+    limit: 20
+    permission-limits: {}
+  CAT:
+    enabled: true
+    limit: 20
+    permission-limits: {}
+  PARROT:
+    enabled: true
+    limit: 20
+    permission-limits: {}
+  FOX:
+    enabled: true
+    limit: 20
+    permission-limits: {}
+  TURTLE:
+    enabled: true
+    limit: 20
+    permission-limits: {}

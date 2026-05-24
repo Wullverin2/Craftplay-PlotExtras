@@ -160,6 +160,16 @@ Zielgruppe: Spieler / Rang
 Default: op
 Gibt frei: Spezial-Ränder im Deko-Menü.
 
+Permission: craftplayplotextras.entitylimits.bypass
+Zielgruppe: Team
+Default: op
+Gibt frei: Umgeht alle Entity-Limits pro Plot oder Plotmerge.
+
+Permission: craftplayplotextras.entitylimits.<entity>.<rang>
+Zielgruppe: Spieler / Rang
+Default: nicht in plugin.yml registriert, über limits.yml frei definierbar
+Gibt frei: Höhere Entity-Limits für einzelne Entity-Arten. Die konkreten Permission-Namen und Werte stehen pro Entity unter permission-limits in limits.yml.
+
 Permission: craftplayplotextras.future
 Zielgruppe: Team / optionale Ränge
 Default: op

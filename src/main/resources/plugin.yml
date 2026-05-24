@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 17
+file-version: 18
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -159,6 +159,9 @@ permissions:
     default: op
   craftplayplotextras.deco.border.special:
     description: Erlaubt Spezial-Ränder im Deko-Menü.
+    default: op
+  craftplayplotextras.entitylimits.bypass:
+    description: Erlaubt das Umgehen der Entity-Limits pro Plot oder Plotmerge.
     default: op
   craftplayplotextras.future:
     # Erlaubt das Öffnen des Zukunftsfeature-Menüs.

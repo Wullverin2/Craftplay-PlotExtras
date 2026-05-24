@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 22
+file-version: 23
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -22,6 +22,8 @@ bedrock-only: "&cThis menu is only available for Bedrock players."
 bedrock-form-failed: "&cThe Bedrock menu could not be opened."
 # Message shown when a player needs to stand on a plot for a plot feature.
 no-plot: "&cYou are not standing on a plot."
+# Message shown when an entity was blocked by the plot or merge limit. Placeholders: {entity}, {type}, {current}, {limit}, {plot}, {world}, {merge}
+entity-limit-reached: "&cThis plot already has &f{current}/{limit} &centities of type &f{entity}&c."
 # Message shown when a player may not toggle a flag.
 flag-no-permission: "&cYou may not change this plot flag."
 # Message shown when a player may not change flags on this plot.

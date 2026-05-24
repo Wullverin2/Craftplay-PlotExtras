@@ -1,6 +1,7 @@
 package de.craftplay.plotextras.plotsquared;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -93,8 +94,37 @@ public final class PlotSquaredFlagService {
             return Optional.empty();
         }
 
-        final World world = world(player, plot);
-        final String worldName = world == null ? player.getWorld().getName() : world.getName();
+        return plotContext(plot, player.getWorld());
+    }
+
+    public Optional<PlotContext> plotContextAt(final Location location) {
+        if (location == null || location.getWorld() == null) {
+            return Optional.empty();
+        }
+        try {
+            final com.plotsquared.core.location.Location plotLocation = com.plotsquared.core.location.Location.at(
+                    location.getWorld().getName(),
+                    location.getBlockX(),
+                    location.getBlockY(),
+                    location.getBlockZ()
+            );
+            if (!plotLocation.isPlotArea()) {
+                return Optional.empty();
+            }
+            final Object plot = plotLocation.getPlot();
+            if (plot == null) {
+                return Optional.empty();
+            }
+            return plotContext(plot, location.getWorld());
+        } catch (final Throwable throwable) {
+            warn("PlotSquared-Plot an Position konnte nicht gelesen werden.", throwable);
+            return Optional.empty();
+        }
+    }
+
+    private Optional<PlotContext> plotContext(final Object plot, final World fallbackWorld) {
+        final World world = world(fallbackWorld, plot);
+        final String worldName = world == null ? "" : world.getName();
         final List<PlotRegion> regions = plotRegions(plot, worldName);
         final PlotRegion bounds = PlotRegion.encompassing(worldName, regions);
         if (bounds == null) {
@@ -260,6 +290,10 @@ public final class PlotSquaredFlagService {
     }
 
     private World world(final Player player, final Object plot) {
+        return world(player.getWorld(), plot);
+    }
+
+    private World world(final World fallbackWorld, final Object plot) {
         final Object worldName = invokeNoArgs(plot, "getWorldName");
         if (worldName != null) {
             final World world = Bukkit.getWorld(worldName.toString());
@@ -267,7 +301,7 @@ public final class PlotSquaredFlagService {
                 return world;
             }
         }
-        return player.getWorld();
+        return fallbackWorld;
     }
 
     private List<PlotRegion> plotRegions(final Object plot, final String worldName) {
@@ -662,7 +696,7 @@ public final class PlotSquaredFlagService {
         }
     }
 
-    private void warn(final String message, final Exception exception) {
+    private void warn(final String message, final Throwable exception) {
         if (warned) {
             return;
         }

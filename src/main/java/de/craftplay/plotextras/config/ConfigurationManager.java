@@ -21,6 +21,7 @@ public final class ConfigurationManager {
 
     private static final List<String> MANAGED_FILES = Arrays.asList(
             "config.yml",
+            "limits.yml",
             "language/de.yml",
             "language/en.yml",
             "gui/de/main.yml",
