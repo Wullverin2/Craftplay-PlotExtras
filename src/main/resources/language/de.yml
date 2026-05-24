@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 19
+file-version: 20
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -300,6 +300,16 @@ passive-wither-chest-set: "&aPassive-Wither-Zieltruhe gesetzt: &f{world} {x} {y}
 passive-wither-chest-cleared: "&aPassive-Wither-Zieltruhe entfernt. Drops gehen wieder in die nächste Truhe."
 passive-wither-chest-info-empty: "&7Es ist keine feste Passive-Wither-Zieltruhe gesetzt."
 passive-wither-chest-info: "&7Aktuelle Passive-Wither-Zieltruhe: &f{world} {x} {y} {z}&7."
+passive-wither-menu-not-owner: "&cNur der Besitzer dieses passiven Withers kann sein Menü nutzen."
+passive-wither-menu-wither-missing: "&cDieser passive Wither wurde nicht mehr gefunden."
+passive-wither-menu-link-start: "&aKlicke jetzt die Truhe an, die mit diesem passiven Wither verlinkt werden soll."
+passive-wither-menu-link-invalid: "&cBitte klicke eine Truhe oder ein anderes Inventar an."
+passive-wither-menu-link-not-on-plot: "&cDiese Truhe liegt nicht auf dem Plot oder Plotmerge dieses passiven Withers."
+passive-wither-menu-link-success: "&aPassive-Wither-Truhe verlinkt: &f{world} {x} {y} {z}&a."
+passive-wither-menu-unlink-success: "&aPassive-Wither-Truhenverlinkung aufgehoben."
+passive-wither-menu-status-linked: "&aVerlinkt"
+passive-wither-menu-status-unlinked: "&cNicht verlinkt"
+passive-wither-menu-target-empty: "Keine Truhe"
 passive-wither-sound-enabled: "&aPassive-Wither-Sounds sind für dich wieder aktiviert."
 passive-wither-sound-disabled: "&aPassive-Wither-Sounds sind für dich deaktiviert."
 passive-wither-sound-status-enabled: "&7Passive-Wither-Sounds sind aktuell &aaktiviert&7."

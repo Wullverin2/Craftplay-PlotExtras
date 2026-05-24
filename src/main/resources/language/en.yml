@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 19
+file-version: 20
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -300,6 +300,16 @@ passive-wither-chest-set: "&aPassive Wither target chest set: &f{world} {x} {y} 
 passive-wither-chest-cleared: "&aPassive Wither target chest cleared. Drops will use the nearest chest again."
 passive-wither-chest-info-empty: "&7No fixed Passive Wither target chest is set."
 passive-wither-chest-info: "&7Current Passive Wither target chest: &f{world} {x} {y} {z}&7."
+passive-wither-menu-not-owner: "&cOnly the owner of this passive Wither can use its menu."
+passive-wither-menu-wither-missing: "&cThis passive Wither could no longer be found."
+passive-wither-menu-link-start: "&aNow click the chest that should be linked to this passive Wither."
+passive-wither-menu-link-invalid: "&cPlease click a chest or another inventory."
+passive-wither-menu-link-not-on-plot: "&cThat chest is not on this passive Wither's plot or plot merge."
+passive-wither-menu-link-success: "&aPassive Wither chest linked: &f{world} {x} {y} {z}&a."
+passive-wither-menu-unlink-success: "&aPassive Wither chest link removed."
+passive-wither-menu-status-linked: "&aLinked"
+passive-wither-menu-status-unlinked: "&cNot linked"
+passive-wither-menu-target-empty: "No chest"
 passive-wither-sound-enabled: "&aPassive Wither sounds are enabled for you again."
 passive-wither-sound-disabled: "&aPassive Wither sounds are disabled for you."
 passive-wither-sound-status-enabled: "&7Passive Wither sounds are currently &aenabled&7."

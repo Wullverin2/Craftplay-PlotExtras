@@ -38,6 +38,8 @@ import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -94,7 +96,9 @@ public final class PassiveWitherService implements Listener {
     private final Map<UUID, Long> effectProtectedPlayers = new HashMap<>();
     private final Map<UUID, UUID> passiveWitherOwners = new HashMap<>();
     private final Map<UUID, Location> passiveWitherAnchors = new HashMap<>();
+    private final Map<UUID, Location> passiveWitherDropTargets = new HashMap<>();
     private final Map<UUID, Long> passiveWitherNextExplosions = new HashMap<>();
+    private final Map<UUID, UUID> pendingChestLinks = new HashMap<>();
     private final Set<Material> protectedMiningMaterials = new HashSet<>();
     private final Set<Integer> passiveWitherEntityIds = ConcurrentHashMap.newKeySet();
     private final Set<UUID> soundDisabledPlayers = ConcurrentHashMap.newKeySet();
@@ -148,8 +152,8 @@ public final class PassiveWitherService implements Listener {
         enabled = plugin.getConfig().getBoolean("passive-wither.enabled", true);
         dataFile = plugin.getConfig().getString("passive-wither.data-file", "passivewither.yml");
         data = plugin.getStorageService().load("passivewither", dataFile);
-        if (data.getInt("file-version", 0) < 2) {
-            data.set("file-version", 2);
+        if (data.getInt("file-version", 0) < 3) {
+            data.set("file-version", 3);
             saveData();
         }
         buyPermission = plugin.getConfig().getString("passive-wither.buy-permission", "craftplayplotextras.passivewither.buy");
@@ -192,6 +196,7 @@ public final class PassiveWitherService implements Listener {
         }
         passiveWitherEntityIds.clear();
         scheduledExplosions.clear();
+        pendingChestLinks.clear();
     }
 
     public void runMenuCommand(final Player player, final String payload) {
@@ -436,6 +441,44 @@ public final class PassiveWitherService implements Listener {
         return formatMoney(price);
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPassiveWitherChestLinkClick(final PlayerInteractEvent event) {
+        if (event.getHand() != EquipmentSlot.HAND || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+        final UUID witherId = pendingChestLinks.get(event.getPlayer().getUniqueId());
+        if (witherId == null) {
+            return;
+        }
+        event.setCancelled(true);
+        final Entity entity = Bukkit.getEntity(witherId);
+        if (!(entity instanceof Wither) || !entity.isValid() || !isPassiveWither(entity)) {
+            pendingChestLinks.remove(event.getPlayer().getUniqueId());
+            plugin.getLanguageManager().send(event.getPlayer(), "passive-wither-menu-wither-missing");
+            return;
+        }
+        final UUID owner = getPassiveWitherOwner(entity);
+        if (owner == null || !owner.equals(event.getPlayer().getUniqueId())) {
+            pendingChestLinks.remove(event.getPlayer().getUniqueId());
+            plugin.getLanguageManager().send(event.getPlayer(), "passive-wither-menu-not-owner");
+            return;
+        }
+        final Block clickedBlock = event.getClickedBlock();
+        if (clickedBlock == null || !(clickedBlock.getState() instanceof InventoryHolder)) {
+            plugin.getLanguageManager().send(event.getPlayer(), "passive-wither-menu-link-invalid");
+            return;
+        }
+        final Location anchor = getPassiveWitherAnchor(entity);
+        if (!isAllowedMiningBlock(anchor, clickedBlock)) {
+            plugin.getLanguageManager().send(event.getPlayer(), "passive-wither-menu-link-not-on-plot");
+            return;
+        }
+        pendingChestLinks.remove(event.getPlayer().getUniqueId());
+        setPassiveWitherDropTarget(witherId, clickedBlock.getLocation());
+        plugin.getLanguageManager().send(event.getPlayer(), "passive-wither-menu-link-success",
+                locationPlaceholders(clickedBlock.getLocation()));
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSpawnEggUse(final PlayerInteractEvent event) {
         if (event.getHand() != EquipmentSlot.HAND || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -464,8 +507,7 @@ public final class PassiveWitherService implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPassiveWitherPickup(final PlayerInteractEntityEvent event) {
-        if (event.getHand() != EquipmentSlot.HAND || !event.getPlayer().isSneaking()
-                || !isPassiveWither(event.getRightClicked())) {
+        if (event.getHand() != EquipmentSlot.HAND || !isPassiveWither(event.getRightClicked())) {
             return;
         }
         event.setCancelled(true);
@@ -478,11 +520,65 @@ public final class PassiveWitherService implements Listener {
             plugin.getLanguageManager().send(event.getPlayer(), "passive-wither-pickup-not-owner");
             return;
         }
+        if (!event.getPlayer().isSneaking()) {
+            openPassiveWitherMenu(event.getPlayer(), event.getRightClicked().getUniqueId());
+            return;
+        }
         event.getRightClicked().remove();
         passiveWitherEntityIds.remove(event.getRightClicked().getEntityId());
         removePassiveWitherOwner(event.getRightClicked().getUniqueId());
         givePassiveWitherEgg(event.getPlayer(), 1);
         plugin.getLanguageManager().send(event.getPlayer(), "passive-wither-pickup-success");
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPassiveWitherMenuClick(final InventoryClickEvent event) {
+        if (!(event.getInventory().getHolder() instanceof PassiveWitherMenuHolder)) {
+            return;
+        }
+        event.setCancelled(true);
+        if (!(event.getWhoClicked() instanceof Player) || event.getRawSlot() < 0
+                || event.getRawSlot() >= event.getInventory().getSize()) {
+            return;
+        }
+        final Player player = (Player) event.getWhoClicked();
+        final PassiveWitherMenuHolder holder = (PassiveWitherMenuHolder) event.getInventory().getHolder();
+        final Entity entity = Bukkit.getEntity(holder.witherId);
+        if (!(entity instanceof Wither) || !entity.isValid() || !isPassiveWither(entity)) {
+            player.closeInventory();
+            plugin.getLanguageManager().send(player, "passive-wither-menu-wither-missing");
+            return;
+        }
+        final UUID owner = getPassiveWitherOwner(entity);
+        if (owner == null || !owner.equals(player.getUniqueId())) {
+            player.closeInventory();
+            plugin.getLanguageManager().send(player, "passive-wither-menu-not-owner");
+            return;
+        }
+
+        final int slot = event.getRawSlot();
+        if (menuButtonEnabled("link") && slot == menuSlot("link", 11)) {
+            pendingChestLinks.put(player.getUniqueId(), holder.witherId);
+            player.closeInventory();
+            plugin.getLanguageManager().send(player, "passive-wither-menu-link-start");
+            return;
+        }
+        if (menuButtonEnabled("unlink") && slot == menuSlot("unlink", 15)) {
+            clearPassiveWitherDropTarget(holder.witherId);
+            plugin.getLanguageManager().send(player, "passive-wither-menu-unlink-success");
+            openPassiveWitherMenu(player, holder.witherId);
+            return;
+        }
+        if (menuButtonEnabled("close") && slot == menuSlot("close", 22)) {
+            player.closeInventory();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPassiveWitherMenuDrag(final InventoryDragEvent event) {
+        if (event.getInventory().getHolder() instanceof PassiveWitherMenuHolder) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -547,7 +643,7 @@ public final class PassiveWitherService implements Listener {
             event.setYield(0.0F);
         } else {
             scheduledExplosions.remove(scheduledExplosion);
-            routePassiveExplosionDrops(event);
+            routePassiveExplosionDrops(event, sourceId);
             for (final Block block : event.blockList()) {
                 rememberPassiveBlockBreakSound(block.getLocation());
             }
@@ -615,6 +711,101 @@ public final class PassiveWitherService implements Listener {
             return;
         }
         event.setCancelled(true);
+    }
+
+    private void openPassiveWitherMenu(final Player player, final UUID witherId) {
+        if (!plugin.getConfig().getBoolean("passive-wither.menu.enabled", true)) {
+            return;
+        }
+        final int size = normalizeInventorySize(plugin.getConfig().getInt("passive-wither.menu.size", 27));
+        final Map<String, String> placeholders = passiveWitherMenuPlaceholders(witherId);
+        final String title = apply(plugin.getConfig().getString("passive-wither.menu.title", "&8Passiver Wither"), placeholders);
+        final Inventory inventory = Bukkit.createInventory(
+                new PassiveWitherMenuHolder(witherId),
+                size,
+                Text.color(title)
+        );
+
+        final ItemStack filler = createMenuItem("passive-wither.menu.filler", Material.BLACK_STAINED_GLASS_PANE, placeholders);
+        if (plugin.getConfig().getBoolean("passive-wither.menu.filler.enabled", true) && filler != null) {
+            for (int slot = 0; slot < size; slot++) {
+                inventory.setItem(slot, filler.clone());
+            }
+        }
+        setMenuItem(inventory, "link", Material.CHEST, placeholders);
+        setMenuItem(inventory, "unlink", Material.BARRIER, placeholders);
+        setMenuItem(inventory, "close", Material.OAK_DOOR, placeholders);
+        player.openInventory(inventory);
+    }
+
+    private boolean menuButtonEnabled(final String button) {
+        return plugin.getConfig().getBoolean("passive-wither.menu.buttons." + button + ".enabled", true);
+    }
+
+    private void setMenuItem(
+            final Inventory inventory,
+            final String button,
+            final Material fallback,
+            final Map<String, String> placeholders
+    ) {
+        if (!menuButtonEnabled(button)) {
+            return;
+        }
+        final int slot = menuSlot(button, "close".equals(button) ? 22 : ("unlink".equals(button) ? 15 : 11));
+        if (slot < 0 || slot >= inventory.getSize()) {
+            return;
+        }
+        final ItemStack item = createMenuItem("passive-wither.menu.buttons." + button, fallback, placeholders);
+        if (item != null) {
+            inventory.setItem(slot, item);
+        }
+    }
+
+    private ItemStack createMenuItem(
+            final String path,
+            final Material fallback,
+            final Map<String, String> placeholders
+    ) {
+        final Material material = material(plugin.getConfig().getString(path + ".material", fallback.name()), fallback);
+        if (material == null) {
+            return null;
+        }
+        final ItemStack item = new ItemStack(material);
+        final ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(Text.color(apply(plugin.getConfig().getString(path + ".name", "&r"), placeholders)));
+            meta.setLore(Text.color(apply(plugin.getConfig().getStringList(path + ".lore"), placeholders)));
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private Map<String, String> passiveWitherMenuPlaceholders(final UUID witherId) {
+        final Map<String, String> placeholders = new HashMap<>();
+        final Location target = passiveWitherDropTargetLocation(witherId);
+        if (target == null) {
+            placeholders.put("status", plugin.getLanguageManager().getMessage("passive-wither-menu-status-unlinked"));
+            placeholders.put("target", plugin.getLanguageManager().getMessage("passive-wither-menu-target-empty"));
+            placeholders.put("world", "-");
+            placeholders.put("x", "-");
+            placeholders.put("y", "-");
+            placeholders.put("z", "-");
+            return placeholders;
+        }
+        placeholders.put("status", plugin.getLanguageManager().getMessage("passive-wither-menu-status-linked"));
+        placeholders.put("target", target.getWorld() == null ? "-" : target.getWorld().getName()
+                + " " + target.getBlockX() + " " + target.getBlockY() + " " + target.getBlockZ());
+        placeholders.putAll(locationPlaceholders(target));
+        return placeholders;
+    }
+
+    private int menuSlot(final String button, final int fallback) {
+        return plugin.getConfig().getInt("passive-wither.menu.buttons." + button + ".slot", fallback);
+    }
+
+    private int normalizeInventorySize(final int configured) {
+        final int bounded = Math.max(9, Math.min(54, configured));
+        return ((bounded + 8) / 9) * 9;
     }
 
     private ItemStack createPassiveWitherEgg(final int amount) {
@@ -721,6 +912,7 @@ public final class PassiveWitherService implements Listener {
     private void loadPassiveWitherOwners() {
         passiveWitherOwners.clear();
         passiveWitherAnchors.clear();
+        passiveWitherDropTargets.clear();
         passiveWitherNextExplosions.clear();
         if (data == null) {
             return;
@@ -740,6 +932,10 @@ public final class PassiveWitherService implements Listener {
                 final Location anchor = loadLocation("withers." + witherIdText + ".anchor");
                 if (anchor != null) {
                     passiveWitherAnchors.put(witherId, anchor);
+                }
+                final Location target = loadLocation("withers." + witherIdText + ".target-inventory");
+                if (target != null && target.getBlock().getState() instanceof InventoryHolder) {
+                    passiveWitherDropTargets.put(witherId, target);
                 }
                 passiveWitherNextExplosions.put(witherId, Math.max(
                         System.currentTimeMillis(),
@@ -801,12 +997,16 @@ public final class PassiveWitherService implements Listener {
         }
         data.set("withers." + witherId + ".next-explosion-at", nextExplosionAt);
         saveLocation("withers." + witherId + ".anchor", anchor);
+        if (passiveWitherDropTargets.containsKey(witherId)) {
+            saveLocation("withers." + witherId + ".target-inventory", passiveWitherDropTargets.get(witherId));
+        }
         saveData();
     }
 
     private void removePassiveWitherOwner(final UUID witherId) {
         passiveWitherOwners.remove(witherId);
         passiveWitherAnchors.remove(witherId);
+        passiveWitherDropTargets.remove(witherId);
         passiveWitherNextExplosions.remove(witherId);
         if (data != null) {
             data.set("withers." + witherId, null);
@@ -818,6 +1018,22 @@ public final class PassiveWitherService implements Listener {
         passiveWitherNextExplosions.put(witherId, nextExplosionAt);
         if (data != null) {
             data.set("withers." + witherId + ".next-explosion-at", nextExplosionAt);
+            saveData();
+        }
+    }
+
+    private void setPassiveWitherDropTarget(final UUID witherId, final Location location) {
+        passiveWitherDropTargets.put(witherId, location);
+        if (data != null) {
+            saveLocation("withers." + witherId + ".target-inventory", location);
+            saveData();
+        }
+    }
+
+    private void clearPassiveWitherDropTarget(final UUID witherId) {
+        passiveWitherDropTargets.remove(witherId);
+        if (data != null) {
+            data.set("withers." + witherId + ".target-inventory", null);
             saveData();
         }
     }
@@ -1015,9 +1231,9 @@ public final class PassiveWitherService implements Listener {
         return false;
     }
 
-    private void routePassiveExplosionDrops(final EntityExplodeEvent event) {
+    private void routePassiveExplosionDrops(final EntityExplodeEvent event, final UUID witherId) {
         final List<Block> blocks = event.blockList();
-        final DropTarget dropTarget = findDropTarget(event.getLocation(), blocks);
+        final DropTarget dropTarget = findDropTarget(event.getLocation(), blocks, witherId);
         if (dropTarget != null) {
             blocks.removeIf(block -> isSameBlock(block, dropTarget.block));
         }
@@ -1025,8 +1241,8 @@ public final class PassiveWitherService implements Listener {
         depositDrops(event.getLocation(), dropTarget, collectDrops(blocks));
     }
 
-    private void routePassiveBlockDrops(final Location location, final List<Block> blocks) {
-        final DropTarget dropTarget = findDropTarget(location, blocks);
+    private void routePassiveBlockDrops(final UUID witherId, final Location location, final List<Block> blocks) {
+        final DropTarget dropTarget = findDropTarget(location, blocks, witherId);
         if (dropTarget != null) {
             blocks.removeIf(block -> isSameBlock(block, dropTarget.block));
         }
@@ -1075,7 +1291,11 @@ public final class PassiveWitherService implements Listener {
         }
     }
 
-    private DropTarget findDropTarget(final Location location, final List<Block> explodingBlocks) {
+    private DropTarget findDropTarget(final Location location, final List<Block> explodingBlocks, final UUID witherId) {
+        final DropTarget linkedTarget = getPassiveWitherDropTarget(witherId);
+        if (linkedTarget != null) {
+            return linkedTarget;
+        }
         final DropTarget configuredTarget = getConfiguredDropTarget();
         if (configuredTarget != null) {
             return configuredTarget;
@@ -1117,6 +1337,31 @@ public final class PassiveWitherService implements Listener {
             }
         }
         return nearest;
+    }
+
+    private DropTarget getPassiveWitherDropTarget(final UUID witherId) {
+        final Location location = passiveWitherDropTargetLocation(witherId);
+        if (location == null) {
+            return null;
+        }
+        final Block block = location.getBlock();
+        final BlockState state = block.getState();
+        if (!(state instanceof InventoryHolder)) {
+            clearPassiveWitherDropTarget(witherId);
+            return null;
+        }
+        return new DropTarget(block, ((InventoryHolder) state).getInventory());
+    }
+
+    private Location passiveWitherDropTargetLocation(final UUID witherId) {
+        if (witherId == null) {
+            return null;
+        }
+        final Location location = passiveWitherDropTargets.get(witherId);
+        if (location == null || location.getWorld() == null) {
+            return null;
+        }
+        return location.clone();
     }
 
     private DropTarget getConfiguredDropTarget() {
@@ -1363,7 +1608,7 @@ public final class PassiveWitherService implements Listener {
         final long nextExplosionAt = now + explosionCooldownMillis;
         savePassiveWitherNextExplosion(wither.getUniqueId(), nextExplosionAt);
         final List<Block> blocks = collectMiningBlocks(anchor);
-        routePassiveBlockDrops(anchor, blocks);
+        routePassiveBlockDrops(wither.getUniqueId(), anchor, blocks);
         for (final Block block : blocks) {
             rememberPassiveBlockBreakSound(block.getLocation());
         }
@@ -1791,6 +2036,19 @@ public final class PassiveWitherService implements Listener {
         private DropTarget(final Block block, final Inventory inventory) {
             this.block = block;
             this.inventory = inventory;
+        }
+    }
+
+    private static final class PassiveWitherMenuHolder implements InventoryHolder {
+        private final UUID witherId;
+
+        private PassiveWitherMenuHolder(final UUID witherId) {
+            this.witherId = witherId;
+        }
+
+        @Override
+        public Inventory getInventory() {
+            return null;
         }
     }
 }

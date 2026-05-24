@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 20
+file-version: 21
 
 # Befehle dieses Plugins.
 command:
@@ -548,6 +548,64 @@ passive-wither:
   wither:
     # Anzeigename des gespawnten passiven Withers.
     name: "&5Passiver Wither"
+  menu:
+    # Wenn true, öffnet Rechtsklick auf den passiven Wither ein kleines Verwaltungsmenü.
+    enabled: true
+    # Titel des Verwaltungsmenüs. Platzhalter: {status}, {target}, {world}, {x}, {y}, {z}
+    title: "&8Passiver Wither"
+    # Größe des Menüs. Wird automatisch auf 9er-Schritte zwischen 9 und 54 gerundet.
+    size: 27
+    filler:
+      # Wenn true, werden leere Slots mit diesem Item gefüllt.
+      enabled: true
+      # Material des Füllitems.
+      material: BLACK_STAINED_GLASS_PANE
+      # Anzeigename des Füllitems.
+      name: "&r"
+      # Lore des Füllitems.
+      lore: []
+    buttons:
+      link:
+        # Wenn true, wird der Button zum Verlinken einer Truhe angezeigt.
+        enabled: true
+        # Slot des Buttons.
+        slot: 11
+        # Material des Buttons.
+        material: CHEST
+        # Anzeigename des Buttons.
+        name: "&aTruhe verlinken"
+        # Lore des Buttons. Platzhalter: {status}, {target}, {world}, {x}, {y}, {z}
+        lore:
+          - "&7Aktuell: &f{status}"
+          - "&7Ziel: &f{target}"
+          - ""
+          - "&eKlicken, dann eine Truhe anklicken."
+      unlink:
+        # Wenn true, wird der Button zum Entfernen der Verlinkung angezeigt.
+        enabled: true
+        # Slot des Buttons.
+        slot: 15
+        # Material des Buttons.
+        material: BARRIER
+        # Anzeigename des Buttons.
+        name: "&cVerlinkung aufheben"
+        # Lore des Buttons. Platzhalter: {status}, {target}, {world}, {x}, {y}, {z}
+        lore:
+          - "&7Aktuell: &f{status}"
+          - "&7Danach nutzt der Wither wieder"
+          - "&7die globale oder nächste Truhe."
+      close:
+        # Wenn true, wird der Schließen-Button angezeigt.
+        enabled: true
+        # Slot des Buttons.
+        slot: 22
+        # Material des Buttons.
+        material: OAK_DOOR
+        # Anzeigename des Buttons.
+        name: "&cSchließen"
+        # Lore des Buttons.
+        lore:
+          - "&7Schließt dieses Menü."
 
 # Plotbackup-System.
 plot-backups:
