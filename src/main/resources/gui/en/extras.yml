@@ -2,7 +2,7 @@
 # This file controls additional services that are not directly part of PlotSquared.
 # Each button can be disabled, moved, given its own permission, or extended with custom commands.
 
-file-version: 3
+file-version: 4
 
 title: "&8Extras"
 size: 27
@@ -35,13 +35,14 @@ buttons:
   passive-wither:
     enabled: true
     slot: 13
-    material: WITHER_SKELETON_SKULL
+    material: WITHER_SKELETON_SPAWN_EGG
     name: "&5Passive Wither"
     lore:
       - "&7Buys a passive Wither spawn egg."
       - "&7Price: &f{passive_wither_price}"
-      - "&7The Wither attacks nobody"
-      - "&7and can be picked up again."
+      - "&7Stays at its spawn point"
+      - "&7and fires no skulls."
+      - "&7Drops go into a chest."
     commands:
       - "passive-wither:buy"
     close: true

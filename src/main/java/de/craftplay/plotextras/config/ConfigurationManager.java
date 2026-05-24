@@ -122,6 +122,20 @@ public final class ConfigurationManager {
                 changed = true;
             }
         }
+        if ("config.yml".equals(resourcePath) && existingVersion < 19) {
+            final String passiveWitherItem = existing.getString("passive-wither.egg.material", "");
+            if ("WITHER_SKELETON_SKULL".equalsIgnoreCase(passiveWitherItem)) {
+                existing.set("passive-wither.egg.material", "WITHER_SKELETON_SPAWN_EGG");
+                changed = true;
+            }
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/extras.yml") && existingVersion < 4) {
+            final String passiveWitherIcon = existing.getString("buttons.passive-wither.material", "");
+            if ("WITHER_SKELETON_SKULL".equalsIgnoreCase(passiveWitherIcon)) {
+                existing.set("buttons.passive-wither.material", "WITHER_SKELETON_SPAWN_EGG");
+                changed = true;
+            }
+        }
         if (resourcePath.replace('\\', '/').endsWith("/main.yml") && existingVersion < 10) {
             if (existing.contains("bedrock-form")) {
                 existing.set("bedrock-form", null);

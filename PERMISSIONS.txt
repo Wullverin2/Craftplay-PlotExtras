@@ -230,6 +230,11 @@ Zielgruppe: Spieler / Team
 Default: op
 Gibt frei: Passive Wither kostenlos kaufen.
 
+Permission: craftplayplotextras.passivewither.chest
+Zielgruppe: Team
+Default: op
+Gibt frei: Globale Passive-Wither-Zieltruhe per /passivewither chest set, clear und info verwalten.
+
 Permission: craftplayplotextras.backup.create
 Zielgruppe: Team
 Default: op

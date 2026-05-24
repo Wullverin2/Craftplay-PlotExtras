@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -40,6 +41,8 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -49,6 +52,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -84,8 +88,11 @@ public final class PassiveWitherService implements Listener {
     private final List<ProtectedExplosion> protectedExplosions = new ArrayList<>();
     private final List<SoundSuppressionArea> activeSoundSuppressions = new CopyOnWriteArrayList<>();
     private final List<SoundSuppressionArea> activeBlockBreakSoundSuppressions = new CopyOnWriteArrayList<>();
+    private final List<ScheduledExplosionMarker> scheduledExplosions = new CopyOnWriteArrayList<>();
     private final Map<UUID, Long> effectProtectedPlayers = new HashMap<>();
     private final Map<UUID, UUID> passiveWitherOwners = new HashMap<>();
+    private final Map<UUID, Location> passiveWitherAnchors = new HashMap<>();
+    private final Map<UUID, Long> passiveWitherNextExplosions = new HashMap<>();
     private final Set<Integer> passiveWitherEntityIds = ConcurrentHashMap.newKeySet();
     private final Set<UUID> soundDisabledPlayers = ConcurrentHashMap.newKeySet();
     private final List<Sound> mutedFallbackSounds = new ArrayList<>();
@@ -99,14 +106,21 @@ public final class PassiveWitherService implements Listener {
     private String commandPermission;
     private String soundPermission;
     private String freePermission;
+    private String chestPermission;
     private double price;
     private Material eggMaterial;
+    private float explosionPower;
+    private boolean explosionSetFire;
+    private int nearestInventoryRadius;
+    private boolean dropOverflow;
+    private Location configuredDropInventoryLocation;
     private long explosionCooldownMillis;
     private long nextBlockDestructionAllowedAtMillis;
     private long blockDestructionBatchUntilMillis;
     private UUID activeBlockDestructionSourceId;
     private long globalSoundSuppressionUntilMillis;
     private int soundSuppressTicks;
+    private int passiveWitherMaintenanceTicks;
     private BukkitTask soundSuppressTask;
     private BukkitTask passiveWitherMaintenanceTask;
     private PassiveWitherSoundPacketHook soundPacketHook;
@@ -132,21 +146,27 @@ public final class PassiveWitherService implements Listener {
         enabled = plugin.getConfig().getBoolean("passive-wither.enabled", true);
         dataFile = plugin.getConfig().getString("passive-wither.data-file", "passivewither.yml");
         data = plugin.getStorageService().load("passivewither", dataFile);
-        if (data.getInt("file-version", 0) < 1) {
-            data.set("file-version", 1);
+        if (data.getInt("file-version", 0) < 2) {
+            data.set("file-version", 2);
             saveData();
         }
         buyPermission = plugin.getConfig().getString("passive-wither.buy-permission", "craftplayplotextras.passivewither.buy");
         commandPermission = plugin.getConfig().getString("passive-wither.command-permission", "craftplayplotextras.passivewither.command");
         soundPermission = plugin.getConfig().getString("passive-wither.sound-permission", "craftplayplotextras.passivewither.sound");
         freePermission = plugin.getConfig().getString("passive-wither.free-permission", "craftplayplotextras.passivewither.free");
+        chestPermission = plugin.getConfig().getString("passive-wither.chest-permission", "craftplayplotextras.passivewither.chest");
         price = Math.max(0.0D, plugin.getConfig().getDouble("passive-wither.price", 25000.0D));
-        eggMaterial = material(plugin.getConfig().getString("passive-wither.egg.material", "WITHER_SKELETON_SKULL"), Material.WITHER_SKELETON_SKULL);
+        eggMaterial = material(plugin.getConfig().getString("passive-wither.egg.material", "WITHER_SKELETON_SPAWN_EGG"), Material.WITHER_SKELETON_SPAWN_EGG);
         economyEnabled = plugin.getConfig().getBoolean("passive-wither.economy.enabled", true);
         explosionCooldownMillis = Math.max(0L, Math.round(plugin.getConfig()
                 .getDouble("passive-wither.explosion-cooldown-seconds", 5.0D) * 1000.0D));
+        explosionPower = (float) Math.max(0.0D, plugin.getConfig().getDouble("passive-wither.explosion.power", 4.0D));
+        explosionSetFire = plugin.getConfig().getBoolean("passive-wither.explosion.set-fire", false);
+        nearestInventoryRadius = Math.max(1, plugin.getConfig().getInt("passive-wither.drops.nearest-inventory-radius", 16));
+        dropOverflow = plugin.getConfig().getBoolean("passive-wither.drops.drop-overflow", true);
 
         loadPassiveWitherOwners();
+        loadConfiguredDropInventory();
         loadSoundDisabledPlayers();
         setupEconomy();
         registerPlotSquaredFlag();
@@ -169,6 +189,7 @@ public final class PassiveWitherService implements Listener {
             soundPacketHook = null;
         }
         passiveWitherEntityIds.clear();
+        scheduledExplosions.clear();
     }
 
     public void runMenuCommand(final Player player, final String payload) {
@@ -197,6 +218,9 @@ public final class PassiveWitherService implements Listener {
     public boolean handleCommand(final CommandSender sender, final String label, final String[] args) {
         if (args.length > 0 && args[0].equalsIgnoreCase("sound")) {
             return handleSoundCommand(sender, label, args);
+        }
+        if (args.length > 0 && (args[0].equalsIgnoreCase("chest") || args[0].equalsIgnoreCase("truhe"))) {
+            return handleChestCommand(sender, label, args);
         }
 
         if (!sender.hasPermission(commandPermission)) {
@@ -241,6 +265,56 @@ public final class PassiveWitherService implements Listener {
 
         givePassiveWitherEgg(target, amount);
         plugin.getLanguageManager().send(sender, "passive-wither-egg-given");
+        return true;
+    }
+
+    private boolean handleChestCommand(final CommandSender sender, final String label, final String[] args) {
+        if (chestPermission != null && !chestPermission.trim().isEmpty() && !sender.hasPermission(chestPermission.trim())) {
+            plugin.getLanguageManager().send(sender, "no-permission");
+            return true;
+        }
+        if (args.length < 2) {
+            sendChestUsage(sender, label);
+            return true;
+        }
+
+        final String mode = args[1].toLowerCase(Locale.ROOT);
+        if (mode.equals("set") || mode.equals("setzen")) {
+            if (!(sender instanceof Player)) {
+                plugin.getLanguageManager().send(sender, "only-players");
+                return true;
+            }
+            final Player player = (Player) sender;
+            final Block targetBlock = player.getTargetBlockExact(8);
+            if (targetBlock == null || !(targetBlock.getState() instanceof InventoryHolder)) {
+                plugin.getLanguageManager().send(player, "passive-wither-chest-not-found");
+                return true;
+            }
+            configuredDropInventoryLocation = targetBlock.getLocation();
+            saveConfiguredDropInventory();
+            plugin.getLanguageManager().send(player, "passive-wither-chest-set",
+                    locationPlaceholders(configuredDropInventoryLocation));
+            return true;
+        }
+        if (mode.equals("clear") || mode.equals("remove") || mode.equals("entfernen")) {
+            configuredDropInventoryLocation = null;
+            if (data != null) {
+                data.set("target-inventory", null);
+                saveData();
+            }
+            plugin.getLanguageManager().send(sender, "passive-wither-chest-cleared");
+            return true;
+        }
+        if (mode.equals("info")) {
+            if (configuredDropInventoryLocation == null) {
+                plugin.getLanguageManager().send(sender, "passive-wither-chest-info-empty");
+            } else {
+                plugin.getLanguageManager().send(sender, "passive-wither-chest-info",
+                        locationPlaceholders(configuredDropInventoryLocation));
+            }
+            return true;
+        }
+        sendChestUsage(sender, label);
         return true;
     }
 
@@ -295,6 +369,7 @@ public final class PassiveWitherService implements Listener {
             addIfMatches(values, "give", args[0]);
             addIfMatches(values, "reload", args[0]);
             addIfMatches(values, "sound", args[0]);
+            addIfMatches(values, "chest", args[0]);
             return values;
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("sound")) {
@@ -304,7 +379,14 @@ public final class PassiveWitherService implements Listener {
             addIfMatches(values, "toggle", args[1]);
             return values;
         }
-        if (args.length == 2) {
+        if (args.length == 2 && (args[0].equalsIgnoreCase("chest") || args[0].equalsIgnoreCase("truhe"))) {
+            final List<String> values = new ArrayList<>();
+            addIfMatches(values, "set", args[1]);
+            addIfMatches(values, "clear", args[1]);
+            addIfMatches(values, "info", args[1]);
+            return values;
+        }
+        if (args.length == 2 && (args[0].equalsIgnoreCase("egg") || args[0].equalsIgnoreCase("give"))) {
             final String input = args[1].toLowerCase(Locale.ROOT);
             final List<String> values = new ArrayList<>();
             for (final Player player : plugin.getServer().getOnlinePlayers()) {
@@ -314,7 +396,7 @@ public final class PassiveWitherService implements Listener {
             }
             return values;
         }
-        if (args.length == 3) {
+        if (args.length == 3 && (args[0].equalsIgnoreCase("egg") || args[0].equalsIgnoreCase("give"))) {
             final List<String> values = new ArrayList<>();
             for (final String option : new String[]{"1", "8", "16", "64"}) {
                 addIfMatches(values, option, args[2]);
@@ -426,12 +508,8 @@ public final class PassiveWitherService implements Listener {
         final Projectile projectile = event.getEntity();
         final ProjectileSource shooter = projectile.getShooter();
         if (shooter instanceof Entity && isPassiveWither((Entity) shooter)) {
-            markPassive(projectile);
-            projectile.getPersistentDataContainer().set(
-                    passiveWitherSourceKey,
-                    PersistentDataType.STRING,
-                    ((Entity) shooter).getUniqueId().toString()
-            );
+            event.setCancelled(true);
+            projectile.remove();
             triggerPassiveWitherSoundSuppression(projectile.getLocation());
         }
     }
@@ -442,20 +520,31 @@ public final class PassiveWitherService implements Listener {
         if (sourceId == null) {
             return;
         }
+        if (findScheduledExplosion(sourceId, event.getEntity().getLocation()) == null) {
+            event.setCancelled(true);
+            triggerPassiveWitherSoundSuppression(event.getEntity().getLocation());
+            return;
+        }
         rememberExplosion(event.getEntity().getLocation(), event.getRadius());
         triggerPassiveWitherSoundSuppression(event.getEntity().getLocation());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPassiveWitherExplosion(final EntityExplodeEvent event) {
-        final UUID sourceId = getPassiveWitherExplosionSourceId(event.getEntity());
+        UUID sourceId = getPassiveWitherExplosionSourceId(event.getEntity());
+        ScheduledExplosionMarker scheduledExplosion = findScheduledExplosion(sourceId, event.getLocation());
+        if (sourceId == null && scheduledExplosion != null) {
+            sourceId = scheduledExplosion.sourceId;
+        }
         if (sourceId == null) {
             return;
         }
-        if (!tryUseBlockDestruction(sourceId)) {
+        if (scheduledExplosion == null) {
             event.blockList().clear();
             event.setYield(0.0F);
         } else {
+            scheduledExplosions.remove(scheduledExplosion);
+            routePassiveExplosionDrops(event);
             for (final Block block : event.blockList()) {
                 rememberPassiveBlockBreakSound(block.getLocation());
             }
@@ -486,13 +575,6 @@ public final class PassiveWitherService implements Listener {
         final boolean passiveWitherTarget = isPassiveWither(livingEntity);
         if (passiveWitherTarget) {
             triggerPassiveWitherSoundSuppression(livingEntity.getLocation());
-        }
-        if (passiveWitherTarget && isBlockDamageCause(event.getCause())) {
-            event.setCancelled(true);
-            return;
-        }
-        if (passiveWitherTarget && event instanceof EntityDamageByEntityEvent
-                && isPlayerDamageSource(((EntityDamageByEntityEvent) event).getDamager())) {
             event.setCancelled(true);
             return;
         }
@@ -559,7 +641,7 @@ public final class PassiveWitherService implements Listener {
             return false;
         }
         final Wither wither = world.spawn(location, Wither.class);
-        setupPassiveWither(wither, owner);
+        setupPassiveWither(wither, owner, location);
         if (wither.isValid()) {
             passiveWitherEntityIds.add(wither.getEntityId());
             savePassiveWitherOwner(wither, owner);
@@ -568,13 +650,15 @@ public final class PassiveWitherService implements Listener {
         return wither.isValid();
     }
 
-    private void setupPassiveWither(final Wither wither, final Player owner) {
+    private void setupPassiveWither(final Wither wither, final Player owner, final Location anchorLocation) {
         markPassive(wither);
         wither.getPersistentDataContainer().set(passiveWitherOwnerKey, PersistentDataType.STRING, owner.getUniqueId().toString());
         wither.setCustomName(Text.color(plugin.getConfig().getString("passive-wither.wither.name", "&5Passiver Wither")));
         wither.setCustomNameVisible(true);
         wither.setRemoveWhenFarAway(false);
-        wither.setTarget(null);
+        configureStationaryWither(wither);
+        setPassiveWitherAnchor(wither, anchorLocation);
+        passiveWitherNextExplosions.put(wither.getUniqueId(), System.currentTimeMillis() + explosionCooldownMillis);
         passiveWitherEntityIds.add(wither.getEntityId());
         hidePassiveWitherBossBar(wither);
     }
@@ -633,6 +717,8 @@ public final class PassiveWitherService implements Listener {
 
     private void loadPassiveWitherOwners() {
         passiveWitherOwners.clear();
+        passiveWitherAnchors.clear();
+        passiveWitherNextExplosions.clear();
         if (data == null) {
             return;
         }
@@ -646,10 +732,27 @@ public final class PassiveWitherService implements Listener {
                 continue;
             }
             try {
-                passiveWitherOwners.put(UUID.fromString(witherIdText), UUID.fromString(ownerIdText));
+                final UUID witherId = UUID.fromString(witherIdText);
+                passiveWitherOwners.put(witherId, UUID.fromString(ownerIdText));
+                final Location anchor = loadLocation("withers." + witherIdText + ".anchor");
+                if (anchor != null) {
+                    passiveWitherAnchors.put(witherId, anchor);
+                }
+                passiveWitherNextExplosions.put(witherId, Math.max(
+                        System.currentTimeMillis(),
+                        data.getLong("withers." + witherIdText + ".next-explosion-at", System.currentTimeMillis() + explosionCooldownMillis)
+                ));
             } catch (final IllegalArgumentException ignored) {
                 plugin.getLogger().warning("Ungueltiger Passive-Wither-Datensatz: " + witherIdText);
             }
+        }
+    }
+
+    private void loadConfiguredDropInventory() {
+        configuredDropInventoryLocation = loadLocation("target-inventory");
+        if (configuredDropInventoryLocation != null
+                && !(configuredDropInventoryLocation.getBlock().getState() instanceof InventoryHolder)) {
+            configuredDropInventoryLocation = null;
         }
     }
 
@@ -669,20 +772,49 @@ public final class PassiveWitherService implements Listener {
     }
 
     private void savePassiveWitherOwner(final Entity wither, final UUID owner, final String ownerName) {
+        final UUID witherId = wither.getUniqueId();
+        final Location anchor = getPassiveWitherAnchor(wither);
+        final long nextExplosionAt = passiveWitherNextExplosions.containsKey(witherId)
+                ? passiveWitherNextExplosions.get(witherId)
+                : System.currentTimeMillis() + explosionCooldownMillis;
+        passiveWitherNextExplosions.put(witherId, nextExplosionAt);
         passiveWitherOwners.put(wither.getUniqueId(), owner);
-        data.set("withers." + wither.getUniqueId() + ".owner", owner.toString());
-        data.set("withers." + wither.getUniqueId() + ".owner-name", ownerName == null ? "unknown" : ownerName);
-        data.set("withers." + wither.getUniqueId() + ".world", wither.getWorld().getName());
-        data.set("withers." + wither.getUniqueId() + ".spawned-at", System.currentTimeMillis());
+        data.set("withers." + witherId + ".owner", owner.toString());
+        data.set("withers." + witherId + ".owner-name", ownerName == null ? "unknown" : ownerName);
+        data.set("withers." + witherId + ".world", wither.getWorld().getName());
+        if (!data.contains("withers." + witherId + ".spawned-at")) {
+            data.set("withers." + witherId + ".spawned-at", System.currentTimeMillis());
+        }
+        data.set("withers." + witherId + ".next-explosion-at", nextExplosionAt);
+        saveLocation("withers." + witherId + ".anchor", anchor);
         saveData();
     }
 
     private void removePassiveWitherOwner(final UUID witherId) {
         passiveWitherOwners.remove(witherId);
+        passiveWitherAnchors.remove(witherId);
+        passiveWitherNextExplosions.remove(witherId);
         if (data != null) {
             data.set("withers." + witherId, null);
             saveData();
         }
+    }
+
+    private void savePassiveWitherNextExplosion(final UUID witherId, final long nextExplosionAt) {
+        passiveWitherNextExplosions.put(witherId, nextExplosionAt);
+        if (data != null) {
+            data.set("withers." + witherId + ".next-explosion-at", nextExplosionAt);
+            saveData();
+        }
+    }
+
+    private void saveConfiguredDropInventory() {
+        if (configuredDropInventoryLocation == null) {
+            data.set("target-inventory", null);
+        } else {
+            saveLocation("target-inventory", configuredDropInventoryLocation);
+        }
+        saveData();
     }
 
     private void saveSoundDisabledPlayers() {
@@ -768,6 +900,144 @@ public final class PassiveWitherService implements Listener {
             }
         }
         return null;
+    }
+
+    private ScheduledExplosionMarker findScheduledExplosion(final UUID sourceId, final Location location) {
+        if (location == null) {
+            return null;
+        }
+        final long now = System.currentTimeMillis();
+        scheduledExplosions.removeIf(marker -> marker.expiresAtMillis < now);
+        for (final ScheduledExplosionMarker marker : scheduledExplosions) {
+            if ((sourceId == null || marker.sourceId.equals(sourceId)) && marker.isInside(location)) {
+                return marker;
+            }
+        }
+        return null;
+    }
+
+    private void routePassiveExplosionDrops(final EntityExplodeEvent event) {
+        final List<Block> blocks = event.blockList();
+        final DropTarget dropTarget = findDropTarget(event.getLocation(), blocks);
+        if (dropTarget != null) {
+            blocks.removeIf(block -> isSameBlock(block, dropTarget.block));
+        }
+
+        final List<ItemStack> drops = new ArrayList<>();
+        for (final Block block : blocks) {
+            final BlockState state = block.getState();
+            if (state instanceof InventoryHolder) {
+                for (final ItemStack content : ((InventoryHolder) state).getInventory().getContents()) {
+                    if (content != null && content.getType() != Material.AIR) {
+                        drops.add(content.clone());
+                    }
+                }
+            }
+            for (final ItemStack drop : block.getDrops()) {
+                if (drop != null && drop.getType() != Material.AIR) {
+                    drops.add(drop.clone());
+                }
+            }
+        }
+
+        event.setYield(0.0F);
+        if (drops.isEmpty()) {
+            return;
+        }
+
+        if (dropTarget == null) {
+            if (dropOverflow) {
+                dropItems(event.getLocation(), drops);
+            }
+            return;
+        }
+
+        for (final ItemStack drop : drops) {
+            final Map<Integer, ItemStack> leftovers = dropTarget.inventory.addItem(drop);
+            if (dropOverflow) {
+                dropItems(dropTarget.block.getLocation().add(0.5D, 1.0D, 0.5D), new ArrayList<>(leftovers.values()));
+            }
+        }
+    }
+
+    private DropTarget findDropTarget(final Location location, final List<Block> explodingBlocks) {
+        final DropTarget configuredTarget = getConfiguredDropTarget();
+        if (configuredTarget != null) {
+            return configuredTarget;
+        }
+        final World world = location.getWorld();
+        if (world == null) {
+            return null;
+        }
+        final Set<String> ignoredBlocks = new HashSet<>();
+        for (final Block block : explodingBlocks) {
+            if (block.getWorld().getUID().equals(world.getUID())) {
+                ignoredBlocks.add(blockKey(block));
+            }
+        }
+        DropTarget nearest = null;
+        double nearestDistance = Double.MAX_VALUE;
+        final int centerX = location.getBlockX();
+        final int centerY = location.getBlockY();
+        final int centerZ = location.getBlockZ();
+        final int minY = Math.max(0, centerY - nearestInventoryRadius);
+        final int maxY = Math.min(world.getMaxHeight() - 1, centerY + nearestInventoryRadius);
+        for (int x = centerX - nearestInventoryRadius; x <= centerX + nearestInventoryRadius; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = centerZ - nearestInventoryRadius; z <= centerZ + nearestInventoryRadius; z++) {
+                    final Block block = world.getBlockAt(x, y, z);
+                    if (ignoredBlocks.contains(blockKey(block))) {
+                        continue;
+                    }
+                    final BlockState state = block.getState();
+                    if (!(state instanceof InventoryHolder)) {
+                        continue;
+                    }
+                    final double distance = block.getLocation().add(0.5D, 0.5D, 0.5D).distanceSquared(location);
+                    if (distance < nearestDistance) {
+                        nearestDistance = distance;
+                        nearest = new DropTarget(block, ((InventoryHolder) state).getInventory());
+                    }
+                }
+            }
+        }
+        return nearest;
+    }
+
+    private DropTarget getConfiguredDropTarget() {
+        if (configuredDropInventoryLocation == null || configuredDropInventoryLocation.getWorld() == null) {
+            return null;
+        }
+        final Block block = configuredDropInventoryLocation.getBlock();
+        final BlockState state = block.getState();
+        if (!(state instanceof InventoryHolder)) {
+            return null;
+        }
+        return new DropTarget(block, ((InventoryHolder) state).getInventory());
+    }
+
+    private void dropItems(final Location location, final List<ItemStack> items) {
+        final World world = location.getWorld();
+        if (world == null) {
+            return;
+        }
+        for (final ItemStack item : items) {
+            if (item != null && item.getType() != Material.AIR && item.getAmount() > 0) {
+                world.dropItemNaturally(location, item);
+            }
+        }
+    }
+
+    private boolean isSameBlock(final Block first, final Block second) {
+        return first != null && second != null
+                && first.getWorld().getUID().equals(second.getWorld().getUID())
+                && first.getX() == second.getX()
+                && first.getY() == second.getY()
+                && first.getZ() == second.getZ();
+    }
+
+    private String blockKey(final Block block) {
+        return block.getX() + ":" + block.getY() + ":" + block.getZ();
     }
 
     private boolean tryUseBlockDestruction(final UUID sourceId) {
@@ -877,7 +1147,11 @@ public final class PassiveWitherService implements Listener {
             for (final Entity entity : world.getEntities()) {
                 if (isPassiveWither(entity)) {
                     passiveWitherEntityIds.add(entity.getEntityId());
-                    hidePassiveWitherBossBar((Wither) entity);
+                    final Wither wither = (Wither) entity;
+                    getPassiveWitherOwner(wither);
+                    configureStationaryWither(wither);
+                    getPassiveWitherAnchor(wither);
+                    hidePassiveWitherBossBar(wither);
                 }
             }
         }
@@ -896,7 +1170,119 @@ public final class PassiveWitherService implements Listener {
             return;
         }
         soundSuppressTask = plugin.getServer().getScheduler().runTaskTimer(plugin, this::runSoundSuppressionTick, 1L, 1L);
-        passiveWitherMaintenanceTask = plugin.getServer().getScheduler().runTaskTimer(plugin, this::refreshPassiveWitherEntityIds, 20L, 20L);
+        passiveWitherMaintenanceTask = plugin.getServer().getScheduler().runTaskTimer(plugin, this::runPassiveWitherMaintenanceTick, 1L, 1L);
+    }
+
+    private void runPassiveWitherMaintenanceTick() {
+        passiveWitherMaintenanceTicks++;
+        if (passiveWitherMaintenanceTicks >= 20) {
+            passiveWitherMaintenanceTicks = 0;
+            refreshPassiveWitherEntityIds();
+        }
+
+        final long now = System.currentTimeMillis();
+        scheduledExplosions.removeIf(marker -> marker.expiresAtMillis < now);
+        for (final UUID witherId : new HashSet<>(passiveWitherOwners.keySet())) {
+            final Entity entity = Bukkit.getEntity(witherId);
+            if (!(entity instanceof Wither) || !entity.isValid() || entity.isDead() || !isPassiveWither(entity)) {
+                continue;
+            }
+            final Wither wither = (Wither) entity;
+            keepPassiveWitherStationary(wither);
+            final long nextExplosionAt = passiveWitherNextExplosions.containsKey(witherId)
+                    ? passiveWitherNextExplosions.get(witherId)
+                    : now + explosionCooldownMillis;
+            if (!passiveWitherNextExplosions.containsKey(witherId)) {
+                savePassiveWitherNextExplosion(witherId, nextExplosionAt);
+            }
+            if (now >= nextExplosionAt) {
+                triggerPassiveWitherExplosion(wither, now);
+            }
+        }
+    }
+
+    private void configureStationaryWither(final Wither wither) {
+        wither.setTarget(null);
+        wither.setAI(false);
+        wither.setGravity(false);
+        wither.setInvulnerable(true);
+        wither.setCollidable(false);
+        wither.setVelocity(new Vector(0.0D, 0.0D, 0.0D));
+    }
+
+    private void setPassiveWitherAnchor(final Wither wither, final Location location) {
+        final Location anchor = location.clone();
+        anchor.setYaw(0.0F);
+        anchor.setPitch(0.0F);
+        passiveWitherAnchors.put(wither.getUniqueId(), anchor);
+        wither.teleport(anchor);
+    }
+
+    private Location getPassiveWitherAnchor(final Entity entity) {
+        Location anchor = passiveWitherAnchors.get(entity.getUniqueId());
+        if (anchor == null || anchor.getWorld() == null) {
+            anchor = entity.getLocation().clone();
+            anchor.setYaw(0.0F);
+            anchor.setPitch(0.0F);
+            passiveWitherAnchors.put(entity.getUniqueId(), anchor);
+        }
+        return anchor.clone();
+    }
+
+    private void keepPassiveWitherStationary(final Wither wither) {
+        configureStationaryWither(wither);
+        final Location anchor = getPassiveWitherAnchor(wither);
+        final Location current = wither.getLocation();
+        if (current.getWorld() == null || anchor.getWorld() == null
+                || !current.getWorld().getUID().equals(anchor.getWorld().getUID())
+                || current.distanceSquared(anchor) > 0.0001D
+                || Math.abs(current.getYaw() - anchor.getYaw()) > 0.01F
+                || Math.abs(current.getPitch() - anchor.getPitch()) > 0.01F) {
+            wither.teleport(anchor);
+        }
+        wither.setVelocity(new Vector(0.0D, 0.0D, 0.0D));
+    }
+
+    private void triggerPassiveWitherExplosion(final Wither wither, final long now) {
+        final Location anchor = getPassiveWitherAnchor(wither);
+        final World world = anchor.getWorld();
+        if (world == null) {
+            return;
+        }
+        final long nextExplosionAt = now + explosionCooldownMillis;
+        savePassiveWitherNextExplosion(wither.getUniqueId(), nextExplosionAt);
+        scheduledExplosions.add(new ScheduledExplosionMarker(
+                wither.getUniqueId(),
+                anchor,
+                Math.max(MIN_EXPLOSION_PROTECTION_RADIUS, explosionPower + 2.0D),
+                now + EXPLOSION_PROTECTION_MILLIS
+        ));
+        rememberExplosion(anchor, Math.max(MIN_EXPLOSION_PROTECTION_RADIUS, explosionPower));
+        triggerPassiveWitherSoundSuppression(anchor);
+        createPassiveWitherExplosion(world, anchor, wither);
+        keepPassiveWitherStationary(wither);
+    }
+
+    private void createPassiveWitherExplosion(final World world, final Location location, final Wither source) {
+        try {
+            final Method method = world.getClass().getMethod(
+                    "createExplosion",
+                    double.class,
+                    double.class,
+                    double.class,
+                    float.class,
+                    boolean.class,
+                    boolean.class,
+                    Entity.class
+            );
+            method.invoke(world, location.getX(), location.getY(), location.getZ(), explosionPower, explosionSetFire, true, source);
+            return;
+        } catch (final NoSuchMethodException ignored) {
+            // Spigot 1.16 exposes both variants depending on the server implementation.
+        } catch (final IllegalAccessException | InvocationTargetException exception) {
+            plugin.getLogger().log(Level.WARNING, "Passive-Wither-Explosion konnte nicht mit Quelle erstellt werden.", exception);
+        }
+        world.createExplosion(location.getX(), location.getY(), location.getZ(), explosionPower, explosionSetFire, true);
     }
 
     private void hidePassiveWitherBossBar(final Wither wither) {
@@ -1138,6 +1524,48 @@ public final class PassiveWitherService implements Listener {
         return result;
     }
 
+    private Location loadLocation(final String path) {
+        if (data == null || !data.contains(path + ".world")) {
+            return null;
+        }
+        final String worldName = data.getString(path + ".world", "");
+        final World world = plugin.getServer().getWorld(worldName);
+        if (world == null) {
+            return null;
+        }
+        final Location location = new Location(
+                world,
+                data.getDouble(path + ".x"),
+                data.getDouble(path + ".y"),
+                data.getDouble(path + ".z")
+        );
+        location.setYaw((float) data.getDouble(path + ".yaw", 0.0D));
+        location.setPitch((float) data.getDouble(path + ".pitch", 0.0D));
+        return location;
+    }
+
+    private void saveLocation(final String path, final Location location) {
+        if (location == null || location.getWorld() == null) {
+            data.set(path, null);
+            return;
+        }
+        data.set(path + ".world", location.getWorld().getName());
+        data.set(path + ".x", location.getX());
+        data.set(path + ".y", location.getY());
+        data.set(path + ".z", location.getZ());
+        data.set(path + ".yaw", (double) location.getYaw());
+        data.set(path + ".pitch", (double) location.getPitch());
+    }
+
+    private Map<String, String> locationPlaceholders(final Location location) {
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("world", location.getWorld() == null ? "-" : location.getWorld().getName());
+        placeholders.put("x", String.valueOf(location.getBlockX()));
+        placeholders.put("y", String.valueOf(location.getBlockY()));
+        placeholders.put("z", String.valueOf(location.getBlockZ()));
+        return placeholders;
+    }
+
     private void sendUsage(final CommandSender sender, final String label) {
         final Map<String, String> placeholders = new HashMap<>();
         placeholders.put("label", label);
@@ -1148,6 +1576,12 @@ public final class PassiveWitherService implements Listener {
         final Map<String, String> placeholders = new HashMap<>();
         placeholders.put("label", label);
         plugin.getLanguageManager().send(sender, "passive-wither-sound-usage", placeholders);
+    }
+
+    private void sendChestUsage(final CommandSender sender, final String label) {
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("label", label);
+        plugin.getLanguageManager().send(sender, "passive-wither-chest-usage", placeholders);
     }
 
     private void saveData() {
@@ -1214,6 +1648,51 @@ public final class PassiveWitherService implements Listener {
             final double dy = location.getY() - y;
             final double dz = location.getZ() - z;
             return dx * dx + dy * dy + dz * dz <= radiusSquared;
+        }
+    }
+
+    private static final class ScheduledExplosionMarker {
+        private final UUID sourceId;
+        private final UUID worldId;
+        private final double x;
+        private final double y;
+        private final double z;
+        private final double radiusSquared;
+        private final long expiresAtMillis;
+
+        private ScheduledExplosionMarker(
+                final UUID sourceId,
+                final Location location,
+                final double radius,
+                final long expiresAtMillis
+        ) {
+            this.sourceId = sourceId;
+            this.worldId = location.getWorld() == null ? null : location.getWorld().getUID();
+            this.x = location.getX();
+            this.y = location.getY();
+            this.z = location.getZ();
+            this.radiusSquared = radius * radius;
+            this.expiresAtMillis = expiresAtMillis;
+        }
+
+        private boolean isInside(final Location location) {
+            if (location.getWorld() == null || worldId == null || !worldId.equals(location.getWorld().getUID())) {
+                return false;
+            }
+            final double dx = location.getX() - x;
+            final double dy = location.getY() - y;
+            final double dz = location.getZ() - z;
+            return dx * dx + dy * dy + dz * dz <= radiusSquared;
+        }
+    }
+
+    private static final class DropTarget {
+        private final Block block;
+        private final Inventory inventory;
+
+        private DropTarget(final Block block, final Inventory inventory) {
+            this.block = block;
+            this.inventory = inventory;
         }
     }
 }

@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 18
+file-version: 19
 
 # Befehle dieses Plugins.
 command:
@@ -499,22 +499,36 @@ passive-wither:
   sound-permission: "craftplayplotextras.passivewither.sound"
   # Permission, mit der das Spawnei kostenlos gekauft werden kann.
   free-permission: "craftplayplotextras.passivewither.free"
-  # Globaler Cooldown zwischen passiven Wither-Explosionen, die Blöcke zerstören dürfen.
-  # Explosionen und Effekte bleiben sichtbar, aber Blöcke werden nur nach diesem Cooldown zerstört.
+  # Permission, mit der Teammitglieder die globale Zieltruhe für Passive-Wither-Drops setzen dürfen.
+  chest-permission: "craftplayplotextras.passivewither.chest"
+  # Cooldown pro passivem Wither. Erst nach diesem Zeitraum löst er seine Block-Explosion aus.
   explosion-cooldown-seconds: 5.0
+  explosion:
+    # Stärke der geplanten Explosion. 4.0 entspricht ungefähr einer normalen Wither-Explosion.
+    power: 4.0
+    # Wenn true, kann die geplante Explosion Feuer setzen.
+    set-fire: false
+  drops:
+    # Suchradius für die nächste Truhe bzw. das nächste Inventar, wenn keine feste Zieltruhe gesetzt ist.
+    nearest-inventory-radius: 16
+    # Wenn true, werden Items, die nicht mehr in die Truhe passen, neben der Truhe gedroppt.
+    # Wenn false, gehen überzählige Items verloren.
+    drop-overflow: true
   economy:
     # Wenn true, wird der Kaufpreis über Vault/CMI-Economy abgebucht.
     enabled: true
   egg:
-    # Material des Passive-Wither-Items. Auf 1.16 gibt es kein WITHER_SPAWN_EGG, daher ist der Default ein Schädel.
-    material: WITHER_SKELETON_SKULL
+    # Material des Passive-Wither-Items. Das Item bekommt zusätzlich einen internen Passive-Wither-Tag.
+    # Auf 1.16 gibt es kein echtes WITHER_SPAWN_EGG, daher nutzt der Default ein Wither-Skelett-Spawnei.
+    material: WITHER_SKELETON_SPAWN_EGG
     # Anzeigename des gekauften Spawneis.
     name: "&5Passiver Wither"
     # Lore des Spawneis. Platzhalter: {price}
     lore:
-      - "&7Greift keine Kreaturen an."
-      - "&7Explosionen bleiben normal."
-      - "&7Blöcke nur nach Cooldown."
+      - "&7Bleibt stationär am Spawnpunkt."
+      - "&7Schießt keine Witherköpfe."
+      - "&7Explosion nach Cooldown."
+      - "&7Drops gehen in die nächste Truhe."
       - "&7Sneak-Rechtsklick zum Einsammeln."
       - ""
       - "&7Preis: &f{price}"
