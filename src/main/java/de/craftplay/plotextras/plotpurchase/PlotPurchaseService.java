@@ -486,39 +486,7 @@ public final class PlotPurchaseService {
             final double globalDiscount = plugin.getConfig().getDouble("plot-purchase.discounts.global.value-percent", 0.0D);
             price -= (globalDiscount / 100.0D) * price;
         }
-        if (plugin.getConfig().getBoolean("plot-purchase.discounts.group.active", false)) {
-            final int groups = Math.max(0, plugin.getConfig().getInt("plot-purchase.discounts.group.number-groups", 10));
-            for (int index = 1; index <= groups; index++) {
-                final String path = "plot-purchase.discounts.group.groups.group" + index + ".";
-                final String groupName = plugin.getConfig().getString(path + "group-name", "");
-                if (groupName == null || groupName.trim().isEmpty() || !playerInGroup(player, groupName.trim())) {
-                    continue;
-                }
-                final double groupDiscount = plugin.getConfig().getDouble(path + "value-percent", 0.0D);
-                price -= (groupDiscount / 100.0D) * price;
-            }
-        }
         return Math.max(0.0D, price);
-    }
-
-    private boolean playerInGroup(final Player player, final String groupName) {
-        if (permissionProvider == null) {
-            return false;
-        }
-        try {
-            final Method method = permissionProvider.getClass().getMethod("playerInGroup", Player.class, String.class);
-            final Object result = method.invoke(permissionProvider, player, groupName);
-            return result instanceof Boolean && (Boolean) result;
-        } catch (final ReflectiveOperationException ignored) {
-            // Try the modern Vault signature below.
-        }
-        try {
-            final Method method = permissionProvider.getClass().getMethod("playerInGroup", String.class, OfflinePlayer.class, String.class);
-            final Object result = method.invoke(permissionProvider, player.getWorld().getName(), player, groupName);
-            return result instanceof Boolean && (Boolean) result;
-        } catch (final ReflectiveOperationException ignored) {
-            return false;
-        }
     }
 
     private int luckPermsGroupWeight(final String groupName) {

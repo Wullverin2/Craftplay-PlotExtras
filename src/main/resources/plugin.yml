@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Pluginbeschreibung.
 # Diese Datei wird nicht in den Pluginordner kopiert, sondern direkt aus dem JAR gelesen.
-file-version: 20
+file-version: 21
 
 # Interner Pluginname. Dieser Name erscheint in der Pluginliste des Servers.
 name: CraftplayPlotExtras
@@ -74,7 +74,7 @@ permissions:
   craftplayplotextras.plotbuy:
     # Erlaubt Spielern, das Plotlimit-Kaufmenü zu öffnen und zusätzliche Plotlimits zu kaufen.
     description: Erlaubt das Nutzen des Plotlimit-Kaufmenüs.
-    default: false
+    default: true
   craftplayplotextras.create.premium:
     # Erlaubt das Nutzen des Premiumplot-Buttons im Plot-Erstellen-Menü.
     description: Erlaubt Premiumplot-Erstellung über das Menü.

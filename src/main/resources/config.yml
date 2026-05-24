@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 31
+file-version: 32
 
 # Befehle dieses Plugins.
 command:
@@ -241,6 +241,7 @@ plot-purchase:
   # Wenn true, wird ein erfolgreicher Kauf in die Konsole geschrieben.
   logging: true
   # Permission, die Spieler brauchen, damit der Button im Hauptmenü und das Kaufmenü sichtbar/nutzbar sind.
+  # Diese Permission ist im Plugin standardmäßig für alle Spieler aktiv und kann bei Bedarf in LuckPerms verneint werden.
   purchase-permission: "craftplayplotextras.plotbuy"
   # PlotSquared-Permission-Präfix. Das Plugin setzt gekaufte Limits wie LostPlots direkt als Spielerpermission, z. B. plots.plot.10.
   plot-permission-prefix: "plots.plot."
@@ -260,51 +261,13 @@ plot-purchase:
   # Gratisplots werden nicht im Plugin gepflegt.
   # Das Plugin liest die LuckPerms-Gruppen des Spielers, nimmt die Gruppe mit der höchsten Gewichtung
   # und liest daraus die PlotSquared-Permission plots.plot.<anzahl> als Gratislimit.
-  # Rabatte aus LostPlots, erweitert um sichere Preisgrenzen.
+  # Globaler Rabatt für alle Spieler. Wenn active true ist, zahlen alle Spieler den reduzierten Preis.
   discounts:
     global:
       # Aktiviert einen globalen Rabatt für alle Spieler.
       active: false
       # Rabatt in Prozent. 10 bedeutet 10 Prozent weniger.
       value-percent: 0.0
-    group:
-      # Aktiviert Gruppenrabatte über Vault-Permissions.
-      active: false
-      # Anzahl der unten konfigurierten Gruppen. Im Gegensatz zu LostPlots wird die letzte Gruppe hier mit geprüft.
-      number-groups: 10
-      groups:
-        group1:
-          # Vault-Gruppenname.
-          group-name: "default"
-          # Rabatt in Prozent für diese Gruppe.
-          value-percent: 0.0
-        group2:
-          group-name: ""
-          value-percent: 0.0
-        group3:
-          group-name: ""
-          value-percent: 0.0
-        group4:
-          group-name: ""
-          value-percent: 0.0
-        group5:
-          group-name: ""
-          value-percent: 0.0
-        group6:
-          group-name: ""
-          value-percent: 0.0
-        group7:
-          group-name: ""
-          value-percent: 0.0
-        group8:
-          group-name: ""
-          value-percent: 0.0
-        group9:
-          group-name: ""
-          value-percent: 0.0
-        group10:
-          group-name: ""
-          value-percent: 0.0
 
 # Report-System.
 reports:
