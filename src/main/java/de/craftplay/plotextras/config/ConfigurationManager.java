@@ -1,5 +1,6 @@
 package de.craftplay.plotextras.config;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -459,6 +460,24 @@ public final class ConfigurationManager {
             existing.set("tabs.rating.buttons.like.permission", "plots.rate");
             changed = true;
         }
+        if (resourcePath.replace('\\', '/').endsWith("/deco.yml") && existingVersion < 2
+                && !existing.contains("tabs.wall.subtabs")) {
+            replaceSection(existing, defaults, "tabs");
+            existing.set("title", defaults.getString("title", existing.getString("title")));
+            existing.set("default-tab", defaults.getString("default-tab", existing.getString("default-tab")));
+            existing.set("bedrock.content", defaults.getString("bedrock.content", existing.getString("bedrock.content")));
+            changed = true;
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/main.yml") && existingVersion < 18) {
+            existing.set("buttons.deco.commands", Arrays.asList("open-menu:deco:wall:basic"));
+            existing.set("buttons.deco.close", false);
+            changed = true;
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/bedrock.yml") && existingVersion < 9) {
+            existing.set("buttons.deco.commands", Arrays.asList("open-menu:deco:wall:basic"));
+            existing.set("buttons.deco.close", false);
+            changed = true;
+        }
         if (existingVersion < defaultVersion) {
             existing.set("file-version", defaultVersion);
             changed = true;
@@ -574,6 +593,29 @@ public final class ConfigurationManager {
             changed = true;
         }
         return changed;
+    }
+
+    private void replaceSection(
+            final YamlConfiguration existing,
+            final YamlConfiguration defaults,
+            final String path
+    ) {
+        existing.set(path, null);
+        final ConfigurationSection section = defaults.getConfigurationSection(path);
+        if (section == null) {
+            return;
+        }
+        existing.createSection(path);
+        for (final String key : section.getKeys(true)) {
+            final String fullPath = path + "." + key;
+            if (defaults.isConfigurationSection(fullPath)) {
+                if (!existing.contains(fullPath)) {
+                    existing.createSection(fullPath);
+                }
+                continue;
+            }
+            existing.set(fullPath, defaults.get(fullPath));
+        }
     }
 
     private int readResourceVersion(final String resourcePath, final int fallback) {

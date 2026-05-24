@@ -1,14 +1,15 @@
 # English deco menu.
 # This file controls the PlotSquared deco menu for wall and border.
-# All tabs, buttons, materials, names, lore, slots, permissions, and commands can be adjusted.
+# Structure: wall and border are main tabs. Category subtabs are below them.
+# Category subtabs only show block buttons the player has permission for.
 # The command plot-deco:<command> first checks that the player is standing on their own plot
 # or has a matching plot role/permission, then runs the PlotSquared command.
 
-file-version: 1
+file-version: 2
 
-title: "&8Deco: {tab}"
+title: "&8Deco: {tab} - {subtab}"
 size: 54
-default-tab: wall-basic
+default-tab: wall
 require-plot: true
 permission: "craftplayplotextras.deco"
 bedrock:
@@ -26,141 +27,145 @@ buttons:
   close: {enabled: true, slot: 53, material: BARRIER, name: "&cClose", lore: ["&7Closes this menu."], commands: [], close: true, permission: ""}
 
 decorations:
-  frame: {enabled: true, slot: [9, 17, 45, 46, 47, 48, 50, 51, 52], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+  frame: {enabled: true, slot: [9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 50, 51, 52], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
 
 tabs:
-  wall-basic:
+  wall:
     enabled: true
     slot: 0
     material: STONE_BRICKS
-    name: "&aWall: Basic"
-    lore: ["&7Solid default blocks", "&7for the plot wall."]
-    commands: ["open-menu:deco:wall-basic"]
-    permission: "craftplayplotextras.deco.wall.basic"
-    buttons:
-      stone: {enabled: true, slot: 19, material: STONE, name: "&fStone Wall", lore: ["&7Sets the plot wall to stone."], commands: ["plot-deco:plot set wall stone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      cobblestone: {enabled: true, slot: 20, material: COBBLESTONE, name: "&fCobblestone Wall", lore: ["&7Sets the plot wall to cobblestone."], commands: ["plot-deco:plot set wall cobblestone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      stone-bricks: {enabled: true, slot: 21, material: STONE_BRICKS, name: "&fStone Brick Wall", lore: ["&7Sets the plot wall to stone bricks."], commands: ["plot-deco:plot set wall stone_bricks"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      smooth-stone: {enabled: true, slot: 22, material: SMOOTH_STONE, name: "&fSmooth Stone Wall", lore: ["&7Sets the plot wall to smooth stone."], commands: ["plot-deco:plot set wall smooth_stone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      andesite: {enabled: true, slot: 23, material: POLISHED_ANDESITE, name: "&fPolished Andesite", lore: ["&7Sets the plot wall to polished andesite."], commands: ["plot-deco:plot set wall polished_andesite"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      bricks: {enabled: true, slot: 24, material: BRICKS, name: "&cBrick Wall", lore: ["&7Sets the plot wall to bricks."], commands: ["plot-deco:plot set wall bricks"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      quartz: {enabled: true, slot: 25, material: QUARTZ_BLOCK, name: "&fQuartz Wall", lore: ["&7Sets the plot wall to quartz."], commands: ["plot-deco:plot set wall quartz_block"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
+    name: "&aWall"
+    lore: ["&7Choose categories", "&7for the plot wall."]
+    permission: "craftplayplotextras.deco"
+    default-subtab: basic
+    subtabs:
+      basic:
+        enabled: true
+        slot: 10
+        material: STONE
+        name: "&aBasic"
+        lore: ["&7Solid default blocks", "&7for the plot wall."]
+        permission: "craftplayplotextras.deco.wall.basic"
+        buttons:
+          stone: {enabled: true, slot: 19, material: STONE, name: "&fStone Wall", lore: ["&7Sets the plot wall to stone."], commands: ["plot-deco:plot set wall stone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
+          cobblestone: {enabled: true, slot: 20, material: COBBLESTONE, name: "&fCobblestone Wall", lore: ["&7Sets the plot wall to cobblestone."], commands: ["plot-deco:plot set wall cobblestone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
+          stone-bricks: {enabled: true, slot: 21, material: STONE_BRICKS, name: "&fStone Brick Wall", lore: ["&7Sets the plot wall to stone bricks."], commands: ["plot-deco:plot set wall stone_bricks"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
+          smooth-stone: {enabled: true, slot: 22, material: SMOOTH_STONE, name: "&fSmooth Stone Wall", lore: ["&7Sets the plot wall to smooth stone."], commands: ["plot-deco:plot set wall smooth_stone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
+          andesite: {enabled: true, slot: 23, material: POLISHED_ANDESITE, name: "&fPolished Andesite", lore: ["&7Sets the plot wall to polished andesite."], commands: ["plot-deco:plot set wall polished_andesite"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
+          bricks: {enabled: true, slot: 24, material: BRICKS, name: "&cBrick Wall", lore: ["&7Sets the plot wall to bricks."], commands: ["plot-deco:plot set wall bricks"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
+          quartz: {enabled: true, slot: 25, material: QUARTZ_BLOCK, name: "&fQuartz Wall", lore: ["&7Sets the plot wall to quartz."], commands: ["plot-deco:plot set wall quartz_block"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
+      natural:
+        enabled: true
+        slot: 11
+        material: OAK_LOG
+        name: "&2Natural"
+        lore: ["&7Wood, earth, and natural", "&7materials for the plot wall."]
+        permission: "craftplayplotextras.deco.wall.natural"
+        buttons:
+          oak: {enabled: true, slot: 19, material: OAK_PLANKS, name: "&6Oak Wall", lore: ["&7Sets the plot wall to oak planks."], commands: ["plot-deco:plot set wall oak_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
+          spruce: {enabled: true, slot: 20, material: SPRUCE_PLANKS, name: "&6Spruce Wall", lore: ["&7Sets the plot wall to spruce planks."], commands: ["plot-deco:plot set wall spruce_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
+          dark-oak: {enabled: true, slot: 21, material: DARK_OAK_PLANKS, name: "&6Dark Oak Wall", lore: ["&7Sets the plot wall to dark oak planks."], commands: ["plot-deco:plot set wall dark_oak_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
+          mangrove: {enabled: true, slot: 22, material: MANGROVE_PLANKS, name: "&cMangrove Wall", lore: ["&7Sets the plot wall to mangrove planks."], commands: ["plot-deco:plot set wall mangrove_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
+          grass: {enabled: true, slot: 23, material: GRASS_BLOCK, name: "&aGrass Wall", lore: ["&7Sets the plot wall to grass blocks."], commands: ["plot-deco:plot set wall grass_block"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
+          moss: {enabled: true, slot: 24, material: MOSS_BLOCK, name: "&aMoss Wall", lore: ["&7Sets the plot wall to moss."], commands: ["plot-deco:plot set wall moss_block"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
+          leaves: {enabled: true, slot: 25, material: OAK_LEAVES, name: "&aLeaf Wall", lore: ["&7Sets the plot wall to oak leaves."], commands: ["plot-deco:plot set wall oak_leaves"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
+      valuable:
+        enabled: true
+        slot: 12
+        material: GOLD_BLOCK
+        name: "&6Valuable"
+        lore: ["&7Precious blocks for higher", "&7ranks or special plots."]
+        permission: "craftplayplotextras.deco.wall.valuable"
+        buttons:
+          gold: {enabled: true, slot: 19, material: GOLD_BLOCK, name: "&6Gold Wall", lore: ["&7Sets the plot wall to gold blocks."], commands: ["plot-deco:plot set wall gold_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
+          iron: {enabled: true, slot: 20, material: IRON_BLOCK, name: "&fIron Wall", lore: ["&7Sets the plot wall to iron blocks."], commands: ["plot-deco:plot set wall iron_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
+          emerald: {enabled: true, slot: 21, material: EMERALD_BLOCK, name: "&aEmerald Wall", lore: ["&7Sets the plot wall to emerald blocks."], commands: ["plot-deco:plot set wall emerald_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
+          diamond: {enabled: true, slot: 22, material: DIAMOND_BLOCK, name: "&bDiamond Wall", lore: ["&7Sets the plot wall to diamond blocks."], commands: ["plot-deco:plot set wall diamond_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
+          amethyst: {enabled: true, slot: 23, material: AMETHYST_BLOCK, name: "&dAmethyst Wall", lore: ["&7Sets the plot wall to amethyst."], commands: ["plot-deco:plot set wall amethyst_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
+          sea-lantern: {enabled: true, slot: 24, material: SEA_LANTERN, name: "&bSea Lantern Wall", lore: ["&7Sets the plot wall to sea lanterns."], commands: ["plot-deco:plot set wall sea_lantern"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
+          lodestone: {enabled: true, slot: 25, material: LODESTONE, name: "&7Lodestone Wall", lore: ["&7Sets the plot wall to lodestone."], commands: ["plot-deco:plot set wall lodestone"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
+      premium:
+        enabled: true
+        slot: 13
+        material: PRISMARINE
+        name: "&bPremium"
+        lore: ["&7Decorative premium blocks", "&7for the plot wall."]
+        permission: "craftplayplotextras.deco.wall.premium"
+        buttons:
+          prismarine: {enabled: true, slot: 19, material: PRISMARINE, name: "&bPrismarine Wall", lore: ["&7Sets the plot wall to prismarine."], commands: ["plot-deco:plot set wall prismarine"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
+          dark-prismarine: {enabled: true, slot: 20, material: DARK_PRISMARINE, name: "&3Dark Prismarine Wall", lore: ["&7Sets the plot wall to dark prismarine."], commands: ["plot-deco:plot set wall dark_prismarine"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
+          purpur: {enabled: true, slot: 21, material: PURPUR_BLOCK, name: "&dPurpur Wall", lore: ["&7Sets the plot wall to purpur."], commands: ["plot-deco:plot set wall purpur_block"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
+          blackstone: {enabled: true, slot: 22, material: POLISHED_BLACKSTONE, name: "&8Blackstone Wall", lore: ["&7Sets the plot wall to polished blackstone."], commands: ["plot-deco:plot set wall polished_blackstone"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
+          deepslate: {enabled: true, slot: 23, material: POLISHED_DEEPSLATE, name: "&8Deepslate Wall", lore: ["&7Sets the plot wall to polished deepslate."], commands: ["plot-deco:plot set wall polished_deepslate"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
+          copper: {enabled: true, slot: 24, material: COPPER_BLOCK, name: "&6Copper Wall", lore: ["&7Sets the plot wall to copper."], commands: ["plot-deco:plot set wall copper_block"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
+          honeycomb: {enabled: true, slot: 25, material: HONEYCOMB_BLOCK, name: "&eHoneycomb Wall", lore: ["&7Sets the plot wall to honeycomb blocks."], commands: ["plot-deco:plot set wall honeycomb_block"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
 
-  wall-natural:
+  border:
     enabled: true
     slot: 1
-    material: OAK_LOG
-    name: "&2Wall: Natural"
-    lore: ["&7Wood, earth, and natural", "&7materials for the plot wall."]
-    commands: ["open-menu:deco:wall-natural"]
-    permission: "craftplayplotextras.deco.wall.natural"
-    buttons:
-      oak: {enabled: true, slot: 19, material: OAK_PLANKS, name: "&6Oak Wall", lore: ["&7Sets the plot wall to oak planks."], commands: ["plot-deco:plot set wall oak_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      spruce: {enabled: true, slot: 20, material: SPRUCE_PLANKS, name: "&6Spruce Wall", lore: ["&7Sets the plot wall to spruce planks."], commands: ["plot-deco:plot set wall spruce_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      dark-oak: {enabled: true, slot: 21, material: DARK_OAK_PLANKS, name: "&6Dark Oak Wall", lore: ["&7Sets the plot wall to dark oak planks."], commands: ["plot-deco:plot set wall dark_oak_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      mangrove: {enabled: true, slot: 22, material: MANGROVE_PLANKS, name: "&cMangrove Wall", lore: ["&7Sets the plot wall to mangrove planks."], commands: ["plot-deco:plot set wall mangrove_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      grass: {enabled: true, slot: 23, material: GRASS_BLOCK, name: "&aGrass Wall", lore: ["&7Sets the plot wall to grass blocks."], commands: ["plot-deco:plot set wall grass_block"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      moss: {enabled: true, slot: 24, material: MOSS_BLOCK, name: "&aMoss Wall", lore: ["&7Sets the plot wall to moss."], commands: ["plot-deco:plot set wall moss_block"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      leaves: {enabled: true, slot: 25, material: OAK_LEAVES, name: "&aLeaf Wall", lore: ["&7Sets the plot wall to oak leaves."], commands: ["plot-deco:plot set wall oak_leaves"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-
-  wall-valuable:
-    enabled: true
-    slot: 2
-    material: GOLD_BLOCK
-    name: "&6Wall: Valuable"
-    lore: ["&7Precious blocks for higher", "&7ranks or special plots."]
-    commands: ["open-menu:deco:wall-valuable"]
-    permission: "craftplayplotextras.deco.wall.valuable"
-    buttons:
-      gold: {enabled: true, slot: 19, material: GOLD_BLOCK, name: "&6Gold Wall", lore: ["&7Sets the plot wall to gold blocks."], commands: ["plot-deco:plot set wall gold_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      iron: {enabled: true, slot: 20, material: IRON_BLOCK, name: "&fIron Wall", lore: ["&7Sets the plot wall to iron blocks."], commands: ["plot-deco:plot set wall iron_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      emerald: {enabled: true, slot: 21, material: EMERALD_BLOCK, name: "&aEmerald Wall", lore: ["&7Sets the plot wall to emerald blocks."], commands: ["plot-deco:plot set wall emerald_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      diamond: {enabled: true, slot: 22, material: DIAMOND_BLOCK, name: "&bDiamond Wall", lore: ["&7Sets the plot wall to diamond blocks."], commands: ["plot-deco:plot set wall diamond_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      amethyst: {enabled: true, slot: 23, material: AMETHYST_BLOCK, name: "&dAmethyst Wall", lore: ["&7Sets the plot wall to amethyst."], commands: ["plot-deco:plot set wall amethyst_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      sea-lantern: {enabled: true, slot: 24, material: SEA_LANTERN, name: "&bSea Lantern Wall", lore: ["&7Sets the plot wall to sea lanterns."], commands: ["plot-deco:plot set wall sea_lantern"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      lodestone: {enabled: true, slot: 25, material: LODESTONE, name: "&7Lodestone Wall", lore: ["&7Sets the plot wall to lodestone."], commands: ["plot-deco:plot set wall lodestone"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-
-  wall-premium:
-    enabled: true
-    slot: 3
-    material: PRISMARINE
-    name: "&bWall: Premium"
-    lore: ["&7Decorative premium blocks", "&7for the plot wall."]
-    commands: ["open-menu:deco:wall-premium"]
-    permission: "craftplayplotextras.deco.wall.premium"
-    buttons:
-      prismarine: {enabled: true, slot: 19, material: PRISMARINE, name: "&bPrismarine Wall", lore: ["&7Sets the plot wall to prismarine."], commands: ["plot-deco:plot set wall prismarine"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      dark-prismarine: {enabled: true, slot: 20, material: DARK_PRISMARINE, name: "&3Dark Prismarine Wall", lore: ["&7Sets the plot wall to dark prismarine."], commands: ["plot-deco:plot set wall dark_prismarine"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      purpur: {enabled: true, slot: 21, material: PURPUR_BLOCK, name: "&dPurpur Wall", lore: ["&7Sets the plot wall to purpur."], commands: ["plot-deco:plot set wall purpur_block"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      blackstone: {enabled: true, slot: 22, material: POLISHED_BLACKSTONE, name: "&8Blackstone Wall", lore: ["&7Sets the plot wall to polished blackstone."], commands: ["plot-deco:plot set wall polished_blackstone"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      deepslate: {enabled: true, slot: 23, material: POLISHED_DEEPSLATE, name: "&8Deepslate Wall", lore: ["&7Sets the plot wall to polished deepslate."], commands: ["plot-deco:plot set wall polished_deepslate"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      copper: {enabled: true, slot: 24, material: COPPER_BLOCK, name: "&6Copper Wall", lore: ["&7Sets the plot wall to copper."], commands: ["plot-deco:plot set wall copper_block"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      honeycomb: {enabled: true, slot: 25, material: HONEYCOMB_BLOCK, name: "&eHoneycomb Wall", lore: ["&7Sets the plot wall to honeycomb blocks."], commands: ["plot-deco:plot set wall honeycomb_block"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-
-  border-basic:
-    enabled: true
-    slot: 4
     material: STONE_SLAB
-    name: "&aBorder: Basic"
-    lore: ["&7Default blocks and slabs", "&7for the plot border."]
-    commands: ["open-menu:deco:border-basic"]
-    permission: "craftplayplotextras.deco.border.basic"
-    buttons:
-      air: {enabled: true, slot: 19, material: BARRIER, name: "&fRemove Border", lore: ["&7Sets the plot border to air."], commands: ["plot-deco:plot set border air"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      stone-slab: {enabled: true, slot: 20, material: STONE_SLAB, name: "&fStone Slab", lore: ["&7Sets the plot border to stone slabs."], commands: ["plot-deco:plot set border stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      smooth-slab: {enabled: true, slot: 21, material: SMOOTH_STONE_SLAB, name: "&fSmooth Stone Slab", lore: ["&7Sets the plot border to smooth stone slabs."], commands: ["plot-deco:plot set border smooth_stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      brick-slab: {enabled: true, slot: 22, material: BRICK_SLAB, name: "&cBrick Slab", lore: ["&7Sets the plot border to brick slabs."], commands: ["plot-deco:plot set border brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      cobble-slab: {enabled: true, slot: 23, material: COBBLESTONE_SLAB, name: "&7Cobblestone Slab", lore: ["&7Sets the plot border to cobblestone slabs."], commands: ["plot-deco:plot set border cobblestone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      quartz-slab: {enabled: true, slot: 24, material: QUARTZ_SLAB, name: "&fQuartz Slab", lore: ["&7Sets the plot border to quartz slabs."], commands: ["plot-deco:plot set border quartz_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      stone-brick-slab: {enabled: true, slot: 25, material: STONE_BRICK_SLAB, name: "&fStone Brick Slab", lore: ["&7Sets the plot border to stone brick slabs."], commands: ["plot-deco:plot set border stone_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-
-  border-natural:
-    enabled: true
-    slot: 5
-    material: OAK_SLAB
-    name: "&2Border: Natural"
-    lore: ["&7Natural slabs and", "&7soft border blocks."]
-    commands: ["open-menu:deco:border-natural"]
-    permission: "craftplayplotextras.deco.border.natural"
-    buttons:
-      oak-slab: {enabled: true, slot: 19, material: OAK_SLAB, name: "&6Oak Slab", lore: ["&7Sets the plot border to oak slabs."], commands: ["plot-deco:plot set border oak_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      spruce-slab: {enabled: true, slot: 20, material: SPRUCE_SLAB, name: "&6Spruce Slab", lore: ["&7Sets the plot border to spruce slabs."], commands: ["plot-deco:plot set border spruce_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      dark-oak-slab: {enabled: true, slot: 21, material: DARK_OAK_SLAB, name: "&6Dark Oak Slab", lore: ["&7Sets the plot border to dark oak slabs."], commands: ["plot-deco:plot set border dark_oak_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      mangrove-slab: {enabled: true, slot: 22, material: MANGROVE_SLAB, name: "&cMangrove Slab", lore: ["&7Sets the plot border to mangrove slabs."], commands: ["plot-deco:plot set border mangrove_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      moss: {enabled: true, slot: 23, material: MOSS_BLOCK, name: "&aMoss Border", lore: ["&7Sets the plot border to moss."], commands: ["plot-deco:plot set border moss_block"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      grass: {enabled: true, slot: 24, material: GRASS_BLOCK, name: "&aGrass Border", lore: ["&7Sets the plot border to grass blocks."], commands: ["plot-deco:plot set border grass_block"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      leaves: {enabled: true, slot: 25, material: OAK_LEAVES, name: "&aLeaf Border", lore: ["&7Sets the plot border to oak leaves."], commands: ["plot-deco:plot set border oak_leaves"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-
-  border-valuable:
-    enabled: true
-    slot: 6
-    material: DIAMOND_BLOCK
-    name: "&6Border: Valuable"
-    lore: ["&7Precious border blocks", "&7for special ranks."]
-    commands: ["open-menu:deco:border-valuable"]
-    permission: "craftplayplotextras.deco.border.valuable"
-    buttons:
-      gold: {enabled: true, slot: 19, material: GOLD_BLOCK, name: "&6Gold Border", lore: ["&7Sets the plot border to gold blocks."], commands: ["plot-deco:plot set border gold_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      iron: {enabled: true, slot: 20, material: IRON_BLOCK, name: "&fIron Border", lore: ["&7Sets the plot border to iron blocks."], commands: ["plot-deco:plot set border iron_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      emerald: {enabled: true, slot: 21, material: EMERALD_BLOCK, name: "&aEmerald Border", lore: ["&7Sets the plot border to emerald blocks."], commands: ["plot-deco:plot set border emerald_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      diamond: {enabled: true, slot: 22, material: DIAMOND_BLOCK, name: "&bDiamond Border", lore: ["&7Sets the plot border to diamond blocks."], commands: ["plot-deco:plot set border diamond_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      amethyst: {enabled: true, slot: 23, material: AMETHYST_BLOCK, name: "&dAmethyst Border", lore: ["&7Sets the plot border to amethyst."], commands: ["plot-deco:plot set border amethyst_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      sea-lantern: {enabled: true, slot: 24, material: SEA_LANTERN, name: "&bSea Lantern Border", lore: ["&7Sets the plot border to sea lanterns."], commands: ["plot-deco:plot set border sea_lantern"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      beacon: {enabled: true, slot: 25, material: BEACON, name: "&bBeacon Border", lore: ["&7Sets the plot border to beacons."], commands: ["plot-deco:plot set border beacon"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-
-  border-special:
-    enabled: true
-    slot: 7
-    material: DRAGON_EGG
-    name: "&5Border: Special"
-    lore: ["&7Special border blocks", "&7for events and special ranks."]
-    commands: ["open-menu:deco:border-special"]
-    permission: "craftplayplotextras.deco.border.special"
-    buttons:
-      dragon-egg: {enabled: true, slot: 19, material: DRAGON_EGG, name: "&5Dragon Egg Border", lore: ["&7Sets the plot border to dragon eggs."], commands: ["plot-deco:plot set border dragon_egg"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      end-stone: {enabled: true, slot: 20, material: END_STONE_BRICKS, name: "&eEnd Stone Brick Border", lore: ["&7Sets the plot border to end stone bricks."], commands: ["plot-deco:plot set border end_stone_bricks"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      obsidian: {enabled: true, slot: 21, material: OBSIDIAN, name: "&5Obsidian Border", lore: ["&7Sets the plot border to obsidian."], commands: ["plot-deco:plot set border obsidian"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      crying-obsidian: {enabled: true, slot: 22, material: CRYING_OBSIDIAN, name: "&5Crying Obsidian", lore: ["&7Sets the plot border to crying obsidian."], commands: ["plot-deco:plot set border crying_obsidian"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      respawn-anchor: {enabled: true, slot: 23, material: RESPAWN_ANCHOR, name: "&5Respawn Anchor Border", lore: ["&7Sets the plot border to respawn anchors."], commands: ["plot-deco:plot set border respawn_anchor"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      shroomlight: {enabled: true, slot: 24, material: SHROOMLIGHT, name: "&6Shroomlight Border", lore: ["&7Sets the plot border to shroomlights."], commands: ["plot-deco:plot set border shroomlight"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      froglight: {enabled: true, slot: 25, material: OCHRE_FROGLIGHT, name: "&eFroglight Border", lore: ["&7Sets the plot border to ochre froglights."], commands: ["plot-deco:plot set border ochre_froglight"], close: false, permission: "craftplayplotextras.deco.border.special"}
+    name: "&aBorder"
+    lore: ["&7Choose categories", "&7for the plot border."]
+    permission: "craftplayplotextras.deco"
+    default-subtab: basic
+    subtabs:
+      basic:
+        enabled: true
+        slot: 10
+        material: STONE_SLAB
+        name: "&aBasic"
+        lore: ["&7Default blocks and slabs", "&7for the plot border."]
+        permission: "craftplayplotextras.deco.border.basic"
+        buttons:
+          air: {enabled: true, slot: 19, material: BARRIER, name: "&fRemove Border", lore: ["&7Sets the plot border to air."], commands: ["plot-deco:plot set border air"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          stone-slab: {enabled: true, slot: 20, material: STONE_SLAB, name: "&fStone Slab", lore: ["&7Sets the plot border to stone slabs."], commands: ["plot-deco:plot set border stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          smooth-slab: {enabled: true, slot: 21, material: SMOOTH_STONE_SLAB, name: "&fSmooth Stone Slab", lore: ["&7Sets the plot border to smooth stone slabs."], commands: ["plot-deco:plot set border smooth_stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          brick-slab: {enabled: true, slot: 22, material: BRICK_SLAB, name: "&cBrick Slab", lore: ["&7Sets the plot border to brick slabs."], commands: ["plot-deco:plot set border brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          cobble-slab: {enabled: true, slot: 23, material: COBBLESTONE_SLAB, name: "&7Cobblestone Slab", lore: ["&7Sets the plot border to cobblestone slabs."], commands: ["plot-deco:plot set border cobblestone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          quartz-slab: {enabled: true, slot: 24, material: QUARTZ_SLAB, name: "&fQuartz Slab", lore: ["&7Sets the plot border to quartz slabs."], commands: ["plot-deco:plot set border quartz_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+          stone-brick-slab: {enabled: true, slot: 25, material: STONE_BRICK_SLAB, name: "&fStone Brick Slab", lore: ["&7Sets the plot border to stone brick slabs."], commands: ["plot-deco:plot set border stone_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+      natural:
+        enabled: true
+        slot: 11
+        material: OAK_SLAB
+        name: "&2Natural"
+        lore: ["&7Natural slabs and", "&7soft border blocks."]
+        permission: "craftplayplotextras.deco.border.natural"
+        buttons:
+          oak-slab: {enabled: true, slot: 19, material: OAK_SLAB, name: "&6Oak Slab", lore: ["&7Sets the plot border to oak slabs."], commands: ["plot-deco:plot set border oak_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
+          spruce-slab: {enabled: true, slot: 20, material: SPRUCE_SLAB, name: "&6Spruce Slab", lore: ["&7Sets the plot border to spruce slabs."], commands: ["plot-deco:plot set border spruce_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
+          dark-oak-slab: {enabled: true, slot: 21, material: DARK_OAK_SLAB, name: "&6Dark Oak Slab", lore: ["&7Sets the plot border to dark oak slabs."], commands: ["plot-deco:plot set border dark_oak_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
+          mangrove-slab: {enabled: true, slot: 22, material: MANGROVE_SLAB, name: "&cMangrove Slab", lore: ["&7Sets the plot border to mangrove slabs."], commands: ["plot-deco:plot set border mangrove_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
+          moss: {enabled: true, slot: 23, material: MOSS_BLOCK, name: "&aMoss Border", lore: ["&7Sets the plot border to moss."], commands: ["plot-deco:plot set border moss_block"], close: false, permission: "craftplayplotextras.deco.border.natural"}
+          grass: {enabled: true, slot: 24, material: GRASS_BLOCK, name: "&aGrass Border", lore: ["&7Sets the plot border to grass blocks."], commands: ["plot-deco:plot set border grass_block"], close: false, permission: "craftplayplotextras.deco.border.natural"}
+          leaves: {enabled: true, slot: 25, material: OAK_LEAVES, name: "&aLeaf Border", lore: ["&7Sets the plot border to oak leaves."], commands: ["plot-deco:plot set border oak_leaves"], close: false, permission: "craftplayplotextras.deco.border.natural"}
+      valuable:
+        enabled: true
+        slot: 12
+        material: DIAMOND_BLOCK
+        name: "&6Valuable"
+        lore: ["&7Precious border blocks", "&7for special ranks."]
+        permission: "craftplayplotextras.deco.border.valuable"
+        buttons:
+          gold: {enabled: true, slot: 19, material: GOLD_BLOCK, name: "&6Gold Border", lore: ["&7Sets the plot border to gold blocks."], commands: ["plot-deco:plot set border gold_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
+          iron: {enabled: true, slot: 20, material: IRON_BLOCK, name: "&fIron Border", lore: ["&7Sets the plot border to iron blocks."], commands: ["plot-deco:plot set border iron_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
+          emerald: {enabled: true, slot: 21, material: EMERALD_BLOCK, name: "&aEmerald Border", lore: ["&7Sets the plot border to emerald blocks."], commands: ["plot-deco:plot set border emerald_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
+          diamond: {enabled: true, slot: 22, material: DIAMOND_BLOCK, name: "&bDiamond Border", lore: ["&7Sets the plot border to diamond blocks."], commands: ["plot-deco:plot set border diamond_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
+          amethyst: {enabled: true, slot: 23, material: AMETHYST_BLOCK, name: "&dAmethyst Border", lore: ["&7Sets the plot border to amethyst."], commands: ["plot-deco:plot set border amethyst_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
+          sea-lantern: {enabled: true, slot: 24, material: SEA_LANTERN, name: "&bSea Lantern Border", lore: ["&7Sets the plot border to sea lanterns."], commands: ["plot-deco:plot set border sea_lantern"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
+          beacon: {enabled: true, slot: 25, material: BEACON, name: "&bBeacon Border", lore: ["&7Sets the plot border to beacons."], commands: ["plot-deco:plot set border beacon"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
+      special:
+        enabled: true
+        slot: 13
+        material: DRAGON_EGG
+        name: "&5Special"
+        lore: ["&7Special border blocks", "&7for events and special ranks."]
+        permission: "craftplayplotextras.deco.border.special"
+        buttons:
+          dragon-egg: {enabled: true, slot: 19, material: DRAGON_EGG, name: "&5Dragon Egg Border", lore: ["&7Sets the plot border to dragon eggs."], commands: ["plot-deco:plot set border dragon_egg"], close: false, permission: "craftplayplotextras.deco.border.special"}
+          end-stone: {enabled: true, slot: 20, material: END_STONE_BRICKS, name: "&eEnd Stone Brick Border", lore: ["&7Sets the plot border to end stone bricks."], commands: ["plot-deco:plot set border end_stone_bricks"], close: false, permission: "craftplayplotextras.deco.border.special"}
+          obsidian: {enabled: true, slot: 21, material: OBSIDIAN, name: "&5Obsidian Border", lore: ["&7Sets the plot border to obsidian."], commands: ["plot-deco:plot set border obsidian"], close: false, permission: "craftplayplotextras.deco.border.special"}
+          crying-obsidian: {enabled: true, slot: 22, material: CRYING_OBSIDIAN, name: "&5Crying Obsidian", lore: ["&7Sets the plot border to crying obsidian."], commands: ["plot-deco:plot set border crying_obsidian"], close: false, permission: "craftplayplotextras.deco.border.special"}
+          respawn-anchor: {enabled: true, slot: 23, material: RESPAWN_ANCHOR, name: "&5Respawn Anchor Border", lore: ["&7Sets the plot border to respawn anchors."], commands: ["plot-deco:plot set border respawn_anchor"], close: false, permission: "craftplayplotextras.deco.border.special"}
+          shroomlight: {enabled: true, slot: 24, material: SHROOMLIGHT, name: "&6Shroomlight Border", lore: ["&7Sets the plot border to shroomlights."], commands: ["plot-deco:plot set border shroomlight"], close: false, permission: "craftplayplotextras.deco.border.special"}
+          froglight: {enabled: true, slot: 25, material: OCHRE_FROGLIGHT, name: "&eFroglight Border", lore: ["&7Sets the plot border to ochre froglights."], commands: ["plot-deco:plot set border ochre_froglight"], close: false, permission: "craftplayplotextras.deco.border.special"}

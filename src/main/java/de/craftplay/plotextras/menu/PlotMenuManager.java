@@ -649,6 +649,10 @@ public final class PlotMenuManager implements Listener {
     }
 
     private void openJavaActionMenu(final Player player, final ActionMenu menu, final String requestedTabId) {
+        if (!menu.getNestedTabs().isEmpty()) {
+            openJavaNestedActionMenu(player, menu, requestedTabId);
+            return;
+        }
         final SettingsTab tab = actionMenuTab(menu, requestedTabId);
         final Map<String, String> placeholders = actionMenuPlaceholders(player, menu, tab);
         final Inventory inventory = Bukkit.createInventory(
@@ -693,7 +697,76 @@ public final class PlotMenuManager implements Listener {
         openAnimatedInventory(player, inventory, menu.getFiller());
     }
 
+    private void openJavaNestedActionMenu(final Player player, final ActionMenu menu, final String requestedTabId) {
+        final ActionMenuSelection selection = actionMenuSelection(player, menu, requestedTabId);
+        final ActionMenuTab tab = selection == null ? null : selection.getTab();
+        final SettingsTab subtab = selection == null ? null : selection.getSubtab();
+        final Map<String, String> placeholders = actionMenuPlaceholders(player, menu, tab, subtab);
+        final Inventory inventory = Bukkit.createInventory(
+                new PlotMenuHolder("action-" + menu.getId(), selection == null ? "" : selection.getId()),
+                menu.getSize(),
+                Text.color(placeholderHook.apply(player, applyPlaceholders(menu.getTitle(), placeholders)))
+        );
+        if (menu.getFiller() != null) {
+            for (int slot = 0; slot < menu.getSize(); slot++) {
+                inventory.setItem(slot, menu.getFiller());
+            }
+        }
+        for (final MenuButton decoration : menu.getDecorationsBySlot().values()) {
+            if (canSee(player, decoration)) {
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
+            }
+        }
+        for (final MenuButton button : menu.getButtonsBySlot().values()) {
+            if (canSee(player, button)) {
+                inventory.setItem(button.getSlot(), createButtonItem(player, button, placeholders));
+            }
+        }
+        for (final ActionMenuTab actionTab : menu.getNestedTabs().values()) {
+            for (final MenuButton selector : actionTab.getSelectors()) {
+                if (canSee(player, selector)) {
+                    inventory.setItem(selector.getSlot(), createButtonItem(player, selector, placeholders));
+                }
+            }
+        }
+        if (tab != null) {
+            for (final MenuButton decoration : tab.getDecorationsBySlot().values()) {
+                if (canSee(player, decoration)) {
+                    inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
+                }
+            }
+            for (final MenuButton button : tab.getButtonsBySlot().values()) {
+                if (canSee(player, button)) {
+                    inventory.setItem(button.getSlot(), createButtonItem(player, button, placeholders));
+                }
+            }
+            for (final SettingsTab candidate : tab.getSubtabs().values()) {
+                for (final MenuButton selector : candidate.getSelectors()) {
+                    if (canSee(player, selector)) {
+                        inventory.setItem(selector.getSlot(), createButtonItem(player, selector, placeholders));
+                    }
+                }
+            }
+        }
+        if (subtab != null) {
+            for (final MenuButton decoration : subtab.getDecorationsBySlot().values()) {
+                if (canSee(player, decoration)) {
+                    inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, placeholders));
+                }
+            }
+            for (final MenuButton button : subtab.getButtonsBySlot().values()) {
+                if (canSee(player, button)) {
+                    inventory.setItem(button.getSlot(), createButtonItem(player, button, placeholders));
+                }
+            }
+        }
+        openAnimatedInventory(player, inventory, menu.getFiller());
+    }
+
     private boolean openBedrockActionMenu(final Player player, final ActionMenu menu, final String requestedTabId) {
+        if (!menu.getNestedTabs().isEmpty()) {
+            return openBedrockNestedActionMenu(player, menu, requestedTabId);
+        }
         final SettingsTab tab = actionMenuTab(menu, requestedTabId);
         final Map<String, String> placeholders = actionMenuPlaceholders(player, menu, tab);
         final List<String> labels = new ArrayList<>();
@@ -730,6 +803,65 @@ public final class PlotMenuManager implements Listener {
                 return;
             }
             Bukkit.getScheduler().runTask(plugin, actions.get(clickedButton));
+        });
+    }
+
+    private boolean openBedrockNestedActionMenu(final Player player, final ActionMenu menu, final String requestedTabId) {
+        final ActionMenuSelection selection = actionMenuSelection(player, menu, requestedTabId);
+        final ActionMenuTab tab = selection == null ? null : selection.getTab();
+        final SettingsTab subtab = selection == null ? null : selection.getSubtab();
+        final Map<String, String> placeholders = actionMenuPlaceholders(player, menu, tab, subtab);
+        final List<String> labels = new ArrayList<>();
+        final List<Runnable> actions = new ArrayList<>();
+        for (final ActionMenuTab actionTab : menu.getNestedTabs().values()) {
+            for (final MenuButton selector : actionTab.getSelectors()) {
+                if (!canSee(player, selector)) {
+                    continue;
+                }
+                labels.add(bedrockLabel(player, selector, placeholders));
+                actions.add(() -> openActionMenu(player, menu.getId(), actionTab.getId()));
+            }
+        }
+        if (tab != null) {
+            for (final SettingsTab candidate : tab.getSubtabs().values()) {
+                for (final MenuButton selector : candidate.getSelectors()) {
+                    if (!canSee(player, selector)) {
+                        continue;
+                    }
+                    labels.add(bedrockLabel(player, selector, placeholders));
+                    actions.add(() -> openActionMenu(player, menu.getId(), candidate.getId()));
+                }
+            }
+        }
+        for (final MenuButton button : menu.getButtonsBySlot().values()) {
+            if (canSee(player, button)) {
+                labels.add(bedrockLabel(player, button, placeholders));
+                actions.add(() -> executeButtonCommands(player, button));
+            }
+        }
+        if (tab != null) {
+            for (final MenuButton button : tab.getButtonsBySlot().values()) {
+                if (canSee(player, button)) {
+                    labels.add(bedrockLabel(player, button, placeholders));
+                    actions.add(() -> executeButtonCommands(player, button));
+                }
+            }
+        }
+        if (subtab != null) {
+            for (final MenuButton button : subtab.getButtonsBySlot().values()) {
+                if (canSee(player, button)) {
+                    labels.add(bedrockLabel(player, button, placeholders));
+                    actions.add(() -> executeButtonCommands(player, button));
+                }
+            }
+        }
+        final String title = Text.color(placeholderHook.apply(player, applyPlaceholders(menu.getBedrockTitle(), placeholders)));
+        final String content = Text.color(placeholderHook.apply(player, applyPlaceholders(menu.getBedrockContent(), placeholders)));
+        return floodgateHook.sendSimpleForm(player, title, content, labels, clickedButton -> {
+            if (clickedButton < 0 || clickedButton >= actions.size()) {
+                return;
+            }
+            actions.get(clickedButton).run();
         });
     }
 
@@ -2055,9 +2187,10 @@ public final class PlotMenuManager implements Listener {
         final Map<Integer, MenuButton> buttons = new HashMap<>();
         final Map<Integer, MenuButton> decorations = new HashMap<>();
         final Map<String, SettingsTab> tabs = new LinkedHashMap<>();
+        final Map<String, ActionMenuTab> nestedTabs = new LinkedHashMap<>();
         loadButtonsFromSection(menuConfig, "buttons", buttons, menuSize);
         loadDecorationsFromSection(menuConfig, "decorations", decorations, menuSize);
-        loadActionTabs(id, menuConfig, menuSize, tabs);
+        loadActionTabs(id, menuConfig, menuSize, tabs, nestedTabs);
         actionMenus.put(id, new ActionMenu(
                 id,
                 true,
@@ -2069,6 +2202,7 @@ public final class PlotMenuManager implements Listener {
                 buttons,
                 decorations,
                 tabs,
+                nestedTabs,
                 menuConfig.getString("default-tab", ""),
                 menuConfig.getBoolean("require-plot", false),
                 menuConfig.getBoolean("bedrock.enabled", true),
@@ -2080,7 +2214,8 @@ public final class PlotMenuManager implements Listener {
             final String menuId,
             final YamlConfiguration menuConfig,
             final int menuSize,
-            final Map<String, SettingsTab> target
+            final Map<String, SettingsTab> target,
+            final Map<String, ActionMenuTab> nestedTarget
     ) {
         final ConfigurationSection section = menuConfig.getConfigurationSection("tabs");
         if (section == null) {
@@ -2091,33 +2226,7 @@ public final class PlotMenuManager implements Listener {
             if (!menuConfig.getBoolean(path + "enabled", true)) {
                 continue;
             }
-            final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, Material.BOOK);
-            final Material material = materialDefinition.getMaterial();
-            final String headDatabaseId = headDatabaseId(menuConfig, path);
-            final String skullOwner = skullOwner(menuConfig, path, materialDefinition.getSkullOwner());
-            final String name = menuConfig.getString(path + "name", "&a" + id);
-            final List<String> lore = menuConfig.getStringList(path + "lore");
-            final List<String> commands = configuredCommands(menuConfig, path);
-            final String permission = menuConfig.getString(path + "permission", "");
-            final MenuSound clickSound = loadButtonSound(menuConfig, path);
-            final String bedrockLabel = menuConfig.getString(path + "bedrock-label", "");
-            final List<MenuButton> selectors = new ArrayList<>();
-            for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menü-Tab", id)) {
-                selectors.add(new MenuButton(
-                        id,
-                        slot,
-                        material,
-                        headDatabaseId,
-                        skullOwner,
-                        name,
-                        lore,
-                        commands.isEmpty() ? Collections.singletonList("open-menu:" + menuId + ":" + id) : commands,
-                        false,
-                        permission,
-                        clickSound,
-                        bedrockLabel
-                ));
-            }
+            final List<MenuButton> selectors = loadActionSelectors(menuId, menuConfig, path, id, id, menuSize, Material.BOOK);
             if (selectors.isEmpty()) {
                 continue;
             }
@@ -2125,8 +2234,77 @@ public final class PlotMenuManager implements Listener {
             final Map<Integer, MenuButton> tabDecorations = new HashMap<>();
             loadButtonsFromSection(menuConfig, path + "buttons", tabButtons, menuSize);
             loadDecorationsFromSection(menuConfig, path + "decorations", tabDecorations, menuSize);
+            final ConfigurationSection subtabSection = menuConfig.getConfigurationSection(path + "subtabs");
+            if (subtabSection != null) {
+                final Map<String, SettingsTab> subtabs = new LinkedHashMap<>();
+                for (final String subtabId : subtabSection.getKeys(false)) {
+                    final String subtabPath = path + "subtabs." + subtabId + ".";
+                    if (!menuConfig.getBoolean(subtabPath + "enabled", true)) {
+                        continue;
+                    }
+                    final String fullId = id.toLowerCase(Locale.ROOT) + ":" + subtabId.toLowerCase(Locale.ROOT);
+                    final List<MenuButton> subtabSelectors = loadActionSelectors(menuId, menuConfig, subtabPath,
+                            subtabId, fullId, menuSize, Material.PAPER);
+                    if (subtabSelectors.isEmpty()) {
+                        continue;
+                    }
+                    final Map<Integer, MenuButton> subtabButtons = new HashMap<>();
+                    final Map<Integer, MenuButton> subtabDecorations = new HashMap<>();
+                    loadButtonsFromSection(menuConfig, subtabPath + "buttons", subtabButtons, menuSize);
+                    loadDecorationsFromSection(menuConfig, subtabPath + "decorations", subtabDecorations, menuSize);
+                    subtabs.put(subtabId.toLowerCase(Locale.ROOT), new SettingsTab(fullId, subtabSelectors, subtabButtons, subtabDecorations));
+                }
+                nestedTarget.put(id.toLowerCase(Locale.ROOT), new ActionMenuTab(
+                        id.toLowerCase(Locale.ROOT),
+                        selectors,
+                        tabButtons,
+                        tabDecorations,
+                        subtabs,
+                        menuConfig.getString(path + "default-subtab", "")
+                ));
+                continue;
+            }
             target.put(id.toLowerCase(Locale.ROOT), new SettingsTab(id.toLowerCase(Locale.ROOT), selectors, tabButtons, tabDecorations));
         }
+    }
+
+    private List<MenuButton> loadActionSelectors(
+            final String menuId,
+            final YamlConfiguration menuConfig,
+            final String path,
+            final String id,
+            final String navigationId,
+            final int menuSize,
+            final Material fallbackMaterial
+    ) {
+        final MaterialDefinition materialDefinition = materialDefinition(menuConfig, path, fallbackMaterial);
+        final Material material = materialDefinition.getMaterial();
+        final String headDatabaseId = headDatabaseId(menuConfig, path);
+        final String skullOwner = skullOwner(menuConfig, path, materialDefinition.getSkullOwner());
+        final String name = menuConfig.getString(path + "name", "&a" + id);
+        final List<String> lore = menuConfig.getStringList(path + "lore");
+        final List<String> commands = configuredCommands(menuConfig, path);
+        final String permission = menuConfig.getString(path + "permission", "");
+        final MenuSound clickSound = loadButtonSound(menuConfig, path);
+        final String bedrockLabel = menuConfig.getString(path + "bedrock-label", "");
+        final List<MenuButton> selectors = new ArrayList<>();
+        for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menue-Tab", id)) {
+            selectors.add(new MenuButton(
+                    id,
+                    slot,
+                    material,
+                    headDatabaseId,
+                    skullOwner,
+                    name,
+                    lore,
+                    commands.isEmpty() ? Collections.singletonList("open-menu:" + menuId + ":" + navigationId) : commands,
+                    false,
+                    permission,
+                    clickSound,
+                    bedrockLabel
+            ));
+        }
+        return selectors;
     }
 
     private void loadDecorations(final YamlConfiguration menuConfig, final Map<Integer, MenuButton> target, final int menuSize) {
@@ -2824,6 +3002,10 @@ public final class PlotMenuManager implements Listener {
         if (menu == null) {
             return;
         }
+        if (!menu.getNestedTabs().isEmpty()) {
+            handleNestedActionMenuClick(player, menu, tabId, slot);
+            return;
+        }
         final SettingsTab tab = actionMenuTab(menu, tabId);
         for (final SettingsTab actionTab : menu.getTabs().values()) {
             for (final MenuButton selector : actionTab.getSelectors()) {
@@ -2846,6 +3028,49 @@ public final class PlotMenuManager implements Listener {
         final MenuButton tabButton = tab.getButtonsBySlot().get(slot);
         if (tabButton != null && canSee(player, tabButton)) {
             executeButtonCommands(player, tabButton);
+        }
+    }
+
+    private void handleNestedActionMenuClick(final Player player, final ActionMenu menu, final String tabId, final int slot) {
+        final ActionMenuSelection selection = actionMenuSelection(player, menu, tabId);
+        final ActionMenuTab tab = selection == null ? null : selection.getTab();
+        final SettingsTab subtab = selection == null ? null : selection.getSubtab();
+        for (final ActionMenuTab actionTab : menu.getNestedTabs().values()) {
+            for (final MenuButton selector : actionTab.getSelectors()) {
+                if (selector.getSlot() == slot && canSee(player, selector)) {
+                    executeButtonCommands(player, selector);
+                    return;
+                }
+            }
+        }
+        if (tab != null) {
+            for (final SettingsTab candidate : tab.getSubtabs().values()) {
+                for (final MenuButton selector : candidate.getSelectors()) {
+                    if (selector.getSlot() == slot && canSee(player, selector)) {
+                        executeButtonCommands(player, selector);
+                        return;
+                    }
+                }
+            }
+        }
+
+        final MenuButton rootButton = menu.getButtonsBySlot().get(slot);
+        if (rootButton != null && canSee(player, rootButton)) {
+            executeButtonCommands(player, rootButton);
+            return;
+        }
+        if (tab != null) {
+            final MenuButton tabButton = tab.getButtonsBySlot().get(slot);
+            if (tabButton != null && canSee(player, tabButton)) {
+                executeButtonCommands(player, tabButton);
+                return;
+            }
+        }
+        if (subtab != null) {
+            final MenuButton subtabButton = subtab.getButtonsBySlot().get(slot);
+            if (subtabButton != null && canSee(player, subtabButton)) {
+                executeButtonCommands(player, subtabButton);
+            }
         }
     }
 
@@ -3839,11 +4064,106 @@ public final class PlotMenuManager implements Listener {
         return menu.getTabs().values().iterator().next();
     }
 
+    private ActionMenuSelection actionMenuSelection(final Player player, final ActionMenu menu, final String requestedTabId) {
+        if (menu.getNestedTabs().isEmpty()) {
+            return null;
+        }
+        final String raw = requestedTabId == null ? "" : requestedTabId.trim().toLowerCase(Locale.ROOT);
+        String tabId = raw;
+        String subtabId = "";
+        final int separator = raw.indexOf(':');
+        if (separator >= 0) {
+            tabId = raw.substring(0, separator);
+            subtabId = raw.substring(separator + 1);
+        } else if (raw.indexOf('-') > 0) {
+            final int legacySeparator = raw.indexOf('-');
+            final String possibleTab = raw.substring(0, legacySeparator);
+            if (menu.getNestedTabs().containsKey(possibleTab)) {
+                tabId = possibleTab;
+                subtabId = raw.substring(legacySeparator + 1);
+            }
+        }
+
+        ActionMenuTab tab = visibleActionTab(player, menu.getNestedTabs().get(tabId));
+        if (tab == null) {
+            tab = visibleActionTab(player, menu.getNestedTabs().get(menu.getDefaultTab().toLowerCase(Locale.ROOT)));
+        }
+        if (tab == null) {
+            for (final ActionMenuTab candidate : menu.getNestedTabs().values()) {
+                tab = visibleActionTab(player, candidate);
+                if (tab != null) {
+                    break;
+                }
+            }
+        }
+        if (tab == null) {
+            return null;
+        }
+
+        SettingsTab subtab = visibleSubtab(player, tab.getSubtabs().get(subtabId));
+        if (subtab == null) {
+            subtab = visibleSubtab(player, tab.getSubtabs().get(tab.getDefaultSubtab().toLowerCase(Locale.ROOT)));
+        }
+        if (subtab == null) {
+            for (final SettingsTab candidate : tab.getSubtabs().values()) {
+                subtab = visibleSubtab(player, candidate);
+                if (subtab != null) {
+                    break;
+                }
+            }
+        }
+        return new ActionMenuSelection(tab, subtab);
+    }
+
+    private ActionMenuTab visibleActionTab(final Player player, final ActionMenuTab tab) {
+        if (tab == null) {
+            return null;
+        }
+        for (final MenuButton selector : tab.getSelectors()) {
+            if (canSee(player, selector)) {
+                return tab;
+            }
+        }
+        return null;
+    }
+
+    private SettingsTab visibleSubtab(final Player player, final SettingsTab tab) {
+        if (tab == null) {
+            return null;
+        }
+        for (final MenuButton selector : tab.getSelectors()) {
+            if (canSee(player, selector)) {
+                return tab;
+            }
+        }
+        return null;
+    }
+
     private Map<String, String> actionMenuPlaceholders(final Player player, final ActionMenu menu, final SettingsTab tab) {
         final Map<String, String> placeholders = new HashMap<>();
         placeholders.put("menu", menu.getId());
         placeholders.put("tab", tab == null ? "" : tabName(tab));
         placeholders.put("tab_id", tab == null ? "" : tab.getId());
+        if ("community".equalsIgnoreCase(menu.getId())) {
+            placeholders.putAll(communityPlaceholders(player));
+        }
+        return placeholders;
+    }
+
+    private Map<String, String> actionMenuPlaceholders(
+            final Player player,
+            final ActionMenu menu,
+            final ActionMenuTab tab,
+            final SettingsTab subtab
+    ) {
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("menu", menu.getId());
+        placeholders.put("tab", tab == null ? "" : actionTabName(tab));
+        placeholders.put("tab_id", tab == null ? "" : tab.getId());
+        placeholders.put("subtab", subtab == null ? "" : tabName(subtab));
+        placeholders.put("subtab_id", subtab == null ? "" : subtab.getId());
+        placeholders.put("category", subtab == null ? "" : tabName(subtab));
+        placeholders.put("category_id", subtab == null ? "" : subtab.getId());
         if ("community".equalsIgnoreCase(menu.getId())) {
             placeholders.putAll(communityPlaceholders(player));
         }
@@ -3955,7 +4275,7 @@ public final class PlotMenuManager implements Listener {
                     || menuId.toLowerCase(Locale.ROOT).startsWith("plotbuy")) {
                 openPlotPurchaseMenu(player);
             } else if (actionMenus.containsKey(menuRoot(menuId))) {
-                openActionMenu(player, menuRoot(menuId), menuArgument(menuId, 1, ""));
+                openActionMenu(player, menuRoot(menuId), menuArgument(menuId, ""));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("settings")) {
                 openSettingsMenu(player, menuArgument(menuId, defaultSettingsTab));
             } else if (menuId.toLowerCase(Locale.ROOT).startsWith("team-backups")) {
@@ -4435,6 +4755,11 @@ public final class PlotMenuManager implements Listener {
         return selector == null ? tab.getId() : selector.getName();
     }
 
+    private String actionTabName(final ActionMenuTab tab) {
+        final MenuButton selector = tab.getSelector();
+        return selector == null ? tab.getId() : selector.getName();
+    }
+
     private int menuPage(final String menuId) {
         final int separator = menuId.indexOf(':');
         if (separator < 0 || separator >= menuId.length() - 1) {
@@ -4719,6 +5044,7 @@ public final class PlotMenuManager implements Listener {
         private final Map<Integer, MenuButton> buttonsBySlot;
         private final Map<Integer, MenuButton> decorationsBySlot;
         private final Map<String, SettingsTab> tabs;
+        private final Map<String, ActionMenuTab> nestedTabs;
         private final String defaultTab;
         private final boolean requirePlot;
         private final boolean bedrockEnabled;
@@ -4735,6 +5061,7 @@ public final class PlotMenuManager implements Listener {
                 final Map<Integer, MenuButton> buttonsBySlot,
                 final Map<Integer, MenuButton> decorationsBySlot,
                 final Map<String, SettingsTab> tabs,
+                final Map<String, ActionMenuTab> nestedTabs,
                 final String defaultTab,
                 final boolean requirePlot,
                 final boolean bedrockEnabled,
@@ -4750,6 +5077,7 @@ public final class PlotMenuManager implements Listener {
             this.buttonsBySlot = buttonsBySlot;
             this.decorationsBySlot = decorationsBySlot;
             this.tabs = tabs;
+            this.nestedTabs = nestedTabs;
             this.defaultTab = defaultTab == null ? "" : defaultTab;
             this.requirePlot = requirePlot;
             this.bedrockEnabled = bedrockEnabled;
@@ -4796,6 +5124,10 @@ public final class PlotMenuManager implements Listener {
             return tabs;
         }
 
+        private Map<String, ActionMenuTab> getNestedTabs() {
+            return nestedTabs;
+        }
+
         private String getDefaultTab() {
             return defaultTab;
         }
@@ -4810,6 +5142,91 @@ public final class PlotMenuManager implements Listener {
 
         private String getPermission() {
             return permission;
+        }
+    }
+
+    private static final class ActionMenuTab {
+
+        private final String id;
+        private final List<MenuButton> selectors;
+        private final Map<Integer, MenuButton> buttonsBySlot;
+        private final Map<Integer, MenuButton> decorationsBySlot;
+        private final Map<String, SettingsTab> subtabs;
+        private final String defaultSubtab;
+
+        private ActionMenuTab(
+                final String id,
+                final List<MenuButton> selectors,
+                final Map<Integer, MenuButton> buttonsBySlot,
+                final Map<Integer, MenuButton> decorationsBySlot,
+                final Map<String, SettingsTab> subtabs,
+                final String defaultSubtab
+        ) {
+            this.id = id;
+            this.selectors = selectors == null ? Collections.emptyList() : Collections.unmodifiableList(selectors);
+            this.buttonsBySlot = buttonsBySlot == null ? Collections.emptyMap() : buttonsBySlot;
+            this.decorationsBySlot = decorationsBySlot == null ? Collections.emptyMap() : decorationsBySlot;
+            this.subtabs = subtabs == null ? Collections.emptyMap() : subtabs;
+            this.defaultSubtab = defaultSubtab == null ? "" : defaultSubtab.trim();
+        }
+
+        private String getId() {
+            return id;
+        }
+
+        private MenuButton getSelector() {
+            return selectors.isEmpty() ? null : selectors.get(0);
+        }
+
+        private List<MenuButton> getSelectors() {
+            return selectors;
+        }
+
+        private Map<Integer, MenuButton> getButtonsBySlot() {
+            return buttonsBySlot;
+        }
+
+        private Map<Integer, MenuButton> getDecorationsBySlot() {
+            return decorationsBySlot;
+        }
+
+        private Map<String, SettingsTab> getSubtabs() {
+            return subtabs;
+        }
+
+        private String getDefaultSubtab() {
+            return defaultSubtab;
+        }
+    }
+
+    private static final class ActionMenuSelection {
+
+        private final ActionMenuTab tab;
+        private final SettingsTab subtab;
+
+        private ActionMenuSelection(final ActionMenuTab tab, final SettingsTab subtab) {
+            this.tab = tab;
+            this.subtab = subtab;
+        }
+
+        private ActionMenuTab getTab() {
+            return tab;
+        }
+
+        private SettingsTab getSubtab() {
+            return subtab;
+        }
+
+        private String getId() {
+            if (tab == null) {
+                return "";
+            }
+            if (subtab == null) {
+                return tab.getId();
+            }
+            final String subtabId = subtab.getId();
+            final int separator = subtabId.indexOf(':');
+            return tab.getId() + ":" + (separator >= 0 ? subtabId.substring(separator + 1) : subtabId);
         }
     }
 

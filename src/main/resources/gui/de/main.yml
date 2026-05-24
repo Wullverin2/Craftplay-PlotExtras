@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 17
+file-version: 18
 
 # Titel des Inventars.
 title: "&8Plot-Menü"
@@ -264,7 +264,7 @@ buttons:
       - "&7Wirkt nur auf deinem Plot"
       - "&7oder mit passender Plotrolle."
     commands:
-      - "open-menu:deco:wall-basic"
+      - "open-menu:deco:wall:basic"
     close: false
     permission: "craftplayplotextras.deco"
   plot-purchase:
