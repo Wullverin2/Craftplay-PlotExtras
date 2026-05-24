@@ -148,24 +148,51 @@ public final class ConfigurationManager {
                     "&7die globale oder nächste Truhe."))) {
                 existing.set("passive-wither.menu.buttons.unlink.lore", Arrays.asList(
                         "&7Aktuell: &f{status}",
-                        "&7Danach nutzt der Wither nur",
-                        "&7noch die globale Zieltruhe."));
+                        "&7Danach droppen Items wieder",
+                        "&7normal am Abbauort."));
                 changed = true;
             }
         }
-        if (resourcePath.replace('\\', '/').equals("language/de.yml") && existingVersion < 21) {
-            final String oldMessage = "&aPassive-Wither-Zieltruhe entfernt. Drops gehen wieder in die nächste Truhe.";
-            if (oldMessage.equals(existing.getString("passive-wither-chest-cleared", ""))) {
-                existing.set("passive-wither-chest-cleared",
-                        "&aPassive-Wither-Zieltruhe entfernt. Drops fallen ohne verlinkte oder globale Zieltruhe am Abbauort herunter.");
+        if ("config.yml".equals(resourcePath) && existingVersion < 24) {
+            if (existing.contains("passive-wither.chest-permission")) {
+                existing.set("passive-wither.chest-permission", null);
+                changed = true;
+            }
+            final List<String> unlinkLore = existing.getStringList("passive-wither.menu.buttons.unlink.lore");
+            if (unlinkLore.equals(Arrays.asList(
+                    "&7Aktuell: &f{status}",
+                    "&7Danach nutzt der Wither nur",
+                    "&7noch die globale Zieltruhe."))
+                    || unlinkLore.equals(Arrays.asList(
+                    "&7Aktuell: &f{status}",
+                    "&7Danach nutzt der Wither wieder",
+                    "&7die globale oder nächste Truhe."))) {
+                existing.set("passive-wither.menu.buttons.unlink.lore", Arrays.asList(
+                        "&7Aktuell: &f{status}",
+                        "&7Danach droppen Items wieder",
+                        "&7normal am Abbauort."));
                 changed = true;
             }
         }
-        if (resourcePath.replace('\\', '/').equals("language/en.yml") && existingVersion < 21) {
-            final String oldMessage = "&aPassive Wither target chest cleared. Drops will use the nearest chest again.";
-            if (oldMessage.equals(existing.getString("passive-wither-chest-cleared", ""))) {
-                existing.set("passive-wither-chest-cleared",
-                        "&aPassive Wither target chest cleared. Without a linked or global target chest, drops will fall at the mined location.");
+        if (resourcePath.replace('\\', '/').equals("language/de.yml") && existingVersion < 22) {
+            final String oldUsage = "&cBenutzung: /{label} egg [spieler] [anzahl], /{label} reload, /{label} chest <set|clear|info> oder /{label} sound <on|off|toggle>";
+            if (oldUsage.equals(existing.getString("passive-wither-command-usage", ""))) {
+                existing.set("passive-wither-command-usage",
+                        "&cBenutzung: /{label} egg [spieler] [anzahl], /{label} reload oder /{label} sound <on|off|toggle>");
+                changed = true;
+            }
+            if (removeGlobalPassiveWitherChestMessages(existing)) {
+                changed = true;
+            }
+        }
+        if (resourcePath.replace('\\', '/').equals("language/en.yml") && existingVersion < 22) {
+            final String oldUsage = "&cUsage: /{label} egg [player] [amount], /{label} reload, /{label} chest <set|clear|info> or /{label} sound <on|off|toggle>";
+            if (oldUsage.equals(existing.getString("passive-wither-command-usage", ""))) {
+                existing.set("passive-wither-command-usage",
+                        "&cUsage: /{label} egg [player] [amount], /{label} reload or /{label} sound <on|off|toggle>");
+                changed = true;
+            }
+            if (removeGlobalPassiveWitherChestMessages(existing)) {
                 changed = true;
             }
         }
@@ -173,6 +200,20 @@ public final class ConfigurationManager {
             final String passiveWitherIcon = existing.getString("buttons.passive-wither.material", "");
             if ("WITHER_SKELETON_SKULL".equalsIgnoreCase(passiveWitherIcon)) {
                 existing.set("buttons.passive-wither.material", "WITHER_SKELETON_SPAWN_EGG");
+                changed = true;
+            }
+        }
+        if (resourcePath.replace('\\', '/').endsWith("/extras.yml") && existingVersion < 6) {
+            final List<String> lore = existing.getStringList("buttons.passive-wither.lore");
+            final int germanLine = lore.indexOf("&7Drops gehen in eine Truhe.");
+            final int englishLine = lore.indexOf("&7Drops go into a chest.");
+            if (germanLine >= 0) {
+                lore.set(germanLine, "&7Drops gehen in die verlinkte Truhe.");
+                existing.set("buttons.passive-wither.lore", lore);
+                changed = true;
+            } else if (englishLine >= 0) {
+                lore.set(englishLine, "&7Drops go into the linked chest.");
+                existing.set("buttons.passive-wither.lore", lore);
                 changed = true;
             }
         }
@@ -444,6 +485,25 @@ public final class ConfigurationManager {
             plugin.getLogger().log(Level.WARNING, "Standarddatei konnte nicht gelesen werden: " + resourcePath, exception);
             return new YamlConfiguration();
         }
+    }
+
+    private boolean removeGlobalPassiveWitherChestMessages(final YamlConfiguration existing) {
+        boolean changed = false;
+        final List<String> keys = Arrays.asList(
+                "passive-wither-chest-usage",
+                "passive-wither-chest-not-found",
+                "passive-wither-chest-set",
+                "passive-wither-chest-cleared",
+                "passive-wither-chest-info-empty",
+                "passive-wither-chest-info"
+        );
+        for (final String key : keys) {
+            if (existing.contains(key)) {
+                existing.set(key, null);
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     private boolean isJavaInventoryGuiFile(final String resourcePath) {

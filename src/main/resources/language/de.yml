@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 21
+file-version: 22
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -292,14 +292,8 @@ passive-wither-egg-given: "&aPassives Wither-Spawnei gegeben."
 passive-wither-reloaded: "&aPassive-Wither-System wurde neu geladen."
 passive-wither-player-not-found: "&cSpieler nicht gefunden."
 passive-wither-invalid-amount: "&cDie Anzahl muss eine Zahl zwischen 1 und 64 sein."
-passive-wither-command-usage: "&cBenutzung: /{label} egg [spieler] [anzahl], /{label} reload, /{label} chest <set|clear|info> oder /{label} sound <on|off|toggle>"
+passive-wither-command-usage: "&cBenutzung: /{label} egg [spieler] [anzahl], /{label} reload oder /{label} sound <on|off|toggle>"
 passive-wither-sound-usage: "&cBenutzung: /{label} sound <on|off|toggle>"
-passive-wither-chest-usage: "&cBenutzung: /{label} chest <set|clear|info>"
-passive-wither-chest-not-found: "&cBitte schaue eine Truhe oder ein anderes Inventar in maximal 8 Blöcken Entfernung an."
-passive-wither-chest-set: "&aPassive-Wither-Zieltruhe gesetzt: &f{world} {x} {y} {z}&a."
-passive-wither-chest-cleared: "&aPassive-Wither-Zieltruhe entfernt. Drops fallen ohne verlinkte oder globale Zieltruhe am Abbauort herunter."
-passive-wither-chest-info-empty: "&7Es ist keine feste Passive-Wither-Zieltruhe gesetzt."
-passive-wither-chest-info: "&7Aktuelle Passive-Wither-Zieltruhe: &f{world} {x} {y} {z}&7."
 passive-wither-menu-not-owner: "&cNur der Besitzer dieses passiven Withers kann sein Menü nutzen."
 passive-wither-menu-wither-missing: "&cDieser passive Wither wurde nicht mehr gefunden."
 passive-wither-menu-link-start: "&aKlicke jetzt die Truhe an, die mit diesem passiven Wither verlinkt werden soll."

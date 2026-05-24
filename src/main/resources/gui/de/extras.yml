@@ -2,7 +2,7 @@
 # Diese Datei steuert zusätzliche Services, die nicht direkt zu PlotSquared gehören.
 # Jeder Button kann deaktiviert, verschoben, mit eigener Permission versehen oder mit eigenen Befehlen erweitert werden.
 
-file-version: 5
+file-version: 6
 
 title: "&8Extras"
 size: 27
@@ -43,7 +43,7 @@ buttons:
       - "&7Bleibt am Spawnpunkt stehen"
       - "&7und schießt keine Köpfe."
       - "&7Baut in Blickrichtung ab."
-      - "&7Drops gehen in eine Truhe."
+      - "&7Drops gehen in die verlinkte Truhe."
     commands:
       - "passive-wither:buy"
     close: true

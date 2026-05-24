@@ -113,12 +113,10 @@ public final class PassiveWitherService implements Listener {
     private String commandPermission;
     private String soundPermission;
     private String freePermission;
-    private String chestPermission;
     private double price;
     private Material eggMaterial;
     private int miningRange;
     private boolean dropOverflow;
-    private Location configuredDropInventoryLocation;
     private long explosionCooldownMillis;
     private boolean passiveWitherDataDirty;
     private long nextPassiveWitherDataFlushAtMillis;
@@ -168,15 +166,15 @@ public final class PassiveWitherService implements Listener {
         nextPassiveWitherDataFlushAtMillis = System.currentTimeMillis() + passiveWitherDataFlushIntervalMillis;
         passiveWitherMaintenanceTicks = 0;
         data = plugin.getStorageService().load("passivewither", dataFile);
-        if (data.getInt("file-version", 0) < 3) {
-            data.set("file-version", 3);
+        if (data.getInt("file-version", 0) < 4) {
+            data.set("file-version", 4);
+            data.set("target-inventory", null);
             saveData();
         }
         buyPermission = plugin.getConfig().getString("passive-wither.buy-permission", "craftplayplotextras.passivewither.buy");
         commandPermission = plugin.getConfig().getString("passive-wither.command-permission", "craftplayplotextras.passivewither.command");
         soundPermission = plugin.getConfig().getString("passive-wither.sound-permission", "craftplayplotextras.passivewither.sound");
         freePermission = plugin.getConfig().getString("passive-wither.free-permission", "craftplayplotextras.passivewither.free");
-        chestPermission = plugin.getConfig().getString("passive-wither.chest-permission", "craftplayplotextras.passivewither.chest");
         price = Math.max(0.0D, plugin.getConfig().getDouble("passive-wither.price", 25000.0D));
         eggMaterial = material(plugin.getConfig().getString("passive-wither.egg.material", "WITHER_SKELETON_SPAWN_EGG"), Material.WITHER_SKELETON_SPAWN_EGG);
         economyEnabled = plugin.getConfig().getBoolean("passive-wither.economy.enabled", true);
@@ -187,7 +185,6 @@ public final class PassiveWitherService implements Listener {
         dropOverflow = plugin.getConfig().getBoolean("passive-wither.drops.drop-overflow", true);
 
         loadPassiveWitherOwners();
-        loadConfiguredDropInventory();
         loadSoundDisabledPlayers();
         setupEconomy();
         registerPlotSquaredFlag();
@@ -242,9 +239,6 @@ public final class PassiveWitherService implements Listener {
         if (args.length > 0 && args[0].equalsIgnoreCase("sound")) {
             return handleSoundCommand(sender, label, args);
         }
-        if (args.length > 0 && (args[0].equalsIgnoreCase("chest") || args[0].equalsIgnoreCase("truhe"))) {
-            return handleChestCommand(sender, label, args);
-        }
 
         if (!sender.hasPermission(commandPermission)) {
             plugin.getLanguageManager().send(sender, "no-permission");
@@ -288,56 +282,6 @@ public final class PassiveWitherService implements Listener {
 
         givePassiveWitherEgg(target, amount);
         plugin.getLanguageManager().send(sender, "passive-wither-egg-given");
-        return true;
-    }
-
-    private boolean handleChestCommand(final CommandSender sender, final String label, final String[] args) {
-        if (chestPermission != null && !chestPermission.trim().isEmpty() && !sender.hasPermission(chestPermission.trim())) {
-            plugin.getLanguageManager().send(sender, "no-permission");
-            return true;
-        }
-        if (args.length < 2) {
-            sendChestUsage(sender, label);
-            return true;
-        }
-
-        final String mode = args[1].toLowerCase(Locale.ROOT);
-        if (mode.equals("set") || mode.equals("setzen")) {
-            if (!(sender instanceof Player)) {
-                plugin.getLanguageManager().send(sender, "only-players");
-                return true;
-            }
-            final Player player = (Player) sender;
-            final Block targetBlock = player.getTargetBlockExact(8);
-            if (targetBlock == null || !(targetBlock.getState() instanceof InventoryHolder)) {
-                plugin.getLanguageManager().send(player, "passive-wither-chest-not-found");
-                return true;
-            }
-            configuredDropInventoryLocation = targetBlock.getLocation();
-            saveConfiguredDropInventory();
-            plugin.getLanguageManager().send(player, "passive-wither-chest-set",
-                    locationPlaceholders(configuredDropInventoryLocation));
-            return true;
-        }
-        if (mode.equals("clear") || mode.equals("remove") || mode.equals("entfernen")) {
-            configuredDropInventoryLocation = null;
-            if (data != null) {
-                data.set("target-inventory", null);
-                saveData();
-            }
-            plugin.getLanguageManager().send(sender, "passive-wither-chest-cleared");
-            return true;
-        }
-        if (mode.equals("info")) {
-            if (configuredDropInventoryLocation == null) {
-                plugin.getLanguageManager().send(sender, "passive-wither-chest-info-empty");
-            } else {
-                plugin.getLanguageManager().send(sender, "passive-wither-chest-info",
-                        locationPlaceholders(configuredDropInventoryLocation));
-            }
-            return true;
-        }
-        sendChestUsage(sender, label);
         return true;
     }
 
@@ -392,7 +336,6 @@ public final class PassiveWitherService implements Listener {
             addIfMatches(values, "give", args[0]);
             addIfMatches(values, "reload", args[0]);
             addIfMatches(values, "sound", args[0]);
-            addIfMatches(values, "chest", args[0]);
             return values;
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("sound")) {
@@ -400,13 +343,6 @@ public final class PassiveWitherService implements Listener {
             addIfMatches(values, "on", args[1]);
             addIfMatches(values, "off", args[1]);
             addIfMatches(values, "toggle", args[1]);
-            return values;
-        }
-        if (args.length == 2 && (args[0].equalsIgnoreCase("chest") || args[0].equalsIgnoreCase("truhe"))) {
-            final List<String> values = new ArrayList<>();
-            addIfMatches(values, "set", args[1]);
-            addIfMatches(values, "clear", args[1]);
-            addIfMatches(values, "info", args[1]);
             return values;
         }
         if (args.length == 2 && (args[0].equalsIgnoreCase("egg") || args[0].equalsIgnoreCase("give"))) {
@@ -963,14 +899,6 @@ public final class PassiveWitherService implements Listener {
         }
     }
 
-    private void loadConfiguredDropInventory() {
-        configuredDropInventoryLocation = loadLocation("target-inventory");
-        if (configuredDropInventoryLocation != null
-                && !(configuredDropInventoryLocation.getBlock().getState() instanceof InventoryHolder)) {
-            configuredDropInventoryLocation = null;
-        }
-    }
-
     private void loadProtectedMiningMaterials() {
         protectedMiningMaterials.clear();
         for (final String configured : plugin.getConfig().getStringList("passive-wither.mining.protected-materials")) {
@@ -1052,15 +980,6 @@ public final class PassiveWitherService implements Listener {
             data.set("withers." + witherId + ".target-inventory", null);
             saveData();
         }
-    }
-
-    private void saveConfiguredDropInventory() {
-        if (configuredDropInventoryLocation == null) {
-            data.set("target-inventory", null);
-        } else {
-            saveLocation("target-inventory", configuredDropInventoryLocation);
-        }
-        saveData();
     }
 
     private void saveSoundDisabledPlayers() {
@@ -1294,9 +1213,7 @@ public final class PassiveWitherService implements Listener {
             return;
         }
         if (dropTarget == null) {
-            if (dropOverflow) {
-                dropItems(location, drops);
-            }
+            dropItems(location, drops);
             return;
         }
         for (final ItemStack drop : drops) {
@@ -1308,15 +1225,7 @@ public final class PassiveWitherService implements Listener {
     }
 
     private DropTarget findDropTarget(final UUID witherId) {
-        final DropTarget linkedTarget = getPassiveWitherDropTarget(witherId);
-        if (linkedTarget != null) {
-            return linkedTarget;
-        }
-        final DropTarget configuredTarget = getConfiguredDropTarget();
-        if (configuredTarget != null) {
-            return configuredTarget;
-        }
-        return null;
+        return getPassiveWitherDropTarget(witherId);
     }
 
     private DropTarget getPassiveWitherDropTarget(final UUID witherId) {
@@ -1342,18 +1251,6 @@ public final class PassiveWitherService implements Listener {
             return null;
         }
         return location.clone();
-    }
-
-    private DropTarget getConfiguredDropTarget() {
-        if (configuredDropInventoryLocation == null || configuredDropInventoryLocation.getWorld() == null) {
-            return null;
-        }
-        final Block block = configuredDropInventoryLocation.getBlock();
-        final BlockState state = block.getState();
-        if (!(state instanceof InventoryHolder)) {
-            return null;
-        }
-        return new DropTarget(block, ((InventoryHolder) state).getInventory());
     }
 
     private void dropItems(final Location location, final List<ItemStack> items) {
@@ -1908,12 +1805,6 @@ public final class PassiveWitherService implements Listener {
         final Map<String, String> placeholders = new HashMap<>();
         placeholders.put("label", label);
         plugin.getLanguageManager().send(sender, "passive-wither-sound-usage", placeholders);
-    }
-
-    private void sendChestUsage(final CommandSender sender, final String label) {
-        final Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("label", label);
-        plugin.getLanguageManager().send(sender, "passive-wither-chest-usage", placeholders);
     }
 
     private void markPassiveWitherDataDirty() {

@@ -52,7 +52,7 @@ commands:
       - cpe
   passivewither:
     # Beschreibung des Passive-Wither-Befehls.
-    description: Verwaltet passive Wither-Spawneier, Zieltruhe und Sounds.
+    description: Verwaltet passive Wither-Spawneier und Sounds.
     # Nutzungshinweis, falls der Befehl falsch verwendet wird.
     usage: /passivewither
     # Zusätzliche Kurzbefehle.
@@ -202,9 +202,6 @@ permissions:
     default: true
   craftplayplotextras.passivewither.free:
     description: Erlaubt den kostenlosen Kauf passiver Wither-Spawneier.
-    default: op
-  craftplayplotextras.passivewither.chest:
-    description: Erlaubt das Setzen, Anzeigen und Entfernen der globalen Passive-Wither-Zieltruhe.
     default: op
   craftplayplotextras.backup.create:
     # Erlaubt das Erstellen von Plotbackups.
