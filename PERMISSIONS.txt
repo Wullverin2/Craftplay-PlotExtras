@@ -30,11 +30,6 @@ Zielgruppe: Spieler / Rang
 Default: false
 Gibt frei: Sichtbarkeit und Nutzung des Plotlimit-Kaufmenüs. Beim Kauf wird das neue Limit wie bei LostPlots als Spielerpermission plots.plot.<anzahl> beim kaufenden Spieler gesetzt.
 
-Permission: craftplayplotextras.plots.free.<rang>
-Zielgruppe: Spieler / Rang
-Default: nicht in plugin.yml registriert, über config.yml frei definierbar
-Gibt frei: Kostenlose Plotanzahl durch Rang. Die konkreten Permission-Namen, LuckPerms-Gruppen und Gewichtungen stehen unter plot-purchase.free-plot-permissions in config.yml. Hat ein Spieler mehrere passende Ränge, gewinnt die höchste LuckPerms-/Config-Gewichtung.
-
 Permission: craftplayplotextras.create.premium
 Zielgruppe: Spieler / Rang
 Default: op

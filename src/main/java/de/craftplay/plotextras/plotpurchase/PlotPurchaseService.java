@@ -4,17 +4,19 @@ import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
 import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -25,7 +27,6 @@ public final class PlotPurchaseService {
     private final CraftplayPlotExtrasPlugin plugin;
     private final PlotSquaredPlotService plotService;
     private final Map<UUID, Integer> selectedAmounts = new HashMap<>();
-    private final List<FreePlotRule> freePlotRules = new ArrayList<>();
 
     private boolean enabled;
     private boolean logging;
@@ -47,7 +48,9 @@ public final class PlotPurchaseService {
     private Object permissionProvider;
     private Method permissionPlayerAddMethod;
     private Method permissionPlayerRemoveMethod;
+    private Method permissionGetPlayerGroupsMethod;
 
+    private Object luckPermsUserManager;
     private Object luckPermsGroupManager;
 
     public PlotPurchaseService(final CraftplayPlotExtrasPlugin plugin, final PlotSquaredPlotService plotService) {
@@ -57,7 +60,6 @@ public final class PlotPurchaseService {
 
     public void reload() {
         selectedAmounts.clear();
-        freePlotRules.clear();
 
         enabled = plugin.getConfig().getBoolean("plot-purchase.enabled", true);
         logging = plugin.getConfig().getBoolean("plot-purchase.logging", true);
@@ -70,7 +72,6 @@ public final class PlotPurchaseService {
         maximumSelection = Math.max(defaultSelection, plugin.getConfig().getInt("plot-purchase.maximum-selection", 100));
         pricePerPlot = Math.max(0.0D, plugin.getConfig().getDouble("plot-purchase.plot-price", 50000.0D));
 
-        loadFreePermissions();
         setupEconomy();
         setupPermissions();
         setupLuckPerms();
@@ -106,10 +107,10 @@ public final class PlotPurchaseService {
     public PurchaseSnapshot snapshot(final Player player) {
         final int selected = selectedAmount(player);
         final int freePlots = freePlots(player);
-        final int permissionLimit = highestPlotPermissionLimit(player);
+        final int permissionLimit = highestDirectPlayerPlotPermissionLimit(player);
         final int claimedPlots = plotService.ownedPlots(player).size();
         final int allowedPlots = Math.max(Math.max(freePlots, permissionLimit), claimedPlots);
-        final int purchasedPlots = Math.max(0, allowedPlots - freePlots);
+        final int purchasedPlots = Math.max(0, permissionLimit - freePlots);
         final double singlePrice = discountedPricePerPlot(player);
         final double totalPrice = Math.max(0.0D, singlePrice * selected);
         return new PurchaseSnapshot(
@@ -197,77 +198,13 @@ public final class PlotPurchaseService {
         return placeholders;
     }
 
-    private void loadFreePermissions() {
-        final ConfigurationSection section = plugin.getConfig().getConfigurationSection("plot-purchase.free-plot-permissions");
-        if (section == null) {
-            return;
-        }
-        for (final String id : section.getKeys(false)) {
-            final String path = "plot-purchase.free-plot-permissions." + id + ".";
-            final String permission = plugin.getConfig().getString(path + "permission", "");
-            final String groupName = plugin.getConfig().getString(path + "group-name", "");
-            final int weight = plugin.getConfig().contains(path + "weight")
-                    ? plugin.getConfig().getInt(path + "weight", -1)
-                    : -1;
-            final int plots = Math.max(0, plugin.getConfig().getInt(path + "plots", 0));
-            if (plots <= 0) {
-                continue;
-            }
-            freePlotRules.add(new FreePlotRule(
-                    permission == null ? "" : permission.trim(),
-                    groupName == null ? "" : groupName.trim(),
-                    weight,
-                    plots,
-                    freePlotRules.size()
-            ));
-        }
-    }
-
     private int freePlots(final Player player) {
         int plots = baseFreePlots;
-        FreePlotRule bestRule = null;
-        for (final FreePlotRule rule : freePlotRules) {
-            if (!matchesFreePlotRule(player, rule)) {
-                continue;
-            }
-            if (bestRule == null || compareFreePlotRules(rule, bestRule) > 0) {
-                bestRule = rule;
-            }
+        final int weightedRankPlots = highestWeightedGroupPlotLimit(player);
+        if (weightedRankPlots >= 0) {
+            return Math.max(plots, weightedRankPlots);
         }
-        if (bestRule != null) {
-            plots = Math.max(plots, bestRule.plots);
-        }
-        return plots;
-    }
-
-    private boolean matchesFreePlotRule(final Player player, final FreePlotRule rule) {
-        if (!rule.permission.isEmpty() && player.hasPermission(rule.permission)) {
-            return true;
-        }
-        return !rule.groupName.isEmpty() && playerInGroup(player, rule.groupName);
-    }
-
-    private int compareFreePlotRules(final FreePlotRule left, final FreePlotRule right) {
-        final int leftWeight = effectiveWeight(left);
-        final int rightWeight = effectiveWeight(right);
-        if (leftWeight != rightWeight) {
-            return Integer.compare(leftWeight, rightWeight);
-        }
-        if (left.plots != right.plots) {
-            return Integer.compare(left.plots, right.plots);
-        }
-        return Integer.compare(left.order, right.order);
-    }
-
-    private int effectiveWeight(final FreePlotRule rule) {
-        if (rule.weight >= 0) {
-            return rule.weight;
-        }
-        final int luckPermsWeight = luckPermsGroupWeight(rule.groupName);
-        if (luckPermsWeight != NO_WEIGHT) {
-            return luckPermsWeight;
-        }
-        return rule.plots;
+        return Math.max(plots, highestPlotPermissionLimit(player));
     }
 
     private boolean applyPlotPermissionLimit(final Player player, final int targetLimit) {
@@ -275,7 +212,7 @@ public final class PlotPurchaseService {
             return false;
         }
         final String worldName = player.getWorld().getName();
-        final List<Integer> limits = plotPermissionLimits(player);
+        final List<Integer> limits = directPlayerPlotPermissionLimits(player);
         for (final int limit : limits) {
             if (limit == targetLimit) {
                 continue;
@@ -314,6 +251,39 @@ public final class PlotPurchaseService {
         return highest;
     }
 
+    private int highestDirectPlayerPlotPermissionLimit(final Player player) {
+        int highest = 0;
+        for (final int limit : directPlayerPlotPermissionLimits(player)) {
+            highest = Math.max(highest, limit);
+        }
+        return highest;
+    }
+
+    private int highestWeightedGroupPlotLimit(final Player player) {
+        int bestWeight = NO_WEIGHT;
+        int bestLimit = -1;
+        for (final String groupName : playerGroupNames(player)) {
+            final int groupLimit = groupPlotPermissionLimit(groupName);
+            if (groupLimit < 0) {
+                continue;
+            }
+            final int groupWeight = luckPermsGroupWeight(groupName);
+            if (groupWeight > bestWeight || (groupWeight == bestWeight && groupLimit > bestLimit)) {
+                bestWeight = groupWeight;
+                bestLimit = groupLimit;
+            }
+        }
+        return bestLimit;
+    }
+
+    private List<Integer> directPlayerPlotPermissionLimits(final Player player) {
+        final Object user = luckPermsUser(player);
+        if (user == null) {
+            return plotPermissionLimits(player);
+        }
+        return plotPermissionLimitsFromNodes(user);
+    }
+
     private List<Integer> plotPermissionLimits(final Player player) {
         final List<Integer> limits = new ArrayList<>();
         for (final PermissionAttachmentInfo permissionInfo : player.getEffectivePermissions()) {
@@ -335,6 +305,139 @@ public final class PlotPurchaseService {
             }
         }
         return limits;
+    }
+
+    private int groupPlotPermissionLimit(final String groupName) {
+        if (groupName == null || groupName.trim().isEmpty() || luckPermsGroupManager == null) {
+            return -1;
+        }
+        try {
+            final Method getGroupMethod = luckPermsGroupManager.getClass().getMethod("getGroup", String.class);
+            final Object group = getGroupMethod.invoke(luckPermsGroupManager, groupName.trim());
+            if (group == null) {
+                return -1;
+            }
+            int highest = -1;
+            for (final int limit : plotPermissionLimitsFromNodes(group)) {
+                highest = Math.max(highest, limit);
+            }
+            return highest;
+        } catch (final ReflectiveOperationException exception) {
+            plugin.getLogger().fine("Plotlimit der LuckPerms-Gruppe '" + groupName + "' konnte nicht gelesen werden: "
+                    + exception.getMessage());
+            return -1;
+        }
+    }
+
+    private List<Integer> plotPermissionLimitsFromNodes(final Object nodeHolder) {
+        final List<Integer> limits = new ArrayList<>();
+        if (nodeHolder == null) {
+            return limits;
+        }
+        try {
+            final Method getNodesMethod = nodeHolder.getClass().getMethod("getNodes");
+            final Object rawNodes = getNodesMethod.invoke(nodeHolder);
+            if (!(rawNodes instanceof Iterable<?>)) {
+                return limits;
+            }
+            for (final Object node : (Iterable<?>) rawNodes) {
+                final Integer limit = plotPermissionLimitFromNode(node);
+                if (limit != null && !limits.contains(limit)) {
+                    limits.add(limit);
+                }
+            }
+        } catch (final ReflectiveOperationException exception) {
+            plugin.getLogger().fine("LuckPerms-Plotlimit-Nodes konnten nicht gelesen werden: " + exception.getMessage());
+        }
+        return limits;
+    }
+
+    private Integer plotPermissionLimitFromNode(final Object node) {
+        if (node == null) {
+            return null;
+        }
+        try {
+            final Method getValueMethod = node.getClass().getMethod("getValue");
+            final Object value = getValueMethod.invoke(node);
+            if (value instanceof Boolean && !(Boolean) value) {
+                return null;
+            }
+        } catch (final ReflectiveOperationException ignored) {
+            // LuckPerms permission nodes are positive by default; older APIs may not expose getValue on the implementation class.
+        }
+        try {
+            final Method getKeyMethod = node.getClass().getMethod("getKey");
+            final Object key = getKeyMethod.invoke(node);
+            if (key == null) {
+                return null;
+            }
+            final String permission = key.toString();
+            if (!permission.toLowerCase(Locale.ROOT).startsWith(plotPermissionPrefix.toLowerCase(Locale.ROOT))) {
+                return null;
+            }
+            final String rawValue = permission.substring(plotPermissionPrefix.length()).trim();
+            final int limit = Integer.parseInt(rawValue);
+            return limit >= 0 ? limit : null;
+        } catch (final ReflectiveOperationException | NumberFormatException ignored) {
+            return null;
+        }
+    }
+
+    private List<String> playerGroupNames(final Player player) {
+        final Set<String> groups = new HashSet<>();
+        if (permissionProvider != null) {
+            if (permissionGetPlayerGroupsMethod != null) {
+                try {
+                    final Object result = permissionGetPlayerGroupsMethod.invoke(permissionProvider, player.getWorld().getName(), player);
+                    if (result instanceof String[]) {
+                        groups.addAll(Arrays.asList((String[]) result));
+                    }
+                } catch (final ReflectiveOperationException exception) {
+                    plugin.getLogger().fine("Vault-Spielergruppen konnten nicht gelesen werden: " + exception.getMessage());
+                }
+            }
+            try {
+                final Method method = permissionProvider.getClass().getMethod("getPlayerGroups", Player.class);
+                final Object result = method.invoke(permissionProvider, player);
+                if (result instanceof String[]) {
+                    groups.addAll(Arrays.asList((String[]) result));
+                }
+            } catch (final ReflectiveOperationException ignored) {
+                // The world-aware Vault signature above is preferred.
+            }
+        }
+        final Object user = luckPermsUser(player);
+        if (user != null) {
+            try {
+                final Method getPrimaryGroupMethod = user.getClass().getMethod("getPrimaryGroup");
+                final Object primaryGroup = getPrimaryGroupMethod.invoke(user);
+                if (primaryGroup != null && !primaryGroup.toString().trim().isEmpty()) {
+                    groups.add(primaryGroup.toString());
+                }
+            } catch (final ReflectiveOperationException ignored) {
+                // Vault normally provides all groups; this is only a fallback.
+            }
+        }
+        final List<String> result = new ArrayList<>();
+        for (final String group : groups) {
+            if (group != null && !group.trim().isEmpty()) {
+                result.add(group.trim());
+            }
+        }
+        return result;
+    }
+
+    private Object luckPermsUser(final Player player) {
+        if (luckPermsUserManager == null || player == null) {
+            return null;
+        }
+        try {
+            final Method getUserMethod = luckPermsUserManager.getClass().getMethod("getUser", UUID.class);
+            return getUserMethod.invoke(luckPermsUserManager, player.getUniqueId());
+        } catch (final ReflectiveOperationException exception) {
+            plugin.getLogger().fine("LuckPerms-User fuer Plotkauf konnte nicht gelesen werden: " + exception.getMessage());
+            return null;
+        }
     }
 
     private boolean withdraw(final Player player, final double price, final Map<String, String> placeholders) {
@@ -500,6 +603,7 @@ public final class PlotPurchaseService {
         permissionProvider = null;
         permissionPlayerAddMethod = null;
         permissionPlayerRemoveMethod = null;
+        permissionGetPlayerGroupsMethod = null;
         try {
             final Class<?> permissionClass = Class.forName("net.milkbowl.vault.permission.Permission");
             @SuppressWarnings({"rawtypes", "unchecked"})
@@ -510,12 +614,18 @@ public final class PlotPurchaseService {
             permissionProvider = registration.getProvider();
             permissionPlayerAddMethod = permissionClass.getMethod("playerAdd", String.class, OfflinePlayer.class, String.class);
             permissionPlayerRemoveMethod = permissionClass.getMethod("playerRemove", String.class, OfflinePlayer.class, String.class);
+            try {
+                permissionGetPlayerGroupsMethod = permissionClass.getMethod("getPlayerGroups", String.class, OfflinePlayer.class);
+            } catch (final NoSuchMethodException ignored) {
+                permissionGetPlayerGroupsMethod = null;
+            }
         } catch (final ClassNotFoundException | NoSuchMethodException exception) {
             plugin.getLogger().fine("Vault-Permissions sind fuer Plotkaeufe nicht verfuegbar: " + exception.getMessage());
         }
     }
 
     private void setupLuckPerms() {
+        luckPermsUserManager = null;
         luckPermsGroupManager = null;
         try {
             final Class<?> luckPermsClass = Class.forName("net.luckperms.api.LuckPerms");
@@ -525,34 +635,13 @@ public final class PlotPurchaseService {
                 return;
             }
             final Object luckPerms = registration.getProvider();
+            final Method getUserManagerMethod = luckPermsClass.getMethod("getUserManager");
             final Method getGroupManagerMethod = luckPermsClass.getMethod("getGroupManager");
+            luckPermsUserManager = getUserManagerMethod.invoke(luckPerms);
             luckPermsGroupManager = getGroupManagerMethod.invoke(luckPerms);
         } catch (final ReflectiveOperationException exception) {
             plugin.getLogger().fine("LuckPerms-Gruppengewichtungen sind fuer Plotkaeufe nicht verfuegbar: "
                     + exception.getMessage());
-        }
-    }
-
-    private static final class FreePlotRule {
-
-        private final String permission;
-        private final String groupName;
-        private final int weight;
-        private final int plots;
-        private final int order;
-
-        private FreePlotRule(
-                final String permission,
-                final String groupName,
-                final int weight,
-                final int plots,
-                final int order
-        ) {
-            this.permission = permission;
-            this.groupName = groupName;
-            this.weight = weight;
-            this.plots = plots;
-            this.order = order;
         }
     }
 
