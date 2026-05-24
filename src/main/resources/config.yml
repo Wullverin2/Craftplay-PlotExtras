@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 22
+file-version: 23
 
 # Befehle dieses Plugins.
 command:
@@ -522,10 +522,8 @@ passive-wither:
       - END_PORTAL_FRAME
       - NETHER_PORTAL
   drops:
-    # Suchradius für die nächste Truhe bzw. das nächste Inventar, wenn keine feste Zieltruhe gesetzt ist.
-    nearest-inventory-radius: 16
-    # Wenn true, werden Items, die nicht mehr in die Truhe passen, neben der Truhe gedroppt.
-    # Wenn false, gehen überzählige Items verloren.
+    # Wenn true, werden Items, die nicht mehr in die verlinkte oder globale Zieltruhe passen, neben der Truhe gedroppt.
+    # Wenn false, gehen überzählige Items verloren. Ohne Zieltruhe droppen Items normal am Abbauort, wenn dieser Wert true ist.
     drop-overflow: true
   performance:
     # Intervall in Sekunden, in dem laufende Passive-Wither-Cooldowns gesammelt gespeichert werden.
@@ -553,7 +551,7 @@ passive-wither:
       - "&7Bleibt stationär am Spawnpunkt."
       - "&7Schießt keine Witherköpfe."
       - "&7Baut Blöcke in Blickrichtung ab."
-      - "&7Drops gehen in die nächste Truhe."
+      - "&7Drops gehen in die verlinkte Zieltruhe."
       - "&7Sneak-Rechtsklick zum Einsammeln."
       - ""
       - "&7Preis: &f{price}"
@@ -604,8 +602,8 @@ passive-wither:
         # Lore des Buttons. Platzhalter: {status}, {target}, {world}, {x}, {y}, {z}
         lore:
           - "&7Aktuell: &f{status}"
-          - "&7Danach nutzt der Wither wieder"
-          - "&7die globale oder nächste Truhe."
+          - "&7Danach nutzt der Wither nur"
+          - "&7noch die globale Zieltruhe."
       close:
         # Wenn true, wird der Schließen-Button angezeigt.
         enabled: true

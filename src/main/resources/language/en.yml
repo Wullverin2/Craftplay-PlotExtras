@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 20
+file-version: 21
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -297,7 +297,7 @@ passive-wither-sound-usage: "&cUsage: /{label} sound <on|off|toggle>"
 passive-wither-chest-usage: "&cUsage: /{label} chest <set|clear|info>"
 passive-wither-chest-not-found: "&cPlease look at a chest or another inventory within 8 blocks."
 passive-wither-chest-set: "&aPassive Wither target chest set: &f{world} {x} {y} {z}&a."
-passive-wither-chest-cleared: "&aPassive Wither target chest cleared. Drops will use the nearest chest again."
+passive-wither-chest-cleared: "&aPassive Wither target chest cleared. Without a linked or global target chest, drops will fall at the mined location."
 passive-wither-chest-info-empty: "&7No fixed Passive Wither target chest is set."
 passive-wither-chest-info: "&7Current Passive Wither target chest: &f{world} {x} {y} {z}&7."
 passive-wither-menu-not-owner: "&cOnly the owner of this passive Wither can use its menu."

@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 20
+file-version: 21
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -297,7 +297,7 @@ passive-wither-sound-usage: "&cBenutzung: /{label} sound <on|off|toggle>"
 passive-wither-chest-usage: "&cBenutzung: /{label} chest <set|clear|info>"
 passive-wither-chest-not-found: "&cBitte schaue eine Truhe oder ein anderes Inventar in maximal 8 Blöcken Entfernung an."
 passive-wither-chest-set: "&aPassive-Wither-Zieltruhe gesetzt: &f{world} {x} {y} {z}&a."
-passive-wither-chest-cleared: "&aPassive-Wither-Zieltruhe entfernt. Drops gehen wieder in die nächste Truhe."
+passive-wither-chest-cleared: "&aPassive-Wither-Zieltruhe entfernt. Drops fallen ohne verlinkte oder globale Zieltruhe am Abbauort herunter."
 passive-wither-chest-info-empty: "&7Es ist keine feste Passive-Wither-Zieltruhe gesetzt."
 passive-wither-chest-info: "&7Aktuelle Passive-Wither-Zieltruhe: &f{world} {x} {y} {z}&7."
 passive-wither-menu-not-owner: "&cNur der Besitzer dieses passiven Withers kann sein Menü nutzen."

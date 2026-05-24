@@ -129,6 +129,46 @@ public final class ConfigurationManager {
                 changed = true;
             }
         }
+        if ("config.yml".equals(resourcePath) && existingVersion < 23) {
+            if (existing.contains("passive-wither.drops.nearest-inventory-radius")) {
+                existing.set("passive-wither.drops.nearest-inventory-radius", null);
+                changed = true;
+            }
+            final List<String> eggLore = existing.getStringList("passive-wither.egg.lore");
+            final int nearestChestLine = eggLore.indexOf("&7Drops gehen in die nächste Truhe.");
+            if (nearestChestLine >= 0) {
+                eggLore.set(nearestChestLine, "&7Drops gehen in die verlinkte Zieltruhe.");
+                existing.set("passive-wither.egg.lore", eggLore);
+                changed = true;
+            }
+            final List<String> unlinkLore = existing.getStringList("passive-wither.menu.buttons.unlink.lore");
+            if (unlinkLore.equals(Arrays.asList(
+                    "&7Aktuell: &f{status}",
+                    "&7Danach nutzt der Wither wieder",
+                    "&7die globale oder nächste Truhe."))) {
+                existing.set("passive-wither.menu.buttons.unlink.lore", Arrays.asList(
+                        "&7Aktuell: &f{status}",
+                        "&7Danach nutzt der Wither nur",
+                        "&7noch die globale Zieltruhe."));
+                changed = true;
+            }
+        }
+        if (resourcePath.replace('\\', '/').equals("language/de.yml") && existingVersion < 21) {
+            final String oldMessage = "&aPassive-Wither-Zieltruhe entfernt. Drops gehen wieder in die nächste Truhe.";
+            if (oldMessage.equals(existing.getString("passive-wither-chest-cleared", ""))) {
+                existing.set("passive-wither-chest-cleared",
+                        "&aPassive-Wither-Zieltruhe entfernt. Drops fallen ohne verlinkte oder globale Zieltruhe am Abbauort herunter.");
+                changed = true;
+            }
+        }
+        if (resourcePath.replace('\\', '/').equals("language/en.yml") && existingVersion < 21) {
+            final String oldMessage = "&aPassive Wither target chest cleared. Drops will use the nearest chest again.";
+            if (oldMessage.equals(existing.getString("passive-wither-chest-cleared", ""))) {
+                existing.set("passive-wither-chest-cleared",
+                        "&aPassive Wither target chest cleared. Without a linked or global target chest, drops will fall at the mined location.");
+                changed = true;
+            }
+        }
         if (resourcePath.replace('\\', '/').endsWith("/extras.yml") && existingVersion < 4) {
             final String passiveWitherIcon = existing.getString("buttons.passive-wither.material", "");
             if ("WITHER_SKELETON_SKULL".equalsIgnoreCase(passiveWitherIcon)) {

@@ -5,7 +5,6 @@ import com.plotsquared.core.plot.flag.GlobalFlagContainer;
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
 import de.craftplay.plotextras.util.Text;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -118,7 +117,6 @@ public final class PassiveWitherService implements Listener {
     private double price;
     private Material eggMaterial;
     private int miningRange;
-    private int nearestInventoryRadius;
     private boolean dropOverflow;
     private Location configuredDropInventoryLocation;
     private long explosionCooldownMillis;
@@ -186,7 +184,6 @@ public final class PassiveWitherService implements Listener {
                 .getDouble("passive-wither.explosion-cooldown-seconds", 5.0D) * 1000.0D));
         miningRange = Math.max(1, plugin.getConfig().getInt("passive-wither.mining.range-blocks", 32));
         loadProtectedMiningMaterials();
-        nearestInventoryRadius = Math.max(1, plugin.getConfig().getInt("passive-wither.drops.nearest-inventory-radius", 16));
         dropOverflow = plugin.getConfig().getBoolean("passive-wither.drops.drop-overflow", true);
 
         loadPassiveWitherOwners();
@@ -1252,7 +1249,7 @@ public final class PassiveWitherService implements Listener {
 
     private void routePassiveExplosionDrops(final EntityExplodeEvent event, final UUID witherId) {
         final List<Block> blocks = event.blockList();
-        final DropTarget dropTarget = findDropTarget(event.getLocation(), blocks, witherId);
+        final DropTarget dropTarget = findDropTarget(witherId);
         if (dropTarget != null) {
             blocks.removeIf(block -> isSameBlock(block, dropTarget.block));
         }
@@ -1261,7 +1258,7 @@ public final class PassiveWitherService implements Listener {
     }
 
     private void routePassiveBlockDrops(final UUID witherId, final Location location, final List<Block> blocks) {
-        final DropTarget dropTarget = findDropTarget(location, blocks, witherId);
+        final DropTarget dropTarget = findDropTarget(witherId);
         if (dropTarget != null) {
             blocks.removeIf(block -> isSameBlock(block, dropTarget.block));
         }
@@ -1310,7 +1307,7 @@ public final class PassiveWitherService implements Listener {
         }
     }
 
-    private DropTarget findDropTarget(final Location location, final List<Block> explodingBlocks, final UUID witherId) {
+    private DropTarget findDropTarget(final UUID witherId) {
         final DropTarget linkedTarget = getPassiveWitherDropTarget(witherId);
         if (linkedTarget != null) {
             return linkedTarget;
@@ -1319,59 +1316,7 @@ public final class PassiveWitherService implements Listener {
         if (configuredTarget != null) {
             return configuredTarget;
         }
-        final World world = location.getWorld();
-        if (world == null) {
-            return null;
-        }
-        final Set<String> ignoredBlocks = new HashSet<>();
-        for (final Block block : explodingBlocks) {
-            if (block.getWorld().getUID().equals(world.getUID())) {
-                ignoredBlocks.add(blockKey(block));
-            }
-        }
-        DropTarget nearest = null;
-        double nearestDistance = Double.MAX_VALUE;
-        final int centerX = location.getBlockX();
-        final int centerY = location.getBlockY();
-        final int centerZ = location.getBlockZ();
-        final int minX = centerX - nearestInventoryRadius;
-        final int maxX = centerX + nearestInventoryRadius;
-        final int minY = Math.max(0, centerY - nearestInventoryRadius);
-        final int maxY = Math.min(world.getMaxHeight() - 1, centerY + nearestInventoryRadius);
-        final int minZ = centerZ - nearestInventoryRadius;
-        final int maxZ = centerZ + nearestInventoryRadius;
-        final int minChunkX = Math.floorDiv(minX, 16);
-        final int maxChunkX = Math.floorDiv(maxX, 16);
-        final int minChunkZ = Math.floorDiv(minZ, 16);
-        final int maxChunkZ = Math.floorDiv(maxZ, 16);
-        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
-            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                if (!world.isChunkLoaded(chunkX, chunkZ)) {
-                    continue;
-                }
-                final Chunk chunk = world.getChunkAt(chunkX, chunkZ);
-                for (final BlockState state : chunk.getTileEntities()) {
-                    if (!(state instanceof InventoryHolder)) {
-                        continue;
-                    }
-                    final Block block = state.getBlock();
-                    if (block.getX() < minX || block.getX() > maxX
-                            || block.getY() < minY || block.getY() > maxY
-                            || block.getZ() < minZ || block.getZ() > maxZ) {
-                        continue;
-                    }
-                    if (ignoredBlocks.contains(blockKey(block))) {
-                        continue;
-                    }
-                    final double distance = block.getLocation().add(0.5D, 0.5D, 0.5D).distanceSquared(location);
-                    if (distance < nearestDistance) {
-                        nearestDistance = distance;
-                        nearest = new DropTarget(block, ((InventoryHolder) state).getInventory());
-                    }
-                }
-            }
-        }
-        return nearest;
+        return null;
     }
 
     private DropTarget getPassiveWitherDropTarget(final UUID witherId) {
