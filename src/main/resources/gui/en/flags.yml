@@ -9,14 +9,14 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 14
+file-version: 15
 
 # Inventory title.
 title: "&8Plot Flags &7{page}/{max_page}"
 # Inventory size. Allowed values are 9, 18, 27, 36, 45, or 54 slots.
 size: 54
 # Delay in ticks before the menu refreshes after toggling a flag.
-reopen-delay-ticks: 2
+reopen-delay-ticks: 0
 # Automatic placement for flags.
 # When enabled is true, the plugin ignores page/slot on individual flags and fills the areas below in order.
 # Players only see allowed flags; gaps caused by missing permissions are closed automatically.
@@ -45,7 +45,7 @@ filler:
   name: "&r"
 # Static buttons in this menu.
 animation:
-  enabled: true
+  enabled: false
   delay-ticks: 1
   keep-filler-visible: true
 buttons:

@@ -154,6 +154,7 @@ public final class PlotMenuManager implements Listener {
     private int flagsSize;
     private ItemStack flagsFiller;
     private boolean flagsLoaded;
+    private boolean flagsAnimationEnabled;
     private boolean automaticFlagLayout;
     private List<Integer> automaticFlagSlots = Collections.emptyList();
     private String statusEnabled;
@@ -379,7 +380,8 @@ public final class PlotMenuManager implements Listener {
         flagsFiller = createFiller(flagsConfig);
         statusEnabled = flagsConfig.getString("status.enabled", "&aAktiv");
         statusDisabled = flagsConfig.getString("status.disabled", "&cInaktiv");
-        reopenDelayTicks = Math.max(1L, flagsConfig.getLong("reopen-delay-ticks", 2L));
+        reopenDelayTicks = Math.max(0L, flagsConfig.getLong("reopen-delay-ticks", 2L));
+        flagsAnimationEnabled = flagsConfig.getBoolean("animation.enabled", inventoryAnimationEnabled);
         loadButtons(flagsConfig, flagButtonsBySlot, flagsSize);
         loadDecorations(flagsConfig, flagDecorationsBySlot, flagsSize);
         loadFlags(flagsConfig);
@@ -578,7 +580,17 @@ public final class PlotMenuManager implements Listener {
             final ItemStack filler,
             final MenuSound openSound
     ) {
-        if (!inventoryAnimationEnabled) {
+        openAnimatedInventory(player, inventory, filler, openSound, inventoryAnimationEnabled);
+    }
+
+    private void openAnimatedInventory(
+            final Player player,
+            final Inventory inventory,
+            final ItemStack filler,
+            final MenuSound openSound,
+            final boolean animate
+    ) {
+        if (!animate) {
             player.openInventory(inventory);
             playSound(player, openSound);
             return;
@@ -1305,7 +1317,7 @@ public final class PlotMenuManager implements Listener {
             inventory.setItem(flagEntry.getSlot(), createFlagItem(player, flagEntry));
         }
 
-        openAnimatedInventory(player, inventory, flagsFiller);
+        openAnimatedInventory(player, inventory, flagsFiller, null, flagsAnimationEnabled);
     }
 
     public void openSettingsMenu(final Player player) {
@@ -3181,11 +3193,15 @@ public final class PlotMenuManager implements Listener {
         placeholders.put("flag", Text.color(flagEntry.getName()));
         placeholders.put("status", Text.color(target ? statusEnabled : statusDisabled));
         languageManager.send(player, "flag-toggled", placeholders);
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-            if (player.isOnline()) {
-                openFlagsMenu(player, page);
-            }
-        }, reopenDelayTicks);
+        if (reopenDelayTicks <= 0L) {
+            openFlagsMenu(player, page);
+        } else {
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                if (player.isOnline()) {
+                    openFlagsMenu(player, page);
+                }
+            }, reopenDelayTicks);
+        }
     }
 
     private void handleSettingsClick(final Player player, final String tabId, final int slot) {

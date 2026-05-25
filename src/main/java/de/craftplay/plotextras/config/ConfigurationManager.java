@@ -501,6 +501,11 @@ public final class ConfigurationManager {
             existing.set("buttons.next-page.close", false);
             changed = true;
         }
+        if (resourcePath.replace('\\', '/').endsWith("/flags.yml") && existingVersion < 15) {
+            existing.set("reopen-delay-ticks", 0);
+            existing.set("animation.enabled", false);
+            changed = true;
+        }
         if (resourcePath.replace('\\', '/').endsWith("/main.yml") && existingVersion < 18) {
             existing.set("buttons.deco.commands", Arrays.asList("open-menu:deco:wall:basic"));
             existing.set("buttons.deco.close", false);

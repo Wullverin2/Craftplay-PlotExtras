@@ -9,14 +9,14 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 14
+file-version: 15
 
 # Titel des Inventars.
 title: "&8Plot-Flags &7{page}/{max_page}"
 # Größe des Inventars. Erlaubt sind 9, 18, 27, 36, 45 oder 54 Slots.
 size: 54
 # Nach wie vielen Ticks das Menü nach dem Umschalten aktualisiert wird.
-reopen-delay-ticks: 2
+reopen-delay-ticks: 0
 # Automatische Platzierung der Flags.
 # Wenn enabled true ist, ignoriert das Plugin page/slot an einzelnen Flags und füllt die Bereiche unten der Reihe nach.
 # Spieler sehen nur erlaubte Flags; Lücken durch fehlende Permissions werden automatisch geschlossen.
@@ -45,7 +45,7 @@ filler:
   name: "&r"
 # Feste Buttons im Menü.
 animation:
-  enabled: true
+  enabled: false
   delay-ticks: 1
   keep-filler-visible: true
 buttons:
