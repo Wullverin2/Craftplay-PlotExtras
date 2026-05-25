@@ -245,12 +245,23 @@ public final class PlotSquaredPlotService {
         if (id == null) {
             return null;
         }
+        final int[] parsed = parsePlotIdCoordinates(id.toString());
+        if (parsed != null || id instanceof CharSequence) {
+            return parsed;
+        }
         final Integer x = coordinate(id, "X");
         final Integer y = coordinate(id, "Y");
         if (x != null && y != null) {
             return new int[]{x, y};
         }
-        final String normalized = id.toString().replace(';', ',').replace(':', ',');
+        return null;
+    }
+
+    private int[] parsePlotIdCoordinates(final String plotId) {
+        if (plotId == null || plotId.trim().isEmpty()) {
+            return null;
+        }
+        final String normalized = plotId.replace(';', ',').replace(':', ',');
         final String[] parts = normalized.split(",");
         if (parts.length < 2) {
             return null;
