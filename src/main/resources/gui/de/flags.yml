@@ -9,10 +9,10 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 12
+file-version: 13
 
 # Titel des Inventars.
-title: "&8Plot-Flags"
+title: "&8Plot-Flags &7{page}/{max_page}"
 # Größe des Inventars. Erlaubt sind 9, 18, 27, 36, 45 oder 54 Slots.
 size: 54
 # Nach wie vielen Ticks das Menü nach dem Umschalten aktualisiert wird.
@@ -78,13 +78,14 @@ buttons:
     # Optional: HeadDatabase-ID für diesen Button.
     head-database-id: ""
     # Anzeigename des Buttons.
-    name: "&eSeite 1"
+    name: "&eZurück zu Seite {previous_page}"
     # Beschreibung unter dem Buttonnamen.
     lore:
-      - "&7Öffnet die erste Flag-Seite."
+      - "&7Aktuelle Seite: &f{page}/{max_page}"
+      - "&7Öffnet die vorherige Flag-Seite."
     # Interne Aktion: öffnet Seite 1 des Flag-Menüs.
     commands:
-      - "open-menu:flags:1"
+      - "open-menu:flags:{previous_page}"
     # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: false
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.
@@ -98,13 +99,14 @@ buttons:
     # Optional: HeadDatabase-ID für diesen Button.
     head-database-id: ""
     # Anzeigename des Buttons.
-    name: "&eSeite 2"
+    name: "&eWeiter zu Seite {next_page}"
     # Beschreibung unter dem Buttonnamen.
     lore:
-      - "&7Öffnet die zweite Flag-Seite."
+      - "&7Aktuelle Seite: &f{page}/{max_page}"
+      - "&7Öffnet die nächste Flag-Seite."
     # Interne Aktion: öffnet Seite 2 des Flag-Menüs.
     commands:
-      - "open-menu:flags:2"
+      - "open-menu:flags:{next_page}"
     # Wenn true, wird das Menü nach dem Klick geschlossen.
     close: false
     # Optional: Permission, die ein Spieler braucht, damit der Button sichtbar ist.

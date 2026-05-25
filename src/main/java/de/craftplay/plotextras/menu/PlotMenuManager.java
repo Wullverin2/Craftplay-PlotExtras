@@ -1274,11 +1274,13 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
-        final int normalizedPage = Math.max(1, page);
+        final int maxPage = maxFlagPage(player);
+        final int normalizedPage = Math.min(Math.max(1, page), maxPage);
+        final Map<String, String> pagePlaceholders = flagMenuPlaceholders(normalizedPage, maxPage);
         final Inventory inventory = Bukkit.createInventory(
                 new PlotMenuHolder("flags", normalizedPage),
                 flagsSize,
-                Text.color(placeholderHook.apply(player, flagsTitle))
+                Text.color(placeholderHook.apply(player, applyPlaceholders(flagsTitle, pagePlaceholders)))
         );
         if (flagsFiller != null) {
             for (int slot = 0; slot < flagsSize; slot++) {
@@ -1287,7 +1289,7 @@ public final class PlotMenuManager implements Listener {
         }
         for (final MenuButton decoration : flagDecorationsBySlot.values()) {
             if (canSee(player, decoration)) {
-                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration));
+                inventory.setItem(decoration.getSlot(), createButtonItem(player, decoration, pagePlaceholders));
             }
         }
 
@@ -1295,7 +1297,7 @@ public final class PlotMenuManager implements Listener {
             if (!canSee(player, button)) {
                 continue;
             }
-            inventory.setItem(button.getSlot(), createButtonItem(player, button));
+            inventory.setItem(button.getSlot(), createButtonItem(player, button, pagePlaceholders));
         }
 
         final Map<Integer, FlagMenuEntry> flagsBySlot = flagsForPage(player, normalizedPage);
@@ -2858,6 +2860,41 @@ public final class PlotMenuManager implements Listener {
         return flagService.hasTogglePermission(player, flagEntry.getFlag(), target);
     }
 
+    private int maxFlagPage(final Player player) {
+        if (automaticFlagLayout) {
+            final int pageSize = automaticFlagSlots == null || automaticFlagSlots.isEmpty() ? 1 : automaticFlagSlots.size();
+            int visible = 0;
+            for (final FlagMenuEntry template : automaticFlagEntries) {
+                if (canSeeFlag(player, template)) {
+                    visible++;
+                }
+            }
+            return Math.max(1, (int) Math.ceil(visible / (double) pageSize));
+        }
+
+        int maxPage = 1;
+        for (final Map.Entry<Integer, Map<Integer, FlagMenuEntry>> pageEntry : flagsByPageAndSlot.entrySet()) {
+            for (final FlagMenuEntry entry : pageEntry.getValue().values()) {
+                if (canSeeFlag(player, entry)) {
+                    maxPage = Math.max(maxPage, pageEntry.getKey());
+                    break;
+                }
+            }
+        }
+        return maxPage;
+    }
+
+    private Map<String, String> flagMenuPlaceholders(final int page, final int maxPage) {
+        final int normalizedMaxPage = Math.max(1, maxPage);
+        final int normalizedPage = Math.min(Math.max(1, page), normalizedMaxPage);
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("page", String.valueOf(normalizedPage));
+        placeholders.put("max_page", String.valueOf(normalizedMaxPage));
+        placeholders.put("next_page", String.valueOf(Math.min(normalizedMaxPage, normalizedPage + 1)));
+        placeholders.put("previous_page", String.valueOf(Math.max(1, normalizedPage - 1)));
+        return placeholders;
+    }
+
     private Map<Integer, FlagMenuEntry> flagsForPage(final Player player, final int page) {
         final int normalizedPage = Math.max(1, page);
         if (!automaticFlagLayout) {
@@ -3118,7 +3155,9 @@ public final class PlotMenuManager implements Listener {
             if (!canSee(player, button)) {
                 return;
             }
-            executeButtonCommands(player, button);
+            final int maxPage = maxFlagPage(player);
+            playSound(player, button.getClickSound());
+            executeCommands(player, button.isCloseInventory(), applyCommandState(button.getCommands(), flagMenuPlaceholders(page, maxPage)), button);
             return;
         }
 

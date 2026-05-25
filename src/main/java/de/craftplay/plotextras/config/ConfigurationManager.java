@@ -481,6 +481,26 @@ public final class ConfigurationManager {
             existing.set("flags.passive-wither-spawn.permission", "craftplayplotextras.passivewither");
             changed = true;
         }
+        if (resourcePath.replace('\\', '/').endsWith("/flags.yml") && existingVersion < 13) {
+            final boolean english = resourcePath.replace('\\', '/').contains("/en/");
+            final String oldTitle = existing.getString("title", "");
+            if ("&8Plot-Flags".equals(oldTitle) || "&8Plot Flags".equals(oldTitle)) {
+                existing.set("title", english ? "&8Plot Flags &7{page}/{max_page}" : "&8Plot-Flags &7{page}/{max_page}");
+            }
+            existing.set("buttons.previous-page.name", english ? "&eBack to Page {previous_page}" : "&eZurück zu Seite {previous_page}");
+            existing.set("buttons.previous-page.lore", english
+                    ? Arrays.asList("&7Current page: &f{page}/{max_page}", "&7Open the previous flag page.")
+                    : Arrays.asList("&7Aktuelle Seite: &f{page}/{max_page}", "&7Öffnet die vorherige Flag-Seite."));
+            existing.set("buttons.previous-page.commands", Arrays.asList("open-menu:flags:{previous_page}"));
+            existing.set("buttons.previous-page.close", false);
+            existing.set("buttons.next-page.name", english ? "&eNext to Page {next_page}" : "&eWeiter zu Seite {next_page}");
+            existing.set("buttons.next-page.lore", english
+                    ? Arrays.asList("&7Current page: &f{page}/{max_page}", "&7Open the next flag page.")
+                    : Arrays.asList("&7Aktuelle Seite: &f{page}/{max_page}", "&7Öffnet die nächste Flag-Seite."));
+            existing.set("buttons.next-page.commands", Arrays.asList("open-menu:flags:{next_page}"));
+            existing.set("buttons.next-page.close", false);
+            changed = true;
+        }
         if (resourcePath.replace('\\', '/').endsWith("/main.yml") && existingVersion < 18) {
             existing.set("buttons.deco.commands", Arrays.asList("open-menu:deco:wall:basic"));
             existing.set("buttons.deco.close", false);
