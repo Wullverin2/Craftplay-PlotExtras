@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 32
+file-version: 33
 
 # Befehle dieses Plugins.
 command:
@@ -224,6 +224,90 @@ bedrock:
   # Wenn true, wird bei Problemen mit Floodgate automatisch das Java-Inventar-Menü geöffnet.
   # Bei false erhält der Spieler nur eine Fehlermeldung.
   fallback-to-java-gui: true
+
+# PlotSquared-No-Fly-Integration.
+# Diese Funktion ersetzt das separate PlotSquaredNoFly-Plugin.
+plot-no-fly:
+  # Wenn false, wird die komplette No-Fly-Integration deaktiviert.
+  enabled: true
+  # Wenn true, merkt sich das Plugin Fly in Plotwelten und stellt es beim Betreten/Verlassen von Plots wieder her.
+  restore-flight-inside-plot-worlds: true
+  # Wenn true, wird Fly deaktiviert, sobald Spieler in eine Nicht-Plotwelt wechseln.
+  disable-flight-outside-plot-worlds: true
+  # Wenn true und CMI installiert ist, nutzt das Plugin zusätzlich cmi fly <spieler> true/false -s.
+  use-cmi-command: true
+  # Wenn true, behalten Creative- und Spectator-Spieler ihr normales GameMode-Fliegen.
+  ignore-creative-and-spectator: true
+  # Nach wie vielen Ticks Fly in Plotwelten erneut wiederhergestellt wird.
+  # Mehrere Werte helfen, wenn PlotSquared oder CMI den Status verzögert ändert.
+  restore-delay-ticks:
+    - 1
+    - 5
+  # Nach wie vielen Ticks Fly in Nicht-Plotwelten nochmals deaktiviert wird.
+  disable-delay-ticks:
+    - 1
+    - 5
+  # Intervall in Ticks, in dem in Plotwelten der aktuelle Fly-Status gespeichert wird.
+  flight-state-scan-interval-ticks: 20
+  # Wenn true, schreibt die No-Fly-Integration Debugmeldungen in die Konsole.
+  debug: false
+
+# Furniture- und Feldschutz-Integration.
+# Diese Funktion ersetzt das separate PlotFurnitureFlags-Plugin.
+plot-furniture-flags:
+  # Wenn false, werden Furniture-Prüfung und Feldschutz deaktiviert.
+  enabled: true
+  # Wenn true, schreibt die Furniture-Integration ausführliche Debugdaten in die Konsole.
+  debug: false
+  # Score-Schwelle für die Furniture-Erkennung.
+  # 4 bedeutet: Interaction/ArmorStand allein reicht nicht; Namen, Tags oder PDC-Hinweise müssen dazukommen.
+  threshold: 4
+  # Wenn true, wird die effektive Schwelle um 1 gesenkt und dadurch eher blockiert.
+  strict-mode: false
+  # Wenn true, kann das Plugin erkannte Möbel-Interaktionen wieder freigeben,
+  # wenn eine Furniture-Flag sie erlaubt und ein anderes Plugin das Event vorher abgebrochen hat.
+  uncancel-allowed-furniture: true
+  # Wenn true, erhalten Spieler eine Nachricht, wenn sie Möbel nicht benutzen dürfen.
+  block-message-enabled: true
+  # Cooldown in Millisekunden für Blockiernachrichten pro Spieler.
+  block-message-cooldown-millis: 1000
+  # Cooldown in Millisekunden für Debugausgaben pro Spieler.
+  debug-cooldown-millis: 1500
+  # Permissions, mit denen Spieler die Furniture-Prüfung umgehen.
+  bypass-permissions:
+    - craftplayplotextras.furniture.bypass
+    - plotfurnitureflags.bypass
+    - plots.admin
+    - plots.admin.interact.other
+  detect:
+    # Entity-Typen, die als mögliche Möbel geprüft werden.
+    # INTERACTION existiert erst auf neueren Minecraft-Versionen; auf alten Versionen wird der Eintrag ignoriert.
+    entity-types:
+      - INTERACTION
+      - ARMOR_STAND
+    # Begriffe, die im Entity-Anzeigenamen auf Möbel hindeuten.
+    name-contains:
+      - furniture
+      - furnicraft
+      - bench
+      - chair
+      - seat
+      - sofa
+      - stool
+    # Begriffe, die in Scoreboard-Tags auf Möbel hindeuten.
+    scoreboard-tag-contains:
+      - furniture
+      - furnicraft
+      - bench
+      - chair
+      - seat
+    # Begriffe, die in PersistentDataContainer-Keys auf Möbel hindeuten.
+    pdc-key-contains:
+      - furniture
+      - furnicraft
+      - bench
+      - chair
+      - seat
 
 # Meine-Plots-System.
 my-plots:

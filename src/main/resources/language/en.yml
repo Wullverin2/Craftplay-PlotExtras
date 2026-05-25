@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 28
+file-version: 29
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -351,6 +351,13 @@ passive-wither-flag-description: "Allow spawning passive Withers with the Passiv
 # Vehicles integration.
 vehicles-plot-denied: "&cVehicles are not allowed on this plot."
 vehicles-flag-description: "Allows placing and using Vehicles plugin vehicles on the plot."
+
+# Furniture integration.
+furniture-blocked: "&cYou are not allowed to use this furniture on this plot."
+furniture-interact-flag-description: "Allows guests to use detected furniture on the plot."
+furniture-sit-flag-description: "Allows guests to sit on detected furniture on the plot."
+furniture-modify-flag-description: "Allows guests to modify or damage detected furniture on the plot."
+prevent-crop-trample-flag-description: "Prevents players from trampling farmland on the plot."
 
 # Message shown when a future feature is disabled.
 future-disabled: "&cThis future feature is currently disabled."

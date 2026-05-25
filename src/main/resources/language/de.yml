@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 28
+file-version: 29
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -351,6 +351,13 @@ passive-wither-flag-description: "Erlaubt das Spawnen passiver Wither mit dem Pa
 # Vehicles-Integration.
 vehicles-plot-denied: "&cAuf diesem Plot sind Vehicles-Fahrzeuge nicht erlaubt."
 vehicles-flag-description: "Erlaubt das Platzieren und Nutzen von Vehicles-Fahrzeugen auf dem Plot."
+
+# Furniture-Integration.
+furniture-blocked: "&cDu darfst diese Möbel auf diesem Plot nicht benutzen."
+furniture-interact-flag-description: "Erlaubt Gästen, erkannte Möbel auf dem Plot zu benutzen."
+furniture-sit-flag-description: "Erlaubt Gästen, sich auf erkannte Möbel auf dem Plot zu setzen."
+furniture-modify-flag-description: "Erlaubt Gästen, erkannte Möbel auf dem Plot zu verändern oder zu beschädigen."
+prevent-crop-trample-flag-description: "Verhindert, dass Spieler Ackerboden auf dem Plot zertrampeln."
 
 # Nachricht, wenn ein Future-Feature deaktiviert ist.
 future-disabled: "&cDieses Zukunftsfeature ist aktuell deaktiviert."

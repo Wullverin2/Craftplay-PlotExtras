@@ -5,6 +5,7 @@ import de.craftplay.plotextras.command.PlotExtrasCommand;
 import de.craftplay.plotextras.config.ConfigurationManager;
 import de.craftplay.plotextras.extras.ExtrasService;
 import de.craftplay.plotextras.future.PlotFutureService;
+import de.craftplay.plotextras.furniture.FurnitureIntegrationService;
 import de.craftplay.plotextras.language.LanguageManager;
 import de.craftplay.plotextras.listener.CommandListener;
 import de.craftplay.plotextras.listener.PlotBackupProtectionListener;
@@ -13,6 +14,7 @@ import de.craftplay.plotextras.listener.TeamFeatureProtectionListener;
 import de.craftplay.plotextras.limits.EntityLimitService;
 import de.craftplay.plotextras.menu.PlotMenuManager;
 import de.craftplay.plotextras.myplots.PlotDataStore;
+import de.craftplay.plotextras.nofly.PlotNoFlyService;
 import de.craftplay.plotextras.passivewither.PassiveWitherCommand;
 import de.craftplay.plotextras.passivewither.PassiveWitherService;
 import de.craftplay.plotextras.plotpurchase.PlotPurchaseService;
@@ -45,6 +47,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     private PlotPurchaseService plotPurchaseService;
     private StorageService storageService;
     private VehiclesIntegrationService vehiclesIntegrationService;
+    private FurnitureIntegrationService furnitureIntegrationService;
+    private PlotNoFlyService plotNoFlyService;
     private PlotExtrasCommand commandExecutor;
 
     @Override
@@ -76,6 +80,10 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         passiveWitherService.reload();
         vehiclesIntegrationService = new VehiclesIntegrationService(this);
         vehiclesIntegrationService.reload();
+        furnitureIntegrationService = new FurnitureIntegrationService(this);
+        furnitureIntegrationService.reload();
+        plotNoFlyService = new PlotNoFlyService(this);
+        plotNoFlyService.reload();
         entityLimitService = new EntityLimitService(this, plotSquaredFlagService);
         entityLimitService.reload();
         extrasService = new ExtrasService(this, languageManager, plotSquaredFlagService);
@@ -91,6 +99,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlotFutureListener(plotFutureService), this);
         getServer().getPluginManager().registerEvents(new TeamFeatureProtectionListener(teamFeatureService), this);
         getServer().getPluginManager().registerEvents(passiveWitherService, this);
+        getServer().getPluginManager().registerEvents(furnitureIntegrationService, this);
+        getServer().getPluginManager().registerEvents(plotNoFlyService, this);
         getServer().getPluginManager().registerEvents(entityLimitService, this);
         getServer().getPluginManager().registerEvents(extrasService, this);
         registerCommands();
@@ -111,6 +121,12 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         }
         if (vehiclesIntegrationService != null) {
             vehiclesIntegrationService.shutdown();
+        }
+        if (furnitureIntegrationService != null) {
+            furnitureIntegrationService.shutdown();
+        }
+        if (plotNoFlyService != null) {
+            plotNoFlyService.shutdown();
         }
         if (plotPurchaseService != null) {
             plotPurchaseService.shutdown();
@@ -135,6 +151,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         teamFeatureService.reload();
         passiveWitherService.reload();
         vehiclesIntegrationService.reload();
+        furnitureIntegrationService.reload();
+        plotNoFlyService.reload();
         entityLimitService.reload();
         extrasService.reload();
         plotMenuManager.reload();

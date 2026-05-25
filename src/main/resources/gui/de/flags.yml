@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 13
+file-version: 14
 
 # Titel des Inventars.
 title: "&8Plot-Flags &7{page}/{max_page}"
@@ -1070,3 +1070,51 @@ flags:
       - "&7Status: {status}"
       - "&eKlicken zum Umschalten."
     permission: "craftplayplotextras.passivewither"
+  furniture-interact:
+    enabled: true
+    enabled-material: OAK_STAIRS
+    disabled-material: ARMOR_STAND
+    name: "&aMöbel benutzen"
+    lore:
+      - "&7Legt fest, ob Gäste erkannte"
+      - "&7Möbel auf diesem Plot benutzen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  furniture-sit:
+    enabled: true
+    enabled-material: SADDLE
+    disabled-material: GRAY_DYE
+    name: "&aAuf Möbeln sitzen"
+    lore:
+      - "&7Legt fest, ob Gäste sich auf"
+      - "&7erkannte Möbel setzen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  furniture-modify:
+    enabled: true
+    enabled-material: IRON_AXE
+    disabled-material: WOODEN_AXE
+    name: "&aMöbel verändern"
+    lore:
+      - "&7Legt fest, ob Gäste erkannte"
+      - "&7Möbel verändern oder beschädigen dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  prevent-crop-trample:
+    enabled: true
+    enabled-material: FARMLAND
+    disabled-material: DIRT
+    name: "&aFelder schützen"
+    lore:
+      - "&7Verhindert, dass Spieler"
+      - "&7Ackerboden auf dem Plot zertrampeln."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""

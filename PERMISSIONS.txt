@@ -300,6 +300,16 @@ Zielgruppe: Spieler / Team
 Default: op
 Gibt frei: Passive Wither kostenlos kaufen.
 
+Permission: craftplayplotextras.furniture.bypass
+Zielgruppe: Team
+Default: op
+Gibt frei: Umgeht die integrierte Furniture- und Feldschutz-Prüfung.
+
+Permission: plotfurnitureflags.bypass
+Zielgruppe: Team
+Default: op
+Gibt frei: Kompatibilitätspermission für die frühere PlotFurnitureFlags-Bypass-Permission. Sie umgeht ebenfalls die integrierte Furniture- und Feldschutz-Prüfung.
+
 Permission: craftplayplotextras.backup.create
 Zielgruppe: Team
 Default: op
@@ -381,6 +391,22 @@ Gibt frei: Anzeigen und Umschalten der Passive-Wither-Spawn-Flag im Flag-Menü.
 Permission: plots.set.flag.vehicles
 Zielgruppe: Spieler / Rang
 Gibt frei: Anzeigen und Umschalten der Vehicles-Plugin-Flag im Flag-Menü. Diese Flag steuert, ob Vehicles-Fahrzeuge auf dem Plot platziert und genutzt werden dürfen.
+
+Permission: plots.set.flag.furniture-interact
+Zielgruppe: Spieler / Rang
+Gibt frei: Anzeigen und Umschalten der Furniture-Interact-Flag im Flag-Menü. Diese Flag steuert, ob Gäste erkannte Möbel auf dem Plot benutzen dürfen.
+
+Permission: plots.set.flag.furniture-sit
+Zielgruppe: Spieler / Rang
+Gibt frei: Anzeigen und Umschalten der Furniture-Sit-Flag im Flag-Menü. Diese Flag steuert, ob Gäste sich auf erkannte Möbel setzen dürfen.
+
+Permission: plots.set.flag.furniture-modify
+Zielgruppe: Spieler / Rang
+Gibt frei: Anzeigen und Umschalten der Furniture-Modify-Flag im Flag-Menü. Diese Flag steuert, ob Gäste erkannte Möbel verändern oder beschädigen dürfen.
+
+Permission: plots.set.flag.prevent-crop-trample
+Zielgruppe: Spieler / Rang
+Gibt frei: Anzeigen und Umschalten der Prevent-Crop-Trample-Flag im Flag-Menü. Diese Flag verhindert, dass Spieler Ackerboden auf dem Plot zertrampeln.
 
 Permission: plots.flag
 Zielgruppe: Spieler / Team

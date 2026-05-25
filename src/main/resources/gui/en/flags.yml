@@ -9,7 +9,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 13
+file-version: 14
 
 # Inventory title.
 title: "&8Plot Flags &7{page}/{max_page}"
@@ -1070,3 +1070,51 @@ flags:
       - "&7Status: {status}"
       - "&eClick to toggle."
     permission: "craftplayplotextras.passivewither"
+  furniture-interact:
+    enabled: true
+    enabled-material: OAK_STAIRS
+    disabled-material: ARMOR_STAND
+    name: "&aUse Furniture"
+    lore:
+      - "&7Controls whether guests may"
+      - "&7use detected furniture on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  furniture-sit:
+    enabled: true
+    enabled-material: SADDLE
+    disabled-material: GRAY_DYE
+    name: "&aSit On Furniture"
+    lore:
+      - "&7Controls whether guests may"
+      - "&7sit on detected furniture."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  furniture-modify:
+    enabled: true
+    enabled-material: IRON_AXE
+    disabled-material: WOODEN_AXE
+    name: "&aModify Furniture"
+    lore:
+      - "&7Controls whether guests may"
+      - "&7modify or damage detected furniture."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  prevent-crop-trample:
+    enabled: true
+    enabled-material: FARMLAND
+    disabled-material: DIRT
+    name: "&aProtect Farmland"
+    lore:
+      - "&7Prevents players from trampling"
+      - "&7farmland on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
