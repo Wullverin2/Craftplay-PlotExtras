@@ -54,7 +54,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Array;
@@ -83,6 +82,8 @@ public final class PassiveWitherService implements Listener {
     private static final double BLOCK_BREAK_SOUND_RADIUS = 3.0D;
     private static final double MIN_EXPLOSION_PROTECTION_RADIUS = 8.0D;
     private static final double PASSIVE_WITHER_SOUND_RADIUS = 96.0D;
+    private static final int PASSIVE_WITHER_TUNNEL_RADIUS = 1;
+    private static final int PASSIVE_WITHER_TUNNEL_CENTER_Y_OFFSET = 1;
 
     private final CraftplayPlotExtrasPlugin plugin;
     private final NamespacedKey passiveWitherKey;
@@ -456,7 +457,7 @@ public final class PassiveWitherService implements Listener {
         }
         final Location spawnLocation = clickedBlock.getRelative(event.getBlockFace()).getLocation().add(0.5D, 0.0D, 0.5D);
         spawnLocation.setYaw(event.getPlayer().getLocation().getYaw());
-        spawnLocation.setPitch(event.getPlayer().getLocation().getPitch());
+        spawnLocation.setPitch(0.0F);
         if (!canSpawnPassiveWither(event.getPlayer(), spawnLocation)) {
             return;
         }
@@ -891,7 +892,7 @@ public final class PassiveWitherService implements Listener {
                 passiveWitherOwners.put(witherId, UUID.fromString(ownerIdText));
                 final Location anchor = loadLocation("withers." + witherIdText + ".anchor");
                 if (anchor != null) {
-                    passiveWitherAnchors.put(witherId, anchor);
+                    passiveWitherAnchors.put(witherId, horizontalAnchor(anchor));
                 }
                 final Location target = loadLocation("withers." + witherIdText + ".target-inventory");
                 if (target != null && target.getBlock().getState() instanceof InventoryHolder) {
@@ -1092,8 +1093,8 @@ public final class PassiveWitherService implements Listener {
     private List<Block> collectMiningBlocks(final Location anchor) {
         final List<Block> blocks = new ArrayList<>();
         final World world = anchor.getWorld();
-        final Vector direction = anchor.getDirection();
-        if (world == null || direction.lengthSquared() <= 0.0D) {
+        final Vector forward = horizontalDirection(anchor);
+        if (world == null || forward.lengthSquared() <= 0.0D) {
             return blocks;
         }
         final MiningContext miningContext = miningContext(anchor);
@@ -1101,16 +1102,35 @@ public final class PassiveWitherService implements Listener {
             return blocks;
         }
         final Set<String> visited = new HashSet<>();
-        final Location origin = anchor.clone().add(0.0D, 1.5D, 0.0D).add(direction.clone().normalize());
-        final BlockIterator iterator = new BlockIterator(world, origin.toVector(), direction.clone().normalize(), 0.0D, miningRange);
-        while (iterator.hasNext()) {
-            final Block block = iterator.next();
-            if (!visited.add(blockKey(block)) || !isMineableBlock(miningContext, block)) {
-                continue;
+        final Vector right = new Vector(-forward.getZ(), 0.0D, forward.getX()).normalize();
+        final int centerY = anchor.getBlockY() + PASSIVE_WITHER_TUNNEL_CENTER_Y_OFFSET;
+        for (int distance = 1; distance <= miningRange; distance++) {
+            final double centerX = anchor.getX() + (forward.getX() * distance);
+            final double centerZ = anchor.getZ() + (forward.getZ() * distance);
+            for (int sideOffset = -PASSIVE_WITHER_TUNNEL_RADIUS; sideOffset <= PASSIVE_WITHER_TUNNEL_RADIUS; sideOffset++) {
+                final double x = centerX + (right.getX() * sideOffset);
+                final double z = centerZ + (right.getZ() * sideOffset);
+                for (int yOffset = -PASSIVE_WITHER_TUNNEL_RADIUS; yOffset <= PASSIVE_WITHER_TUNNEL_RADIUS; yOffset++) {
+                    final Block block = world.getBlockAt(blockCoordinate(x), centerY + yOffset, blockCoordinate(z));
+                    if (!visited.add(blockKey(block)) || !isMineableBlock(miningContext, block)) {
+                        continue;
+                    }
+                    blocks.add(block);
+                }
             }
-            blocks.add(block);
         }
         return blocks;
+    }
+
+    private Vector horizontalDirection(final Location anchor) {
+        final Location directionSource = anchor.clone();
+        directionSource.setPitch(0.0F);
+        final Vector forward = directionSource.getDirection();
+        forward.setY(0.0D);
+        if (forward.lengthSquared() <= 0.0D) {
+            return new Vector(0.0D, 0.0D, 0.0D);
+        }
+        return forward.normalize();
     }
 
     private boolean isMineableBlock(final Location anchor, final Block block) {
@@ -1371,6 +1391,10 @@ public final class PassiveWitherService implements Listener {
         return block.getX() + ":" + block.getY() + ":" + block.getZ();
     }
 
+    private int blockCoordinate(final double value) {
+        return (int) Math.floor(value);
+    }
+
     private boolean tryUseBlockDestruction(final UUID sourceId) {
         if (sourceId == null) {
             return false;
@@ -1563,15 +1587,21 @@ public final class PassiveWitherService implements Listener {
     }
 
     private void setPassiveWitherAnchor(final Wither wither, final Location location) {
-        final Location anchor = location.clone();
+        final Location anchor = horizontalAnchor(location);
         passiveWitherAnchors.put(wither.getUniqueId(), anchor);
         wither.teleport(anchor);
+    }
+
+    private Location horizontalAnchor(final Location location) {
+        final Location anchor = location.clone();
+        anchor.setPitch(0.0F);
+        return anchor;
     }
 
     private Location getPassiveWitherAnchor(final Entity entity) {
         Location anchor = passiveWitherAnchors.get(entity.getUniqueId());
         if (anchor == null || anchor.getWorld() == null) {
-            anchor = entity.getLocation().clone();
+            anchor = horizontalAnchor(entity.getLocation());
             passiveWitherAnchors.put(entity.getUniqueId(), anchor);
         }
         return anchor.clone();
