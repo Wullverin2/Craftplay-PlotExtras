@@ -4474,7 +4474,7 @@ public final class PlotMenuManager implements Listener {
         if (!canModifyCurrentPlotDeco(player)) {
             return;
         }
-        player.performCommand(command);
+        performPlotDecoCommand(player, command);
     }
 
     private void runPlotDecoResetCommand(final Player player, final String payload) {
