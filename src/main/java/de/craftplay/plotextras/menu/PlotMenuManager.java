@@ -15,6 +15,7 @@ import de.craftplay.plotextras.myplots.PlotMetadata;
 import de.craftplay.plotextras.plotpurchase.PlotPurchaseService;
 import de.craftplay.plotextras.plotsquared.OwnedPlot;
 import de.craftplay.plotextras.plotsquared.PlotContext;
+import de.craftplay.plotextras.plotsquared.PlotIdentity;
 import de.craftplay.plotextras.plotsquared.PlotMemberEntry;
 import de.craftplay.plotextras.plotsquared.PlotMemberType;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
@@ -1286,8 +1287,9 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
-        final int maxPage = maxFlagPage(player);
-        final int normalizedPage = Math.min(Math.max(1, page), maxPage);
+        final FlagMenuView view = flagMenuView(player, page);
+        final int maxPage = view.getMaxPage();
+        final int normalizedPage = view.getPage();
         final Map<String, String> pagePlaceholders = flagMenuPlaceholders(normalizedPage, maxPage);
         final Inventory inventory = Bukkit.createInventory(
                 new PlotMenuHolder("flags", normalizedPage),
@@ -1312,9 +1314,11 @@ public final class PlotMenuManager implements Listener {
             inventory.setItem(button.getSlot(), createButtonItem(player, button, pagePlaceholders));
         }
 
-        final Map<Integer, FlagMenuEntry> flagsBySlot = flagsForPage(player, normalizedPage);
+        final Map<Integer, FlagMenuEntry> flagsBySlot = view.getFlagsBySlot();
+        final Map<String, Boolean> flagStates = flagService.flagStates(player, flagNames(flagsBySlot.values()));
         for (final FlagMenuEntry flagEntry : flagsBySlot.values()) {
-            inventory.setItem(flagEntry.getSlot(), createFlagItem(player, flagEntry));
+            inventory.setItem(flagEntry.getSlot(), createFlagItem(player, flagEntry,
+                    flagStates.getOrDefault(flagEntry.getFlag().toLowerCase(Locale.ROOT), false)));
         }
 
         openAnimatedInventory(player, inventory, flagsFiller, null, flagsAnimationEnabled);
@@ -1845,7 +1849,7 @@ public final class PlotMenuManager implements Listener {
             return;
         }
         if ("flags".equalsIgnoreCase(holder.getMenuId())) {
-            handleFlagsClick(player, holder.getPage(), event.getSlot());
+            handleFlagsClick(player, holder.getPage(), event.getSlot(), event.getInventory());
             return;
         }
         if ("settings".equalsIgnoreCase(holder.getMenuId())) {
@@ -2620,6 +2624,10 @@ public final class PlotMenuManager implements Listener {
 
     private ItemStack createFlagItem(final Player player, final FlagMenuEntry flagEntry) {
         final boolean enabled = flagService.isFlagEnabled(player, flagEntry.getFlag());
+        return createFlagItem(player, flagEntry, enabled);
+    }
+
+    private ItemStack createFlagItem(final Player player, final FlagMenuEntry flagEntry, final boolean enabled) {
         final ItemStack item = new ItemStack(enabled ? flagEntry.getEnabledMaterial() : flagEntry.getDisabledMaterial());
         final ItemMeta meta = item.getItemMeta();
         if (meta != null) {
@@ -2852,11 +2860,19 @@ public final class PlotMenuManager implements Listener {
     }
 
     private boolean canSeeFlag(final Player player, final FlagMenuEntry flagEntry) {
+        return canSeeFlag(player, flagEntry, new FlagPermissionLookup(player));
+    }
+
+    private boolean canSeeFlag(
+            final Player player,
+            final FlagMenuEntry flagEntry,
+            final FlagPermissionLookup permissions
+    ) {
         if (flagEntry.getPermission() != null && !flagEntry.getPermission().trim().isEmpty()) {
-            return hasConfiguredPermission(player, flagEntry.getPermission().trim())
-                    || flagService.hasAnyFlagPermission(player, flagEntry.getFlag());
+            return permissions.hasConfiguredPermission(flagEntry.getPermission().trim())
+                    || permissions.hasAnyFlagPermission(flagEntry.getFlag());
         }
-        return flagService.hasAnyFlagPermission(player, flagEntry.getFlag());
+        return permissions.hasAnyFlagPermission(flagEntry.getFlag());
     }
 
     private boolean hasFlagTogglePermission(
@@ -2864,36 +2880,25 @@ public final class PlotMenuManager implements Listener {
             final FlagMenuEntry flagEntry,
             final boolean target
     ) {
+        return hasFlagTogglePermission(player, flagEntry, target, new FlagPermissionLookup(player));
+    }
+
+    private boolean hasFlagTogglePermission(
+            final Player player,
+            final FlagMenuEntry flagEntry,
+            final boolean target,
+            final FlagPermissionLookup permissions
+    ) {
         if (flagEntry.getPermission() != null
                 && !flagEntry.getPermission().trim().isEmpty()
-                && hasConfiguredPermission(player, flagEntry.getPermission().trim())) {
+                && permissions.hasConfiguredPermission(flagEntry.getPermission().trim())) {
             return true;
         }
-        return flagService.hasTogglePermission(player, flagEntry.getFlag(), target);
+        return permissions.hasTogglePermission(flagEntry.getFlag(), target);
     }
 
     private int maxFlagPage(final Player player) {
-        if (automaticFlagLayout) {
-            final int pageSize = automaticFlagSlots == null || automaticFlagSlots.isEmpty() ? 1 : automaticFlagSlots.size();
-            int visible = 0;
-            for (final FlagMenuEntry template : automaticFlagEntries) {
-                if (canSeeFlag(player, template)) {
-                    visible++;
-                }
-            }
-            return Math.max(1, (int) Math.ceil(visible / (double) pageSize));
-        }
-
-        int maxPage = 1;
-        for (final Map.Entry<Integer, Map<Integer, FlagMenuEntry>> pageEntry : flagsByPageAndSlot.entrySet()) {
-            for (final FlagMenuEntry entry : pageEntry.getValue().values()) {
-                if (canSeeFlag(player, entry)) {
-                    maxPage = Math.max(maxPage, pageEntry.getKey());
-                    break;
-                }
-            }
-        }
-        return maxPage;
+        return flagMenuView(player, 1).getMaxPage();
     }
 
     private Map<String, String> flagMenuPlaceholders(final int page, final int maxPage) {
@@ -2908,40 +2913,57 @@ public final class PlotMenuManager implements Listener {
     }
 
     private Map<Integer, FlagMenuEntry> flagsForPage(final Player player, final int page) {
-        final int normalizedPage = Math.max(1, page);
+        return flagMenuView(player, page).getFlagsBySlot();
+    }
+
+    private FlagMenuView flagMenuView(final Player player, final int page) {
+        final int requestedPage = Math.max(1, page);
+        final FlagPermissionLookup permissions = new FlagPermissionLookup(player);
         if (!automaticFlagLayout) {
-            final Map<Integer, FlagMenuEntry> configured = flagsByPageAndSlot.getOrDefault(normalizedPage, Collections.emptyMap());
-            if (configured.isEmpty()) {
-                return Collections.emptyMap();
+            int maxPage = 1;
+            for (final Map.Entry<Integer, Map<Integer, FlagMenuEntry>> pageEntry : flagsByPageAndSlot.entrySet()) {
+                for (final FlagMenuEntry entry : pageEntry.getValue().values()) {
+                    if (canSeeFlag(player, entry, permissions)) {
+                        maxPage = Math.max(maxPage, pageEntry.getKey());
+                        break;
+                    }
+                }
             }
+            final int actualPage = Math.min(requestedPage, maxPage);
+            final Map<Integer, FlagMenuEntry> configured = flagsByPageAndSlot.getOrDefault(actualPage, Collections.emptyMap());
             final Map<Integer, FlagMenuEntry> visible = new LinkedHashMap<>();
             for (final Map.Entry<Integer, FlagMenuEntry> entry : configured.entrySet()) {
-                if (canSeeFlag(player, entry.getValue())) {
+                if (canSeeFlag(player, entry.getValue(), permissions)) {
                     visible.put(entry.getKey(), entry.getValue());
                 }
             }
-            return visible;
+            return new FlagMenuView(actualPage, maxPage, visible, permissions);
         }
         if (automaticFlagSlots == null || automaticFlagSlots.isEmpty() || automaticFlagEntries.isEmpty()) {
-            return Collections.emptyMap();
+            return new FlagMenuView(1, 1, Collections.emptyMap(), permissions);
         }
 
+        final List<FlagMenuEntry> visibleTemplates = new ArrayList<>();
+        for (final FlagMenuEntry template : automaticFlagEntries) {
+            if (canSeeFlag(player, template, permissions)) {
+                visibleTemplates.add(template);
+            }
+        }
+        final int maxPage = Math.max(1, (int) Math.ceil(visibleTemplates.size() / (double) automaticFlagSlots.size()));
+        final int actualPage = Math.min(requestedPage, maxPage);
         final Map<Integer, FlagMenuEntry> visible = new LinkedHashMap<>();
         int visibleIndex = 0;
-        for (final FlagMenuEntry template : automaticFlagEntries) {
-            if (!canSeeFlag(player, template)) {
-                continue;
-            }
+        for (final FlagMenuEntry template : visibleTemplates) {
             final int entryPage = (visibleIndex / automaticFlagSlots.size()) + 1;
             final int slot = automaticFlagSlots.get(visibleIndex % automaticFlagSlots.size());
-            if (entryPage == normalizedPage) {
+            if (entryPage == actualPage) {
                 visible.put(slot, positionedFlag(template, entryPage, slot));
-            } else if (entryPage > normalizedPage) {
+            } else if (entryPage > actualPage) {
                 break;
             }
             visibleIndex++;
         }
-        return visible;
+        return new FlagMenuView(actualPage, maxPage, visible, permissions);
     }
 
     private FlagMenuEntry positionedFlag(final FlagMenuEntry template, final int page, final int slot) {
@@ -2955,6 +2977,19 @@ public final class PlotMenuManager implements Listener {
                 template.getLore(),
                 template.getPermission()
         );
+    }
+
+    private Set<String> flagNames(final Iterable<FlagMenuEntry> entries) {
+        final Set<String> names = new LinkedHashSet<>();
+        if (entries == null) {
+            return names;
+        }
+        for (final FlagMenuEntry entry : entries) {
+            if (entry != null && entry.getFlag() != null && !entry.getFlag().trim().isEmpty()) {
+                names.add(entry.getFlag().trim().toLowerCase(Locale.ROOT));
+            }
+        }
+        return names;
     }
 
     private void handleMyPlotsClick(
@@ -3161,20 +3196,21 @@ public final class PlotMenuManager implements Listener {
         }
     }
 
-    private void handleFlagsClick(final Player player, final int page, final int slot) {
+    private void handleFlagsClick(final Player player, final int page, final int slot, final Inventory inventory) {
+        final FlagMenuView view = flagMenuView(player, page);
         final MenuButton button = flagButtonsBySlot.get(slot);
         if (button != null) {
             if (!canSee(player, button)) {
                 return;
             }
-            final int maxPage = maxFlagPage(player);
             playSound(player, button.getClickSound());
-            executeCommands(player, button.isCloseInventory(), applyCommandState(button.getCommands(), flagMenuPlaceholders(page, maxPage)), button);
+            executeCommands(player, button.isCloseInventory(),
+                    applyCommandState(button.getCommands(), flagMenuPlaceholders(view.getPage(), view.getMaxPage())),
+                    button);
             return;
         }
 
-        final Map<Integer, FlagMenuEntry> flagsBySlot = flagsForPage(player, page);
-        final FlagMenuEntry flagEntry = flagsBySlot.get(slot);
+        final FlagMenuEntry flagEntry = view.getFlagsBySlot().get(slot);
         if (flagEntry == null) {
             return;
         }
@@ -3183,24 +3219,18 @@ public final class PlotMenuManager implements Listener {
         if (!canModifyCurrentPlotFlag(player, flagEntry.getFlag())) {
             return;
         }
-        if (!hasFlagTogglePermission(player, flagEntry, target)) {
+        if (!hasFlagTogglePermission(player, flagEntry, target, view.getPermissions())) {
             languageManager.send(player, "flag-no-permission");
             return;
         }
 
-        flagService.toggleBooleanFlag(player, flagEntry.getFlag());
+        flagService.setBooleanFlagWithFallback(player, flagEntry.getFlag(), target);
         final Map<String, String> placeholders = new HashMap<>();
         placeholders.put("flag", Text.color(flagEntry.getName()));
         placeholders.put("status", Text.color(target ? statusEnabled : statusDisabled));
         languageManager.send(player, "flag-toggled", placeholders);
-        if (reopenDelayTicks <= 0L) {
-            openFlagsMenu(player, page);
-        } else {
-            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                if (player.isOnline()) {
-                    openFlagsMenu(player, page);
-                }
-            }, reopenDelayTicks);
+        if (inventory != null && slot >= 0 && slot < inventory.getSize()) {
+            inventory.setItem(slot, createFlagItem(player, flagEntry, target));
         }
     }
 
@@ -3791,12 +3821,12 @@ public final class PlotMenuManager implements Listener {
     }
 
     private boolean canModifyCurrentPlotFlag(final Player player, final String flag) {
-        final Optional<PlotContext> context = flagService.currentPlotContext(player);
+        final Optional<PlotIdentity> context = flagService.currentPlotIdentity(player);
         if (!context.isPresent() || !context.get().isComplete()) {
             languageManager.send(player, "no-plot");
             return false;
         }
-        final PlotContext plot = context.get();
+        final PlotIdentity plot = context.get();
         if (plot.getOwnerUuid() != null && plot.getOwnerUuid().equals(player.getUniqueId())) {
             return true;
         }
@@ -3808,9 +3838,9 @@ public final class PlotMenuManager implements Listener {
             languageManager.send(player, "flag-no-plot-right");
             return false;
         }
-        if (roleService.hasRolePermission(player, "flags")
-                || roleService.hasRolePermission(player, "flags." + normalizedFlag)
-                || roleService.hasRolePermission(player, "flag." + normalizedFlag)) {
+        if (roleService.hasRolePermission(plot.getPlotKey(), player.getUniqueId(), plot.getOwnerUuid(), "flags")
+                || roleService.hasRolePermission(plot.getPlotKey(), player.getUniqueId(), plot.getOwnerUuid(), "flags." + normalizedFlag)
+                || roleService.hasRolePermission(plot.getPlotKey(), player.getUniqueId(), plot.getOwnerUuid(), "flag." + normalizedFlag)) {
             return true;
         }
         languageManager.send(player, "flag-no-plot-right");
@@ -5731,6 +5761,111 @@ public final class PlotMenuManager implements Listener {
 
         private String getPermission() {
             return permission;
+        }
+    }
+
+    private final class FlagMenuView {
+
+        private final int page;
+        private final int maxPage;
+        private final Map<Integer, FlagMenuEntry> flagsBySlot;
+        private final FlagPermissionLookup permissions;
+
+        private FlagMenuView(
+                final int page,
+                final int maxPage,
+                final Map<Integer, FlagMenuEntry> flagsBySlot,
+                final FlagPermissionLookup permissions
+        ) {
+            this.page = page;
+            this.maxPage = maxPage;
+            this.flagsBySlot = flagsBySlot == null ? Collections.emptyMap() : flagsBySlot;
+            this.permissions = permissions;
+        }
+
+        private int getPage() {
+            return page;
+        }
+
+        private int getMaxPage() {
+            return maxPage;
+        }
+
+        private Map<Integer, FlagMenuEntry> getFlagsBySlot() {
+            return flagsBySlot;
+        }
+
+        private FlagPermissionLookup getPermissions() {
+            return permissions;
+        }
+    }
+
+    private final class FlagPermissionLookup {
+
+        private final Player player;
+        private final Map<String, Boolean> cache = new HashMap<>();
+        private Boolean globalFlagPermission;
+
+        private FlagPermissionLookup(final Player player) {
+            this.player = player;
+        }
+
+        private boolean hasConfiguredPermission(final String permission) {
+            final String normalized = permission == null ? "" : permission.trim();
+            if (normalized.isEmpty()) {
+                return true;
+            }
+            final Boolean cached = cache.get(normalized.toLowerCase(Locale.ROOT));
+            if (cached != null) {
+                return cached;
+            }
+            final boolean result = PlotMenuManager.this.hasConfiguredPermission(player, normalized);
+            cache.put(normalized.toLowerCase(Locale.ROOT), result);
+            return result;
+        }
+
+        private boolean hasAnyFlagPermission(final String flagName) {
+            if (hasGlobalFlagPermission()) {
+                return true;
+            }
+            final String normalizedFlag = normalizeFlagPermissionName(flagName);
+            if (normalizedFlag.isEmpty()) {
+                return false;
+            }
+            return hasConfiguredPermission("plots.set.flag." + normalizedFlag)
+                    || hasConfiguredPermission("plots.set.flag." + normalizedFlag + ".*")
+                    || hasConfiguredPermission("plots.set.flag." + normalizedFlag + ".true")
+                    || hasConfiguredPermission("plots.set.flag." + normalizedFlag + ".false");
+        }
+
+        private boolean hasTogglePermission(final String flagName, final boolean targetValue) {
+            if (hasGlobalFlagPermission()) {
+                return true;
+            }
+            final String normalizedFlag = normalizeFlagPermissionName(flagName);
+            if (normalizedFlag.isEmpty()) {
+                return false;
+            }
+            return hasConfiguredPermission("plots.set.flag." + normalizedFlag)
+                    || hasConfiguredPermission("plots.set.flag." + normalizedFlag + ".*")
+                    || hasConfiguredPermission("plots.set.flag." + normalizedFlag + "." + targetValue);
+        }
+
+        private boolean hasGlobalFlagPermission() {
+            if (globalFlagPermission != null) {
+                return globalFlagPermission;
+            }
+            globalFlagPermission = hasConfiguredPermission("plots.admin")
+                    || hasConfiguredPermission("plots.admin.command.set.flag")
+                    || hasConfiguredPermission("plots.set.flag")
+                    || hasConfiguredPermission("plots.flag")
+                    || hasConfiguredPermission("plots.flag.add")
+                    || hasConfiguredPermission("plots.flag.remove");
+            return globalFlagPermission;
+        }
+
+        private String normalizeFlagPermissionName(final String flagName) {
+            return flagName == null ? "" : flagName.trim().toLowerCase(Locale.ROOT);
         }
     }
 

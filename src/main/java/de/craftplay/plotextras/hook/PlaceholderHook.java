@@ -27,6 +27,9 @@ public final class PlaceholderHook {
         if (text == null || text.isEmpty()) {
             return text;
         }
+        if (text.indexOf('%') < 0) {
+            return text;
+        }
         if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             return text;
         }

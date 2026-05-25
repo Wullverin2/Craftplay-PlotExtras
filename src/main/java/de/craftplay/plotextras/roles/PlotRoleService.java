@@ -126,6 +126,39 @@ public final class PlotRoleService {
         return false;
     }
 
+    public boolean hasRolePermission(
+            final String plotKey,
+            final UUID playerId,
+            final UUID ownerUuid,
+            final String permission
+    ) {
+        if (!enabled || plotKey == null || playerId == null || permission == null || permission.trim().isEmpty()) {
+            return false;
+        }
+        final PlotRoleData data = data(plotKey);
+        final String roleName = ownerUuid != null && ownerUuid.equals(playerId)
+                ? OWNER_ROLE
+                : data.members.get(playerId);
+        if (roleName == null) {
+            return false;
+        }
+        final String key = findRoleKey(data, roleName);
+        if (key == null) {
+            return false;
+        }
+        final String required = permission.trim().toLowerCase(Locale.ROOT);
+        for (final String value : data.roles.get(key).getPermissions()) {
+            final String current = value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+            if ("*".equals(current) || current.equals(required)) {
+                return true;
+            }
+            if (current.endsWith(".*") && required.startsWith(current.substring(0, current.length() - 1))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean createRole(final Player player, final String roleName) {
         if (!canManage(player)) {
             return false;

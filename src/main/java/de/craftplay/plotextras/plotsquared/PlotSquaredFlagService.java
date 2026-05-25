@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,11 +24,23 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public final class PlotSquaredFlagService {
 
     private final JavaPlugin plugin;
+    private final Map<String, Object> flagCache = new ConcurrentHashMap<>();
+    private final Map<String, Boolean> booleanFlagCache = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Class<?>> flagBaseClassCache = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Method> currentPlotMethodCache = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Method> permissionMethodCache = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Method> getFlagByClassMethodCache = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Method> setFlagStringMethodCache = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Method> parseMethodCache = new ConcurrentHashMap<>();
+    private final Map<String, Method> getFlagDefaultMethodCache = new ConcurrentHashMap<>();
+    private final Map<String, Method> getFlagOptionalMethodCache = new ConcurrentHashMap<>();
+    private final Map<String, Method> setParsedFlagMethodCache = new ConcurrentHashMap<>();
     private boolean warned;
 
     public PlotSquaredFlagService(final JavaPlugin plugin) {
@@ -39,8 +52,18 @@ public final class PlotSquaredFlagService {
     }
 
     public boolean isBooleanFlag(final String flagName) {
-        final Object flag = flag(flagName);
-        return flag != null && (isBooleanFlagObject(flag) || canParseBooleanValues(flag));
+        final String normalized = normalizeFlagName(flagName);
+        if (normalized.isEmpty()) {
+            return false;
+        }
+        final Boolean cached = booleanFlagCache.get(normalized);
+        if (cached != null) {
+            return cached;
+        }
+        final Object flag = flag(normalized);
+        final boolean result = flag != null && (isBooleanFlagObject(flag) || canParseBooleanValues(flag));
+        booleanFlagCache.put(normalized, result);
+        return result;
     }
 
     public boolean isFlagEnabled(final Player player, final String flagName) {
@@ -52,6 +75,26 @@ public final class PlotSquaredFlagService {
 
         final Object value = getFlagValue(plot, flag);
         return isEnabledValue(value);
+    }
+
+    public Map<String, Boolean> flagStates(final Player player, final Collection<String> flagNames) {
+        if (flagNames == null || flagNames.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        final Object plot = currentPlot(player);
+        if (plot == null) {
+            return Collections.emptyMap();
+        }
+        final Map<String, Boolean> states = new HashMap<>();
+        for (final String flagName : flagNames) {
+            final String normalized = normalizeFlagName(flagName);
+            if (normalized.isEmpty() || states.containsKey(normalized)) {
+                continue;
+            }
+            final Object flag = flag(normalized);
+            states.put(normalized, flag != null && isEnabledValue(getFlagValue(plot, flag)));
+        }
+        return states;
     }
 
     public boolean hasAnyFlagPermission(final Player player, final String flagName) {
@@ -86,9 +129,15 @@ public final class PlotSquaredFlagService {
     public void toggleBooleanFlag(final Player player, final String flagName) {
         final boolean current = isFlagEnabled(player, flagName);
         final boolean target = !current;
-        if (!setBooleanFlag(player, flagName, target)) {
-            player.performCommand("plot flag set " + flagName + " " + target);
+        setBooleanFlagWithFallback(player, flagName, target);
+    }
+
+    public boolean setBooleanFlagWithFallback(final Player player, final String flagName, final boolean value) {
+        if (setBooleanFlag(player, flagName, value)) {
+            return true;
         }
+        player.performCommand("plot flag set " + flagName + " " + value);
+        return false;
     }
 
     public boolean setBooleanFlag(final Player player, final String flagName, final boolean value) {
@@ -99,7 +148,7 @@ public final class PlotSquaredFlagService {
         }
 
         try {
-            final Method typedMethod = plot.getClass().getMethod("setFlag", Class.class, String.class);
+            final Method typedMethod = cachedMethod(setFlagStringMethodCache, plot.getClass(), "setFlag", Class.class, String.class);
             final Object result = typedMethod.invoke(plot, flag.getClass(), String.valueOf(value));
             return !(result instanceof Boolean) || (Boolean) result;
         } catch (final NoSuchMethodException ignored) {
@@ -120,7 +169,13 @@ public final class PlotSquaredFlagService {
             return false;
         }
         try {
-            final Method method = plot.getClass().getMethod("setFlag", flagClass);
+            final Method method = cachedMethod(
+                    setParsedFlagMethodCache,
+                    methodKey(plot.getClass(), flagClass),
+                    plot.getClass(),
+                    "setFlag",
+                    flagClass
+            );
             final Object result = method.invoke(plot, parsedFlag);
             return !(result instanceof Boolean) || (Boolean) result;
         } catch (final ReflectiveOperationException exception) {
@@ -136,6 +191,17 @@ public final class PlotSquaredFlagService {
         }
 
         return plotContext(plot, player.getWorld());
+    }
+
+    public Optional<PlotIdentity> currentPlotIdentity(final Player player) {
+        final Object plot = currentPlot(player);
+        if (plot == null) {
+            return Optional.empty();
+        }
+        final World world = world(player, plot);
+        final String worldName = world == null ? "" : world.getName();
+        final String plotId = stringify(invokeNoArgs(plot, "getId"), "");
+        return Optional.of(new PlotIdentity(worldName, plotId, ownerUuid(plot)));
     }
 
     public Optional<String> defaultPlotComponent(final Player player, final String component) {
@@ -241,7 +307,7 @@ public final class PlotSquaredFlagService {
             return null;
         }
         try {
-            final Method method = plotPlayer.getClass().getMethod("getCurrentPlot");
+            final Method method = cachedMethod(currentPlotMethodCache, plotPlayer.getClass(), "getCurrentPlot");
             return method.invoke(plotPlayer);
         } catch (final ReflectiveOperationException exception) {
             warn("PlotSquared-Spielerobjekt konnte nicht gelesen werden.", exception);
@@ -620,20 +686,34 @@ public final class PlotSquaredFlagService {
     }
 
     private boolean hasPlotSquaredPermission(final Player player, final String permission) {
+        if (player.hasPermission(permission)) {
+            return true;
+        }
+        if (!plugin.getConfig().getBoolean("plot-flags.use-plotsquared-permission-api", false)) {
+            return false;
+        }
         final Object plotPlayer = plotPlayer(player);
         if (plotPlayer == null) {
-            return player.hasPermission(permission);
+            return false;
         }
         try {
-            final Method method = plotPlayer.getClass().getMethod("hasPermission", String.class);
+            final Method method = cachedMethod(permissionMethodCache, plotPlayer.getClass(), "hasPermission", String.class);
             final Object result = method.invoke(plotPlayer, permission);
             return result instanceof Boolean && (Boolean) result;
         } catch (final ReflectiveOperationException exception) {
-            return player.hasPermission(permission);
+            return false;
         }
     }
 
     private Object flag(final String flagName) {
+        final String normalized = normalizeFlagName(flagName);
+        if (normalized.isEmpty()) {
+            return null;
+        }
+        final Object cached = flagCache.get(normalized);
+        if (cached != null) {
+            return cached;
+        }
         final Object modernFlag = invokeStatic(
                 "com.plotsquared.core.plot.flag.GlobalFlagContainer",
                 "getInstance"
@@ -643,9 +723,10 @@ public final class PlotSquaredFlagService {
                     modernFlag,
                     "getFlagFromString",
                     String.class,
-                    flagName.toLowerCase(Locale.ROOT)
+                    normalized
             );
             if (resolvedFlag != null) {
+                flagCache.put(normalized, resolvedFlag);
                 return resolvedFlag;
             }
         }
@@ -654,21 +735,39 @@ public final class PlotSquaredFlagService {
                 "com.github.intellectualsites.plotsquared.plot.flag.Flags",
                 "getFlag",
                 String.class,
-                flagName.toLowerCase(Locale.ROOT)
+                normalized
         );
         if (oldFlag != null) {
+            flagCache.put(normalized, oldFlag);
             return oldFlag;
         }
         return null;
     }
 
     private Object getFlagValue(final Object plot, final Object flag) {
+        try {
+            final Method method = cachedMethod(getFlagByClassMethodCache, plot.getClass(), "getFlag", Class.class);
+            return method.invoke(plot, flag.getClass());
+        } catch (final NoSuchMethodException ignored) {
+            // Older PlotSquared builds may only expose getFlag(Flag, default) or getFlag(Flag).
+        } catch (final IllegalAccessException | InvocationTargetException exception) {
+            warn("PlotSquared-Flag konnte nicht gelesen werden.", exception);
+            return false;
+        }
+
         final Class<?> flagClass = findFlagBaseClass(flag);
         if (flagClass == null) {
             return false;
         }
         try {
-            final Method method = plot.getClass().getMethod("getFlag", flagClass, Object.class);
+            final Method method = cachedMethod(
+                    getFlagDefaultMethodCache,
+                    methodKey(plot.getClass(), flagClass),
+                    plot.getClass(),
+                    "getFlag",
+                    flagClass,
+                    Object.class
+            );
             return method.invoke(plot, flag, Boolean.FALSE);
         } catch (final NoSuchMethodException ignored) {
             return getOptionalFlagValue(plot, flag, flagClass);
@@ -680,7 +779,13 @@ public final class PlotSquaredFlagService {
 
     private Object getOptionalFlagValue(final Object plot, final Object flag, final Class<?> flagClass) {
         try {
-            final Method method = plot.getClass().getMethod("getFlag", flagClass);
+            final Method method = cachedMethod(
+                    getFlagOptionalMethodCache,
+                    methodKey(plot.getClass(), flagClass),
+                    plot.getClass(),
+                    "getFlag",
+                    flagClass
+            );
             final Object value = method.invoke(plot, flag);
             if (value instanceof Optional) {
                 final Optional<?> optional = (Optional<?>) value;
@@ -694,9 +799,14 @@ public final class PlotSquaredFlagService {
     }
 
     private Class<?> findFlagBaseClass(final Object flag) {
+        final Class<?> cached = flagBaseClassCache.get(flag.getClass());
+        if (cached != null) {
+            return cached;
+        }
         Class<?> type = flag.getClass();
         while (type != null) {
             if ("PlotFlag".equals(type.getSimpleName()) || "Flag".equals(type.getSimpleName())) {
+                flagBaseClassCache.put(flag.getClass(), type);
                 return type;
             }
             type = type.getSuperclass();
@@ -721,7 +831,7 @@ public final class PlotSquaredFlagService {
 
     private Object parseFlag(final Object flag, final String value) {
         try {
-            final Method method = flag.getClass().getMethod("parse", String.class);
+            final Method method = cachedMethod(parseMethodCache, flag.getClass(), "parse", String.class);
             return method.invoke(flag, value);
         } catch (final ReflectiveOperationException exception) {
             return null;
@@ -742,6 +852,45 @@ public final class PlotSquaredFlagService {
                 || "on".equals(normalized)
                 || "allow".equals(normalized)
                 || "allowed".equals(normalized);
+    }
+
+    private String normalizeFlagName(final String flagName) {
+        return flagName == null ? "" : flagName.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private Method cachedMethod(
+            final Map<Class<?>, Method> cache,
+            final Class<?> owner,
+            final String methodName,
+            final Class<?>... parameterTypes
+    ) throws NoSuchMethodException {
+        final Method cached = cache.get(owner);
+        if (cached != null) {
+            return cached;
+        }
+        final Method method = owner.getMethod(methodName, parameterTypes);
+        cache.put(owner, method);
+        return method;
+    }
+
+    private Method cachedMethod(
+            final Map<String, Method> cache,
+            final String key,
+            final Class<?> owner,
+            final String methodName,
+            final Class<?>... parameterTypes
+    ) throws NoSuchMethodException {
+        final Method cached = cache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+        final Method method = owner.getMethod(methodName, parameterTypes);
+        cache.put(key, method);
+        return method;
+    }
+
+    private String methodKey(final Class<?> owner, final Class<?> parameter) {
+        return owner.getName() + "#" + parameter.getName();
     }
 
     private Object invokeStatic(final String className, final String methodName) {

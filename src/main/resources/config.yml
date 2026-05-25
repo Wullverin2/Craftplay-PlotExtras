@@ -5,7 +5,7 @@
 
 # Dateiversion dieser Konfigurationsdatei.
 # Das Plugin nutzt diesen Wert, um neue Standardwerte zu ergänzen.
-file-version: 33
+file-version: 34
 
 # Befehle dieses Plugins.
 command:
@@ -139,8 +139,15 @@ storage:
     uri: "mongodb://127.0.0.1:27017"
     # Datenbankname.
     database: craftplay_plotextras
-    # Collection, in der Plugin-Daten gespeichert werden.
+      # Collection, in der Plugin-Daten gespeichert werden.
     collection: data
+
+# Plot-Flag-Menü und PlotSquared-Flagzugriffe.
+plot-flags:
+  # Wenn false, prüft das Plugin PlotSquared-Permissions über Bukkit/LuckPerms.
+  # Das ist deutlich schneller und reicht für normale LuckPerms-Setups.
+  # Nur auf true stellen, wenn du bewusst PlotSquareds eigene Kontext-Permission-API brauchst.
+  use-plotsquared-permission-api: false
 
 # GUI-Grundeinstellungen.
 gui:
