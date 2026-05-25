@@ -5004,7 +5004,7 @@ public final class PlotMenuManager implements Listener {
     ) {
         final String parentPath = parentPathForSectionSlots(sectionPath);
         final List<Integer> configured = new ArrayList<>();
-        if (sectionPath != null && sectionPath.contains(".subtabs.")) {
+        if (parentPath.startsWith("tabs.")) {
             configured.addAll(configuredSlotValues(menuConfig, parentPath + "slots", type, id));
         }
         configured.addAll(configuredSlotValues(menuConfig, parentPath + "button-slots", type, id));
