@@ -25,6 +25,12 @@ import de.craftplay.plotextras.roles.PlotRole;
 import de.craftplay.plotextras.roles.PlotRoleService;
 import de.craftplay.plotextras.team.TeamFeatureService;
 import de.craftplay.plotextras.util.Text;
+import com.plotsquared.core.player.PlotPlayer;
+import com.plotsquared.core.plot.Plot;
+import com.plotsquared.core.plot.PlotArea;
+import com.plotsquared.core.queue.QueueCoordinator;
+import com.plotsquared.core.util.PatternUtil;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -42,10 +48,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -4225,7 +4232,7 @@ public final class PlotMenuManager implements Listener {
 
     private void executeButtonCommands(final Player player, final MenuButton button, final MenuSound defaultSound) {
         playSound(player, button.getClickSound() == null ? defaultSound : button.getClickSound());
-        executeCommands(player, button.isCloseInventory(), button.getCommands());
+        executeCommands(player, button.isCloseInventory(), button.getCommands(), button);
     }
 
     private void playSound(final Player player, final MenuSound sound) {
@@ -4235,6 +4242,15 @@ public final class PlotMenuManager implements Listener {
     }
 
     private void executeCommands(final Player player, final boolean closeInventory, final List<String> commands) {
+        executeCommands(player, closeInventory, commands, null);
+    }
+
+    private void executeCommands(
+            final Player player,
+            final boolean closeInventory,
+            final List<String> commands,
+            final MenuButton sourceButton
+    ) {
         if (closeInventory) {
             player.closeInventory();
         }
@@ -4247,7 +4263,7 @@ public final class PlotMenuManager implements Listener {
                 return;
             }
             for (final String command : commands) {
-                runCommand(player, command);
+                runCommand(player, command, sourceButton);
             }
         };
         if (closeInventory) {
@@ -4258,6 +4274,10 @@ public final class PlotMenuManager implements Listener {
     }
 
     private void runCommand(final Player player, final String configuredCommand) {
+        runCommand(player, configuredCommand, null);
+    }
+
+    private void runCommand(final Player player, final String configuredCommand, final MenuButton sourceButton) {
         if (configuredCommand == null || configuredCommand.trim().isEmpty()) {
             return;
         }
@@ -4393,7 +4413,7 @@ public final class PlotMenuManager implements Listener {
         }
 
         if (command.toLowerCase(Locale.ROOT).startsWith("plot-deco:")) {
-            runPlotDecoCommand(player, command.substring("plot-deco:".length()).trim());
+            runPlotDecoCommand(player, command.substring("plot-deco:".length()).trim(), sourceButton);
             return;
         }
 
@@ -4465,7 +4485,7 @@ public final class PlotMenuManager implements Listener {
         languageManager.send(player, "chat-input-invalid");
     }
 
-    private void runPlotDecoCommand(final Player player, final String payload) {
+    private void runPlotDecoCommand(final Player player, final String payload, final MenuButton sourceButton) {
         final String command = stripCommandPrefix(payload);
         if (command.isEmpty()) {
             languageManager.send(player, "chat-input-invalid");
@@ -4474,7 +4494,7 @@ public final class PlotMenuManager implements Listener {
         if (!canModifyCurrentPlotDeco(player)) {
             return;
         }
-        performPlotDecoCommand(player, command);
+        performPlotDecoCommand(player, command, selectedDecoValue(player, sourceButton, plotSetValue(command)));
     }
 
     private void runPlotDecoResetCommand(final Player player, final String payload) {
@@ -4491,7 +4511,7 @@ public final class PlotMenuManager implements Listener {
             languageManager.send(player, "plot-deco-reset-failed");
             return;
         }
-        performPlotDecoCommand(player, "plot set " + component + " " + defaultComponent.get());
+        performPlotDecoCommand(player, "plot set " + component + " " + defaultComponent.get(), readableDecoValue(defaultComponent.get()));
         final Map<String, String> placeholders = new HashMap<>();
         placeholders.put("component", languageManager.getMessage("plot-deco-component-" + component));
         placeholders.put("value", defaultComponent.get());
@@ -4518,22 +4538,22 @@ public final class PlotMenuManager implements Listener {
     }
 
     private void performPlotDecoCommand(final Player player, final String command) {
+        performPlotDecoCommand(player, command, readableDecoValue(plotSetValue(command)));
+    }
+
+    private void performPlotDecoCommand(final Player player, final String command, final String selectedValue) {
         final String component = plotSetComponent(command);
-        PermissionAttachment attachment = null;
-        if (!component.isEmpty()) {
-            attachment = player.addAttachment(plugin);
-            attachment.setPermission("plots.set", true);
-            attachment.setPermission("plots.set." + component, true);
-            attachment.setPermission("plots.admin.command.set.component", true);
-            player.recalculatePermissions();
-        }
-        try {
+        final String value = plotSetValue(command);
+        if (component.isEmpty()) {
             player.performCommand(command);
-        } finally {
-            if (attachment != null) {
-                player.removeAttachment(attachment);
-                player.recalculatePermissions();
-            }
+            return;
+        }
+        if (value.isEmpty()) {
+            languageManager.send(player, "chat-input-invalid");
+            return;
+        }
+        if (!setPlotDecoComponent(player, component, value, selectedValue)) {
+            return;
         }
     }
 
@@ -4555,6 +4575,183 @@ public final class PlotMenuManager implements Listener {
             return parts[2];
         }
         return "";
+    }
+
+    private String plotSetValue(final String command) {
+        if (command == null) {
+            return "";
+        }
+        final String[] parts = command.trim().split("\\s+", 4);
+        if (parts.length < 4) {
+            return "";
+        }
+        if (!("plot".equalsIgnoreCase(parts[0]) || "plots".equalsIgnoreCase(parts[0]) || "p".equalsIgnoreCase(parts[0]))) {
+            return "";
+        }
+        if (!"set".equalsIgnoreCase(parts[1])) {
+            return "";
+        }
+        if (!"wall".equalsIgnoreCase(parts[2]) && !"border".equalsIgnoreCase(parts[2])) {
+            return "";
+        }
+        return parts[3].trim();
+    }
+
+    private boolean setPlotDecoComponent(
+            final Player player,
+            final String component,
+            final String value,
+            final String selectedValue
+    ) {
+        final Optional<PlotPlayer<?>> plotPlayerOptional = plotPlayer(player);
+        if (!plotPlayerOptional.isPresent()) {
+            languageManager.send(player, "no-plot");
+            return false;
+        }
+
+        final PlotPlayer<?> plotPlayer = plotPlayerOptional.get();
+        final Plot plot = plotPlayer.getCurrentPlot();
+        if (plot == null || plot.getArea() == null) {
+            languageManager.send(player, "no-plot");
+            return false;
+        }
+
+        if (!isSupportedPlotComponent(plot, component)) {
+            languageManager.send(player, "chat-input-invalid");
+            return false;
+        }
+        if (plot.getRunning() > 0) {
+            languageManager.send(player, "plot-deco-busy");
+            return false;
+        }
+
+        final Pattern pattern;
+        try {
+            pattern = PatternUtil.parse(plotPlayer, value, false);
+        } catch (final RuntimeException exception) {
+            languageManager.send(player, "chat-input-invalid");
+            plugin.getLogger().warning("Deko-Material konnte nicht gelesen werden: " + value);
+            return false;
+        }
+
+        final PlotArea plotArea = plot.getArea();
+        final QueueCoordinator queue = plotArea.getQueue();
+        final Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("value", selectedValue == null || selectedValue.trim().isEmpty() ? readableDecoValue(value) : selectedValue);
+        final Runnable complete = () -> {
+            plot.removeRunning();
+            languageManager.send(player, "plot-deco-changed-" + component, placeholders);
+        };
+
+        plot.addRunning();
+        try {
+            boolean changed = false;
+            queue.setCompleteTask(complete);
+            for (final Plot current : plot.getConnectedPlots()) {
+                changed = current.getPlotModificationManager().setComponent(component, pattern, plotPlayer, queue) || changed;
+            }
+            if (!changed) {
+                plot.removeRunning();
+                languageManager.send(player, "chat-input-invalid");
+                return false;
+            }
+            if (queue.size() > 0) {
+                queue.enqueue();
+            } else {
+                complete.run();
+            }
+            return true;
+        } catch (final RuntimeException exception) {
+            plot.removeRunning();
+            plugin.getLogger().warning("Plot-Deko konnte nicht gesetzt werden: " + component + " -> " + value);
+            languageManager.send(player, "chat-input-invalid");
+            return false;
+        }
+    }
+
+    private boolean isSupportedPlotComponent(final Plot plot, final String component) {
+        for (final String supported : plot.getManager().getPlotComponents(plot.getId())) {
+            if (component.equalsIgnoreCase(supported)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Optional<PlotPlayer<?>> plotPlayer(final Player player) {
+        final Object modernPlayer = invokeStatic(
+                "com.plotsquared.bukkit.util.BukkitUtil",
+                "adapt",
+                Player.class,
+                player
+        );
+        if (modernPlayer instanceof PlotPlayer) {
+            return Optional.of((PlotPlayer<?>) modernPlayer);
+        }
+
+        final Object legacyPlayer = invokeStatic(
+                "com.github.intellectualsites.plotsquared.bukkit.util.BukkitUtil",
+                "getPlayer",
+                Player.class,
+                player
+        );
+        if (legacyPlayer instanceof PlotPlayer) {
+            return Optional.of((PlotPlayer<?>) legacyPlayer);
+        }
+        return Optional.empty();
+    }
+
+    private Object invokeStatic(
+            final String className,
+            final String methodName,
+            final Class<?> parameterType,
+            final Object argument
+    ) {
+        try {
+            final Class<?> clazz = Class.forName(className);
+            final Method method = clazz.getMethod(methodName, parameterType);
+            return method.invoke(null, argument);
+        } catch (final ClassNotFoundException | NoSuchMethodException ignored) {
+            return null;
+        } catch (final IllegalAccessException | InvocationTargetException exception) {
+            return null;
+        }
+    }
+
+    private String selectedDecoValue(final Player player, final MenuButton sourceButton, final String fallback) {
+        if (sourceButton != null && sourceButton.getName() != null) {
+            final String label = ChatColor.stripColor(Text.color(placeholderHook.apply(player, sourceButton.getName()))).trim();
+            if (!label.isEmpty()) {
+                return label;
+            }
+        }
+        return readableDecoValue(fallback);
+    }
+
+    private String readableDecoValue(final String rawValue) {
+        if (rawValue == null || rawValue.trim().isEmpty()) {
+            return "";
+        }
+        final String[] words = rawValue.trim()
+                .replace("minecraft:", "")
+                .replace('_', ' ')
+                .replace('-', ' ')
+                .toLowerCase(Locale.ROOT)
+                .split("\\s+");
+        final StringBuilder builder = new StringBuilder();
+        for (final String word : words) {
+            if (word.isEmpty()) {
+                continue;
+            }
+            if (builder.length() > 0) {
+                builder.append(' ');
+            }
+            builder.append(Character.toUpperCase(word.charAt(0)));
+            if (word.length() > 1) {
+                builder.append(word.substring(1));
+            }
+        }
+        return builder.length() == 0 ? rawValue.trim() : builder.toString();
     }
 
     private void runPlotDangerCommand(final Player player, final String payload) {

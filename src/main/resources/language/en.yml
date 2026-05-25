@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 26
+file-version: 27
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -47,6 +47,12 @@ flag-no-permission: "&cYou may not change this plot flag."
 flag-no-plot-right: "&cYou can only change flags on your own plot or when a plot role grants you that right."
 # Message shown after toggling a flag. Placeholders: {flag}, {status}
 flag-toggled: "&a{flag} &7is now {status}&7."
+# Message shown when the plot wall was changed through the deco menu. Placeholder: {value}
+plot-deco-changed-wall: "&aWall: &7The plot wall was changed to &f{value}&7."
+# Message shown when the plot border was changed through the deco menu. Placeholder: {value}
+plot-deco-changed-border: "&aBorder: &7The plot border was changed to &f{value}&7."
+# Message shown when another PlotSquared action is currently running on the plot.
+plot-deco-busy: "&cPlease wait until the current plot action has finished."
 # Message shown when wall or border was reset to the PlotSquared default. Placeholders: {component}, {value}
 plot-deco-reset-done: "&aDeco reset: &f{component} &7to &f{value}&7."
 # Message shown when the wall or border default could not be read from PlotSquared.
