@@ -1,11 +1,10 @@
 package de.craftplay.plotextras.passivewither;
 
 import com.plotsquared.core.plot.Plot;
-import com.plotsquared.core.plot.flag.GlobalFlagContainer;
 import de.craftplay.plotextras.CraftplayPlotExtrasPlugin;
+import de.craftplay.plotextras.plotsquared.PlotSquaredCustomFlagRegistry;
 import de.craftplay.plotextras.util.Text;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -1006,12 +1005,10 @@ public final class PassiveWitherService implements Listener {
             return;
         }
         try {
-            GlobalFlagContainer.getInstance().addFlag(new PassiveWitherSpawnFlag(
-                    false,
-                    ChatColor.stripColor(plugin.getLanguageManager().getMessage("passive-wither-flag-description"))
-            ));
-            registeredPlotSquaredFlag = true;
-            plugin.getLogger().info("PlotSquared-Flag registriert: passive-wither-spawn");
+            if (PlotSquaredCustomFlagRegistry.registerPassiveWither(plugin)) {
+                registeredPlotSquaredFlag = true;
+                plugin.getLogger().info("PlotSquared-Flag registriert: passive-wither-spawn");
+            }
         } catch (final RuntimeException exception) {
             registeredPlotSquaredFlag = true;
             plugin.getLogger().warning("PlotSquared-Flag passive-wither-spawn konnte nicht registriert werden: "
@@ -1035,7 +1032,7 @@ public final class PassiveWitherService implements Listener {
                 return true;
             }
             final Plot plot = plotLocation.getPlot();
-            if (plot == null || !plot.getFlag(PassiveWitherSpawnFlag.class)) {
+            if (plot == null || !plugin.getPlotSquaredFlagService().isFlagEnabled(plot, "passive-wither-spawn")) {
                 plugin.getLanguageManager().send(player, "passive-wither-deny-plotsquared");
                 return false;
             }

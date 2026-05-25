@@ -18,6 +18,7 @@ import de.craftplay.plotextras.nofly.PlotNoFlyService;
 import de.craftplay.plotextras.passivewither.PassiveWitherCommand;
 import de.craftplay.plotextras.passivewither.PassiveWitherService;
 import de.craftplay.plotextras.plotpurchase.PlotPurchaseService;
+import de.craftplay.plotextras.plotsquared.PlotSquaredCustomFlagRegistry;
 import de.craftplay.plotextras.plotsquared.PlotSquaredFlagService;
 import de.craftplay.plotextras.plotsquared.PlotSquaredPlotService;
 import de.craftplay.plotextras.reports.ReportService;
@@ -50,6 +51,11 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     private FurnitureIntegrationService furnitureIntegrationService;
     private PlotNoFlyService plotNoFlyService;
     private PlotExtrasCommand commandExecutor;
+
+    @Override
+    public void onLoad() {
+        PlotSquaredCustomFlagRegistry.registerAll(this);
+    }
 
     @Override
     public void onEnable() {
