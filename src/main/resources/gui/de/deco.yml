@@ -1,201 +1,1167 @@
 # Deutsches Deko-Menü.
-# Diese Datei steuert das PlotSquared-Deko-Menü für Wand und Rand.
-# Aufbau: Jede Wand- und Randkategorie ist ein eigener Tab, wie im Einstellungsmenü.
-# In den Tabs werden nur die Blockbuttons angezeigt, für die der Spieler die Permission hat.
-# Mit slots: [19-25, 28-34] verteilst du Blockbuttons automatisch auf mehrere Bereiche.
-# Der Befehl plot-deco:<befehl> prüft zuerst, ob der Spieler auf seinem eigenen Plot steht
-# oder über eine passende Plotrolle/Rechte verfügt, und führt danach den PlotSquared-Befehl aus.
+# Diese Datei steuert das Menü, in dem Spieler Wand und Rand eines Plots ändern.
+# Jede Wand- und Randkategorie ist ein eigener Tab, genau wie im Einstellungsmenü.
+# Die eigentlichen Blockbuttons werden über die slots-Liste automatisch im Tab verteilt.
+# Jeder Button kann Name, Slot, Material, Lore, Befehle, Permission und Schließen-Verhalten anpassen.
+# Der Befehl plot-deco:<befehl> prüft vorher, ob der Spieler auf seinem eigenen Plot steht.
+# PlaceholderAPI-Platzhalter funktionieren in Titel, Tab-Namen, Buttonnamen, Lore und Commands.
 
+# Dateiversion dieser GUI-Datei.
+# Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
 file-version: 6
 
+# Titel des Inventars. Platzhalter: {tab}
 title: "&8Deko: {tab}"
+# Größe des Inventars. Erlaubt sind 9, 18, 27, 36, 45 oder 54 Slots.
 size: 54
+# Tab, der geöffnet wird, wenn kein Tab angegeben wurde.
 default-tab: wall-basic
+# Wenn true, muss der Spieler auf einem Plot stehen, um dieses Menü zu nutzen.
 require-plot: true
+# Optional: Grundpermission für das gesamte Deko-Menü.
 permission: "craftplayplotextras.deco"
+# Einstellungen für das Bedrock-Formular über Floodgate.
 bedrock:
   enabled: true
   title: "Deko"
   content: "Ändere Wand und Rand deines aktuellen Plots."
-filler: {enabled: true, material: BLACK_STAINED_GLASS_PANE, name: "&r"}
+# Füllitem für leere Slots.
+filler:
+  enabled: true
+  material: BLACK_STAINED_GLASS_PANE
+  name: "&r"
+
+# Animation beim Öffnen dieses Menüs.
 animation:
   enabled: true
   delay-ticks: 1
   keep-filler-visible: true
 
+# Globale Buttons, die in jedem Deko-Tab angezeigt werden.
 buttons:
-  back: {enabled: true, slot: 49, material: ARROW, name: "&eZurück", lore: ["&7Zurück zum Hauptmenü."], commands: ["open-menu:main"], close: false, permission: ""}
-  close: {enabled: true, slot: 53, material: BARRIER, name: "&cSchließen", lore: ["&7Schließt dieses Menü."], commands: [], close: true, permission: ""}
+  back:
+    enabled: true
+    slot: 49
+    material: ARROW
+    name: "&eZurück"
+    lore:
+      - "&7Zurück zum Hauptmenü."
+    commands:
+      - "open-menu:main"
+    close: false
+    permission: ""
+  close:
+    enabled: true
+    slot: 53
+    material: BARRIER
+    name: "&cSchließen"
+    lore:
+      - "&7Schließt dieses Menü."
+    commands: []
+    close: true
+    permission: ""
 
+# Deko-Items, die in jedem Tab angezeigt werden und keine Aktion ausführen.
 decorations:
-  frame: {enabled: true, slot: [9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 50, 51, 52], material: GRAY_STAINED_GLASS_PANE, name: "&r", lore: [], permission: ""}
+  frame:
+    enabled: true
+    slot:
+      - 9
+      - 17
+      - 18
+      - 26
+      - 27
+      - 35
+      - 36
+      - 44
+      - 45
+      - 46
+      - 47
+      - 50
+      - 51
+      - 52
+    material: GRAY_STAINED_GLASS_PANE
+    name: "&r"
+    lore: []
+    permission: ""
 
+# Tabs im Deko-Menü.
+# Wand- und Randkategorien liegen hier direkt unter tabs, damit der Aufbau wie bei settings.yml bleibt.
 tabs:
   wall-basic:
+    # Wenn false, wird diese Kategorie ausgeblendet.
     enabled: true
+    # Slot des Tab-Buttons oben im Menü.
     slot: 0
+    # Item des Tab-Buttons.
     material: STONE
+    # Anzeigename des Tab-Buttons.
     name: "&aWand: Basis"
-    lore: ["&7Solide Standardblöcke", "&7für die Plotwand."]
+    # Beschreibung des Tab-Buttons.
+    lore:
+      - "&7Solide Standardblöcke"
+      - "&7für die Plotwand."
+    # Optional: Permission, damit dieser Tab sichtbar ist.
     permission: "craftplayplotextras.deco.wall.basic"
-    slots: [19-25, 28-34, 37-43]
+    # Slotbereiche für automatische Blockbuttons in diesem Tab.
+    slots:
+      - 19-25
+      - 28-34
+      - 37-43
+    # Buttons innerhalb dieses Tabs.
     buttons:
-      reset-wall: {enabled: true, slot: 48, material: CAULDRON, name: "&eWand zurücksetzen", lore: ["&7Setzt die Plotwand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:wall"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      stone: {enabled: true, material: STONE, name: "&fSteinwand", lore: ["&7Setzt die Plotwand auf Stein."], commands: ["plot-deco:plot set wall stone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      cobblestone: {enabled: true, material: COBBLESTONE, name: "&fBruchsteinwand", lore: ["&7Setzt die Plotwand auf Bruchstein."], commands: ["plot-deco:plot set wall cobblestone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      stone-bricks: {enabled: true, material: STONE_BRICKS, name: "&fSteinziegelwand", lore: ["&7Setzt die Plotwand auf Steinziegel."], commands: ["plot-deco:plot set wall stone_bricks"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      smooth-stone: {enabled: true, material: SMOOTH_STONE, name: "&fGlatte Steinwand", lore: ["&7Setzt die Plotwand auf glatten Stein."], commands: ["plot-deco:plot set wall smooth_stone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      andesite: {enabled: true, material: POLISHED_ANDESITE, name: "&fPolierter Andesit", lore: ["&7Setzt die Plotwand auf polierten Andesit."], commands: ["plot-deco:plot set wall polished_andesite"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      bricks: {enabled: true, material: BRICKS, name: "&cZiegelwand", lore: ["&7Setzt die Plotwand auf Ziegel."], commands: ["plot-deco:plot set wall bricks"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      quartz: {enabled: true, material: QUARTZ_BLOCK, name: "&fQuarzwand", lore: ["&7Setzt die Plotwand auf Quarz."], commands: ["plot-deco:plot set wall quartz_block"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
+      reset-wall:
+        enabled: true
+        slot: 48
+        material: CAULDRON
+        name: "&eWand zurücksetzen"
+        lore:
+          - "&7Setzt die Plotwand auf"
+          - "&7den PlotSquared-Standard zurück."
+        commands:
+          - "plot-deco-reset:wall"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
+      stone:
+        enabled: true
+        material: STONE
+        name: "&fSteinwand"
+        lore:
+          - "&7Setzt die Plotwand auf Stein."
+        commands:
+          - "plot-deco:plot set wall stone"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
+      cobblestone:
+        enabled: true
+        material: COBBLESTONE
+        name: "&fBruchsteinwand"
+        lore:
+          - "&7Setzt die Plotwand auf Bruchstein."
+        commands:
+          - "plot-deco:plot set wall cobblestone"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
+      stone-bricks:
+        enabled: true
+        material: STONE_BRICKS
+        name: "&fSteinziegelwand"
+        lore:
+          - "&7Setzt die Plotwand auf Steinziegel."
+        commands:
+          - "plot-deco:plot set wall stone_bricks"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
+      smooth-stone:
+        enabled: true
+        material: SMOOTH_STONE
+        name: "&fGlatte Steinwand"
+        lore:
+          - "&7Setzt die Plotwand auf glatten Stein."
+        commands:
+          - "plot-deco:plot set wall smooth_stone"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
+      andesite:
+        enabled: true
+        material: POLISHED_ANDESITE
+        name: "&fPolierter Andesit"
+        lore:
+          - "&7Setzt die Plotwand auf polierten Andesit."
+        commands:
+          - "plot-deco:plot set wall polished_andesite"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
+      bricks:
+        enabled: true
+        material: BRICKS
+        name: "&cZiegelwand"
+        lore:
+          - "&7Setzt die Plotwand auf Ziegel."
+        commands:
+          - "plot-deco:plot set wall bricks"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
+      quartz:
+        enabled: true
+        material: QUARTZ_BLOCK
+        name: "&fQuarzwand"
+        lore:
+          - "&7Setzt die Plotwand auf Quarz."
+        commands:
+          - "plot-deco:plot set wall quartz_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
   wall-natural:
+    # Wenn false, wird diese Kategorie ausgeblendet.
     enabled: true
+    # Slot des Tab-Buttons oben im Menü.
     slot: 1
+    # Item des Tab-Buttons.
     material: OAK_LOG
+    # Anzeigename des Tab-Buttons.
     name: "&2Wand: Natur"
-    lore: ["&7Holz, Erde und natürliche", "&7Materialien für die Plotwand."]
+    # Beschreibung des Tab-Buttons.
+    lore:
+      - "&7Holz, Erde und natürliche"
+      - "&7Materialien für die Plotwand."
+    # Optional: Permission, damit dieser Tab sichtbar ist.
     permission: "craftplayplotextras.deco.wall.natural"
-    slots: [19-25, 28-34, 37-43]
+    # Slotbereiche für automatische Blockbuttons in diesem Tab.
+    slots:
+      - 19-25
+      - 28-34
+      - 37-43
+    # Buttons innerhalb dieses Tabs.
     buttons:
-      reset-wall: {enabled: true, slot: 48, material: CAULDRON, name: "&eWand zurücksetzen", lore: ["&7Setzt die Plotwand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:wall"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      oak: {enabled: true, material: OAK_PLANKS, name: "&6Eichenwand", lore: ["&7Setzt die Plotwand auf Eichenbretter."], commands: ["plot-deco:plot set wall oak_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      spruce: {enabled: true, material: SPRUCE_PLANKS, name: "&6Fichtenwand", lore: ["&7Setzt die Plotwand auf Fichtenbretter."], commands: ["plot-deco:plot set wall spruce_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      dark-oak: {enabled: true, material: DARK_OAK_PLANKS, name: "&6Schwarzeichenwand", lore: ["&7Setzt die Plotwand auf Schwarzeichenbretter."], commands: ["plot-deco:plot set wall dark_oak_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      mangrove: {enabled: true, material: MANGROVE_PLANKS, name: "&cMangrovenwand", lore: ["&7Setzt die Plotwand auf Mangrovenbretter."], commands: ["plot-deco:plot set wall mangrove_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      grass: {enabled: true, material: GRASS_BLOCK, name: "&aGraswand", lore: ["&7Setzt die Plotwand auf Grasblöcke."], commands: ["plot-deco:plot set wall grass_block"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      moss: {enabled: true, material: MOSS_BLOCK, name: "&aMooswand", lore: ["&7Setzt die Plotwand auf Moos."], commands: ["plot-deco:plot set wall moss_block"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
-      leaves: {enabled: true, material: OAK_LEAVES, name: "&aLaubwand", lore: ["&7Setzt die Plotwand auf Eichenlaub."], commands: ["plot-deco:plot set wall oak_leaves"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
+      reset-wall:
+        enabled: true
+        slot: 48
+        material: CAULDRON
+        name: "&eWand zurücksetzen"
+        lore:
+          - "&7Setzt die Plotwand auf"
+          - "&7den PlotSquared-Standard zurück."
+        commands:
+          - "plot-deco-reset:wall"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
+      oak:
+        enabled: true
+        material: OAK_PLANKS
+        name: "&6Eichenwand"
+        lore:
+          - "&7Setzt die Plotwand auf Eichenbretter."
+        commands:
+          - "plot-deco:plot set wall oak_planks"
+        close: false
+        permission: "craftplayplotextras.deco.wall.natural"
+      spruce:
+        enabled: true
+        material: SPRUCE_PLANKS
+        name: "&6Fichtenwand"
+        lore:
+          - "&7Setzt die Plotwand auf Fichtenbretter."
+        commands:
+          - "plot-deco:plot set wall spruce_planks"
+        close: false
+        permission: "craftplayplotextras.deco.wall.natural"
+      dark-oak:
+        enabled: true
+        material: DARK_OAK_PLANKS
+        name: "&6Schwarzeichenwand"
+        lore:
+          - "&7Setzt die Plotwand auf Schwarzeichenbretter."
+        commands:
+          - "plot-deco:plot set wall dark_oak_planks"
+        close: false
+        permission: "craftplayplotextras.deco.wall.natural"
+      mangrove:
+        enabled: true
+        material: MANGROVE_PLANKS
+        name: "&cMangrovenwand"
+        lore:
+          - "&7Setzt die Plotwand auf Mangrovenbretter."
+        commands:
+          - "plot-deco:plot set wall mangrove_planks"
+        close: false
+        permission: "craftplayplotextras.deco.wall.natural"
+      grass:
+        enabled: true
+        material: GRASS_BLOCK
+        name: "&aGraswand"
+        lore:
+          - "&7Setzt die Plotwand auf Grasblöcke."
+        commands:
+          - "plot-deco:plot set wall grass_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.natural"
+      moss:
+        enabled: true
+        material: MOSS_BLOCK
+        name: "&aMooswand"
+        lore:
+          - "&7Setzt die Plotwand auf Moos."
+        commands:
+          - "plot-deco:plot set wall moss_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.natural"
+      leaves:
+        enabled: true
+        material: OAK_LEAVES
+        name: "&aLaubwand"
+        lore:
+          - "&7Setzt die Plotwand auf Eichenlaub."
+        commands:
+          - "plot-deco:plot set wall oak_leaves"
+        close: false
+        permission: "craftplayplotextras.deco.wall.natural"
   wall-valuable:
+    # Wenn false, wird diese Kategorie ausgeblendet.
     enabled: true
+    # Slot des Tab-Buttons oben im Menü.
     slot: 2
+    # Item des Tab-Buttons.
     material: GOLD_BLOCK
+    # Anzeigename des Tab-Buttons.
     name: "&6Wand: Wertvoll"
-    lore: ["&7Edle Blöcke für höhere", "&7Ränge oder besondere Plots."]
+    # Beschreibung des Tab-Buttons.
+    lore:
+      - "&7Edle Blöcke für höhere"
+      - "&7Ränge oder besondere Plots."
+    # Optional: Permission, damit dieser Tab sichtbar ist.
     permission: "craftplayplotextras.deco.wall.valuable"
-    slots: [19-25, 28-34, 37-43]
+    # Slotbereiche für automatische Blockbuttons in diesem Tab.
+    slots:
+      - 19-25
+      - 28-34
+      - 37-43
+    # Buttons innerhalb dieses Tabs.
     buttons:
-      reset-wall: {enabled: true, slot: 48, material: CAULDRON, name: "&eWand zurücksetzen", lore: ["&7Setzt die Plotwand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:wall"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      gold: {enabled: true, material: GOLD_BLOCK, name: "&6Goldwand", lore: ["&7Setzt die Plotwand auf Goldblöcke."], commands: ["plot-deco:plot set wall gold_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      iron: {enabled: true, material: IRON_BLOCK, name: "&fEisenwand", lore: ["&7Setzt die Plotwand auf Eisenblöcke."], commands: ["plot-deco:plot set wall iron_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      emerald: {enabled: true, material: EMERALD_BLOCK, name: "&aSmaragdwand", lore: ["&7Setzt die Plotwand auf Smaragdblöcke."], commands: ["plot-deco:plot set wall emerald_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      diamond: {enabled: true, material: DIAMOND_BLOCK, name: "&bDiamantwand", lore: ["&7Setzt die Plotwand auf Diamantblöcke."], commands: ["plot-deco:plot set wall diamond_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      amethyst: {enabled: true, material: AMETHYST_BLOCK, name: "&dAmethystwand", lore: ["&7Setzt die Plotwand auf Amethyst."], commands: ["plot-deco:plot set wall amethyst_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      sea-lantern: {enabled: true, material: SEA_LANTERN, name: "&bSeelaternenwand", lore: ["&7Setzt die Plotwand auf Seelaternen."], commands: ["plot-deco:plot set wall sea_lantern"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
-      lodestone: {enabled: true, material: LODESTONE, name: "&7Leitsteinwand", lore: ["&7Setzt die Plotwand auf Leitstein."], commands: ["plot-deco:plot set wall lodestone"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
+      reset-wall:
+        enabled: true
+        slot: 48
+        material: CAULDRON
+        name: "&eWand zurücksetzen"
+        lore:
+          - "&7Setzt die Plotwand auf"
+          - "&7den PlotSquared-Standard zurück."
+        commands:
+          - "plot-deco-reset:wall"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
+      gold:
+        enabled: true
+        material: GOLD_BLOCK
+        name: "&6Goldwand"
+        lore:
+          - "&7Setzt die Plotwand auf Goldblöcke."
+        commands:
+          - "plot-deco:plot set wall gold_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.valuable"
+      iron:
+        enabled: true
+        material: IRON_BLOCK
+        name: "&fEisenwand"
+        lore:
+          - "&7Setzt die Plotwand auf Eisenblöcke."
+        commands:
+          - "plot-deco:plot set wall iron_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.valuable"
+      emerald:
+        enabled: true
+        material: EMERALD_BLOCK
+        name: "&aSmaragdwand"
+        lore:
+          - "&7Setzt die Plotwand auf Smaragdblöcke."
+        commands:
+          - "plot-deco:plot set wall emerald_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.valuable"
+      diamond:
+        enabled: true
+        material: DIAMOND_BLOCK
+        name: "&bDiamantwand"
+        lore:
+          - "&7Setzt die Plotwand auf Diamantblöcke."
+        commands:
+          - "plot-deco:plot set wall diamond_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.valuable"
+      amethyst:
+        enabled: true
+        material: AMETHYST_BLOCK
+        name: "&dAmethystwand"
+        lore:
+          - "&7Setzt die Plotwand auf Amethyst."
+        commands:
+          - "plot-deco:plot set wall amethyst_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.valuable"
+      sea-lantern:
+        enabled: true
+        material: SEA_LANTERN
+        name: "&bSeelaternenwand"
+        lore:
+          - "&7Setzt die Plotwand auf Seelaternen."
+        commands:
+          - "plot-deco:plot set wall sea_lantern"
+        close: false
+        permission: "craftplayplotextras.deco.wall.valuable"
+      lodestone:
+        enabled: true
+        material: LODESTONE
+        name: "&7Leitsteinwand"
+        lore:
+          - "&7Setzt die Plotwand auf Leitstein."
+        commands:
+          - "plot-deco:plot set wall lodestone"
+        close: false
+        permission: "craftplayplotextras.deco.wall.valuable"
   wall-premium:
+    # Wenn false, wird diese Kategorie ausgeblendet.
     enabled: true
+    # Slot des Tab-Buttons oben im Menü.
     slot: 3
+    # Item des Tab-Buttons.
     material: PRISMARINE
+    # Anzeigename des Tab-Buttons.
     name: "&bWand: Premium"
-    lore: ["&7Dekorative Premiumblöcke", "&7für die Plotwand."]
+    # Beschreibung des Tab-Buttons.
+    lore:
+      - "&7Dekorative Premiumblöcke"
+      - "&7für die Plotwand."
+    # Optional: Permission, damit dieser Tab sichtbar ist.
     permission: "craftplayplotextras.deco.wall.premium"
-    slots: [19-25, 28-34, 37-43]
+    # Slotbereiche für automatische Blockbuttons in diesem Tab.
+    slots:
+      - 19-25
+      - 28-34
+      - 37-43
+    # Buttons innerhalb dieses Tabs.
     buttons:
-      reset-wall: {enabled: true, slot: 48, material: CAULDRON, name: "&eWand zurücksetzen", lore: ["&7Setzt die Plotwand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:wall"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
-      prismarine: {enabled: true, material: PRISMARINE, name: "&bPrismarinwand", lore: ["&7Setzt die Plotwand auf Prismarin."], commands: ["plot-deco:plot set wall prismarine"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      dark-prismarine: {enabled: true, material: DARK_PRISMARINE, name: "&3Dunkelprismarinwand", lore: ["&7Setzt die Plotwand auf Dunkelprismarin."], commands: ["plot-deco:plot set wall dark_prismarine"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      purpur: {enabled: true, material: PURPUR_BLOCK, name: "&dPurpurwand", lore: ["&7Setzt die Plotwand auf Purpur."], commands: ["plot-deco:plot set wall purpur_block"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      blackstone: {enabled: true, material: POLISHED_BLACKSTONE, name: "&8Schwarzsteinwand", lore: ["&7Setzt die Plotwand auf polierten Schwarzstein."], commands: ["plot-deco:plot set wall polished_blackstone"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      deepslate: {enabled: true, material: POLISHED_DEEPSLATE, name: "&8Tiefenschieferwand", lore: ["&7Setzt die Plotwand auf polierten Tiefenschiefer."], commands: ["plot-deco:plot set wall polished_deepslate"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      copper: {enabled: true, material: COPPER_BLOCK, name: "&6Kupferwand", lore: ["&7Setzt die Plotwand auf Kupfer."], commands: ["plot-deco:plot set wall copper_block"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
-      honeycomb: {enabled: true, material: HONEYCOMB_BLOCK, name: "&eHonigwabenwand", lore: ["&7Setzt die Plotwand auf Honigwabenblöcke."], commands: ["plot-deco:plot set wall honeycomb_block"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
+      reset-wall:
+        enabled: true
+        slot: 48
+        material: CAULDRON
+        name: "&eWand zurücksetzen"
+        lore:
+          - "&7Setzt die Plotwand auf"
+          - "&7den PlotSquared-Standard zurück."
+        commands:
+          - "plot-deco-reset:wall"
+        close: false
+        permission: "craftplayplotextras.deco.wall.basic"
+      prismarine:
+        enabled: true
+        material: PRISMARINE
+        name: "&bPrismarinwand"
+        lore:
+          - "&7Setzt die Plotwand auf Prismarin."
+        commands:
+          - "plot-deco:plot set wall prismarine"
+        close: false
+        permission: "craftplayplotextras.deco.wall.premium"
+      dark-prismarine:
+        enabled: true
+        material: DARK_PRISMARINE
+        name: "&3Dunkelprismarinwand"
+        lore:
+          - "&7Setzt die Plotwand auf Dunkelprismarin."
+        commands:
+          - "plot-deco:plot set wall dark_prismarine"
+        close: false
+        permission: "craftplayplotextras.deco.wall.premium"
+      purpur:
+        enabled: true
+        material: PURPUR_BLOCK
+        name: "&dPurpurwand"
+        lore:
+          - "&7Setzt die Plotwand auf Purpur."
+        commands:
+          - "plot-deco:plot set wall purpur_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.premium"
+      blackstone:
+        enabled: true
+        material: POLISHED_BLACKSTONE
+        name: "&8Schwarzsteinwand"
+        lore:
+          - "&7Setzt die Plotwand auf polierten Schwarzstein."
+        commands:
+          - "plot-deco:plot set wall polished_blackstone"
+        close: false
+        permission: "craftplayplotextras.deco.wall.premium"
+      deepslate:
+        enabled: true
+        material: POLISHED_DEEPSLATE
+        name: "&8Tiefenschieferwand"
+        lore:
+          - "&7Setzt die Plotwand auf polierten Tiefenschiefer."
+        commands:
+          - "plot-deco:plot set wall polished_deepslate"
+        close: false
+        permission: "craftplayplotextras.deco.wall.premium"
+      copper:
+        enabled: true
+        material: COPPER_BLOCK
+        name: "&6Kupferwand"
+        lore:
+          - "&7Setzt die Plotwand auf Kupfer."
+        commands:
+          - "plot-deco:plot set wall copper_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.premium"
+      honeycomb:
+        enabled: true
+        material: HONEYCOMB_BLOCK
+        name: "&eHonigwabenwand"
+        lore:
+          - "&7Setzt die Plotwand auf Honigwabenblöcke."
+        commands:
+          - "plot-deco:plot set wall honeycomb_block"
+        close: false
+        permission: "craftplayplotextras.deco.wall.premium"
 
   border-basic:
+    # Wenn false, wird diese Kategorie ausgeblendet.
     enabled: true
+    # Slot des Tab-Buttons oben im Menü.
     slot: 4
+    # Item des Tab-Buttons.
     material: STONE_SLAB
+    # Anzeigename des Tab-Buttons.
     name: "&aRand: Basis"
-    lore: ["&7Standardblöcke und Stufen", "&7für den Plotrand."]
+    # Beschreibung des Tab-Buttons.
+    lore:
+      - "&7Standardblöcke und Stufen"
+      - "&7für den Plotrand."
+    # Optional: Permission, damit dieser Tab sichtbar ist.
     permission: "craftplayplotextras.deco.border.basic"
-    slots: [19-25, 28-34, 37-43]
+    # Slotbereiche für automatische Blockbuttons in diesem Tab.
+    slots:
+      - 19-25
+      - 28-34
+      - 37-43
+    # Buttons innerhalb dieses Tabs.
     buttons:
-      reset-border: {enabled: true, slot: 48, material: STONE_SLAB, name: "&eRand zurücksetzen", lore: ["&7Setzt den Plotrand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:border"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      air: {enabled: true, material: BARRIER, name: "&fRand entfernen", lore: ["&7Setzt den Plotrand auf Luft."], commands: ["plot-deco:plot set border air"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      stone-slab: {enabled: true, material: STONE_SLAB, name: "&fSteinstufe", lore: ["&7Setzt den Plotrand auf Steinstufen."], commands: ["plot-deco:plot set border stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      smooth-slab: {enabled: true, material: SMOOTH_STONE_SLAB, name: "&fGlatte Steinstufe", lore: ["&7Setzt den Plotrand auf glatte Steinstufen."], commands: ["plot-deco:plot set border smooth_stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      brick-slab: {enabled: true, material: BRICK_SLAB, name: "&cZiegelstufe", lore: ["&7Setzt den Plotrand auf Ziegelstufen."], commands: ["plot-deco:plot set border brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      cobble-slab: {enabled: true, material: COBBLESTONE_SLAB, name: "&7Bruchsteinstufe", lore: ["&7Setzt den Plotrand auf Bruchsteinstufen."], commands: ["plot-deco:plot set border cobblestone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      quartz-slab: {enabled: true, material: QUARTZ_SLAB, name: "&fQuarzstufe", lore: ["&7Setzt den Plotrand auf Quarzstufen."], commands: ["plot-deco:plot set border quartz_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      stone-brick-slab: {enabled: true, material: STONE_BRICK_SLAB, name: "&fSteinziegelstufe", lore: ["&7Setzt den Plotrand auf Steinziegelstufen."], commands: ["plot-deco:plot set border stone_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+      reset-border:
+        enabled: true
+        slot: 48
+        material: STONE_SLAB
+        name: "&eRand zurücksetzen"
+        lore:
+          - "&7Setzt den Plotrand auf"
+          - "&7den PlotSquared-Standard zurück."
+        commands:
+          - "plot-deco-reset:border"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      air:
+        enabled: true
+        material: BARRIER
+        name: "&fRand entfernen"
+        lore:
+          - "&7Setzt den Plotrand auf Luft."
+        commands:
+          - "plot-deco:plot set border air"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      stone-slab:
+        enabled: true
+        material: STONE_SLAB
+        name: "&fSteinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Steinstufen."
+        commands:
+          - "plot-deco:plot set border stone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      smooth-slab:
+        enabled: true
+        material: SMOOTH_STONE_SLAB
+        name: "&fGlatte Steinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf glatte Steinstufen."
+        commands:
+          - "plot-deco:plot set border smooth_stone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      brick-slab:
+        enabled: true
+        material: BRICK_SLAB
+        name: "&cZiegelstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Ziegelstufen."
+        commands:
+          - "plot-deco:plot set border brick_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      cobble-slab:
+        enabled: true
+        material: COBBLESTONE_SLAB
+        name: "&7Bruchsteinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Bruchsteinstufen."
+        commands:
+          - "plot-deco:plot set border cobblestone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      quartz-slab:
+        enabled: true
+        material: QUARTZ_SLAB
+        name: "&fQuarzstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Quarzstufen."
+        commands:
+          - "plot-deco:plot set border quartz_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      stone-brick-slab:
+        enabled: true
+        material: STONE_BRICK_SLAB
+        name: "&fSteinziegelstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Steinziegelstufen."
+        commands:
+          - "plot-deco:plot set border stone_brick_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
   border-natural:
+    # Wenn false, wird diese Kategorie ausgeblendet.
     enabled: true
+    # Slot des Tab-Buttons oben im Menü.
     slot: 5
+    # Item des Tab-Buttons.
     material: OAK_SLAB
+    # Anzeigename des Tab-Buttons.
     name: "&2Rand: Natur"
-    lore: ["&7Natürliche Stufen und", "&7weiche Randblöcke."]
+    # Beschreibung des Tab-Buttons.
+    lore:
+      - "&7Natürliche Stufen und"
+      - "&7weiche Randblöcke."
+    # Optional: Permission, damit dieser Tab sichtbar ist.
     permission: "craftplayplotextras.deco.border.natural"
-    slots: [19-25, 28-34, 37-43]
+    # Slotbereiche für automatische Blockbuttons in diesem Tab.
+    slots:
+      - 19-25
+      - 28-34
+      - 37-43
+    # Buttons innerhalb dieses Tabs.
     buttons:
-      reset-border: {enabled: true, slot: 48, material: STONE_SLAB, name: "&eRand zurücksetzen", lore: ["&7Setzt den Plotrand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:border"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      oak-slab: {enabled: true, material: OAK_SLAB, name: "&6Eichenstufe", lore: ["&7Setzt den Plotrand auf Eichenstufen."], commands: ["plot-deco:plot set border oak_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      spruce-slab: {enabled: true, material: SPRUCE_SLAB, name: "&6Fichtenstufe", lore: ["&7Setzt den Plotrand auf Fichtenstufen."], commands: ["plot-deco:plot set border spruce_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      dark-oak-slab: {enabled: true, material: DARK_OAK_SLAB, name: "&6Schwarzeichenstufe", lore: ["&7Setzt den Plotrand auf Schwarzeichenstufen."], commands: ["plot-deco:plot set border dark_oak_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      mangrove-slab: {enabled: true, material: MANGROVE_SLAB, name: "&cMangrovenstufe", lore: ["&7Setzt den Plotrand auf Mangrovenstufen."], commands: ["plot-deco:plot set border mangrove_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      moss: {enabled: true, material: MOSS_BLOCK, name: "&aMoosrand", lore: ["&7Setzt den Plotrand auf Moos."], commands: ["plot-deco:plot set border moss_block"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      grass: {enabled: true, material: GRASS_BLOCK, name: "&aGrasrand", lore: ["&7Setzt den Plotrand auf Grasblöcke."], commands: ["plot-deco:plot set border grass_block"], close: false, permission: "craftplayplotextras.deco.border.natural"}
-      leaves: {enabled: true, material: OAK_LEAVES, name: "&aLaubrand", lore: ["&7Setzt den Plotrand auf Eichenlaub."], commands: ["plot-deco:plot set border oak_leaves"], close: false, permission: "craftplayplotextras.deco.border.natural"}
+      reset-border:
+        enabled: true
+        slot: 48
+        material: STONE_SLAB
+        name: "&eRand zurücksetzen"
+        lore:
+          - "&7Setzt den Plotrand auf"
+          - "&7den PlotSquared-Standard zurück."
+        commands:
+          - "plot-deco-reset:border"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      oak-slab:
+        enabled: true
+        material: OAK_SLAB
+        name: "&6Eichenstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Eichenstufen."
+        commands:
+          - "plot-deco:plot set border oak_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.natural"
+      spruce-slab:
+        enabled: true
+        material: SPRUCE_SLAB
+        name: "&6Fichtenstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Fichtenstufen."
+        commands:
+          - "plot-deco:plot set border spruce_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.natural"
+      dark-oak-slab:
+        enabled: true
+        material: DARK_OAK_SLAB
+        name: "&6Schwarzeichenstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Schwarzeichenstufen."
+        commands:
+          - "plot-deco:plot set border dark_oak_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.natural"
+      mangrove-slab:
+        enabled: true
+        material: MANGROVE_SLAB
+        name: "&cMangrovenstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Mangrovenstufen."
+        commands:
+          - "plot-deco:plot set border mangrove_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.natural"
+      moss:
+        enabled: true
+        material: MOSS_BLOCK
+        name: "&aMoosrand"
+        lore:
+          - "&7Setzt den Plotrand auf Moos."
+        commands:
+          - "plot-deco:plot set border moss_block"
+        close: false
+        permission: "craftplayplotextras.deco.border.natural"
+      grass:
+        enabled: true
+        material: GRASS_BLOCK
+        name: "&aGrasrand"
+        lore:
+          - "&7Setzt den Plotrand auf Grasblöcke."
+        commands:
+          - "plot-deco:plot set border grass_block"
+        close: false
+        permission: "craftplayplotextras.deco.border.natural"
+      leaves:
+        enabled: true
+        material: OAK_LEAVES
+        name: "&aLaubrand"
+        lore:
+          - "&7Setzt den Plotrand auf Eichenlaub."
+        commands:
+          - "plot-deco:plot set border oak_leaves"
+        close: false
+        permission: "craftplayplotextras.deco.border.natural"
   border-slabs:
+    # Wenn false, wird diese Kategorie ausgeblendet.
     enabled: true
+    # Slot des Tab-Buttons oben im Menü.
     slot: 6
+    # Item des Tab-Buttons.
     material: SMOOTH_STONE_SLAB
+    # Anzeigename des Tab-Buttons.
     name: "&aRand: Halbstufen"
-    lore: ["&7Viele unterschiedliche", "&7Halbstufen für den Plotrand."]
+    # Beschreibung des Tab-Buttons.
+    lore:
+      - "&7Viele unterschiedliche"
+      - "&7Halbstufen für den Plotrand."
+    # Optional: Permission, damit dieser Tab sichtbar ist.
     permission: "craftplayplotextras.deco.border.basic"
-    slots: [19-25, 28-34, 37-43]
+    # Slotbereiche für automatische Blockbuttons in diesem Tab.
+    slots:
+      - 19-25
+      - 28-34
+      - 37-43
+    # Buttons innerhalb dieses Tabs.
     buttons:
-      reset-border: {enabled: true, slot: 48, material: STONE_SLAB, name: "&eRand zurücksetzen", lore: ["&7Setzt den Plotrand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:border"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      stone-slab: {enabled: true, material: STONE_SLAB, name: "&fSteinstufe", lore: ["&7Setzt den Plotrand auf Steinstufen."], commands: ["plot-deco:plot set border stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      smooth-stone-slab: {enabled: true, material: SMOOTH_STONE_SLAB, name: "&fGlatte Steinstufe", lore: ["&7Setzt den Plotrand auf glatte Steinstufen."], commands: ["plot-deco:plot set border smooth_stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      cobblestone-slab: {enabled: true, material: COBBLESTONE_SLAB, name: "&7Bruchsteinstufe", lore: ["&7Setzt den Plotrand auf Bruchsteinstufen."], commands: ["plot-deco:plot set border cobblestone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      mossy-cobblestone-slab: {enabled: true, material: MOSSY_COBBLESTONE_SLAB, name: "&2Moosbruchsteinstufe", lore: ["&7Setzt den Plotrand auf Moosbruchsteinstufen."], commands: ["plot-deco:plot set border mossy_cobblestone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      stone-brick-slab: {enabled: true, material: STONE_BRICK_SLAB, name: "&fSteinziegelstufe", lore: ["&7Setzt den Plotrand auf Steinziegelstufen."], commands: ["plot-deco:plot set border stone_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      mossy-stone-brick-slab: {enabled: true, material: MOSSY_STONE_BRICK_SLAB, name: "&2Moossteinziegelstufe", lore: ["&7Setzt den Plotrand auf Moossteinziegelstufen."], commands: ["plot-deco:plot set border mossy_stone_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      brick-slab: {enabled: true, material: BRICK_SLAB, name: "&cZiegelstufe", lore: ["&7Setzt den Plotrand auf Ziegelstufen."], commands: ["plot-deco:plot set border brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      andesite-slab: {enabled: true, material: ANDESITE_SLAB, name: "&7Andesitstufe", lore: ["&7Setzt den Plotrand auf Andesitstufen."], commands: ["plot-deco:plot set border andesite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      polished-andesite-slab: {enabled: true, material: POLISHED_ANDESITE_SLAB, name: "&7Polierte Andesitstufe", lore: ["&7Setzt den Plotrand auf polierte Andesitstufen."], commands: ["plot-deco:plot set border polished_andesite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      granite-slab: {enabled: true, material: GRANITE_SLAB, name: "&cGranitstufe", lore: ["&7Setzt den Plotrand auf Granitstufen."], commands: ["plot-deco:plot set border granite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      polished-granite-slab: {enabled: true, material: POLISHED_GRANITE_SLAB, name: "&cPolierte Granitstufe", lore: ["&7Setzt den Plotrand auf polierte Granitstufen."], commands: ["plot-deco:plot set border polished_granite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      diorite-slab: {enabled: true, material: DIORITE_SLAB, name: "&fDioritstufe", lore: ["&7Setzt den Plotrand auf Dioritstufen."], commands: ["plot-deco:plot set border diorite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      polished-diorite-slab: {enabled: true, material: POLISHED_DIORITE_SLAB, name: "&fPolierte Dioritstufe", lore: ["&7Setzt den Plotrand auf polierte Dioritstufen."], commands: ["plot-deco:plot set border polished_diorite_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      sandstone-slab: {enabled: true, material: SANDSTONE_SLAB, name: "&eSandsteinstufe", lore: ["&7Setzt den Plotrand auf Sandsteinstufen."], commands: ["plot-deco:plot set border sandstone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      red-sandstone-slab: {enabled: true, material: RED_SANDSTONE_SLAB, name: "&6Rote Sandsteinstufe", lore: ["&7Setzt den Plotrand auf rote Sandsteinstufen."], commands: ["plot-deco:plot set border red_sandstone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      cut-sandstone-slab: {enabled: true, material: CUT_SANDSTONE_SLAB, name: "&eGeschnittene Sandsteinstufe", lore: ["&7Setzt den Plotrand auf geschnittene Sandsteinstufen."], commands: ["plot-deco:plot set border cut_sandstone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      cut-red-sandstone-slab: {enabled: true, material: CUT_RED_SANDSTONE_SLAB, name: "&6Geschnittene rote Sandsteinstufe", lore: ["&7Setzt den Plotrand auf geschnittene rote Sandsteinstufen."], commands: ["plot-deco:plot set border cut_red_sandstone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      nether-brick-slab: {enabled: true, material: NETHER_BRICK_SLAB, name: "&4Netherziegelstufe", lore: ["&7Setzt den Plotrand auf Netherziegelstufen."], commands: ["plot-deco:plot set border nether_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      red-nether-brick-slab: {enabled: true, material: RED_NETHER_BRICK_SLAB, name: "&4Rote Netherziegelstufe", lore: ["&7Setzt den Plotrand auf rote Netherziegelstufen."], commands: ["plot-deco:plot set border red_nether_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      blackstone-slab: {enabled: true, material: BLACKSTONE_SLAB, name: "&8Schwarzsteinstufe", lore: ["&7Setzt den Plotrand auf Schwarzsteinstufen."], commands: ["plot-deco:plot set border blackstone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      polished-blackstone-brick-slab: {enabled: true, material: POLISHED_BLACKSTONE_BRICK_SLAB, name: "&8Polierte Schwarzsteinziegelstufe", lore: ["&7Setzt den Plotrand auf polierte Schwarzsteinziegelstufen."], commands: ["plot-deco:plot set border polished_blackstone_brick_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
+      reset-border:
+        enabled: true
+        slot: 48
+        material: STONE_SLAB
+        name: "&eRand zurücksetzen"
+        lore:
+          - "&7Setzt den Plotrand auf"
+          - "&7den PlotSquared-Standard zurück."
+        commands:
+          - "plot-deco-reset:border"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      stone-slab:
+        enabled: true
+        material: STONE_SLAB
+        name: "&fSteinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Steinstufen."
+        commands:
+          - "plot-deco:plot set border stone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      smooth-stone-slab:
+        enabled: true
+        material: SMOOTH_STONE_SLAB
+        name: "&fGlatte Steinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf glatte Steinstufen."
+        commands:
+          - "plot-deco:plot set border smooth_stone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      cobblestone-slab:
+        enabled: true
+        material: COBBLESTONE_SLAB
+        name: "&7Bruchsteinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Bruchsteinstufen."
+        commands:
+          - "plot-deco:plot set border cobblestone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      mossy-cobblestone-slab:
+        enabled: true
+        material: MOSSY_COBBLESTONE_SLAB
+        name: "&2Moosbruchsteinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Moosbruchsteinstufen."
+        commands:
+          - "plot-deco:plot set border mossy_cobblestone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      stone-brick-slab:
+        enabled: true
+        material: STONE_BRICK_SLAB
+        name: "&fSteinziegelstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Steinziegelstufen."
+        commands:
+          - "plot-deco:plot set border stone_brick_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      mossy-stone-brick-slab:
+        enabled: true
+        material: MOSSY_STONE_BRICK_SLAB
+        name: "&2Moossteinziegelstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Moossteinziegelstufen."
+        commands:
+          - "plot-deco:plot set border mossy_stone_brick_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      brick-slab:
+        enabled: true
+        material: BRICK_SLAB
+        name: "&cZiegelstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Ziegelstufen."
+        commands:
+          - "plot-deco:plot set border brick_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      andesite-slab:
+        enabled: true
+        material: ANDESITE_SLAB
+        name: "&7Andesitstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Andesitstufen."
+        commands:
+          - "plot-deco:plot set border andesite_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      polished-andesite-slab:
+        enabled: true
+        material: POLISHED_ANDESITE_SLAB
+        name: "&7Polierte Andesitstufe"
+        lore:
+          - "&7Setzt den Plotrand auf polierte Andesitstufen."
+        commands:
+          - "plot-deco:plot set border polished_andesite_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      granite-slab:
+        enabled: true
+        material: GRANITE_SLAB
+        name: "&cGranitstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Granitstufen."
+        commands:
+          - "plot-deco:plot set border granite_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      polished-granite-slab:
+        enabled: true
+        material: POLISHED_GRANITE_SLAB
+        name: "&cPolierte Granitstufe"
+        lore:
+          - "&7Setzt den Plotrand auf polierte Granitstufen."
+        commands:
+          - "plot-deco:plot set border polished_granite_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      diorite-slab:
+        enabled: true
+        material: DIORITE_SLAB
+        name: "&fDioritstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Dioritstufen."
+        commands:
+          - "plot-deco:plot set border diorite_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      polished-diorite-slab:
+        enabled: true
+        material: POLISHED_DIORITE_SLAB
+        name: "&fPolierte Dioritstufe"
+        lore:
+          - "&7Setzt den Plotrand auf polierte Dioritstufen."
+        commands:
+          - "plot-deco:plot set border polished_diorite_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      sandstone-slab:
+        enabled: true
+        material: SANDSTONE_SLAB
+        name: "&eSandsteinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Sandsteinstufen."
+        commands:
+          - "plot-deco:plot set border sandstone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      red-sandstone-slab:
+        enabled: true
+        material: RED_SANDSTONE_SLAB
+        name: "&6Rote Sandsteinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf rote Sandsteinstufen."
+        commands:
+          - "plot-deco:plot set border red_sandstone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      cut-sandstone-slab:
+        enabled: true
+        material: CUT_SANDSTONE_SLAB
+        name: "&eGeschnittene Sandsteinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf geschnittene Sandsteinstufen."
+        commands:
+          - "plot-deco:plot set border cut_sandstone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      cut-red-sandstone-slab:
+        enabled: true
+        material: CUT_RED_SANDSTONE_SLAB
+        name: "&6Geschnittene rote Sandsteinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf geschnittene rote Sandsteinstufen."
+        commands:
+          - "plot-deco:plot set border cut_red_sandstone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      nether-brick-slab:
+        enabled: true
+        material: NETHER_BRICK_SLAB
+        name: "&4Netherziegelstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Netherziegelstufen."
+        commands:
+          - "plot-deco:plot set border nether_brick_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      red-nether-brick-slab:
+        enabled: true
+        material: RED_NETHER_BRICK_SLAB
+        name: "&4Rote Netherziegelstufe"
+        lore:
+          - "&7Setzt den Plotrand auf rote Netherziegelstufen."
+        commands:
+          - "plot-deco:plot set border red_nether_brick_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      blackstone-slab:
+        enabled: true
+        material: BLACKSTONE_SLAB
+        name: "&8Schwarzsteinstufe"
+        lore:
+          - "&7Setzt den Plotrand auf Schwarzsteinstufen."
+        commands:
+          - "plot-deco:plot set border blackstone_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      polished-blackstone-brick-slab:
+        enabled: true
+        material: POLISHED_BLACKSTONE_BRICK_SLAB
+        name: "&8Polierte Schwarzsteinziegelstufe"
+        lore:
+          - "&7Setzt den Plotrand auf polierte Schwarzsteinziegelstufen."
+        commands:
+          - "plot-deco:plot set border polished_blackstone_brick_slab"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
   border-valuable:
+    # Wenn false, wird diese Kategorie ausgeblendet.
     enabled: true
+    # Slot des Tab-Buttons oben im Menü.
     slot: 7
+    # Item des Tab-Buttons.
     material: DIAMOND_BLOCK
+    # Anzeigename des Tab-Buttons.
     name: "&6Rand: Wertvoll"
-    lore: ["&7Edle Randblöcke für", "&7besondere Ränge."]
+    # Beschreibung des Tab-Buttons.
+    lore:
+      - "&7Edle Randblöcke für"
+      - "&7besondere Ränge."
+    # Optional: Permission, damit dieser Tab sichtbar ist.
     permission: "craftplayplotextras.deco.border.valuable"
-    slots: [19-25, 28-34, 37-43]
+    # Slotbereiche für automatische Blockbuttons in diesem Tab.
+    slots:
+      - 19-25
+      - 28-34
+      - 37-43
+    # Buttons innerhalb dieses Tabs.
     buttons:
-      reset-border: {enabled: true, slot: 48, material: STONE_SLAB, name: "&eRand zurücksetzen", lore: ["&7Setzt den Plotrand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:border"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      gold: {enabled: true, material: GOLD_BLOCK, name: "&6Goldrand", lore: ["&7Setzt den Plotrand auf Goldblöcke."], commands: ["plot-deco:plot set border gold_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      iron: {enabled: true, material: IRON_BLOCK, name: "&fEisenrand", lore: ["&7Setzt den Plotrand auf Eisenblöcke."], commands: ["plot-deco:plot set border iron_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      emerald: {enabled: true, material: EMERALD_BLOCK, name: "&aSmaragdrand", lore: ["&7Setzt den Plotrand auf Smaragdblöcke."], commands: ["plot-deco:plot set border emerald_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      diamond: {enabled: true, material: DIAMOND_BLOCK, name: "&bDiamantrand", lore: ["&7Setzt den Plotrand auf Diamantblöcke."], commands: ["plot-deco:plot set border diamond_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      amethyst: {enabled: true, material: AMETHYST_BLOCK, name: "&dAmethystrand", lore: ["&7Setzt den Plotrand auf Amethyst."], commands: ["plot-deco:plot set border amethyst_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      sea-lantern: {enabled: true, material: SEA_LANTERN, name: "&bSeelaternenrand", lore: ["&7Setzt den Plotrand auf Seelaternen."], commands: ["plot-deco:plot set border sea_lantern"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
-      beacon: {enabled: true, material: BEACON, name: "&bBeaconrand", lore: ["&7Setzt den Plotrand auf Beacons."], commands: ["plot-deco:plot set border beacon"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
+      reset-border:
+        enabled: true
+        slot: 48
+        material: STONE_SLAB
+        name: "&eRand zurücksetzen"
+        lore:
+          - "&7Setzt den Plotrand auf"
+          - "&7den PlotSquared-Standard zurück."
+        commands:
+          - "plot-deco-reset:border"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      gold:
+        enabled: true
+        material: GOLD_BLOCK
+        name: "&6Goldrand"
+        lore:
+          - "&7Setzt den Plotrand auf Goldblöcke."
+        commands:
+          - "plot-deco:plot set border gold_block"
+        close: false
+        permission: "craftplayplotextras.deco.border.valuable"
+      iron:
+        enabled: true
+        material: IRON_BLOCK
+        name: "&fEisenrand"
+        lore:
+          - "&7Setzt den Plotrand auf Eisenblöcke."
+        commands:
+          - "plot-deco:plot set border iron_block"
+        close: false
+        permission: "craftplayplotextras.deco.border.valuable"
+      emerald:
+        enabled: true
+        material: EMERALD_BLOCK
+        name: "&aSmaragdrand"
+        lore:
+          - "&7Setzt den Plotrand auf Smaragdblöcke."
+        commands:
+          - "plot-deco:plot set border emerald_block"
+        close: false
+        permission: "craftplayplotextras.deco.border.valuable"
+      diamond:
+        enabled: true
+        material: DIAMOND_BLOCK
+        name: "&bDiamantrand"
+        lore:
+          - "&7Setzt den Plotrand auf Diamantblöcke."
+        commands:
+          - "plot-deco:plot set border diamond_block"
+        close: false
+        permission: "craftplayplotextras.deco.border.valuable"
+      amethyst:
+        enabled: true
+        material: AMETHYST_BLOCK
+        name: "&dAmethystrand"
+        lore:
+          - "&7Setzt den Plotrand auf Amethyst."
+        commands:
+          - "plot-deco:plot set border amethyst_block"
+        close: false
+        permission: "craftplayplotextras.deco.border.valuable"
+      sea-lantern:
+        enabled: true
+        material: SEA_LANTERN
+        name: "&bSeelaternenrand"
+        lore:
+          - "&7Setzt den Plotrand auf Seelaternen."
+        commands:
+          - "plot-deco:plot set border sea_lantern"
+        close: false
+        permission: "craftplayplotextras.deco.border.valuable"
+      beacon:
+        enabled: true
+        material: BEACON
+        name: "&bBeaconrand"
+        lore:
+          - "&7Setzt den Plotrand auf Beacons."
+        commands:
+          - "plot-deco:plot set border beacon"
+        close: false
+        permission: "craftplayplotextras.deco.border.valuable"
   border-special:
+    # Wenn false, wird diese Kategorie ausgeblendet.
     enabled: true
+    # Slot des Tab-Buttons oben im Menü.
     slot: 8
+    # Item des Tab-Buttons.
     material: DRAGON_EGG
+    # Anzeigename des Tab-Buttons.
     name: "&5Rand: Spezial"
-    lore: ["&7Besondere Randblöcke", "&7für Events und Spezialränge."]
+    # Beschreibung des Tab-Buttons.
+    lore:
+      - "&7Besondere Randblöcke"
+      - "&7für Events und Spezialränge."
+    # Optional: Permission, damit dieser Tab sichtbar ist.
     permission: "craftplayplotextras.deco.border.special"
-    slots: [19-25, 28-34, 37-43]
+    # Slotbereiche für automatische Blockbuttons in diesem Tab.
+    slots:
+      - 19-25
+      - 28-34
+      - 37-43
+    # Buttons innerhalb dieses Tabs.
     buttons:
-      reset-border: {enabled: true, slot: 48, material: STONE_SLAB, name: "&eRand zurücksetzen", lore: ["&7Setzt den Plotrand auf", "&7den PlotSquared-Standard zurück."], commands: ["plot-deco-reset:border"], close: false, permission: "craftplayplotextras.deco.border.basic"}
-      dragon-egg: {enabled: true, material: DRAGON_EGG, name: "&5Enderdrachenei-Rand", lore: ["&7Setzt den Plotrand auf Enderdracheneier."], commands: ["plot-deco:plot set border dragon_egg"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      end-stone: {enabled: true, material: END_STONE_BRICKS, name: "&eEndsteinziegelrand", lore: ["&7Setzt den Plotrand auf Endsteinziegel."], commands: ["plot-deco:plot set border end_stone_bricks"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      obsidian: {enabled: true, material: OBSIDIAN, name: "&5Obsidianrand", lore: ["&7Setzt den Plotrand auf Obsidian."], commands: ["plot-deco:plot set border obsidian"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      crying-obsidian: {enabled: true, material: CRYING_OBSIDIAN, name: "&5Weinender Obsidian", lore: ["&7Setzt den Plotrand auf weinenden Obsidian."], commands: ["plot-deco:plot set border crying_obsidian"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      respawn-anchor: {enabled: true, material: RESPAWN_ANCHOR, name: "&5Respawnanker-Rand", lore: ["&7Setzt den Plotrand auf Respawnanker."], commands: ["plot-deco:plot set border respawn_anchor"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      shroomlight: {enabled: true, material: SHROOMLIGHT, name: "&6Pilzlicht-Rand", lore: ["&7Setzt den Plotrand auf Pilzlicht."], commands: ["plot-deco:plot set border shroomlight"], close: false, permission: "craftplayplotextras.deco.border.special"}
-      froglight: {enabled: true, material: OCHRE_FROGLIGHT, name: "&eFroschlicht-Rand", lore: ["&7Setzt den Plotrand auf ockerfarbenes Froschlicht."], commands: ["plot-deco:plot set border ochre_froglight"], close: false, permission: "craftplayplotextras.deco.border.special"}
+      reset-border:
+        enabled: true
+        slot: 48
+        material: STONE_SLAB
+        name: "&eRand zurücksetzen"
+        lore:
+          - "&7Setzt den Plotrand auf"
+          - "&7den PlotSquared-Standard zurück."
+        commands:
+          - "plot-deco-reset:border"
+        close: false
+        permission: "craftplayplotextras.deco.border.basic"
+      dragon-egg:
+        enabled: true
+        material: DRAGON_EGG
+        name: "&5Enderdrachenei-Rand"
+        lore:
+          - "&7Setzt den Plotrand auf Enderdracheneier."
+        commands:
+          - "plot-deco:plot set border dragon_egg"
+        close: false
+        permission: "craftplayplotextras.deco.border.special"
+      end-stone:
+        enabled: true
+        material: END_STONE_BRICKS
+        name: "&eEndsteinziegelrand"
+        lore:
+          - "&7Setzt den Plotrand auf Endsteinziegel."
+        commands:
+          - "plot-deco:plot set border end_stone_bricks"
+        close: false
+        permission: "craftplayplotextras.deco.border.special"
+      obsidian:
+        enabled: true
+        material: OBSIDIAN
+        name: "&5Obsidianrand"
+        lore:
+          - "&7Setzt den Plotrand auf Obsidian."
+        commands:
+          - "plot-deco:plot set border obsidian"
+        close: false
+        permission: "craftplayplotextras.deco.border.special"
+      crying-obsidian:
+        enabled: true
+        material: CRYING_OBSIDIAN
+        name: "&5Weinender Obsidian"
+        lore:
+          - "&7Setzt den Plotrand auf weinenden Obsidian."
+        commands:
+          - "plot-deco:plot set border crying_obsidian"
+        close: false
+        permission: "craftplayplotextras.deco.border.special"
+      respawn-anchor:
+        enabled: true
+        material: RESPAWN_ANCHOR
+        name: "&5Respawnanker-Rand"
+        lore:
+          - "&7Setzt den Plotrand auf Respawnanker."
+        commands:
+          - "plot-deco:plot set border respawn_anchor"
+        close: false
+        permission: "craftplayplotextras.deco.border.special"
+      shroomlight:
+        enabled: true
+        material: SHROOMLIGHT
+        name: "&6Pilzlicht-Rand"
+        lore:
+          - "&7Setzt den Plotrand auf Pilzlicht."
+        commands:
+          - "plot-deco:plot set border shroomlight"
+        close: false
+        permission: "craftplayplotextras.deco.border.special"
+      froglight:
+        enabled: true
+        material: OCHRE_FROGLIGHT
+        name: "&eFroschlicht-Rand"
+        lore:
+          - "&7Setzt den Plotrand auf ockerfarbenes Froschlicht."
+        commands:
+          - "plot-deco:plot set border ochre_froglight"
+        close: false
+        permission: "craftplayplotextras.deco.border.special"
