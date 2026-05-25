@@ -1,6 +1,6 @@
 # English deco menu.
 # This file controls the menu where players change a plot wall and border.
-# Each wall and border category is its own tab, just like the settings menu.
+# Wall and border are main tabs. Categories are shown below as subtabs.
 # Block buttons are distributed automatically inside the tab through the slots list.
 # Every button can customize name, slot, material, lore, commands, permission, and close behavior.
 # The command plot-deco:<command> first checks that the player is standing on their own plot.
@@ -8,14 +8,14 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 6
+file-version: 7
 
 # Inventory title. Placeholder: {tab}
-title: "&8Deco: {tab}"
+title: "&8Deco: {tab} - {subtab}"
 # Inventory size. Valid values are 9, 18, 27, 36, 45, or 54 slots.
 size: 54
 # Tab that opens when no tab is specified.
-default-tab: wall-basic
+default-tab: wall
 # If true, the player must stand on a plot to use this menu.
 require-plot: true
 # Optional base permission for the whole deco menu.
@@ -86,1082 +86,1111 @@ decorations:
     permission: ""
 
 # Tabs in the deco menu.
-# Wall and border categories live directly below tabs so the layout stays like settings.yml.
+# Wall and border are main tabs; categories live below them as subtabs.
 tabs:
-  wall-basic:
-    # If false, this category is hidden.
+  wall:
+    # If false, the whole wall tab is hidden.
     enabled: true
-    # Slot of the tab button in the top row.
-    slot: 0
-    # Item of the tab button.
-    material: STONE
-    # Display name of the tab button.
-    name: "&aWall: Basic"
-    # Description of the tab button.
-    lore:
-      - "&7Solid default blocks"
-      - "&7for the plot wall."
-    # Optional permission required to see this tab.
-    permission: "craftplayplotextras.deco.wall.basic"
-    # Slot areas for automatic block buttons in this tab.
-    slots:
-      - 19-25
-      - 28-34
-      - 37-43
-    # Buttons inside this tab.
-    buttons:
-      reset-wall:
-        enabled: true
-        slot: 48
-        material: CAULDRON
-        name: "&eReset Wall"
-        lore:
-          - "&7Resets the plot wall"
-          - "&7to the PlotSquared default."
-        commands:
-          - "plot-deco-reset:wall"
-        close: false
-        permission: "craftplayplotextras.deco.wall.basic"
-      stone:
-        enabled: true
-        material: STONE
-        name: "&fStone Wall"
-        lore:
-          - "&7Sets the plot wall to stone."
-        commands:
-          - "plot-deco:plot set wall stone"
-        close: false
-        permission: "craftplayplotextras.deco.wall.basic"
-      cobblestone:
-        enabled: true
-        material: COBBLESTONE
-        name: "&fCobblestone Wall"
-        lore:
-          - "&7Sets the plot wall to cobblestone."
-        commands:
-          - "plot-deco:plot set wall cobblestone"
-        close: false
-        permission: "craftplayplotextras.deco.wall.basic"
-      stone-bricks:
-        enabled: true
-        material: STONE_BRICKS
-        name: "&fStone Brick Wall"
-        lore:
-          - "&7Sets the plot wall to stone bricks."
-        commands:
-          - "plot-deco:plot set wall stone_bricks"
-        close: false
-        permission: "craftplayplotextras.deco.wall.basic"
-      smooth-stone:
-        enabled: true
-        material: SMOOTH_STONE
-        name: "&fSmooth Stone Wall"
-        lore:
-          - "&7Sets the plot wall to smooth stone."
-        commands:
-          - "plot-deco:plot set wall smooth_stone"
-        close: false
-        permission: "craftplayplotextras.deco.wall.basic"
-      andesite:
-        enabled: true
-        material: POLISHED_ANDESITE
-        name: "&fPolished Andesite"
-        lore:
-          - "&7Sets the plot wall to polished andesite."
-        commands:
-          - "plot-deco:plot set wall polished_andesite"
-        close: false
-        permission: "craftplayplotextras.deco.wall.basic"
-      bricks:
-        enabled: true
-        material: BRICKS
-        name: "&cBrick Wall"
-        lore:
-          - "&7Sets the plot wall to bricks."
-        commands:
-          - "plot-deco:plot set wall bricks"
-        close: false
-        permission: "craftplayplotextras.deco.wall.basic"
-      quartz:
-        enabled: true
-        material: QUARTZ_BLOCK
-        name: "&fQuartz Wall"
-        lore:
-          - "&7Sets the plot wall to quartz."
-        commands:
-          - "plot-deco:plot set wall quartz_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.basic"
-  wall-natural:
-    # If false, this category is hidden.
-    enabled: true
-    # Slot of the tab button in the top row.
-    slot: 1
-    # Item of the tab button.
-    material: OAK_LOG
-    # Display name of the tab button.
-    name: "&2Wall: Natural"
-    # Description of the tab button.
-    lore:
-      - "&7Wood, earth, and natural"
-      - "&7materials for the plot wall."
-    # Optional permission required to see this tab.
-    permission: "craftplayplotextras.deco.wall.natural"
-    # Slot areas for automatic block buttons in this tab.
-    slots:
-      - 19-25
-      - 28-34
-      - 37-43
-    # Buttons inside this tab.
-    buttons:
-      reset-wall:
-        enabled: true
-        slot: 48
-        material: CAULDRON
-        name: "&eReset Wall"
-        lore:
-          - "&7Resets the plot wall"
-          - "&7to the PlotSquared default."
-        commands:
-          - "plot-deco-reset:wall"
-        close: false
-        permission: "craftplayplotextras.deco.wall.basic"
-      oak:
-        enabled: true
-        material: OAK_PLANKS
-        name: "&6Oak Wall"
-        lore:
-          - "&7Sets the plot wall to oak planks."
-        commands:
-          - "plot-deco:plot set wall oak_planks"
-        close: false
-        permission: "craftplayplotextras.deco.wall.natural"
-      spruce:
-        enabled: true
-        material: SPRUCE_PLANKS
-        name: "&6Spruce Wall"
-        lore:
-          - "&7Sets the plot wall to spruce planks."
-        commands:
-          - "plot-deco:plot set wall spruce_planks"
-        close: false
-        permission: "craftplayplotextras.deco.wall.natural"
-      dark-oak:
-        enabled: true
-        material: DARK_OAK_PLANKS
-        name: "&6Dark Oak Wall"
-        lore:
-          - "&7Sets the plot wall to dark oak planks."
-        commands:
-          - "plot-deco:plot set wall dark_oak_planks"
-        close: false
-        permission: "craftplayplotextras.deco.wall.natural"
-      mangrove:
-        enabled: true
-        material: MANGROVE_PLANKS
-        name: "&cMangrove Wall"
-        lore:
-          - "&7Sets the plot wall to mangrove planks."
-        commands:
-          - "plot-deco:plot set wall mangrove_planks"
-        close: false
-        permission: "craftplayplotextras.deco.wall.natural"
-      grass:
-        enabled: true
-        material: GRASS_BLOCK
-        name: "&aGrass Wall"
-        lore:
-          - "&7Sets the plot wall to grass blocks."
-        commands:
-          - "plot-deco:plot set wall grass_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.natural"
-      moss:
-        enabled: true
-        material: MOSS_BLOCK
-        name: "&aMoss Wall"
-        lore:
-          - "&7Sets the plot wall to moss."
-        commands:
-          - "plot-deco:plot set wall moss_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.natural"
-      leaves:
-        enabled: true
-        material: OAK_LEAVES
-        name: "&aLeaf Wall"
-        lore:
-          - "&7Sets the plot wall to oak leaves."
-        commands:
-          - "plot-deco:plot set wall oak_leaves"
-        close: false
-        permission: "craftplayplotextras.deco.wall.natural"
-  wall-valuable:
-    # If false, this category is hidden.
-    enabled: true
-    # Slot of the tab button in the top row.
-    slot: 2
-    # Item of the tab button.
-    material: GOLD_BLOCK
-    # Display name of the tab button.
-    name: "&6Wall: Valuable"
-    # Description of the tab button.
-    lore:
-      - "&7Precious blocks for higher"
-      - "&7ranks or special plots."
-    # Optional permission required to see this tab.
-    permission: "craftplayplotextras.deco.wall.valuable"
-    # Slot areas for automatic block buttons in this tab.
-    slots:
-      - 19-25
-      - 28-34
-      - 37-43
-    # Buttons inside this tab.
-    buttons:
-      reset-wall:
-        enabled: true
-        slot: 48
-        material: CAULDRON
-        name: "&eReset Wall"
-        lore:
-          - "&7Resets the plot wall"
-          - "&7to the PlotSquared default."
-        commands:
-          - "plot-deco-reset:wall"
-        close: false
-        permission: "craftplayplotextras.deco.wall.basic"
-      gold:
-        enabled: true
-        material: GOLD_BLOCK
-        name: "&6Gold Wall"
-        lore:
-          - "&7Sets the plot wall to gold blocks."
-        commands:
-          - "plot-deco:plot set wall gold_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.valuable"
-      iron:
-        enabled: true
-        material: IRON_BLOCK
-        name: "&fIron Wall"
-        lore:
-          - "&7Sets the plot wall to iron blocks."
-        commands:
-          - "plot-deco:plot set wall iron_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.valuable"
-      emerald:
-        enabled: true
-        material: EMERALD_BLOCK
-        name: "&aEmerald Wall"
-        lore:
-          - "&7Sets the plot wall to emerald blocks."
-        commands:
-          - "plot-deco:plot set wall emerald_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.valuable"
-      diamond:
-        enabled: true
-        material: DIAMOND_BLOCK
-        name: "&bDiamond Wall"
-        lore:
-          - "&7Sets the plot wall to diamond blocks."
-        commands:
-          - "plot-deco:plot set wall diamond_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.valuable"
-      amethyst:
-        enabled: true
-        material: AMETHYST_BLOCK
-        name: "&dAmethyst Wall"
-        lore:
-          - "&7Sets the plot wall to amethyst."
-        commands:
-          - "plot-deco:plot set wall amethyst_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.valuable"
-      sea-lantern:
-        enabled: true
-        material: SEA_LANTERN
-        name: "&bSea Lantern Wall"
-        lore:
-          - "&7Sets the plot wall to sea lanterns."
-        commands:
-          - "plot-deco:plot set wall sea_lantern"
-        close: false
-        permission: "craftplayplotextras.deco.wall.valuable"
-      lodestone:
-        enabled: true
-        material: LODESTONE
-        name: "&7Lodestone Wall"
-        lore:
-          - "&7Sets the plot wall to lodestone."
-        commands:
-          - "plot-deco:plot set wall lodestone"
-        close: false
-        permission: "craftplayplotextras.deco.wall.valuable"
-  wall-premium:
-    # If false, this category is hidden.
-    enabled: true
-    # Slot of the tab button in the top row.
+    # Slot of the main tab button.
     slot: 3
-    # Item of the tab button.
-    material: PRISMARINE
-    # Display name of the tab button.
-    name: "&bWall: Premium"
-    # Description of the tab button.
+    material: BRICKS
+    name: "&aWall"
     lore:
-      - "&7Decorative premium blocks"
-      - "&7for the plot wall."
-    # Optional permission required to see this tab.
-    permission: "craftplayplotextras.deco.wall.premium"
-    # Slot areas for automatic block buttons in this tab.
-    slots:
-      - 19-25
-      - 28-34
-      - 37-43
-    # Buttons inside this tab.
-    buttons:
-      reset-wall:
+      - "&7Wall categories for"
+      - "&7your current plot."
+    permission: ""
+    # Subtab opened when only wall is requested.
+    default-subtab: basic
+    subtabs:
+      basic:
+        # If false, this category is hidden.
         enabled: true
-        slot: 48
-        material: CAULDRON
-        name: "&eReset Wall"
+        # Slot of the subtab button.
+        slot: 10
+        # Item of the subtab button.
+        material: STONE
+        # Display name of the subtab button.
+        name: "&aBasic"
+        # Description of the subtab button.
         lore:
-          - "&7Resets the plot wall"
-          - "&7to the PlotSquared default."
-        commands:
-          - "plot-deco-reset:wall"
-        close: false
+          - "&7Solid default blocks"
+          - "&7for the plot wall."
+        # Optional permission required to see this subtab.
         permission: "craftplayplotextras.deco.wall.basic"
-      prismarine:
+        # Slot areas for automatic block buttons in this subtab.
+        slots:
+          - 19-25
+          - 28-34
+          - 37-43
+        # Buttons inside this subtab.
+        buttons:
+          reset-wall:
+            enabled: true
+            slot: 48
+            material: CAULDRON
+            name: "&eReset Wall"
+            lore:
+              - "&7Resets the plot wall"
+              - "&7to the PlotSquared default."
+            commands:
+              - "plot-deco-reset:wall"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+          stone:
+            enabled: true
+            material: STONE
+            name: "&fStone Wall"
+            lore:
+              - "&7Sets the plot wall to stone."
+            commands:
+              - "plot-deco:plot set wall stone"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+          cobblestone:
+            enabled: true
+            material: COBBLESTONE
+            name: "&fCobblestone Wall"
+            lore:
+              - "&7Sets the plot wall to cobblestone."
+            commands:
+              - "plot-deco:plot set wall cobblestone"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+          stone-bricks:
+            enabled: true
+            material: STONE_BRICKS
+            name: "&fStone Brick Wall"
+            lore:
+              - "&7Sets the plot wall to stone bricks."
+            commands:
+              - "plot-deco:plot set wall stone_bricks"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+          smooth-stone:
+            enabled: true
+            material: SMOOTH_STONE
+            name: "&fSmooth Stone Wall"
+            lore:
+              - "&7Sets the plot wall to smooth stone."
+            commands:
+              - "plot-deco:plot set wall smooth_stone"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+          andesite:
+            enabled: true
+            material: POLISHED_ANDESITE
+            name: "&fPolished Andesite"
+            lore:
+              - "&7Sets the plot wall to polished andesite."
+            commands:
+              - "plot-deco:plot set wall polished_andesite"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+          bricks:
+            enabled: true
+            material: BRICKS
+            name: "&cBrick Wall"
+            lore:
+              - "&7Sets the plot wall to bricks."
+            commands:
+              - "plot-deco:plot set wall bricks"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+          quartz:
+            enabled: true
+            material: QUARTZ_BLOCK
+            name: "&fQuartz Wall"
+            lore:
+              - "&7Sets the plot wall to quartz."
+            commands:
+              - "plot-deco:plot set wall quartz_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+      natural:
+        # If false, this category is hidden.
         enabled: true
-        material: PRISMARINE
-        name: "&bPrismarine Wall"
+        # Slot of the subtab button.
+        slot: 11
+        # Item of the subtab button.
+        material: OAK_LOG
+        # Display name of the subtab button.
+        name: "&2Natural"
+        # Description of the subtab button.
         lore:
-          - "&7Sets the plot wall to prismarine."
-        commands:
-          - "plot-deco:plot set wall prismarine"
-        close: false
-        permission: "craftplayplotextras.deco.wall.premium"
-      dark-prismarine:
+          - "&7Wood, earth, and natural"
+          - "&7materials for the plot wall."
+        # Optional permission required to see this subtab.
+        permission: "craftplayplotextras.deco.wall.natural"
+        # Slot areas for automatic block buttons in this subtab.
+        slots:
+          - 19-25
+          - 28-34
+          - 37-43
+        # Buttons inside this subtab.
+        buttons:
+          reset-wall:
+            enabled: true
+            slot: 48
+            material: CAULDRON
+            name: "&eReset Wall"
+            lore:
+              - "&7Resets the plot wall"
+              - "&7to the PlotSquared default."
+            commands:
+              - "plot-deco-reset:wall"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+          oak:
+            enabled: true
+            material: OAK_PLANKS
+            name: "&6Oak Wall"
+            lore:
+              - "&7Sets the plot wall to oak planks."
+            commands:
+              - "plot-deco:plot set wall oak_planks"
+            close: false
+            permission: "craftplayplotextras.deco.wall.natural"
+          spruce:
+            enabled: true
+            material: SPRUCE_PLANKS
+            name: "&6Spruce Wall"
+            lore:
+              - "&7Sets the plot wall to spruce planks."
+            commands:
+              - "plot-deco:plot set wall spruce_planks"
+            close: false
+            permission: "craftplayplotextras.deco.wall.natural"
+          dark-oak:
+            enabled: true
+            material: DARK_OAK_PLANKS
+            name: "&6Dark Oak Wall"
+            lore:
+              - "&7Sets the plot wall to dark oak planks."
+            commands:
+              - "plot-deco:plot set wall dark_oak_planks"
+            close: false
+            permission: "craftplayplotextras.deco.wall.natural"
+          mangrove:
+            enabled: true
+            material: MANGROVE_PLANKS
+            name: "&cMangrove Wall"
+            lore:
+              - "&7Sets the plot wall to mangrove planks."
+            commands:
+              - "plot-deco:plot set wall mangrove_planks"
+            close: false
+            permission: "craftplayplotextras.deco.wall.natural"
+          grass:
+            enabled: true
+            material: GRASS_BLOCK
+            name: "&aGrass Wall"
+            lore:
+              - "&7Sets the plot wall to grass blocks."
+            commands:
+              - "plot-deco:plot set wall grass_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.natural"
+          moss:
+            enabled: true
+            material: MOSS_BLOCK
+            name: "&aMoss Wall"
+            lore:
+              - "&7Sets the plot wall to moss."
+            commands:
+              - "plot-deco:plot set wall moss_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.natural"
+          leaves:
+            enabled: true
+            material: OAK_LEAVES
+            name: "&aLeaf Wall"
+            lore:
+              - "&7Sets the plot wall to oak leaves."
+            commands:
+              - "plot-deco:plot set wall oak_leaves"
+            close: false
+            permission: "craftplayplotextras.deco.wall.natural"
+      valuable:
+        # If false, this category is hidden.
         enabled: true
-        material: DARK_PRISMARINE
-        name: "&3Dark Prismarine Wall"
-        lore:
-          - "&7Sets the plot wall to dark prismarine."
-        commands:
-          - "plot-deco:plot set wall dark_prismarine"
-        close: false
-        permission: "craftplayplotextras.deco.wall.premium"
-      purpur:
-        enabled: true
-        material: PURPUR_BLOCK
-        name: "&dPurpur Wall"
-        lore:
-          - "&7Sets the plot wall to purpur."
-        commands:
-          - "plot-deco:plot set wall purpur_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.premium"
-      blackstone:
-        enabled: true
-        material: POLISHED_BLACKSTONE
-        name: "&8Blackstone Wall"
-        lore:
-          - "&7Sets the plot wall to polished blackstone."
-        commands:
-          - "plot-deco:plot set wall polished_blackstone"
-        close: false
-        permission: "craftplayplotextras.deco.wall.premium"
-      deepslate:
-        enabled: true
-        material: POLISHED_DEEPSLATE
-        name: "&8Deepslate Wall"
-        lore:
-          - "&7Sets the plot wall to polished deepslate."
-        commands:
-          - "plot-deco:plot set wall polished_deepslate"
-        close: false
-        permission: "craftplayplotextras.deco.wall.premium"
-      copper:
-        enabled: true
-        material: COPPER_BLOCK
-        name: "&6Copper Wall"
-        lore:
-          - "&7Sets the plot wall to copper."
-        commands:
-          - "plot-deco:plot set wall copper_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.premium"
-      honeycomb:
-        enabled: true
-        material: HONEYCOMB_BLOCK
-        name: "&eHoneycomb Wall"
-        lore:
-          - "&7Sets the plot wall to honeycomb blocks."
-        commands:
-          - "plot-deco:plot set wall honeycomb_block"
-        close: false
-        permission: "craftplayplotextras.deco.wall.premium"
-
-  border-basic:
-    # If false, this category is hidden.
-    enabled: true
-    # Slot of the tab button in the top row.
-    slot: 4
-    # Item of the tab button.
-    material: STONE_SLAB
-    # Display name of the tab button.
-    name: "&aBorder: Basic"
-    # Description of the tab button.
-    lore:
-      - "&7Default blocks and slabs"
-      - "&7for the plot border."
-    # Optional permission required to see this tab.
-    permission: "craftplayplotextras.deco.border.basic"
-    # Slot areas for automatic block buttons in this tab.
-    slots:
-      - 19-25
-      - 28-34
-      - 37-43
-    # Buttons inside this tab.
-    buttons:
-      reset-border:
-        enabled: true
-        slot: 48
-        material: STONE_SLAB
-        name: "&eReset Border"
-        lore:
-          - "&7Resets the plot border"
-          - "&7to the PlotSquared default."
-        commands:
-          - "plot-deco-reset:border"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      air:
-        enabled: true
-        material: BARRIER
-        name: "&fRemove Border"
-        lore:
-          - "&7Sets the plot border to air."
-        commands:
-          - "plot-deco:plot set border air"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      stone-slab:
-        enabled: true
-        material: STONE_SLAB
-        name: "&fStone Slab"
-        lore:
-          - "&7Sets the plot border to stone slabs."
-        commands:
-          - "plot-deco:plot set border stone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      smooth-slab:
-        enabled: true
-        material: SMOOTH_STONE_SLAB
-        name: "&fSmooth Stone Slab"
-        lore:
-          - "&7Sets the plot border to smooth stone slabs."
-        commands:
-          - "plot-deco:plot set border smooth_stone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      brick-slab:
-        enabled: true
-        material: BRICK_SLAB
-        name: "&cBrick Slab"
-        lore:
-          - "&7Sets the plot border to brick slabs."
-        commands:
-          - "plot-deco:plot set border brick_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      cobble-slab:
-        enabled: true
-        material: COBBLESTONE_SLAB
-        name: "&7Cobblestone Slab"
-        lore:
-          - "&7Sets the plot border to cobblestone slabs."
-        commands:
-          - "plot-deco:plot set border cobblestone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      quartz-slab:
-        enabled: true
-        material: QUARTZ_SLAB
-        name: "&fQuartz Slab"
-        lore:
-          - "&7Sets the plot border to quartz slabs."
-        commands:
-          - "plot-deco:plot set border quartz_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      stone-brick-slab:
-        enabled: true
-        material: STONE_BRICK_SLAB
-        name: "&fStone Brick Slab"
-        lore:
-          - "&7Sets the plot border to stone brick slabs."
-        commands:
-          - "plot-deco:plot set border stone_brick_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-  border-natural:
-    # If false, this category is hidden.
-    enabled: true
-    # Slot of the tab button in the top row.
-    slot: 5
-    # Item of the tab button.
-    material: OAK_SLAB
-    # Display name of the tab button.
-    name: "&2Border: Natural"
-    # Description of the tab button.
-    lore:
-      - "&7Natural slabs and"
-      - "&7soft border blocks."
-    # Optional permission required to see this tab.
-    permission: "craftplayplotextras.deco.border.natural"
-    # Slot areas for automatic block buttons in this tab.
-    slots:
-      - 19-25
-      - 28-34
-      - 37-43
-    # Buttons inside this tab.
-    buttons:
-      reset-border:
-        enabled: true
-        slot: 48
-        material: STONE_SLAB
-        name: "&eReset Border"
-        lore:
-          - "&7Resets the plot border"
-          - "&7to the PlotSquared default."
-        commands:
-          - "plot-deco-reset:border"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      oak-slab:
-        enabled: true
-        material: OAK_SLAB
-        name: "&6Oak Slab"
-        lore:
-          - "&7Sets the plot border to oak slabs."
-        commands:
-          - "plot-deco:plot set border oak_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.natural"
-      spruce-slab:
-        enabled: true
-        material: SPRUCE_SLAB
-        name: "&6Spruce Slab"
-        lore:
-          - "&7Sets the plot border to spruce slabs."
-        commands:
-          - "plot-deco:plot set border spruce_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.natural"
-      dark-oak-slab:
-        enabled: true
-        material: DARK_OAK_SLAB
-        name: "&6Dark Oak Slab"
-        lore:
-          - "&7Sets the plot border to dark oak slabs."
-        commands:
-          - "plot-deco:plot set border dark_oak_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.natural"
-      mangrove-slab:
-        enabled: true
-        material: MANGROVE_SLAB
-        name: "&cMangrove Slab"
-        lore:
-          - "&7Sets the plot border to mangrove slabs."
-        commands:
-          - "plot-deco:plot set border mangrove_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.natural"
-      moss:
-        enabled: true
-        material: MOSS_BLOCK
-        name: "&aMoss Border"
-        lore:
-          - "&7Sets the plot border to moss."
-        commands:
-          - "plot-deco:plot set border moss_block"
-        close: false
-        permission: "craftplayplotextras.deco.border.natural"
-      grass:
-        enabled: true
-        material: GRASS_BLOCK
-        name: "&aGrass Border"
-        lore:
-          - "&7Sets the plot border to grass blocks."
-        commands:
-          - "plot-deco:plot set border grass_block"
-        close: false
-        permission: "craftplayplotextras.deco.border.natural"
-      leaves:
-        enabled: true
-        material: OAK_LEAVES
-        name: "&aLeaf Border"
-        lore:
-          - "&7Sets the plot border to oak leaves."
-        commands:
-          - "plot-deco:plot set border oak_leaves"
-        close: false
-        permission: "craftplayplotextras.deco.border.natural"
-  border-slabs:
-    # If false, this category is hidden.
-    enabled: true
-    # Slot of the tab button in the top row.
-    slot: 6
-    # Item of the tab button.
-    material: SMOOTH_STONE_SLAB
-    # Display name of the tab button.
-    name: "&aBorder: Slabs"
-    # Description of the tab button.
-    lore:
-      - "&7Many different slabs"
-      - "&7for the plot border."
-    # Optional permission required to see this tab.
-    permission: "craftplayplotextras.deco.border.basic"
-    # Slot areas for automatic block buttons in this tab.
-    slots:
-      - 19-25
-      - 28-34
-      - 37-43
-    # Buttons inside this tab.
-    buttons:
-      reset-border:
-        enabled: true
-        slot: 48
-        material: STONE_SLAB
-        name: "&eReset Border"
-        lore:
-          - "&7Resets the plot border"
-          - "&7to the PlotSquared default."
-        commands:
-          - "plot-deco-reset:border"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      stone-slab:
-        enabled: true
-        material: STONE_SLAB
-        name: "&fStone Slab"
-        lore:
-          - "&7Sets the plot border to stone slabs."
-        commands:
-          - "plot-deco:plot set border stone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      smooth-stone-slab:
-        enabled: true
-        material: SMOOTH_STONE_SLAB
-        name: "&fSmooth Stone Slab"
-        lore:
-          - "&7Sets the plot border to smooth stone slabs."
-        commands:
-          - "plot-deco:plot set border smooth_stone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      cobblestone-slab:
-        enabled: true
-        material: COBBLESTONE_SLAB
-        name: "&7Cobblestone Slab"
-        lore:
-          - "&7Sets the plot border to cobblestone slabs."
-        commands:
-          - "plot-deco:plot set border cobblestone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      mossy-cobblestone-slab:
-        enabled: true
-        material: MOSSY_COBBLESTONE_SLAB
-        name: "&2Mossy Cobblestone Slab"
-        lore:
-          - "&7Sets the plot border to mossy cobblestone slabs."
-        commands:
-          - "plot-deco:plot set border mossy_cobblestone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      stone-brick-slab:
-        enabled: true
-        material: STONE_BRICK_SLAB
-        name: "&fStone Brick Slab"
-        lore:
-          - "&7Sets the plot border to stone brick slabs."
-        commands:
-          - "plot-deco:plot set border stone_brick_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      mossy-stone-brick-slab:
-        enabled: true
-        material: MOSSY_STONE_BRICK_SLAB
-        name: "&2Mossy Stone Brick Slab"
-        lore:
-          - "&7Sets the plot border to mossy stone brick slabs."
-        commands:
-          - "plot-deco:plot set border mossy_stone_brick_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      brick-slab:
-        enabled: true
-        material: BRICK_SLAB
-        name: "&cBrick Slab"
-        lore:
-          - "&7Sets the plot border to brick slabs."
-        commands:
-          - "plot-deco:plot set border brick_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      andesite-slab:
-        enabled: true
-        material: ANDESITE_SLAB
-        name: "&7Andesite Slab"
-        lore:
-          - "&7Sets the plot border to andesite slabs."
-        commands:
-          - "plot-deco:plot set border andesite_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      polished-andesite-slab:
-        enabled: true
-        material: POLISHED_ANDESITE_SLAB
-        name: "&7Polished Andesite Slab"
-        lore:
-          - "&7Sets the plot border to polished andesite slabs."
-        commands:
-          - "plot-deco:plot set border polished_andesite_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      granite-slab:
-        enabled: true
-        material: GRANITE_SLAB
-        name: "&cGranite Slab"
-        lore:
-          - "&7Sets the plot border to granite slabs."
-        commands:
-          - "plot-deco:plot set border granite_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      polished-granite-slab:
-        enabled: true
-        material: POLISHED_GRANITE_SLAB
-        name: "&cPolished Granite Slab"
-        lore:
-          - "&7Sets the plot border to polished granite slabs."
-        commands:
-          - "plot-deco:plot set border polished_granite_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      diorite-slab:
-        enabled: true
-        material: DIORITE_SLAB
-        name: "&fDiorite Slab"
-        lore:
-          - "&7Sets the plot border to diorite slabs."
-        commands:
-          - "plot-deco:plot set border diorite_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      polished-diorite-slab:
-        enabled: true
-        material: POLISHED_DIORITE_SLAB
-        name: "&fPolished Diorite Slab"
-        lore:
-          - "&7Sets the plot border to polished diorite slabs."
-        commands:
-          - "plot-deco:plot set border polished_diorite_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      sandstone-slab:
-        enabled: true
-        material: SANDSTONE_SLAB
-        name: "&eSandstone Slab"
-        lore:
-          - "&7Sets the plot border to sandstone slabs."
-        commands:
-          - "plot-deco:plot set border sandstone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      red-sandstone-slab:
-        enabled: true
-        material: RED_SANDSTONE_SLAB
-        name: "&6Red Sandstone Slab"
-        lore:
-          - "&7Sets the plot border to red sandstone slabs."
-        commands:
-          - "plot-deco:plot set border red_sandstone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      cut-sandstone-slab:
-        enabled: true
-        material: CUT_SANDSTONE_SLAB
-        name: "&eCut Sandstone Slab"
-        lore:
-          - "&7Sets the plot border to cut sandstone slabs."
-        commands:
-          - "plot-deco:plot set border cut_sandstone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      cut-red-sandstone-slab:
-        enabled: true
-        material: CUT_RED_SANDSTONE_SLAB
-        name: "&6Cut Red Sandstone Slab"
-        lore:
-          - "&7Sets the plot border to cut red sandstone slabs."
-        commands:
-          - "plot-deco:plot set border cut_red_sandstone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      nether-brick-slab:
-        enabled: true
-        material: NETHER_BRICK_SLAB
-        name: "&4Nether Brick Slab"
-        lore:
-          - "&7Sets the plot border to nether brick slabs."
-        commands:
-          - "plot-deco:plot set border nether_brick_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      red-nether-brick-slab:
-        enabled: true
-        material: RED_NETHER_BRICK_SLAB
-        name: "&4Red Nether Brick Slab"
-        lore:
-          - "&7Sets the plot border to red nether brick slabs."
-        commands:
-          - "plot-deco:plot set border red_nether_brick_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      blackstone-slab:
-        enabled: true
-        material: BLACKSTONE_SLAB
-        name: "&8Blackstone Slab"
-        lore:
-          - "&7Sets the plot border to blackstone slabs."
-        commands:
-          - "plot-deco:plot set border blackstone_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      polished-blackstone-brick-slab:
-        enabled: true
-        material: POLISHED_BLACKSTONE_BRICK_SLAB
-        name: "&8Polished Blackstone Brick Slab"
-        lore:
-          - "&7Sets the plot border to polished blackstone brick slabs."
-        commands:
-          - "plot-deco:plot set border polished_blackstone_brick_slab"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-  border-valuable:
-    # If false, this category is hidden.
-    enabled: true
-    # Slot of the tab button in the top row.
-    slot: 7
-    # Item of the tab button.
-    material: DIAMOND_BLOCK
-    # Display name of the tab button.
-    name: "&6Border: Valuable"
-    # Description of the tab button.
-    lore:
-      - "&7Precious border blocks"
-      - "&7for special ranks."
-    # Optional permission required to see this tab.
-    permission: "craftplayplotextras.deco.border.valuable"
-    # Slot areas for automatic block buttons in this tab.
-    slots:
-      - 19-25
-      - 28-34
-      - 37-43
-    # Buttons inside this tab.
-    buttons:
-      reset-border:
-        enabled: true
-        slot: 48
-        material: STONE_SLAB
-        name: "&eReset Border"
-        lore:
-          - "&7Resets the plot border"
-          - "&7to the PlotSquared default."
-        commands:
-          - "plot-deco-reset:border"
-        close: false
-        permission: "craftplayplotextras.deco.border.basic"
-      gold:
-        enabled: true
+        # Slot of the subtab button.
+        slot: 12
+        # Item of the subtab button.
         material: GOLD_BLOCK
-        name: "&6Gold Border"
+        # Display name of the subtab button.
+        name: "&6Valuable"
+        # Description of the subtab button.
         lore:
-          - "&7Sets the plot border to gold blocks."
-        commands:
-          - "plot-deco:plot set border gold_block"
-        close: false
-        permission: "craftplayplotextras.deco.border.valuable"
-      iron:
+          - "&7Precious blocks for higher"
+          - "&7ranks or special plots."
+        # Optional permission required to see this subtab.
+        permission: "craftplayplotextras.deco.wall.valuable"
+        # Slot areas for automatic block buttons in this subtab.
+        slots:
+          - 19-25
+          - 28-34
+          - 37-43
+        # Buttons inside this subtab.
+        buttons:
+          reset-wall:
+            enabled: true
+            slot: 48
+            material: CAULDRON
+            name: "&eReset Wall"
+            lore:
+              - "&7Resets the plot wall"
+              - "&7to the PlotSquared default."
+            commands:
+              - "plot-deco-reset:wall"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+          gold:
+            enabled: true
+            material: GOLD_BLOCK
+            name: "&6Gold Wall"
+            lore:
+              - "&7Sets the plot wall to gold blocks."
+            commands:
+              - "plot-deco:plot set wall gold_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.valuable"
+          iron:
+            enabled: true
+            material: IRON_BLOCK
+            name: "&fIron Wall"
+            lore:
+              - "&7Sets the plot wall to iron blocks."
+            commands:
+              - "plot-deco:plot set wall iron_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.valuable"
+          emerald:
+            enabled: true
+            material: EMERALD_BLOCK
+            name: "&aEmerald Wall"
+            lore:
+              - "&7Sets the plot wall to emerald blocks."
+            commands:
+              - "plot-deco:plot set wall emerald_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.valuable"
+          diamond:
+            enabled: true
+            material: DIAMOND_BLOCK
+            name: "&bDiamond Wall"
+            lore:
+              - "&7Sets the plot wall to diamond blocks."
+            commands:
+              - "plot-deco:plot set wall diamond_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.valuable"
+          amethyst:
+            enabled: true
+            material: AMETHYST_BLOCK
+            name: "&dAmethyst Wall"
+            lore:
+              - "&7Sets the plot wall to amethyst."
+            commands:
+              - "plot-deco:plot set wall amethyst_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.valuable"
+          sea-lantern:
+            enabled: true
+            material: SEA_LANTERN
+            name: "&bSea Lantern Wall"
+            lore:
+              - "&7Sets the plot wall to sea lanterns."
+            commands:
+              - "plot-deco:plot set wall sea_lantern"
+            close: false
+            permission: "craftplayplotextras.deco.wall.valuable"
+          lodestone:
+            enabled: true
+            material: LODESTONE
+            name: "&7Lodestone Wall"
+            lore:
+              - "&7Sets the plot wall to lodestone."
+            commands:
+              - "plot-deco:plot set wall lodestone"
+            close: false
+            permission: "craftplayplotextras.deco.wall.valuable"
+      premium:
+        # If false, this category is hidden.
         enabled: true
-        material: IRON_BLOCK
-        name: "&fIron Border"
+        # Slot of the subtab button.
+        slot: 13
+        # Item of the subtab button.
+        material: PRISMARINE
+        # Display name of the subtab button.
+        name: "&bPremium"
+        # Description of the subtab button.
         lore:
-          - "&7Sets the plot border to iron blocks."
-        commands:
-          - "plot-deco:plot set border iron_block"
-        close: false
-        permission: "craftplayplotextras.deco.border.valuable"
-      emerald:
-        enabled: true
-        material: EMERALD_BLOCK
-        name: "&aEmerald Border"
-        lore:
-          - "&7Sets the plot border to emerald blocks."
-        commands:
-          - "plot-deco:plot set border emerald_block"
-        close: false
-        permission: "craftplayplotextras.deco.border.valuable"
-      diamond:
-        enabled: true
-        material: DIAMOND_BLOCK
-        name: "&bDiamond Border"
-        lore:
-          - "&7Sets the plot border to diamond blocks."
-        commands:
-          - "plot-deco:plot set border diamond_block"
-        close: false
-        permission: "craftplayplotextras.deco.border.valuable"
-      amethyst:
-        enabled: true
-        material: AMETHYST_BLOCK
-        name: "&dAmethyst Border"
-        lore:
-          - "&7Sets the plot border to amethyst."
-        commands:
-          - "plot-deco:plot set border amethyst_block"
-        close: false
-        permission: "craftplayplotextras.deco.border.valuable"
-      sea-lantern:
-        enabled: true
-        material: SEA_LANTERN
-        name: "&bSea Lantern Border"
-        lore:
-          - "&7Sets the plot border to sea lanterns."
-        commands:
-          - "plot-deco:plot set border sea_lantern"
-        close: false
-        permission: "craftplayplotextras.deco.border.valuable"
-      beacon:
-        enabled: true
-        material: BEACON
-        name: "&bBeacon Border"
-        lore:
-          - "&7Sets the plot border to beacons."
-        commands:
-          - "plot-deco:plot set border beacon"
-        close: false
-        permission: "craftplayplotextras.deco.border.valuable"
-  border-special:
-    # If false, this category is hidden.
+          - "&7Decorative premium blocks"
+          - "&7for the plot wall."
+        # Optional permission required to see this subtab.
+        permission: "craftplayplotextras.deco.wall.premium"
+        # Slot areas for automatic block buttons in this subtab.
+        slots:
+          - 19-25
+          - 28-34
+          - 37-43
+        # Buttons inside this subtab.
+        buttons:
+          reset-wall:
+            enabled: true
+            slot: 48
+            material: CAULDRON
+            name: "&eReset Wall"
+            lore:
+              - "&7Resets the plot wall"
+              - "&7to the PlotSquared default."
+            commands:
+              - "plot-deco-reset:wall"
+            close: false
+            permission: "craftplayplotextras.deco.wall.basic"
+          prismarine:
+            enabled: true
+            material: PRISMARINE
+            name: "&bPrismarine Wall"
+            lore:
+              - "&7Sets the plot wall to prismarine."
+            commands:
+              - "plot-deco:plot set wall prismarine"
+            close: false
+            permission: "craftplayplotextras.deco.wall.premium"
+          dark-prismarine:
+            enabled: true
+            material: DARK_PRISMARINE
+            name: "&3Dark Prismarine Wall"
+            lore:
+              - "&7Sets the plot wall to dark prismarine."
+            commands:
+              - "plot-deco:plot set wall dark_prismarine"
+            close: false
+            permission: "craftplayplotextras.deco.wall.premium"
+          purpur:
+            enabled: true
+            material: PURPUR_BLOCK
+            name: "&dPurpur Wall"
+            lore:
+              - "&7Sets the plot wall to purpur."
+            commands:
+              - "plot-deco:plot set wall purpur_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.premium"
+          blackstone:
+            enabled: true
+            material: POLISHED_BLACKSTONE
+            name: "&8Blackstone Wall"
+            lore:
+              - "&7Sets the plot wall to polished blackstone."
+            commands:
+              - "plot-deco:plot set wall polished_blackstone"
+            close: false
+            permission: "craftplayplotextras.deco.wall.premium"
+          deepslate:
+            enabled: true
+            material: POLISHED_DEEPSLATE
+            name: "&8Deepslate Wall"
+            lore:
+              - "&7Sets the plot wall to polished deepslate."
+            commands:
+              - "plot-deco:plot set wall polished_deepslate"
+            close: false
+            permission: "craftplayplotextras.deco.wall.premium"
+          copper:
+            enabled: true
+            material: COPPER_BLOCK
+            name: "&6Copper Wall"
+            lore:
+              - "&7Sets the plot wall to copper."
+            commands:
+              - "plot-deco:plot set wall copper_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.premium"
+          honeycomb:
+            enabled: true
+            material: HONEYCOMB_BLOCK
+            name: "&eHoneycomb Wall"
+            lore:
+              - "&7Sets the plot wall to honeycomb blocks."
+            commands:
+              - "plot-deco:plot set wall honeycomb_block"
+            close: false
+            permission: "craftplayplotextras.deco.wall.premium"
+
+
+  border:
+    # If false, the whole border tab is hidden.
     enabled: true
-    # Slot of the tab button in the top row.
-    slot: 8
-    # Item of the tab button.
-    material: DRAGON_EGG
-    # Display name of the tab button.
-    name: "&5Border: Special"
-    # Description of the tab button.
+    # Slot of the main tab button.
+    slot: 5
+    material: STONE_SLAB
+    name: "&aBorder"
     lore:
-      - "&7Special border blocks"
-      - "&7for events and special ranks."
-    # Optional permission required to see this tab.
-    permission: "craftplayplotextras.deco.border.special"
-    # Slot areas for automatic block buttons in this tab.
-    slots:
-      - 19-25
-      - 28-34
-      - 37-43
-    # Buttons inside this tab.
-    buttons:
-      reset-border:
+      - "&7Border categories for"
+      - "&7your current plot."
+    permission: ""
+    # Subtab opened when only border is requested.
+    default-subtab: basic
+    subtabs:
+      basic:
+        # If false, this category is hidden.
         enabled: true
-        slot: 48
+        # Slot of the subtab button.
+        slot: 10
+        # Item of the subtab button.
         material: STONE_SLAB
-        name: "&eReset Border"
+        # Display name of the subtab button.
+        name: "&aBasic"
+        # Description of the subtab button.
         lore:
-          - "&7Resets the plot border"
-          - "&7to the PlotSquared default."
-        commands:
-          - "plot-deco-reset:border"
-        close: false
+          - "&7Default blocks and slabs"
+          - "&7for the plot border."
+        # Optional permission required to see this subtab.
         permission: "craftplayplotextras.deco.border.basic"
-      dragon-egg:
+        # Slot areas for automatic block buttons in this subtab.
+        slots:
+          - 19-25
+          - 28-34
+          - 37-43
+        # Buttons inside this subtab.
+        buttons:
+          reset-border:
+            enabled: true
+            slot: 48
+            material: STONE_SLAB
+            name: "&eReset Border"
+            lore:
+              - "&7Resets the plot border"
+              - "&7to the PlotSquared default."
+            commands:
+              - "plot-deco-reset:border"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          air:
+            enabled: true
+            material: BARRIER
+            name: "&fRemove Border"
+            lore:
+              - "&7Sets the plot border to air."
+            commands:
+              - "plot-deco:plot set border air"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          stone-slab:
+            enabled: true
+            material: STONE_SLAB
+            name: "&fStone Slab"
+            lore:
+              - "&7Sets the plot border to stone slabs."
+            commands:
+              - "plot-deco:plot set border stone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          smooth-slab:
+            enabled: true
+            material: SMOOTH_STONE_SLAB
+            name: "&fSmooth Stone Slab"
+            lore:
+              - "&7Sets the plot border to smooth stone slabs."
+            commands:
+              - "plot-deco:plot set border smooth_stone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          brick-slab:
+            enabled: true
+            material: BRICK_SLAB
+            name: "&cBrick Slab"
+            lore:
+              - "&7Sets the plot border to brick slabs."
+            commands:
+              - "plot-deco:plot set border brick_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          cobble-slab:
+            enabled: true
+            material: COBBLESTONE_SLAB
+            name: "&7Cobblestone Slab"
+            lore:
+              - "&7Sets the plot border to cobblestone slabs."
+            commands:
+              - "plot-deco:plot set border cobblestone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          quartz-slab:
+            enabled: true
+            material: QUARTZ_SLAB
+            name: "&fQuartz Slab"
+            lore:
+              - "&7Sets the plot border to quartz slabs."
+            commands:
+              - "plot-deco:plot set border quartz_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          stone-brick-slab:
+            enabled: true
+            material: STONE_BRICK_SLAB
+            name: "&fStone Brick Slab"
+            lore:
+              - "&7Sets the plot border to stone brick slabs."
+            commands:
+              - "plot-deco:plot set border stone_brick_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+      natural:
+        # If false, this category is hidden.
         enabled: true
+        # Slot of the subtab button.
+        slot: 11
+        # Item of the subtab button.
+        material: OAK_SLAB
+        # Display name of the subtab button.
+        name: "&2Natural"
+        # Description of the subtab button.
+        lore:
+          - "&7Natural slabs and"
+          - "&7soft border blocks."
+        # Optional permission required to see this subtab.
+        permission: "craftplayplotextras.deco.border.natural"
+        # Slot areas for automatic block buttons in this subtab.
+        slots:
+          - 19-25
+          - 28-34
+          - 37-43
+        # Buttons inside this subtab.
+        buttons:
+          reset-border:
+            enabled: true
+            slot: 48
+            material: STONE_SLAB
+            name: "&eReset Border"
+            lore:
+              - "&7Resets the plot border"
+              - "&7to the PlotSquared default."
+            commands:
+              - "plot-deco-reset:border"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          oak-slab:
+            enabled: true
+            material: OAK_SLAB
+            name: "&6Oak Slab"
+            lore:
+              - "&7Sets the plot border to oak slabs."
+            commands:
+              - "plot-deco:plot set border oak_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.natural"
+          spruce-slab:
+            enabled: true
+            material: SPRUCE_SLAB
+            name: "&6Spruce Slab"
+            lore:
+              - "&7Sets the plot border to spruce slabs."
+            commands:
+              - "plot-deco:plot set border spruce_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.natural"
+          dark-oak-slab:
+            enabled: true
+            material: DARK_OAK_SLAB
+            name: "&6Dark Oak Slab"
+            lore:
+              - "&7Sets the plot border to dark oak slabs."
+            commands:
+              - "plot-deco:plot set border dark_oak_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.natural"
+          mangrove-slab:
+            enabled: true
+            material: MANGROVE_SLAB
+            name: "&cMangrove Slab"
+            lore:
+              - "&7Sets the plot border to mangrove slabs."
+            commands:
+              - "plot-deco:plot set border mangrove_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.natural"
+          moss:
+            enabled: true
+            material: MOSS_BLOCK
+            name: "&aMoss Border"
+            lore:
+              - "&7Sets the plot border to moss."
+            commands:
+              - "plot-deco:plot set border moss_block"
+            close: false
+            permission: "craftplayplotextras.deco.border.natural"
+          grass:
+            enabled: true
+            material: GRASS_BLOCK
+            name: "&aGrass Border"
+            lore:
+              - "&7Sets the plot border to grass blocks."
+            commands:
+              - "plot-deco:plot set border grass_block"
+            close: false
+            permission: "craftplayplotextras.deco.border.natural"
+          leaves:
+            enabled: true
+            material: OAK_LEAVES
+            name: "&aLeaf Border"
+            lore:
+              - "&7Sets the plot border to oak leaves."
+            commands:
+              - "plot-deco:plot set border oak_leaves"
+            close: false
+            permission: "craftplayplotextras.deco.border.natural"
+      slabs:
+        # If false, this category is hidden.
+        enabled: true
+        # Slot of the subtab button.
+        slot: 12
+        # Item of the subtab button.
+        material: SMOOTH_STONE_SLAB
+        # Display name of the subtab button.
+        name: "&aSlabs"
+        # Description of the subtab button.
+        lore:
+          - "&7Many different slabs"
+          - "&7for the plot border."
+        # Optional permission required to see this subtab.
+        permission: "craftplayplotextras.deco.border.basic"
+        # Slot areas for automatic block buttons in this subtab.
+        slots:
+          - 19-25
+          - 28-34
+          - 37-43
+        # Buttons inside this subtab.
+        buttons:
+          reset-border:
+            enabled: true
+            slot: 48
+            material: STONE_SLAB
+            name: "&eReset Border"
+            lore:
+              - "&7Resets the plot border"
+              - "&7to the PlotSquared default."
+            commands:
+              - "plot-deco-reset:border"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          stone-slab:
+            enabled: true
+            material: STONE_SLAB
+            name: "&fStone Slab"
+            lore:
+              - "&7Sets the plot border to stone slabs."
+            commands:
+              - "plot-deco:plot set border stone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          smooth-stone-slab:
+            enabled: true
+            material: SMOOTH_STONE_SLAB
+            name: "&fSmooth Stone Slab"
+            lore:
+              - "&7Sets the plot border to smooth stone slabs."
+            commands:
+              - "plot-deco:plot set border smooth_stone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          cobblestone-slab:
+            enabled: true
+            material: COBBLESTONE_SLAB
+            name: "&7Cobblestone Slab"
+            lore:
+              - "&7Sets the plot border to cobblestone slabs."
+            commands:
+              - "plot-deco:plot set border cobblestone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          mossy-cobblestone-slab:
+            enabled: true
+            material: MOSSY_COBBLESTONE_SLAB
+            name: "&2Mossy Cobblestone Slab"
+            lore:
+              - "&7Sets the plot border to mossy cobblestone slabs."
+            commands:
+              - "plot-deco:plot set border mossy_cobblestone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          stone-brick-slab:
+            enabled: true
+            material: STONE_BRICK_SLAB
+            name: "&fStone Brick Slab"
+            lore:
+              - "&7Sets the plot border to stone brick slabs."
+            commands:
+              - "plot-deco:plot set border stone_brick_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          mossy-stone-brick-slab:
+            enabled: true
+            material: MOSSY_STONE_BRICK_SLAB
+            name: "&2Mossy Stone Brick Slab"
+            lore:
+              - "&7Sets the plot border to mossy stone brick slabs."
+            commands:
+              - "plot-deco:plot set border mossy_stone_brick_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          brick-slab:
+            enabled: true
+            material: BRICK_SLAB
+            name: "&cBrick Slab"
+            lore:
+              - "&7Sets the plot border to brick slabs."
+            commands:
+              - "plot-deco:plot set border brick_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          andesite-slab:
+            enabled: true
+            material: ANDESITE_SLAB
+            name: "&7Andesite Slab"
+            lore:
+              - "&7Sets the plot border to andesite slabs."
+            commands:
+              - "plot-deco:plot set border andesite_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          polished-andesite-slab:
+            enabled: true
+            material: POLISHED_ANDESITE_SLAB
+            name: "&7Polished Andesite Slab"
+            lore:
+              - "&7Sets the plot border to polished andesite slabs."
+            commands:
+              - "plot-deco:plot set border polished_andesite_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          granite-slab:
+            enabled: true
+            material: GRANITE_SLAB
+            name: "&cGranite Slab"
+            lore:
+              - "&7Sets the plot border to granite slabs."
+            commands:
+              - "plot-deco:plot set border granite_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          polished-granite-slab:
+            enabled: true
+            material: POLISHED_GRANITE_SLAB
+            name: "&cPolished Granite Slab"
+            lore:
+              - "&7Sets the plot border to polished granite slabs."
+            commands:
+              - "plot-deco:plot set border polished_granite_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          diorite-slab:
+            enabled: true
+            material: DIORITE_SLAB
+            name: "&fDiorite Slab"
+            lore:
+              - "&7Sets the plot border to diorite slabs."
+            commands:
+              - "plot-deco:plot set border diorite_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          polished-diorite-slab:
+            enabled: true
+            material: POLISHED_DIORITE_SLAB
+            name: "&fPolished Diorite Slab"
+            lore:
+              - "&7Sets the plot border to polished diorite slabs."
+            commands:
+              - "plot-deco:plot set border polished_diorite_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          sandstone-slab:
+            enabled: true
+            material: SANDSTONE_SLAB
+            name: "&eSandstone Slab"
+            lore:
+              - "&7Sets the plot border to sandstone slabs."
+            commands:
+              - "plot-deco:plot set border sandstone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          red-sandstone-slab:
+            enabled: true
+            material: RED_SANDSTONE_SLAB
+            name: "&6Red Sandstone Slab"
+            lore:
+              - "&7Sets the plot border to red sandstone slabs."
+            commands:
+              - "plot-deco:plot set border red_sandstone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          cut-sandstone-slab:
+            enabled: true
+            material: CUT_SANDSTONE_SLAB
+            name: "&eCut Sandstone Slab"
+            lore:
+              - "&7Sets the plot border to cut sandstone slabs."
+            commands:
+              - "plot-deco:plot set border cut_sandstone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          cut-red-sandstone-slab:
+            enabled: true
+            material: CUT_RED_SANDSTONE_SLAB
+            name: "&6Cut Red Sandstone Slab"
+            lore:
+              - "&7Sets the plot border to cut red sandstone slabs."
+            commands:
+              - "plot-deco:plot set border cut_red_sandstone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          nether-brick-slab:
+            enabled: true
+            material: NETHER_BRICK_SLAB
+            name: "&4Nether Brick Slab"
+            lore:
+              - "&7Sets the plot border to nether brick slabs."
+            commands:
+              - "plot-deco:plot set border nether_brick_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          red-nether-brick-slab:
+            enabled: true
+            material: RED_NETHER_BRICK_SLAB
+            name: "&4Red Nether Brick Slab"
+            lore:
+              - "&7Sets the plot border to red nether brick slabs."
+            commands:
+              - "plot-deco:plot set border red_nether_brick_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          blackstone-slab:
+            enabled: true
+            material: BLACKSTONE_SLAB
+            name: "&8Blackstone Slab"
+            lore:
+              - "&7Sets the plot border to blackstone slabs."
+            commands:
+              - "plot-deco:plot set border blackstone_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          polished-blackstone-brick-slab:
+            enabled: true
+            material: POLISHED_BLACKSTONE_BRICK_SLAB
+            name: "&8Polished Blackstone Brick Slab"
+            lore:
+              - "&7Sets the plot border to polished blackstone brick slabs."
+            commands:
+              - "plot-deco:plot set border polished_blackstone_brick_slab"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+      valuable:
+        # If false, this category is hidden.
+        enabled: true
+        # Slot of the subtab button.
+        slot: 13
+        # Item of the subtab button.
+        material: DIAMOND_BLOCK
+        # Display name of the subtab button.
+        name: "&6Valuable"
+        # Description of the subtab button.
+        lore:
+          - "&7Precious border blocks"
+          - "&7for special ranks."
+        # Optional permission required to see this subtab.
+        permission: "craftplayplotextras.deco.border.valuable"
+        # Slot areas for automatic block buttons in this subtab.
+        slots:
+          - 19-25
+          - 28-34
+          - 37-43
+        # Buttons inside this subtab.
+        buttons:
+          reset-border:
+            enabled: true
+            slot: 48
+            material: STONE_SLAB
+            name: "&eReset Border"
+            lore:
+              - "&7Resets the plot border"
+              - "&7to the PlotSquared default."
+            commands:
+              - "plot-deco-reset:border"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          gold:
+            enabled: true
+            material: GOLD_BLOCK
+            name: "&6Gold Border"
+            lore:
+              - "&7Sets the plot border to gold blocks."
+            commands:
+              - "plot-deco:plot set border gold_block"
+            close: false
+            permission: "craftplayplotextras.deco.border.valuable"
+          iron:
+            enabled: true
+            material: IRON_BLOCK
+            name: "&fIron Border"
+            lore:
+              - "&7Sets the plot border to iron blocks."
+            commands:
+              - "plot-deco:plot set border iron_block"
+            close: false
+            permission: "craftplayplotextras.deco.border.valuable"
+          emerald:
+            enabled: true
+            material: EMERALD_BLOCK
+            name: "&aEmerald Border"
+            lore:
+              - "&7Sets the plot border to emerald blocks."
+            commands:
+              - "plot-deco:plot set border emerald_block"
+            close: false
+            permission: "craftplayplotextras.deco.border.valuable"
+          diamond:
+            enabled: true
+            material: DIAMOND_BLOCK
+            name: "&bDiamond Border"
+            lore:
+              - "&7Sets the plot border to diamond blocks."
+            commands:
+              - "plot-deco:plot set border diamond_block"
+            close: false
+            permission: "craftplayplotextras.deco.border.valuable"
+          amethyst:
+            enabled: true
+            material: AMETHYST_BLOCK
+            name: "&dAmethyst Border"
+            lore:
+              - "&7Sets the plot border to amethyst."
+            commands:
+              - "plot-deco:plot set border amethyst_block"
+            close: false
+            permission: "craftplayplotextras.deco.border.valuable"
+          sea-lantern:
+            enabled: true
+            material: SEA_LANTERN
+            name: "&bSea Lantern Border"
+            lore:
+              - "&7Sets the plot border to sea lanterns."
+            commands:
+              - "plot-deco:plot set border sea_lantern"
+            close: false
+            permission: "craftplayplotextras.deco.border.valuable"
+          beacon:
+            enabled: true
+            material: BEACON
+            name: "&bBeacon Border"
+            lore:
+              - "&7Sets the plot border to beacons."
+            commands:
+              - "plot-deco:plot set border beacon"
+            close: false
+            permission: "craftplayplotextras.deco.border.valuable"
+      special:
+        # If false, this category is hidden.
+        enabled: true
+        # Slot of the subtab button.
+        slot: 14
+        # Item of the subtab button.
         material: DRAGON_EGG
-        name: "&5Dragon Egg Border"
+        # Display name of the subtab button.
+        name: "&5Special"
+        # Description of the subtab button.
         lore:
-          - "&7Sets the plot border to dragon eggs."
-        commands:
-          - "plot-deco:plot set border dragon_egg"
-        close: false
+          - "&7Special border blocks"
+          - "&7for events and special ranks."
+        # Optional permission required to see this subtab.
         permission: "craftplayplotextras.deco.border.special"
-      end-stone:
-        enabled: true
-        material: END_STONE_BRICKS
-        name: "&eEnd Stone Brick Border"
-        lore:
-          - "&7Sets the plot border to end stone bricks."
-        commands:
-          - "plot-deco:plot set border end_stone_bricks"
-        close: false
-        permission: "craftplayplotextras.deco.border.special"
-      obsidian:
-        enabled: true
-        material: OBSIDIAN
-        name: "&5Obsidian Border"
-        lore:
-          - "&7Sets the plot border to obsidian."
-        commands:
-          - "plot-deco:plot set border obsidian"
-        close: false
-        permission: "craftplayplotextras.deco.border.special"
-      crying-obsidian:
-        enabled: true
-        material: CRYING_OBSIDIAN
-        name: "&5Crying Obsidian"
-        lore:
-          - "&7Sets the plot border to crying obsidian."
-        commands:
-          - "plot-deco:plot set border crying_obsidian"
-        close: false
-        permission: "craftplayplotextras.deco.border.special"
-      respawn-anchor:
-        enabled: true
-        material: RESPAWN_ANCHOR
-        name: "&5Respawn Anchor Border"
-        lore:
-          - "&7Sets the plot border to respawn anchors."
-        commands:
-          - "plot-deco:plot set border respawn_anchor"
-        close: false
-        permission: "craftplayplotextras.deco.border.special"
-      shroomlight:
-        enabled: true
-        material: SHROOMLIGHT
-        name: "&6Shroomlight Border"
-        lore:
-          - "&7Sets the plot border to shroomlights."
-        commands:
-          - "plot-deco:plot set border shroomlight"
-        close: false
-        permission: "craftplayplotextras.deco.border.special"
-      froglight:
-        enabled: true
-        material: OCHRE_FROGLIGHT
-        name: "&eFroglight Border"
-        lore:
-          - "&7Sets the plot border to ochre froglights."
-        commands:
-          - "plot-deco:plot set border ochre_froglight"
-        close: false
-        permission: "craftplayplotextras.deco.border.special"
+        # Slot areas for automatic block buttons in this subtab.
+        slots:
+          - 19-25
+          - 28-34
+          - 37-43
+        # Buttons inside this subtab.
+        buttons:
+          reset-border:
+            enabled: true
+            slot: 48
+            material: STONE_SLAB
+            name: "&eReset Border"
+            lore:
+              - "&7Resets the plot border"
+              - "&7to the PlotSquared default."
+            commands:
+              - "plot-deco-reset:border"
+            close: false
+            permission: "craftplayplotextras.deco.border.basic"
+          dragon-egg:
+            enabled: true
+            material: DRAGON_EGG
+            name: "&5Dragon Egg Border"
+            lore:
+              - "&7Sets the plot border to dragon eggs."
+            commands:
+              - "plot-deco:plot set border dragon_egg"
+            close: false
+            permission: "craftplayplotextras.deco.border.special"
+          end-stone:
+            enabled: true
+            material: END_STONE_BRICKS
+            name: "&eEnd Stone Brick Border"
+            lore:
+              - "&7Sets the plot border to end stone bricks."
+            commands:
+              - "plot-deco:plot set border end_stone_bricks"
+            close: false
+            permission: "craftplayplotextras.deco.border.special"
+          obsidian:
+            enabled: true
+            material: OBSIDIAN
+            name: "&5Obsidian Border"
+            lore:
+              - "&7Sets the plot border to obsidian."
+            commands:
+              - "plot-deco:plot set border obsidian"
+            close: false
+            permission: "craftplayplotextras.deco.border.special"
+          crying-obsidian:
+            enabled: true
+            material: CRYING_OBSIDIAN
+            name: "&5Crying Obsidian"
+            lore:
+              - "&7Sets the plot border to crying obsidian."
+            commands:
+              - "plot-deco:plot set border crying_obsidian"
+            close: false
+            permission: "craftplayplotextras.deco.border.special"
+          respawn-anchor:
+            enabled: true
+            material: RESPAWN_ANCHOR
+            name: "&5Respawn Anchor Border"
+            lore:
+              - "&7Sets the plot border to respawn anchors."
+            commands:
+              - "plot-deco:plot set border respawn_anchor"
+            close: false
+            permission: "craftplayplotextras.deco.border.special"
+          shroomlight:
+            enabled: true
+            material: SHROOMLIGHT
+            name: "&6Shroomlight Border"
+            lore:
+              - "&7Sets the plot border to shroomlights."
+            commands:
+              - "plot-deco:plot set border shroomlight"
+            close: false
+            permission: "craftplayplotextras.deco.border.special"
+          froglight:
+            enabled: true
+            material: OCHRE_FROGLIGHT
+            name: "&eFroglight Border"
+            lore:
+              - "&7Sets the plot border to ochre froglights."
+            commands:
+              - "plot-deco:plot set border ochre_froglight"
+            close: false
+            permission: "craftplayplotextras.deco.border.special"

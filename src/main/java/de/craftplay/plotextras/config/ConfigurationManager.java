@@ -468,6 +468,15 @@ public final class ConfigurationManager {
             existing.set("bedrock.content", defaults.getString("bedrock.content", existing.getString("bedrock.content")));
             changed = true;
         }
+        if (resourcePath.replace('\\', '/').endsWith("/deco.yml") && existingVersion < 7
+                && (existing.contains("tabs.wall-basic") || existing.contains("tabs.border-basic")
+                || !existing.contains("tabs.wall.subtabs") || !existing.contains("tabs.border.subtabs"))) {
+            replaceSection(existing, defaults, "tabs");
+            existing.set("title", defaults.getString("title", existing.getString("title")));
+            existing.set("default-tab", defaults.getString("default-tab", existing.getString("default-tab")));
+            existing.set("bedrock.content", defaults.getString("bedrock.content", existing.getString("bedrock.content")));
+            changed = true;
+        }
         if (resourcePath.replace('\\', '/').endsWith("/flags.yml") && existingVersion < 11) {
             existing.set("flags.passive-wither-spawn.permission", "craftplayplotextras.passivewither");
             changed = true;
