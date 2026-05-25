@@ -51,6 +51,9 @@ public final class CommandListener implements Listener {
         if (args.length == 0) {
             return;
         }
+        if (isPlotDecoSetCommand(args)) {
+            return;
+        }
 
         final String action = plotAction(args[0]);
         if (action == null) {
@@ -96,6 +99,14 @@ public final class CommandListener implements Listener {
             }
         }
         return false;
+    }
+
+    private boolean isPlotDecoSetCommand(final String[] args) {
+        if (args.length < 2 || !"set".equalsIgnoreCase(args[0])) {
+            return false;
+        }
+        final String component = args[1].toLowerCase(Locale.ROOT);
+        return "wall".equals(component) || "border".equals(component);
     }
 
     private String plotAction(final String subCommand) {
