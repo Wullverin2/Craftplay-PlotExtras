@@ -9,7 +9,7 @@
 
 # File version of this GUI file.
 # The plugin uses this value to add new menu options automatically.
-file-version: 11
+file-version: 12
 
 # Inventory title.
 title: "&8Plot Flags"
@@ -679,6 +679,19 @@ flags:
     lore:
       - "&7Controls whether vehicles"
       - "&7may be broken on this plot."
+      - ""
+      - "&7Status: {status}"
+      - "&eClick to toggle."
+    permission: ""
+  vehicles:
+    enabled: true
+    enabled-material: MINECART
+    disabled-material: GRAY_DYE
+    name: "&aVehicles Plugin Vehicles"
+    lore:
+      - "&7Controls whether vehicles from"
+      - "&7the Vehicles plugin may be used"
+      - "&7on this plot."
       - ""
       - "&7Status: {status}"
       - "&eClick to toggle."

@@ -4,7 +4,7 @@
 
 # File version of this language file.
 # The plugin uses this value to add new messages automatically.
-file-version: 27
+file-version: 28
 
 # Message shown when a player or the console lacks the required permission.
 no-permission: "&cYou do not have permission to do that."
@@ -347,6 +347,10 @@ passive-wither-pickup-unknown-owner: "&cThis passive Wither has no stored owner.
 passive-wither-deny-plotsquared: "&cPassive Wither spawning is not allowed on this plot."
 passive-wither-protection-check-failed: "&cPassive Wither spawning was blocked because {plugin} could not be checked."
 passive-wither-flag-description: "Allow spawning passive Withers with the Passive Wither spawn egg."
+
+# Vehicles integration.
+vehicles-plot-denied: "&cVehicles are not allowed on this plot."
+vehicles-flag-description: "Allows placing and using Vehicles plugin vehicles on the plot."
 
 # Message shown when a future feature is disabled.
 future-disabled: "&cThis future feature is currently disabled."

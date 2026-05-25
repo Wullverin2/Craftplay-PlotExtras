@@ -22,6 +22,7 @@ import de.craftplay.plotextras.reports.ReportService;
 import de.craftplay.plotextras.roles.PlotRoleService;
 import de.craftplay.plotextras.storage.StorageService;
 import de.craftplay.plotextras.team.TeamFeatureService;
+import de.craftplay.plotextras.vehicles.VehiclesIntegrationService;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -43,6 +44,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
     private EntityLimitService entityLimitService;
     private PlotPurchaseService plotPurchaseService;
     private StorageService storageService;
+    private VehiclesIntegrationService vehiclesIntegrationService;
     private PlotExtrasCommand commandExecutor;
 
     @Override
@@ -72,6 +74,8 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         teamFeatureService.reload();
         passiveWitherService = new PassiveWitherService(this);
         passiveWitherService.reload();
+        vehiclesIntegrationService = new VehiclesIntegrationService(this);
+        vehiclesIntegrationService.reload();
         entityLimitService = new EntityLimitService(this, plotSquaredFlagService);
         entityLimitService.reload();
         extrasService = new ExtrasService(this, languageManager, plotSquaredFlagService);
@@ -105,6 +109,9 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         if (passiveWitherService != null) {
             passiveWitherService.shutdown();
         }
+        if (vehiclesIntegrationService != null) {
+            vehiclesIntegrationService.shutdown();
+        }
         if (plotPurchaseService != null) {
             plotPurchaseService.shutdown();
         }
@@ -127,6 +134,7 @@ public final class CraftplayPlotExtrasPlugin extends JavaPlugin {
         plotFutureService.reload();
         teamFeatureService.reload();
         passiveWitherService.reload();
+        vehiclesIntegrationService.reload();
         entityLimitService.reload();
         extrasService.reload();
         plotMenuManager.reload();

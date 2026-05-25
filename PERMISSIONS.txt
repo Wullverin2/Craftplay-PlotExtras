@@ -374,6 +374,14 @@ Permission: plots.set.flag.untrusted-visit
 Zielgruppe: Spieler
 Gibt frei: Öffentliche/private Sichtbarkeit über untrusted-visit ändern.
 
+Permission: plots.set.flag.passive-wither-spawn
+Zielgruppe: Spieler / Rang
+Gibt frei: Anzeigen und Umschalten der Passive-Wither-Spawn-Flag im Flag-Menü.
+
+Permission: plots.set.flag.vehicles
+Zielgruppe: Spieler / Rang
+Gibt frei: Anzeigen und Umschalten der Vehicles-Plugin-Flag im Flag-Menü. Diese Flag steuert, ob Vehicles-Fahrzeuge auf dem Plot platziert und genutzt werden dürfen.
+
 Permission: plots.flag
 Zielgruppe: Spieler / Team
 Gibt frei: Allgemeiner Zugriff auf PlotSquared-Flag-Funktionen.

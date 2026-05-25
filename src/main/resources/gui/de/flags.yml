@@ -9,7 +9,7 @@
 
 # Dateiversion dieser GUI-Datei.
 # Das Plugin nutzt diesen Wert, um neue Menüoptionen automatisch zu ergänzen.
-file-version: 11
+file-version: 12
 
 # Titel des Inventars.
 title: "&8Plot-Flags"
@@ -679,6 +679,19 @@ flags:
     lore:
       - "&7Legt fest, ob Fahrzeuge auf"
       - "&7dem Plot abgebaut werden dürfen."
+      - ""
+      - "&7Status: {status}"
+      - "&eKlicken zum Umschalten."
+    permission: ""
+  vehicles:
+    enabled: true
+    enabled-material: MINECART
+    disabled-material: GRAY_DYE
+    name: "&aVehicles-Fahrzeuge"
+    lore:
+      - "&7Legt fest, ob Fahrzeuge aus"
+      - "&7dem Vehicles-Plugin auf diesem"
+      - "&7Plot genutzt werden dürfen."
       - ""
       - "&7Status: {status}"
       - "&eKlicken zum Umschalten."

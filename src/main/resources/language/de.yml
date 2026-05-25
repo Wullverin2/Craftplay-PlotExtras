@@ -4,7 +4,7 @@
 
 # Dateiversion dieser Sprachdatei.
 # Das Plugin nutzt diesen Wert, um neue Nachrichten automatisch zu ergänzen.
-file-version: 27
+file-version: 28
 
 # Nachricht, wenn ein Spieler oder die Konsole keine passende Permission hat.
 no-permission: "&cDazu hast du keine Berechtigung."
@@ -347,6 +347,10 @@ passive-wither-pickup-unknown-owner: "&cDieser passive Wither hat keinen gespeic
 passive-wither-deny-plotsquared: "&cAuf diesem Plot ist passiver Wither-Spawn nicht erlaubt."
 passive-wither-protection-check-failed: "&cPassive-Wither-Spawn wurde blockiert, weil {plugin} nicht geprüft werden konnte."
 passive-wither-flag-description: "Erlaubt das Spawnen passiver Wither mit dem Passive-Wither-Spawnei."
+
+# Vehicles-Integration.
+vehicles-plot-denied: "&cAuf diesem Plot sind Vehicles-Fahrzeuge nicht erlaubt."
+vehicles-flag-description: "Erlaubt das Platzieren und Nutzen von Vehicles-Fahrzeugen auf dem Plot."
 
 # Nachricht, wenn ein Future-Feature deaktiviert ist.
 future-disabled: "&cDieses Zukunftsfeature ist aktuell deaktiviert."

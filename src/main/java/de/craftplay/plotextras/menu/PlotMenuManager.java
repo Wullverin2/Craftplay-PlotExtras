@@ -2839,7 +2839,8 @@ public final class PlotMenuManager implements Listener {
 
     private boolean canSeeFlag(final Player player, final FlagMenuEntry flagEntry) {
         if (flagEntry.getPermission() != null && !flagEntry.getPermission().trim().isEmpty()) {
-            return hasConfiguredPermission(player, flagEntry.getPermission().trim());
+            return hasConfiguredPermission(player, flagEntry.getPermission().trim())
+                    || flagService.hasAnyFlagPermission(player, flagEntry.getFlag());
         }
         return flagService.hasAnyFlagPermission(player, flagEntry.getFlag());
     }
