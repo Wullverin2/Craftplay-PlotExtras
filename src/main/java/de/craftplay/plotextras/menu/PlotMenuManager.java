@@ -42,6 +42,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
@@ -2263,7 +2264,7 @@ public final class PlotMenuManager implements Listener {
         final MenuSound clickSound = loadButtonSound(menuConfig, path);
         final String bedrockLabel = menuConfig.getString(path + "bedrock-label", "");
         final List<MenuButton> selectors = new ArrayList<>();
-        for (final int slot : configuredSlots(menuConfig, path, menuSize, "Menue-Tab", id)) {
+        for (final int slot : configuredSelectorSlots(menuConfig, path, menuSize, "Menue-Tab", id)) {
             selectors.add(new MenuButton(
                     id,
                     slot,
@@ -4429,7 +4430,7 @@ public final class PlotMenuManager implements Listener {
             return;
         }
 
-        player.performCommand(command);
+        performPlotDecoCommand(player, command);
     }
 
     private void runPlotPurchaseCommand(final Player player, final String payload) {
@@ -4490,7 +4491,7 @@ public final class PlotMenuManager implements Listener {
             languageManager.send(player, "plot-deco-reset-failed");
             return;
         }
-        player.performCommand("plot set " + component + " " + defaultComponent.get());
+        performPlotDecoCommand(player, "plot set " + component + " " + defaultComponent.get());
         final Map<String, String> placeholders = new HashMap<>();
         placeholders.put("component", languageManager.getMessage("plot-deco-component-" + component));
         placeholders.put("value", defaultComponent.get());
@@ -4514,6 +4515,46 @@ public final class PlotMenuManager implements Listener {
         }
         languageManager.send(player, "no-permission");
         return false;
+    }
+
+    private void performPlotDecoCommand(final Player player, final String command) {
+        final String component = plotSetComponent(command);
+        PermissionAttachment attachment = null;
+        if (!component.isEmpty()) {
+            attachment = player.addAttachment(plugin);
+            attachment.setPermission("plots.set", true);
+            attachment.setPermission("plots.set." + component, true);
+            attachment.setPermission("plots.admin.command.set.component", true);
+            player.recalculatePermissions();
+        }
+        try {
+            player.performCommand(command);
+        } finally {
+            if (attachment != null) {
+                player.removeAttachment(attachment);
+                player.recalculatePermissions();
+            }
+        }
+    }
+
+    private String plotSetComponent(final String command) {
+        if (command == null) {
+            return "";
+        }
+        final String[] parts = command.trim().toLowerCase(Locale.ROOT).split("\\s+");
+        if (parts.length < 3) {
+            return "";
+        }
+        if (!("plot".equals(parts[0]) || "plots".equals(parts[0]) || "p".equals(parts[0]))) {
+            return "";
+        }
+        if (!"set".equals(parts[1])) {
+            return "";
+        }
+        if ("wall".equals(parts[2]) || "border".equals(parts[2])) {
+            return parts[2];
+        }
+        return "";
     }
 
     private void runPlotDangerCommand(final Player player, final String payload) {
@@ -4917,6 +4958,39 @@ public final class PlotMenuManager implements Listener {
         return valid;
     }
 
+    private List<Integer> configuredSelectorSlots(
+            final YamlConfiguration menuConfig,
+            final String path,
+            final int menuSize,
+            final String type,
+            final String id
+    ) {
+        final List<Integer> configured = new ArrayList<>();
+        configured.addAll(configuredSlotValues(menuConfig, path + "slot", type, id));
+        if (configured.isEmpty()) {
+            configured.addAll(configuredSlotValues(menuConfig, path + "selector-slots", type, id));
+        }
+        if (configured.isEmpty()) {
+            configured.addAll(configuredSlotValues(menuConfig, path + "slots", type, id));
+        }
+        if (configured.isEmpty()) {
+            plugin.getLogger().warning(type + " '" + id + "' hat keinen Slot gesetzt. Nutze slot: <zahl>, selector-slots: [<zahl>, ...] oder slots: [<zahl>, ...].");
+            return Collections.emptyList();
+        }
+
+        final List<Integer> valid = new ArrayList<>();
+        for (final int slot : configured) {
+            if (slot < 0 || slot >= menuSize) {
+                plugin.getLogger().warning(type + " '" + id + "' hat einen ungueltigen Slot: " + slot);
+                continue;
+            }
+            if (!valid.contains(slot)) {
+                valid.add(slot);
+            }
+        }
+        return valid;
+    }
+
     private boolean hasConfiguredSlots(final YamlConfiguration menuConfig, final String path) {
         return menuConfig.contains(path + "slots") || menuConfig.contains(path + "slot");
     }
@@ -4930,6 +5004,9 @@ public final class PlotMenuManager implements Listener {
     ) {
         final String parentPath = parentPathForSectionSlots(sectionPath);
         final List<Integer> configured = new ArrayList<>();
+        if (sectionPath != null && sectionPath.contains(".subtabs.")) {
+            configured.addAll(configuredSlotValues(menuConfig, parentPath + "slots", type, id));
+        }
         configured.addAll(configuredSlotValues(menuConfig, parentPath + "button-slots", type, id));
         configured.addAll(configuredSlotValues(menuConfig, parentPath + "block-slots", type, id));
         configured.addAll(configuredSlotValues(menuConfig, parentPath + "content-slots", type, id));

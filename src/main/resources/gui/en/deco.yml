@@ -2,11 +2,11 @@
 # This file controls the PlotSquared deco menu for wall and border.
 # Structure: wall and border are main tabs. Category subtabs are below them.
 # Category subtabs only show block buttons the player has permission for.
-# Use button-slots: [19-25, 28-34] to distribute block buttons automatically across multiple areas.
+# Use slots: [19-25, 28-34] to distribute block buttons automatically across multiple areas.
 # The command plot-deco:<command> first checks that the player is standing on their own plot
 # or has a matching plot role/permission, then runs the PlotSquared command.
 
-file-version: 4
+file-version: 5
 
 title: "&8Deco: {tab} - {subtab}"
 size: 54
@@ -49,7 +49,7 @@ tabs:
         name: "&aBasic"
         lore: ["&7Solid default blocks", "&7for the plot wall."]
         permission: "craftplayplotextras.deco.wall.basic"
-        button-slots: [19-25, 28-34, 37-43]
+        slots: [19-25, 28-34, 37-43]
         buttons:
           stone: {enabled: true, material: STONE, name: "&fStone Wall", lore: ["&7Sets the plot wall to stone."], commands: ["plot-deco:plot set wall stone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
           cobblestone: {enabled: true, material: COBBLESTONE, name: "&fCobblestone Wall", lore: ["&7Sets the plot wall to cobblestone."], commands: ["plot-deco:plot set wall cobblestone"], close: false, permission: "craftplayplotextras.deco.wall.basic"}
@@ -65,7 +65,7 @@ tabs:
         name: "&2Natural"
         lore: ["&7Wood, earth, and natural", "&7materials for the plot wall."]
         permission: "craftplayplotextras.deco.wall.natural"
-        button-slots: [19-25, 28-34, 37-43]
+        slots: [19-25, 28-34, 37-43]
         buttons:
           oak: {enabled: true, material: OAK_PLANKS, name: "&6Oak Wall", lore: ["&7Sets the plot wall to oak planks."], commands: ["plot-deco:plot set wall oak_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
           spruce: {enabled: true, material: SPRUCE_PLANKS, name: "&6Spruce Wall", lore: ["&7Sets the plot wall to spruce planks."], commands: ["plot-deco:plot set wall spruce_planks"], close: false, permission: "craftplayplotextras.deco.wall.natural"}
@@ -81,7 +81,7 @@ tabs:
         name: "&6Valuable"
         lore: ["&7Precious blocks for higher", "&7ranks or special plots."]
         permission: "craftplayplotextras.deco.wall.valuable"
-        button-slots: [19-25, 28-34, 37-43]
+        slots: [19-25, 28-34, 37-43]
         buttons:
           gold: {enabled: true, material: GOLD_BLOCK, name: "&6Gold Wall", lore: ["&7Sets the plot wall to gold blocks."], commands: ["plot-deco:plot set wall gold_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
           iron: {enabled: true, material: IRON_BLOCK, name: "&fIron Wall", lore: ["&7Sets the plot wall to iron blocks."], commands: ["plot-deco:plot set wall iron_block"], close: false, permission: "craftplayplotextras.deco.wall.valuable"}
@@ -97,7 +97,7 @@ tabs:
         name: "&bPremium"
         lore: ["&7Decorative premium blocks", "&7for the plot wall."]
         permission: "craftplayplotextras.deco.wall.premium"
-        button-slots: [19-25, 28-34, 37-43]
+        slots: [19-25, 28-34, 37-43]
         buttons:
           prismarine: {enabled: true, material: PRISMARINE, name: "&bPrismarine Wall", lore: ["&7Sets the plot wall to prismarine."], commands: ["plot-deco:plot set wall prismarine"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
           dark-prismarine: {enabled: true, material: DARK_PRISMARINE, name: "&3Dark Prismarine Wall", lore: ["&7Sets the plot wall to dark prismarine."], commands: ["plot-deco:plot set wall dark_prismarine"], close: false, permission: "craftplayplotextras.deco.wall.premium"}
@@ -125,7 +125,7 @@ tabs:
         name: "&aBasic"
         lore: ["&7Default blocks and slabs", "&7for the plot border."]
         permission: "craftplayplotextras.deco.border.basic"
-        button-slots: [19-25, 28-34, 37-43]
+        slots: [19-25, 28-34, 37-43]
         buttons:
           air: {enabled: true, material: BARRIER, name: "&fRemove Border", lore: ["&7Sets the plot border to air."], commands: ["plot-deco:plot set border air"], close: false, permission: "craftplayplotextras.deco.border.basic"}
           stone-slab: {enabled: true, material: STONE_SLAB, name: "&fStone Slab", lore: ["&7Sets the plot border to stone slabs."], commands: ["plot-deco:plot set border stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
@@ -141,7 +141,7 @@ tabs:
         name: "&2Natural"
         lore: ["&7Natural slabs and", "&7soft border blocks."]
         permission: "craftplayplotextras.deco.border.natural"
-        button-slots: [19-25, 28-34, 37-43]
+        slots: [19-25, 28-34, 37-43]
         buttons:
           oak-slab: {enabled: true, material: OAK_SLAB, name: "&6Oak Slab", lore: ["&7Sets the plot border to oak slabs."], commands: ["plot-deco:plot set border oak_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
           spruce-slab: {enabled: true, material: SPRUCE_SLAB, name: "&6Spruce Slab", lore: ["&7Sets the plot border to spruce slabs."], commands: ["plot-deco:plot set border spruce_slab"], close: false, permission: "craftplayplotextras.deco.border.natural"}
@@ -157,7 +157,7 @@ tabs:
         name: "&aSlabs"
         lore: ["&7Many different slabs", "&7for the plot border."]
         permission: "craftplayplotextras.deco.border.basic"
-        button-slots: [19-25, 28-34, 37-43]
+        slots: [19-25, 28-34, 37-43]
         buttons:
           stone-slab: {enabled: true, material: STONE_SLAB, name: "&fStone Slab", lore: ["&7Sets the plot border to stone slabs."], commands: ["plot-deco:plot set border stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
           smooth-stone-slab: {enabled: true, material: SMOOTH_STONE_SLAB, name: "&fSmooth Stone Slab", lore: ["&7Sets the plot border to smooth stone slabs."], commands: ["plot-deco:plot set border smooth_stone_slab"], close: false, permission: "craftplayplotextras.deco.border.basic"}
@@ -187,7 +187,7 @@ tabs:
         name: "&6Valuable"
         lore: ["&7Precious border blocks", "&7for special ranks."]
         permission: "craftplayplotextras.deco.border.valuable"
-        button-slots: [19-25, 28-34, 37-43]
+        slots: [19-25, 28-34, 37-43]
         buttons:
           gold: {enabled: true, material: GOLD_BLOCK, name: "&6Gold Border", lore: ["&7Sets the plot border to gold blocks."], commands: ["plot-deco:plot set border gold_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
           iron: {enabled: true, material: IRON_BLOCK, name: "&fIron Border", lore: ["&7Sets the plot border to iron blocks."], commands: ["plot-deco:plot set border iron_block"], close: false, permission: "craftplayplotextras.deco.border.valuable"}
@@ -203,7 +203,7 @@ tabs:
         name: "&5Special"
         lore: ["&7Special border blocks", "&7for events and special ranks."]
         permission: "craftplayplotextras.deco.border.special"
-        button-slots: [19-25, 28-34, 37-43]
+        slots: [19-25, 28-34, 37-43]
         buttons:
           dragon-egg: {enabled: true, material: DRAGON_EGG, name: "&5Dragon Egg Border", lore: ["&7Sets the plot border to dragon eggs."], commands: ["plot-deco:plot set border dragon_egg"], close: false, permission: "craftplayplotextras.deco.border.special"}
           end-stone: {enabled: true, material: END_STONE_BRICKS, name: "&eEnd Stone Brick Border", lore: ["&7Sets the plot border to end stone bricks."], commands: ["plot-deco:plot set border end_stone_bricks"], close: false, permission: "craftplayplotextras.deco.border.special"}
